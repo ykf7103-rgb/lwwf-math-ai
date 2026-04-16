@@ -2326,14 +2326,14 @@ async function exchangeEdx(rateIdx) {
         alert(`金幣不足！你有 ${spendable} 金幣，需要 ${rate.coins} 金幣。`);
         return;
     }
-    if (!confirm(`確認用 ${rate.coins} 金幣換取 ${rate.edx} EDX 分？\n（換取後不可撤銷）`)) return;
+    if (!confirm(`用 ${rate.coins} 金幣換取 ${rate.edx} EDX 分？`)) return;
 
     const res = await cloudStore.exchangeEdx(currentUser.class, currentUser.number, rate.coins, rate.edx);
     if (res.success) {
         window.currentEdxHistory = await cloudStore.loadEdxHistory(currentUser.class, currentUser.number);
         updateCoinDisplay();
         renderScores();
-        alert(`🎉 成功換取 ${rate.edx} EDX 分！`);
+        alert(`🎉 換取成功！你獲得 ${rate.edx} EDX 分！`);
     } else {
         alert(`換取失敗：${res.error}。請重試。`);
     }
@@ -2713,6 +2713,12 @@ function renderScores() {
 
     const container = document.getElementById('scoresContent');
 
+    // Compute max possible EDX student could exchange now (greedy: highest first)
+    let maxEdx = 0, remaining = spendable;
+    for (const r of [...EDX_RATES].sort((a,b) => b.coins - a.coins)) {
+        while (remaining >= r.coins) { maxEdx += r.edx; remaining -= r.coins; }
+    }
+
     const row = (label, done, info) => `
         <div class="score-row">
             <div><div class="score-row-label">${label}</div></div>
@@ -2727,7 +2733,7 @@ function renderScores() {
             </div>
             <div class="score-stat">
                 <div class="score-stat-value"><img src="${coinImg}" style="width:28px;height:28px;vertical-align:middle;"> ${spendable}</div>
-                <div class="score-stat-label">可換 EDX</div>
+                <div class="score-stat-label">剩餘金幣（可換）</div>
             </div>
             <div class="score-stat">
                 <div class="score-stat-value">🏅 ${totalEdx}</div>
@@ -2780,22 +2786,25 @@ function renderScores() {
 
         <div class="rewards-section">
             <h3>🏅 換取 EDX 分</h3>
-            <p style="color: var(--text-light); margin-bottom: 16px; font-size: 0.9rem;">
-                你有 <strong><img src="${coinImg}" style="width:18px;vertical-align:middle;"> ${spendable}</strong> 可換取，已換取 <strong>${totalEdx}</strong> EDX 分。
-                <br><span style="font-size:0.8rem;">EDX 分用嚟喺學校換取獎品</span>
+            <p style="color: var(--text-light); margin-bottom: 12px; font-size: 0.9rem;">
+                你有 <strong><img src="${coinImg}" style="width:18px;vertical-align:middle;"> ${spendable}</strong> 金幣可以換取 EDX 分。
+                <br><span style="font-size:0.8rem;">💡 EDX 分可以喺學校換取真實獎品</span>
             </p>
+            ${EDX_RATES.some(r => spendable >= r.coins) ? '' : `<div style="padding:14px;background:#FFF3E0;border-radius:10px;color:#E65100;font-size:0.9rem;">
+                ⚠️ 金幣唔夠啊！至少要 10 金幣先可以換 EDX。繼續努力完成學習任務啦！
+            </div>`}
             ${EDX_RATES.map((r, i) => {
                 const enabled = spendable >= r.coins;
-                return `<div class="reward-item" style="${enabled ? '' : 'opacity:0.5;'}">
-                    <span class="reward-item-points"><img src="${coinImg}" style="width:18px;vertical-align:middle;"> ${r.coins} → 🏅 ${r.edx} EDX</span>
+                return `<div class="reward-item" style="${enabled ? '' : 'opacity:0.55;'}">
+                    <span class="reward-item-points">用 <img src="${coinImg}" style="width:18px;vertical-align:middle;"> ${r.coins} 換 <b style="color:#1565C0;">🏅 ${r.edx} EDX</b></span>
                     <button class="btn btn-sm ${enabled ? 'btn-primary' : 'btn-outline'}" ${enabled ? `onclick="exchangeEdx(${i})"` : 'disabled'}>
-                        ${enabled ? '換取' : '金幣不足'}
+                        ${enabled ? '🎁 換取' : '金幣不足'}
                     </button>
                 </div>`;
             }).join('')}
-            ${edxHistory.length > 0 ? `<details style="margin-top:16px;"><summary style="cursor:pointer;">📜 換取記錄 (${edxHistory.length})</summary>
-                <div style="margin-top:8px;font-size:0.9rem;">
-                    ${edxHistory.slice().reverse().map(r => `<div style="padding:6px 0;border-bottom:1px solid #eee;">${new Date(r.exchanged_at).toLocaleDateString('zh-TW')} · <img src="${coinImg}" style="width:14px;vertical-align:middle;"> ${r.coins_spent} → 🏅 ${r.edx_earned} EDX</div>`).join('')}
+            ${edxHistory.length > 0 ? `<details style="margin-top:16px;"><summary style="cursor:pointer;font-weight:700;color:#1565C0;">📜 我的換取記錄 (共 ${edxHistory.length} 次 · 總計 🏅 ${totalEdx} EDX)</summary>
+                <div style="margin-top:8px;font-size:0.9rem;background:#F5F5F5;padding:10px;border-radius:8px;">
+                    ${edxHistory.slice().reverse().map(r => `<div style="padding:6px 0;border-bottom:1px solid #ddd;">${new Date(r.exchanged_at).toLocaleDateString('zh-TW')}：<img src="${coinImg}" style="width:14px;vertical-align:middle;"> ${r.coins_spent} → 🏅 <b>${r.edx_earned} EDX</b></div>`).join('')}
                 </div>
             </details>` : ''}
         </div>
@@ -3125,6 +3134,9 @@ async function showStudentDetail(cls, num, name) {
                         <div style="margin-top:4px;font-style:italic;color:#555;">轉寫：「${a.transcript||''}」</div>
                         ${a.feedback ? `<div style="margin-top:4px;color:${color};">AI 評語：${a.feedback}</div>` : ''}
                     </div>`;
+                } else if (a.type === 'fill') {
+                    const ok = a.correct !== false;
+                    html += `<div style="margin-top:6px;"><em>${a.q}</em><br>→ <strong style="color:${ok?'#2E7D32':'#C62828'};">${ok?'✅ ':'❌ '}${a.answer}</strong></div>`;
                 } else {
                     html += `<div style="margin-top:6px;"><em>${a.q}</em><br>→ <strong>${a.answer}</strong></div>`;
                 }
@@ -3216,7 +3228,7 @@ const PROGRESSION_STEPS = [
       image:'assets/ch12/infographics/quiz1.png',
       questions:[
         { q:'0.45 × 10 = ?', type:'mc', options:['0.045','4.5','45','450'], correct:1 },
-        { q:'為什麼 4 × 100 = 400？用小數點移動來解釋。', type:'text' },
+        { q:'填充：4 × 100 = ___', type:'fill', accept:['400','400.0','400.00'], hint:'×100 小數點向右移 2 位' },
         { q:'🎤 用你自己嘅說話，教一個同學點樣計 2.3 × 100。用 20-30 秒解釋。',
           type:'voice',
           concept:'乘以100 小數點向右移2位',
@@ -3227,7 +3239,7 @@ const PROGRESSION_STEPS = [
       image:'assets/ch12/infographics/quiz2.png',
       questions:[
         { q:'2.6 × 0.001 = ?', type:'mc', options:['260','0.26','0.026','0.0026'], correct:3 },
-        { q:'乘以 0.1 等於除以幾？為什麼？', type:'text' },
+        { q:'填充：乘以 0.1 等於除以 ___', type:'fill', accept:['10','十'], hint:'×0.1 = ÷10，因為 0.1 = 1/10' },
         { q:'🎤 用 Feynman 方法：假設你係老師，教同學點解 45 × 0.01 = 0.45。講 20-30 秒。',
           type:'voice',
           concept:'乘以0.01 小數點向左移2位',
@@ -3238,7 +3250,7 @@ const PROGRESSION_STEPS = [
       image:'assets/ch12/infographics/quiz3.png',
       questions:[
         { q:'0.72 公里 = ? 米', type:'mc', options:['7.2','72','720','7200'], correct:2 },
-        { q:'大單位轉小單位，用乘法還是除法？舉一個例子說明。', type:'text' },
+        { q:'填充：1 公里 = ___ 米', type:'fill', accept:['1000','1000米','一千'], hint:'1 公里 = 1000 米（大變細用乘法）' },
         { q:'🎤 教一教細佬：點解 1.5 公里 = 1500 米？用 20-30 秒解釋。',
           type:'voice',
           concept:'1公里=1000米，單位轉換用乘以1000',
@@ -3815,12 +3827,14 @@ function exitSlideViewer() {
 // Voice recording state
 let voiceData = {}; // { qi: { transcript, score, feedback } }
 let activeRecognizer = null;
+let fillAnswered = {}; // { qi: true } — tracks correct fill-in answers
 
 function openInfographicQuiz(stepIdx) {
     const step = PROGRESSION_STEPS[stepIdx];
     if (step.type !== 'infoquiz') return;
     currentQuizStep = stepIdx;
     voiceData = {}; // reset voice answers
+    fillAnswered = {}; // reset fill answers
     document.getElementById('iqTitle').textContent = step.title;
     document.getElementById('iqImage').src = step.image;
     document.getElementById('studyProgressionView').style.display = 'none';
@@ -3830,6 +3844,7 @@ function openInfographicQuiz(stepIdx) {
     step.questions.forEach((q, qi) => {
         const typeBadge = q.type === 'voice' ? '<span style="background:#E91E63;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">🎤 錄音</span>'
             : q.type === 'mc' ? '<span style="background:#1565C0;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">選擇題</span>'
+            : q.type === 'fill' ? '<span style="background:#7B1FA2;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">填充題</span>'
             : '<span style="background:#7B1FA2;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">文字題</span>';
         html += `<div class="iq-question"><div class="iq-question-text">第${qi+1}題${typeBadge}：${q.q}</div>`;
         if (q.type === 'mc') {
@@ -3839,6 +3854,12 @@ function openInfographicQuiz(stepIdx) {
                 html += `<div class="iq-mc-option" onclick="selectIQOption(${qi},${oi})"><span class="opt-letter">${letters[oi]}</span><span>${opt}</span></div>`;
             });
             html += `</div>`;
+        } else if (q.type === 'fill') {
+            html += `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">
+                <input type="text" id="iqFill${qi}" placeholder="輸入答案..." style="flex:1;min-width:180px;padding:10px 14px;border:2px solid #7B1FA2;border-radius:8px;font-size:1rem;color:#333;outline:none;">
+                <button class="btn btn-sm btn-primary" onclick="checkIQFill(${qi})" style="padding:10px 20px;">檢查</button>
+            </div>
+            <div id="iqFillResult${qi}" style="margin-top:6px;"></div>`;
         } else if (q.type === 'voice') {
             html += `<div class="iq-voice" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);padding:14px;border-radius:12px;border:2px solid #E91E63;">
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
@@ -3865,12 +3886,41 @@ function selectIQOption(qi, oi) {
     opts.forEach((o, i) => o.classList.toggle('selected', i === oi));
 }
 
+function checkIQFill(qi) {
+    const step = PROGRESSION_STEPS[currentQuizStep];
+    const q = step.questions[qi];
+    const input = document.getElementById('iqFill'+qi);
+    const val = input.value.trim();
+    const resEl = document.getElementById('iqFillResult'+qi);
+    if (!val) { resEl.innerHTML = '<span style="color:#C62828;">⚠️ 請輸入答案</span>'; return; }
+    const normalize = (s) => String(s).trim().replace(/\s+/g,'').replace(/，/g,',');
+    const isCorrect = (q.accept || []).some(a => normalize(a) === normalize(val));
+    if (isCorrect) {
+        input.disabled = true;
+        input.style.borderColor = '#4CAF50';
+        input.style.background = '#E8F5E9';
+        input.style.color = '#2E7D32';
+        fillAnswered[qi] = true;
+        resEl.innerHTML = '<span style="color:#2E7D32;font-weight:700;">✅ 答啱！</span>';
+    } else {
+        input.style.borderColor = '#F44336';
+        input.style.animation = 'shake 0.4s';
+        setTimeout(() => input.style.animation = '', 400);
+        resEl.innerHTML = `<span style="color:#C62828;">❌ 再試！<span style="color:#666;font-size:0.85rem;"> 💡 ${q.hint || '睇多次題目同提示'}</span></span>`;
+    }
+}
+
 function startVoiceRecording(qi) {
     if (activeRecognizer) { try { activeRecognizer.stop(); } catch(e){} }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { alert('你嘅瀏覽器唔支援語音辨識，請用 Chrome 或 Edge。'); return; }
+    if (!SR) {
+        document.getElementById('recStatus'+qi).innerHTML = '⚠️ 請用 Chrome/Edge 瀏覽器先可以錄音';
+        alert('你嘅瀏覽器唔支援語音辨識，請用 Chrome 或 Edge 再試。');
+        return;
+    }
     const recognizer = new SR();
-    recognizer.lang = 'yue-Hant-HK';
+    // Try Cantonese first; browser will fall back automatically if unsupported
+    recognizer.lang = 'zh-HK';
     recognizer.continuous = true;
     recognizer.interimResults = true;
     let finalText = (document.getElementById('transcript'+qi).textContent || '').trim();
@@ -3893,7 +3943,14 @@ function startVoiceRecording(qi) {
         activeRecognizer = null;
     };
     recognizer.onerror = (e) => {
-        document.getElementById('recStatus'+qi).textContent = '❌ ' + e.error;
+        const errMsg = {
+            'not-allowed':'⚠️ 請允許麥克風權限 (Mic permission denied)',
+            'no-speech':'⚠️ 聽唔到聲，請再試',
+            'audio-capture':'⚠️ 搵唔到麥克風',
+            'network':'⚠️ 網絡問題',
+            'language-not-supported':'⚠️ 呢個瀏覽器唔支援粵語辨識'
+        }[e.error] || ('❌ 錯誤：' + e.error);
+        document.getElementById('recStatus'+qi).innerHTML = errMsg;
         document.getElementById('recBtn'+qi).disabled = false;
         document.getElementById('stopBtn'+qi).disabled = true;
         activeRecognizer = null;
@@ -3947,10 +4004,27 @@ async function gradeVoiceAnswer(qi) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
         });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const { reply } = await res.json();
+        if (!res.ok) {
+            const errText = await res.text().catch(()=>'');
+            throw new Error('HTTP ' + res.status + ' ' + errText.substring(0,100));
+        }
+        const data = await res.json();
+        const reply = data.reply || data.text || JSON.stringify(data);
+        if (!reply) throw new Error('AI 未回應');
         const match = reply.match(/\{[\s\S]*?\}/);
-        if (!match) throw new Error('解析失敗');
+        if (!match) {
+            // Fallback: treat whole response as feedback, assign a default score
+            console.warn('AI response not JSON, using fallback:', reply);
+            voiceData[qi] = { transcript, score: 60, feedback: reply.substring(0, 80) };
+            const color = '#F57F17';
+            resEl.innerHTML = `<div style="padding:12px;border-radius:10px;background:#FFF8E1;border:2px solid ${color};">
+                <div style="font-size:1.4rem;font-weight:900;color:${color};">✅ 已提交（AI 回應非標準格式）</div>
+                <div style="margin-top:6px;color:#333;font-size:0.9rem;">${reply.substring(0,80)}</div>
+                <button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button>
+            </div>`;
+            gradeBtn.disabled = false;
+            return;
+        }
         const result = JSON.parse(match[0]);
         const score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
         const feedback = result.feedback || '';
@@ -3986,6 +4060,8 @@ async function submitInfographicQuiz() {
         if (q.type === 'mc') {
             const selected = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
             if (!selected) { allAnswered = false; missingMsg = `第${qi+1}題未揀答案`; }
+        } else if (q.type === 'fill') {
+            if (!fillAnswered[qi]) { allAnswered = false; missingMsg = `第${qi+1}題要答啱先可以提交（請按「檢查」）`; }
         } else if (q.type === 'voice') {
             if (!voiceData[qi]) { allAnswered = false; missingMsg = `第${qi+1}題請錄音並提交評分`; }
         } else {
@@ -4001,6 +4077,9 @@ async function submitInfographicQuiz() {
             if (q.type === 'mc') {
                 const sel = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
                 answers.push({ q: q.q, type: 'mc', answer: sel ? sel.textContent.trim() : '' });
+            } else if (q.type === 'fill') {
+                const val = (document.getElementById('iqFill'+qi) || {}).value || '';
+                answers.push({ q: q.q, type: 'fill', answer: val.trim(), correct: !!fillAnswered[qi] });
             } else if (q.type === 'voice') {
                 const v = voiceData[qi];
                 answers.push({ q: q.q, type: 'voice', transcript: v.transcript, score: v.score, feedback: v.feedback });

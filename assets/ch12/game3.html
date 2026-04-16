@@ -117,9 +117,8 @@ body{
     <div style="text-align:center;"><img id="enemyImg" src="images/demon_ox.png" class="char-img"><div class="char-label" id="enemyName">牛魔王</div></div>
   </div>
   <div class="target-panel">
-    <div class="target-instruction" id="instructionText">將數字變成目標值，拖動小數點金丹！</div>
-    <div style="font-size:clamp(13px,2.5vw,15px);color:#f5c76a;margin-bottom:4px;">目標：</div>
-    <div class="target-number" id="targetNumber">345.6</div>
+    <div class="target-instruction" id="instructionText">—</div>
+    <div id="targetNumber" style="display:none;"></div>
     <div class="current-label">你嘅答案：</div>
     <div class="number-display" id="numberDisplay"></div>
     <div class="position-hint" id="positionHint">⬅ 拖動小數點 ➡ 到正確位置</div>
@@ -152,23 +151,27 @@ body{
 
 <script>
 // ============================================================
-// ROUNDS DATA — each round has a start number + target (decimal point position)
-// Student drags decimal point to correct slot index
+// ROUNDS — show "<start> × <op> = ?" and student drags decimal
+// digits = canonical digit sequence (no decimal)
+// startPos / targetPos = decimal position 0..digits.length
+//   pos 0 = before all digits (displays as "0.DDD")
+//   pos N = between digit N-1 and N (displays as "DD.DD")
+//   pos digits.length = after all digits (displays as "DDD")
 // ============================================================
 const ROUNDS = [
-  // Round 1-3: ×10/100/1000 (move right)
-  { digits:'3456', startPos:2, targetPos:4, targetDisplay:'3456', instruction:'將 34.56 × 100，小數點去邊？', category:'×100', enemy:'demon_ox', enemyName:'牛魔王' },
-  { digits:'0567', startPos:1, targetPos:2, targetDisplay:'5.67', instruction:'將 0.567 × 10 = ?', category:'×10', enemy:'demon_bone', enemyName:'白骨精' },
-  { digits:'8901', startPos:1, targetPos:4, targetDisplay:'8901', instruction:'將 0.8901 × 10000 = ?（多一位）將 ×1000 變成 890.1，小數點去邊？', category:'×1000', enemy:'demon_ox', enemyName:'牛魔王' },
-  // Round 4-6: ×0.1/0.01/0.001 (move left)
-  { digits:'2400', startPos:4, targetPos:3, targetDisplay:'240.0', instruction:'將 2400 × 0.1 = ?', category:'×0.1', enemy:'demon_bone', enemyName:'白骨精' },
-  { digits:'0500', startPos:4, targetPos:2, targetDisplay:'5.00', instruction:'將 500 × 0.01 = ?', category:'×0.01', enemy:'demon_ox', enemyName:'牛魔王' },
-  { digits:'7000', startPos:4, targetPos:1, targetDisplay:'0.7000', instruction:'將 7000 × 0.0001 = 0.7000? 其實係 ×0.001，小數點向左移 3 位：7000 → ?', category:'×0.001', enemy:'demon_bone', enemyName:'白骨精' },
-  // Round 7-10: Unit conversion
-  { digits:'3200', startPos:4, targetPos:3, targetDisplay:'320.0', instruction:'將 3.2 公里 = ? 米（×1000）。已經係 3200，將小數點放返去整數位：', category:'公里→米', enemy:'demon_ox', enemyName:'牛魔王' },
-  { digits:'0850', startPos:4, targetPos:3, targetDisplay:'085.0', instruction:'850 克 = 0.85 公斤。將 850 × 0.001，小數點向左移 3 位。請移動：', category:'克→公斤', enemy:'demon_bone', enemyName:'白骨精' },
-  { digits:'1500', startPos:4, targetPos:4, targetDisplay:'1500', instruction:'1.5 升 = 1500 毫升。將 1.5 × 1000，小數點向右移 3 位至最末：', category:'升→毫升', enemy:'demon_ox', enemyName:'牛魔王' },
-  { digits:'0360', startPos:4, targetPos:3, targetDisplay:'036.0', instruction:'最終關！3.6 米 = 360 厘米。將 3.6 × 100，小數點向右移到…等等其實結果係 360！嘗試用 0360 起始，移到正確位置（代表 36.0 呢個中間步驟）：', category:'米→厘米', enemy:'demon_ox', enemyName:'牛魔王（最終）' },
+  // ===== ×10 / ×100 / ×1000 (decimal moves right) =====
+  { digits:'345', startPos:1, targetPos:2, startNum:'3.45', op:'× 10',   enemy:'demon_ox',   enemyName:'牛魔王'  },
+  { digits:'607', startPos:1, targetPos:3, startNum:'0.607',op:'× 100',  enemy:'demon_bone', enemyName:'白骨精'  },
+  { digits:'89',  startPos:1, targetPos:2, startNum:'0.89', op:'× 10',   enemy:'demon_ox',   enemyName:'牛魔王'  },
+  { digits:'456', startPos:0, targetPos:3, startNum:'0.456',op:'× 1000', enemy:'demon_bone', enemyName:'白骨精'  },
+  // ===== ×0.1 / ×0.01 (decimal moves left, auto-pad leading zero) =====
+  { digits:'56',  startPos:2, targetPos:1, startNum:'56',   op:'× 0.1',  enemy:'demon_ox',   enemyName:'牛魔王'  },
+  { digits:'240', startPos:3, targetPos:2, startNum:'240',  op:'× 0.1',  enemy:'demon_bone', enemyName:'白骨精'  },
+  { digits:'34',  startPos:2, targetPos:0, startNum:'34',   op:'× 0.01', enemy:'demon_ox',   enemyName:'牛魔王'  },
+  { digits:'5',   startPos:1, targetPos:0, startNum:'5',    op:'× 0.1',  enemy:'demon_bone', enemyName:'白骨精'  },
+  // ===== Unit conversion =====
+  { digits:'3500',startPos:1, targetPos:4, startNum:'3.5 公里',  op:'= ? 米 (×1000)', enemy:'demon_ox',   enemyName:'牛魔王'   },
+  { digits:'85',  startPos:2, targetPos:0, startNum:'850 克',     op:'= ? 公斤 (×0.001)', enemy:'demon_bone', enemyName:'白骨精（最終）' },
 ];
 
 // ============================================================
@@ -232,13 +235,15 @@ function restart() { showScreen('startScreen'); }
 
 // ============================================================
 // RENDER NUMBER with draggable decimal point
+// When decimal at pos 0, auto-prepend "0" (e.g. ".345" → "0.345")
 // ============================================================
 function renderNumber(digits, pos) {
-  // Build display: digits with decimal dot at position `pos`
-  // pos 0 = before all digits (e.g. .1234)
-  // pos = digits.length = after all digits (e.g. 1234.)
   const container = document.getElementById('numberDisplay');
   let html = '';
+  // If decimal is at very start (pos 0), show leading "0" before the dot
+  if (pos === 0) {
+    html += `<span class="digit" style="color:#999;">0</span>`;
+  }
   for (let i = 0; i <= digits.length; i++) {
     if (i === pos) {
       html += `<span class="decimal-dot" id="decDot" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">.</span>`;
@@ -247,15 +252,16 @@ function renderNumber(digits, pos) {
       html += `<span class="digit">${digits[i]}</span>`;
     }
   }
+  // If decimal at end (pos = digits.length), show nothing extra — just integer
   container.innerHTML = html;
 
-  // Hint bar showing slot positions
+  // Slot indicator bar
   let hints = '';
   for (let i = 0; i <= digits.length; i++) {
     hints += `<span class="slot-indicator ${i === pos ? 'active' : ''}"></span>`;
     if (i < digits.length) hints += `<span style="width:18px;display:inline-block;"></span>`;
   }
-  document.getElementById('positionHint').innerHTML = hints + '<div style="margin-top:6px;font-size:12px;">⬅ 拖動小數點到正確位置 ➡</div>';
+  document.getElementById('positionHint').innerHTML = hints + '<div style="margin-top:6px;font-size:12px;">⬅ 拖動小數點（金丹）到正確位置 ➡</div>';
 }
 
 function loadRound() {
@@ -265,8 +271,14 @@ function loadRound() {
   document.getElementById('scoreText').textContent = state.score;
   document.getElementById('hpFill').style.width = state.hp + '%';
   document.getElementById('hpText').textContent = state.hp + '/100';
-  document.getElementById('instructionText').textContent = r.instruction;
-  document.getElementById('targetNumber').textContent = r.targetDisplay;
+  // Show operation: "3.45 × 10 = ?"
+  document.getElementById('instructionText').innerHTML =
+    `<span style="font-size:1.2em;color:#40ff40;font-weight:700;">${r.startNum}</span> ` +
+    `<span style="color:#FFD700;">${r.op}</span> ` +
+    `<span style="color:#FFD700;">= ?</span>`;
+  // Hide the old target display — it's merged into instruction
+  document.getElementById('targetNumber').textContent = '?';
+  document.getElementById('targetNumber').style.color = '#FF8C00';
   document.getElementById('enemyImg').src = 'images/' + r.enemy + '.png';
   document.getElementById('enemyName').textContent = r.enemyName;
   document.getElementById('heroImg').src = 'images/monkey_happy.png';
@@ -330,10 +342,19 @@ function endDrag() {
 // ============================================================
 // CHECK ANSWER
 // ============================================================
+// Build human-readable number from digits + decimal position
+function formatNumber(digits, pos) {
+  if (pos === 0) return '0.' + digits;
+  if (pos === digits.length) return digits;
+  return digits.slice(0, pos) + '.' + digits.slice(pos);
+}
+
 function checkAnswer() {
   const r = ROUNDS[state.round];
   const isCorrect = state.currentPos === r.targetPos;
   const fb = document.getElementById('feedback');
+  const currentStr = formatNumber(r.digits, state.currentPos);
+  const correctStr = formatNumber(r.digits, r.targetPos);
 
   if (isCorrect) {
     state.score += 10;
@@ -342,14 +363,14 @@ function checkAnswer() {
     document.getElementById('enemyImg').className = 'char-img hit';
     document.getElementById('heroImg').src = 'images/monkey_win.png';
     fb.className = 'feedback show correct';
-    fb.innerHTML = `✅ 正確！悟空金箍棒出擊擊敗${r.enemyName}！ +10 分`;
+    fb.innerHTML = `✅ 正確！<b>${r.startNum} ${r.op} = ${correctStr}</b> 悟空金箍棒擊敗${r.enemyName}！ +10 分`;
     playTone(660, 0.15); setTimeout(()=>playTone(880, 0.2), 120);
 
     setTimeout(() => {
       state.round += 1;
       if (state.round >= ROUNDS.length) endGame();
       else loadRound();
-    }, 1500);
+    }, 1800);
   } else {
     state.hp = Math.max(0, state.hp - 15);
     document.getElementById('heroImg').className = 'char-img hit';
@@ -358,7 +379,7 @@ function checkAnswer() {
     document.getElementById('hpFill').style.width = state.hp + '%';
     document.getElementById('hpText').textContent = state.hp + '/100';
     fb.className = 'feedback show wrong';
-    fb.innerHTML = `❌ 小數點位置錯咗（你揀咗位 ${state.currentPos}，正確位 ${r.targetPos}）。再試！`;
+    fb.innerHTML = `❌ 你答咗 <b>${currentStr}</b>，唔啱喎。再試！`;
     playTone(220, 0.3, 'sawtooth');
 
     if (state.hp <= 0) {
