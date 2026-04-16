@@ -1,0 +1,28 @@
+{
+  "chapter": 12,
+  "title": "有趣的乘法",
+  "theme": "西遊記",
+  "video_url": "https://lh3.googleusercontent.com/notebooklm/AKXwDQGBXV1Ty9Es1kCHieKWm7cY9SWHRWVqrX2bOS-4BntALdirQYy_N810DYPEA8jSoWAUgiZW88RhZMTvzIY5EPAQ7KE9v8yWhWln9piA4O8AtDYonkil2yMHJejtGJKynxbkiRZuTleAvsjQOLGrwk3fwADkK9g=m22-dv",
+  "audio_url": "https://lh3.googleusercontent.com/notebooklm/AKXwDQFyWh1vStb0-B3vnmd8UCoTNnf_c1blEONINOrvB3ukfW5F_kpT8465i_uXbiGGPeg7RBSJcI85fXHh_z53Ttu9nyz8AwmcZz0drULHHkvmlWQmHOHHpvzg1Bx-UPZj7uD3eVyitRupN0-rMtge7EoeYYedBPU=m140-dv",
+  "learning_objectives": [
+    "乘以10/100/1000（小數點向右移）",
+    "乘以0.1/0.01/0.001（小數點向左移）",
+    "單位轉換應用"
+  ],
+  "story_arc": {
+    "slides1": "悟空的放大法術",
+    "slides2": "唐僧的縮小心法",
+    "slides3": "取經路上的單位轉換大冒險"
+  },
+  "coins": {
+    "slides_quiz": 9,
+    "assess1": 4,
+    "assess2": 4,
+    "assess3": 4,
+    "game1": 3,
+    "game2": 3,
+    "national_security": 3,
+    "total": 33
+  },
+  "generated_at": "2026-04-13"
+}

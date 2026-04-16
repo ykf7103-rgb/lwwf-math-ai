@@ -1,0 +1,13 @@
+# Backend / server-side code — not needed for GitHub Pages static deployment
+cloudflare-worker/
+
+# Temporary / local files
+.claude/
+*.pdf
+*.log
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+.env
+.env.*

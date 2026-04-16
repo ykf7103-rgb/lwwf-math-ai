@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學生AI問功課 - 數學小老師</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --blue:#4a90d9;
+    --blue-light:#e8f0fe;
+    --grey:#f0f0f0;
+    --grey-dark:#666;
+    --bg-start:#f5f7fa;
+    --bg-end:#c3cfe2;
+    --shadow:0 2px 12px rgba(0,0,0,.08);
+    --radius:16px;
+  }
+
+  html,body{
+    height:100%;
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    background:linear-gradient(135deg,var(--bg-start),var(--bg-end));
+    color:#333;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---- layout ---- */
+  .app{
+    display:flex;flex-direction:column;
+    height:100%;max-width:680px;margin:0 auto;
+    background:#fff;
+    box-shadow:0 0 40px rgba(0,0,0,.1);
+  }
+
+  /* ---- header ---- */
+  .header{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 18px;
+    background:linear-gradient(135deg,#4a90d9,#357abd);
+    color:#fff;flex-shrink:0;
+  }
+  .header-avatar{font-size:28px;line-height:1}
+  .header-info h1{font-size:17px;font-weight:700;letter-spacing:.3px}
+  .header-info p{font-size:12px;opacity:.85;margin-top:2px}
+  .header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .badge{
+    background:rgba(255,255,255,.22);border-radius:20px;
+    padding:4px 12px;font-size:12px;white-space:nowrap;
+  }
+  .btn-reset{
+    background:none;border:1.5px solid rgba(255,255,255,.5);
+    color:#fff;border-radius:8px;padding:5px 12px;font-size:13px;
+    cursor:pointer;transition:.2s;
+  }
+  .btn-reset:hover{background:rgba(255,255,255,.15)}
+
+  /* ---- chat area ---- */
+  .chat-area{
+    flex:1;overflow-y:auto;padding:16px 14px;
+    display:flex;flex-direction:column;gap:10px;
+    scroll-behavior:smooth;
+  }
+
+  /* message rows */
+  .msg-row{display:flex;gap:8px;max-width:88%;animation:fadeUp .3s ease}
+  .msg-row.student{align-self:flex-end;flex-direction:row-reverse}
+  .msg-row.ai{align-self:flex-start}
+
+  .msg-avatar{
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;flex-shrink:0;line-height:1;
+  }
+  .ai .msg-avatar{background:var(--grey)}
+  .student .msg-avatar{background:var(--blue-light)}
+
+  .msg-bubble{
+    padding:10px 14px;border-radius:var(--radius);
+    font-size:15px;line-height:1.65;
+    word-break:break-word;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .ai .msg-bubble{background:var(--grey);border-top-left-radius:4px}
+  .student .msg-bubble{background:var(--blue);color:#fff;border-top-right-radius:4px}
+
+  .msg-bubble img.thumb{
+    max-width:180px;max-height:180px;border-radius:10px;
+    display:block;margin-bottom:6px;
+  }
+
+  /* typing dots */
+  .typing-dots{display:inline-flex;gap:4px;padding:4px 0}
+  .typing-dots span{
+    width:8px;height:8px;border-radius:50%;background:#999;
+    animation:blink 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2){animation-delay:.2s}
+  .typing-dots span:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ---- quick questions ---- */
+  .quick-bar{
+    display:flex;gap:8px;padding:8px 14px;
+    overflow-x:auto;flex-shrink:0;
+    -webkit-overflow-scrolling:touch;
+  }
+  .quick-bar::-webkit-scrollbar{display:none}
+  .quick-btn{
+    flex-shrink:0;
+    background:#fff;border:1.5px solid var(--blue);
+    color:var(--blue);border-radius:20px;
+    padding:7px 14px;font-size:13px;cursor:pointer;
+    transition:.2s;white-space:nowrap;
+    font-family:inherit;
+  }
+  .quick-btn:hover,.quick-btn:active{background:var(--blue);color:#fff}
+
+  /* ---- input bar ---- */
+  .input-bar{
+    display:flex;align-items:flex-end;gap:8px;
+    padding:10px 14px 14px;background:#fff;
+    border-top:1px solid #eee;flex-shrink:0;
+  }
+  .input-bar textarea{
+    flex:1;resize:none;border:1.5px solid #ddd;
+    border-radius:14px;padding:10px 14px;
+    font-size:15px;font-family:inherit;
+    line-height:1.5;max-height:100px;
+    outline:none;transition:border .2s;
+  }
+  .input-bar textarea:focus{border-color:var(--blue)}
+  .input-bar textarea::placeholder{color:#aaa}
+
+  .icon-btn{
+    width:42px;height:42px;border-radius:50%;border:none;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:20px;flex-shrink:0;transition:.15s;
+  }
+  .btn-photo{background:var(--grey);color:var(--grey-dark)}
+  .btn-photo:hover{background:#e0e0e0}
+  .btn-send{background:var(--blue);color:#fff}
+  .btn-send:hover{background:#357abd}
+  .btn-send:disabled{opacity:.45;cursor:default}
+
+  /* image preview */
+  .preview-strip{
+    display:none;align-items:center;gap:8px;
+    padding:6px 14px;background:#fafafa;border-top:1px solid #eee;
+    flex-shrink:0;
+  }
+  .preview-strip.show{display:flex}
+  .preview-strip img{width:56px;height:56px;object-fit:cover;border-radius:8px}
+  .preview-strip .remove{
+    background:none;border:none;font-size:18px;cursor:pointer;color:#999;
+  }
+  .preview-strip .label{font-size:13px;color:var(--grey-dark)}
+
+  /* ---- welcome card ---- */
+  .welcome{
+    text-align:center;padding:30px 20px;
+    animation:fadeUp .5s ease;
+  }
+  .welcome .emoji{font-size:52px;margin-bottom:10px}
+  .welcome h2{font-size:18px;font-weight:700;margin-bottom:6px}
+  .welcome p{font-size:14px;color:var(--grey-dark);line-height:1.6}
+
+  /* ---- error overlay ---- */
+  .error-overlay{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.92);z-index:100;
+    flex-direction:column;gap:12px;padding:24px;text-align:center;
+  }
+  .error-overlay .emoji{font-size:48px}
+  .error-overlay p{font-size:16px;color:#555;line-height:1.6;max-width:340px}
+
+  /* ---- markdown-like rendering ---- */
+  .msg-bubble p{margin-bottom:6px}
+  .msg-bubble p:last-child{margin-bottom:0}
+  .msg-bubble strong{font-weight:700}
+  .msg-bubble em{font-style:italic}
+  .msg-bubble code{
+    background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px;font-size:13px;
+  }
+
+  /* ---- responsive ---- */
+  @media(max-width:680px){
+    .app{max-width:100%}
+    .msg-row{max-width:92%}
+  }
+</style>
+</head>
+<body>
+
+<!-- Error overlay (hidden by default) -->
+<div class="error-overlay" id="errorOverlay" style="display:none">
+  <div class="emoji" id="errorEmoji"></div>
+  <p id="errorMsg"></p>
+</div>
+
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-avatar">&#129302;</div>
+    <div class="header-info">
+      <h1>數學小老師</h1>
+      <p>P5 第十二課 - 有趣的乘法</p>
+    </div>
+    <div class="header-right">
+      <span class="badge" id="remainBadge" title="本次可問的問題數量"></span>
+      <button class="btn-reset" id="btnReset" title="重新開始對話">重新開始</button>
+    </div>
+  </div>
+
+  <!-- Chat area -->
+  <div class="chat-area" id="chatArea">
+    <div class="welcome">
+      <div class="emoji">&#129302;</div>
+      <h2>你好！我係數學小老師！</h2>
+      <p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>
+    </div>
+  </div>
+
+  <!-- Quick question buttons -->
+  <div class="quick-bar" id="quickBar">
+    <button class="quick-btn" data-q="小數點向右移是什麼意思？">&#128161; 小數點向右移是什麼意思？</button>
+    <button class="quick-btn" data-q="乘以0.1和除以10一樣嗎？">&#129300; 乘以0.1和除以10一樣嗎？</button>
+    <button class="quick-btn" data-q="公里怎樣換做米？">&#128207; 公里怎樣換做米？</button>
+    <button class="quick-btn" data-q="我唔明白呢條題目...">&#128075; 我唔明白呢條題目...</button>
+  </div>
+
+  <!-- Image preview strip -->
+  <div class="preview-strip" id="previewStrip">
+    <img id="previewImg" src="" alt="preview">
+    <span class="label">已選擇圖片</span>
+    <button class="remove" id="btnRemoveImg" title="移除圖片">&times;</button>
+  </div>
+
+  <!-- Input bar -->
+  <div class="input-bar">
+    <button class="icon-btn btn-photo" id="btnPhoto" title="上傳功課相片">&#128247;</button>
+    <button class="icon-btn btn-mic" id="btnMic" title="錄音問功課">&#127908;</button>
+    <textarea id="userInput" rows="1" placeholder="輸入你的數學問題..."></textarea>
+    <button class="icon-btn btn-send" id="btnSend" title="傳送">&#10148;</button>
+    <input type="file" id="fileInput" accept="image/*" hidden>
+  </div>
+</div>
+
+<style>
+.btn-mic { background: rgba(99,102,241,0.1); color: #6366f1 }
+.btn-mic.recording { background: #ef4444; color: white; animation: pulse 1s infinite }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.6 } }
+</style>
+
+<script>
+/* ===== constants ===== */
+const MAX_QUESTIONS = 20;
+const MAX_HISTORY  = 10;
+
+const SYSTEM_PROMPT = `你是「數學小老師」，一位友善的小學五年級數學輔導老師。你正在幫助學生學習第十二課「有趣的乘法」。
+
+重要規則：
+1. 絕對不要直接告訴學生答案
+2. 用引導式提問幫助學生思考
+3. 給予提示和暗示，讓學生自己找到答案
+4. 如果學生卡住了，給更多提示，但仍然不給答案
+5. 用鼓勵的語氣，例如「很好的嘗試！」「你快找到了！」
+6. 用簡單易懂的語言，適合10-11歲學生
+7. 如果學生上傳圖片，先描述你看到的題目，然後引導解題
+8. 可以用生活化的例子幫助理解（例如用金錢、長度來解釋小數）
+9. 回答時可以用emoji讓對話更生動 😊
+10. 每次回答最多3-4句，不要太長
+11. 在每次回答的最後必須加一行視覺化提示，格式：[視覺:英文簡短描述要畫嘅嘢]
+    例：[視覺:colorful number line showing 0.45 multiplied by 10 becoming 4.5, cartoon, cute]
+    例：[視覺:cartoon jar with 10 groups of 0.5 chocolate chips stacking up, kawaii]
+    描述要簡單、卡通、適合小學生，目的係幫學生想像題目或概念。
+
+本課重點：
+- 乘以10/100/1000：小數點向右移1/2/3位
+- 乘以0.1/0.01/0.001：小數點向左移1/2/3位
+- 單位轉換：公里↔米、公斤↔克、升↔毫升`;
+
+/* ===== config ===== */
+// 部署 Cloudflare Worker 之後，將你嘅 Worker URL 貼呢度（或用 ?worker= URL param 覆寫）
+const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
+
+/* ===== state ===== */
+let WORKER_ENDPOINT = '';
+let conversationHistory = [];  // {role, content}
+let questionsUsed = 0;
+let pendingImageBase64 = null;
+let isSending = false;
+
+/* ===== DOM refs ===== */
+const chatArea     = document.getElementById('chatArea');
+const userInput    = document.getElementById('userInput');
+const btnSend      = document.getElementById('btnSend');
+const btnPhoto     = document.getElementById('btnPhoto');
+const btnMic       = document.getElementById('btnMic');
+const btnReset     = document.getElementById('btnReset');
+const fileInput    = document.getElementById('fileInput');
+const previewStrip = document.getElementById('previewStrip');
+const previewImg   = document.getElementById('previewImg');
+const btnRemoveImg = document.getElementById('btnRemoveImg');
+const remainBadge  = document.getElementById('remainBadge');
+const quickBar     = document.getElementById('quickBar');
+const errorOverlay = document.getElementById('errorOverlay');
+
+/* ===== init ===== */
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  WORKER_ENDPOINT = params.get('worker') || WORKER_URL;
+
+  if (!WORKER_ENDPOINT || WORKER_ENDPOINT.includes('YOUR-USERNAME')) {
+    showError('\u{2699}\u{FE0F}', 'AI 功能仲未設定好\n\n請通知老師部署 Cloudflare Worker。');
+    return;
+  }
+
+  updateRemain();
+})();
+
+/* ===== helpers ===== */
+function updateRemain() {
+  const left = MAX_QUESTIONS - questionsUsed;
+  remainBadge.textContent = '\u2753 ' + left + '/' + MAX_QUESTIONS;
+}
+
+function showError(emoji, msg) {
+  document.getElementById('errorEmoji').textContent = emoji;
+  document.getElementById('errorMsg').textContent = msg;
+  errorOverlay.style.display = 'flex';
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    chatArea.scrollTop = chatArea.scrollHeight;
+  });
+}
+
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+/* ===== render messages ===== */
+function renderSimpleMarkdown(raw) {
+  // Escape HTML first
+  let t = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // bold
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // italic
+  t = t.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // inline code
+  t = t.replace(/`(.+?)`/g, '<code>$1</code>');
+  // line breaks -> paragraphs
+  t = t.split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g,'<br>') + '</p>').join('');
+  return t;
+}
+
+function addMessage(role, text, imageDataUrl) {
+  // remove welcome card if present
+  const welcome = chatArea.querySelector('.welcome');
+  if (welcome) welcome.remove();
+
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + (role === 'user' ? 'student' : 'ai');
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = role === 'user' ? '\u{1F4DD}' : '\u{1F916}';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+
+  if (imageDataUrl) {
+    const img = document.createElement('img');
+    img.className = 'thumb';
+    img.src = imageDataUrl;
+    bubble.appendChild(img);
+  }
+
+  if (text) {
+    if (role === 'user') {
+      bubble.appendChild(document.createTextNode(text));
+    } else {
+      bubble.innerHTML += renderSimpleMarkdown(text);
+    }
+  }
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  chatArea.appendChild(row);
+  scrollToBottom();
+  return row;
+}
+
+function addTypingIndicator() {
+  const row = document.createElement('div');
+  row.className = 'msg-row ai';
+  row.id = 'typingRow';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = '\u{1F916}';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = '<div style="font-size:13px;color:#888;margin-bottom:4px">數學小老師正在思考...</div>' +
+    '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  chatArea.appendChild(row);
+  scrollToBottom();
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('typingRow');
+  if (el) el.remove();
+}
+
+/* ===== Worker API ===== */
+async function sendToWorker(text, imageBase64) {
+  // Build current user message
+  const userText = imageBase64
+    ? ('學生上傳了這張功課圖片。請用引導式學習方式幫助他們理解題目，不要直接給答案。' + (text ? ' 學生的問題：' + text : ''))
+    : text;
+
+  const messages = conversationHistory.concat([{ role: 'user', content: userText }]);
+
+  const body = {
+    systemPrompt: SYSTEM_PROMPT,
+    messages: messages,
+    image: imageBase64 || undefined,
+  };
+
+  // Up to 2 attempts
+  let lastErr = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt > 0) await new Promise(r => setTimeout(r, 3000));
+    try {
+      const res = await fetch(WORKER_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 429) {
+        throw new Error(data.message || '今日問題數已達上限');
+      }
+      if (!res.ok) {
+        console.error('Worker error:', res.status, data);
+        lastErr = data.message || 'API_ERROR';
+        continue;
+      }
+      if (!data.reply) {
+        lastErr = 'EMPTY_RESPONSE';
+        continue;
+      }
+      return data.reply;
+    } catch (e) {
+      console.error('Worker request failed:', e);
+      lastErr = e.message;
+    }
+  }
+  throw new Error(lastErr || 'API_ERROR');
+}
+
+/* ===== send flow ===== */
+async function handleSend() {
+  if (isSending) return;
+
+  const text = userInput.value.trim();
+  const hasImage = !!pendingImageBase64;
+
+  if (!text && !hasImage) return;
+
+  if (questionsUsed >= MAX_QUESTIONS) {
+    addMessage('ai', '你今次已經問咗 ' + MAX_QUESTIONS + ' 條問題啦！如果仲有問題，可以按「重新開始」再問過 \u{1F60A}');
+    return;
+  }
+
+  isSending = true;
+  btnSend.disabled = true;
+
+  // Build display image URL (for the thumbnail in chat)
+  let displayDataUrl = null;
+  if (hasImage) {
+    displayDataUrl = previewImg.src;
+  }
+
+  // Show student message
+  addMessage('user', text, displayDataUrl);
+
+  // Store image base64 before clearing
+  const imgB64 = pendingImageBase64;
+
+  // Clear inputs
+  userInput.value = '';
+  autoGrow(userInput);
+  clearImagePreview();
+
+  // Hide quick bar after first message
+  quickBar.style.display = 'none';
+
+  // Show typing indicator
+  addTypingIndicator();
+
+  questionsUsed++;
+  updateRemain();
+
+  try {
+    const reply = await sendToWorker(text || '請幫我睇下呢張圖', imgB64);
+
+    // Parse out [視覺:...] image prompt
+    let displayText = reply;
+    let imagePrompt = null;
+    const m = reply.match(/\[視覺:([^\]]+)\]/);
+    if (m) {
+      imagePrompt = m[1].trim();
+      displayText = reply.replace(/\[視覺:[^\]]+\]/g, '').trim();
+    }
+
+    removeTypingIndicator();
+    const msgRow = addMessage('ai', displayText);
+
+    // Generate illustration in background
+    if (imagePrompt) {
+      generateIllustration(imagePrompt, msgRow);
+    }
+
+    // Update conversation history (text only for history, images not re-sent)
+    conversationHistory.push({ role: 'user', content: text || '（學生上傳了圖片）' });
+    conversationHistory.push({ role: 'assistant', content: displayText });
+
+    // Trim history
+    if (conversationHistory.length > MAX_HISTORY * 2) {
+      conversationHistory = conversationHistory.slice(-MAX_HISTORY * 2);
+    }
+  } catch (err) {
+    removeTypingIndicator();
+    if (err.message === 'RATE_LIMIT') {
+      addMessage('ai', '小老師太忙了！請等待30秒後再試。如果問題持續，請重新整理頁面。⏳');
+    } else if (err.message === 'API_ERROR') {
+      addMessage('ai', '哎呀，小老師暫時無法回答，請稍後再試 \u{1F605}');
+    } else {
+      addMessage('ai', '網路連線有問題，請檢查網路 \u{1F310}');
+    }
+  }
+
+  isSending = false;
+  btnSend.disabled = false;
+  userInput.focus();
+}
+
+/* ===== Voice recording (Web Speech API) ===== */
+let recognition = null;
+let isRecording = false;
+
+function initSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.lang = 'yue-Hant-HK';       // Cantonese (Hong Kong)
+  r.continuous = false;
+  r.interimResults = true;
+  r.maxAlternatives = 1;
+  return r;
+}
+
+function toggleRecording() {
+  if (!recognition) {
+    recognition = initSpeechRecognition();
+    if (!recognition) {
+      alert('你個瀏覽器唔支援錄音辨識，請用 Chrome / Edge 打開 🙏');
+      return;
+    }
+    recognition.onresult = (e) => {
+      let transcript = '';
+      for (let i = 0; i < e.results.length; i++) {
+        transcript += e.results[i][0].transcript;
+      }
+      userInput.value = transcript;
+      autoGrow(userInput);
+    };
+    recognition.onerror = (e) => {
+      console.warn('Speech recognition error:', e.error);
+      stopRecording();
+      if (e.error === 'not-allowed') {
+        alert('請允許麥克風使用權限 🎤');
+      } else if (e.error === 'language-not-supported') {
+        // Fallback to Traditional Chinese
+        recognition.lang = 'zh-TW';
+      }
+    };
+    recognition.onend = () => { stopRecording(); };
+  }
+
+  if (isRecording) {
+    recognition.stop();
+  } else {
+    try {
+      recognition.start();
+      startRecording();
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+}
+
+function startRecording() {
+  isRecording = true;
+  btnMic.classList.add('recording');
+  btnMic.title = '點擊停止錄音';
+  userInput.placeholder = '🎤 講嘢 ... 講完自動停';
+}
+
+function stopRecording() {
+  isRecording = false;
+  btnMic.classList.remove('recording');
+  btnMic.title = '錄音問功課';
+  userInput.placeholder = '輸入你的數學問題...';
+}
+
+btnMic.addEventListener('click', toggleRecording);
+
+/* ===== AI-generated illustration ===== */
+async function generateIllustration(prompt, msgRow) {
+  try {
+    // Add a placeholder loader inside the bubble
+    const bubble = msgRow.querySelector('.msg-bubble');
+    const loader = document.createElement('div');
+    loader.style.cssText = 'margin-top:10px;padding:12px;background:rgba(255,215,0,0.08);border-radius:10px;color:#888;font-size:13px;text-align:center';
+    loader.textContent = '🎨 繪圖中...';
+    bubble.appendChild(loader);
+
+    const res = await fetch(WORKER_ENDPOINT + '/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt + ', cute kawaii cartoon illustration, colorful, simple, educational', width: 384, height: 384 }),
+    });
+    const data = await res.json().catch(() => ({}));
+    loader.remove();
+
+    if (!data.image) {
+      console.warn('illustration failed:', data);
+      return;
+    }
+
+    const img = document.createElement('img');
+    img.src = 'data:image/jpeg;base64,' + data.image;
+    img.style.cssText = 'margin-top:10px;max-width:100%;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15)';
+    img.alt = prompt;
+    bubble.appendChild(img);
+    scrollToBottom();
+  } catch (e) {
+    console.warn('generateIllustration error:', e);
+  }
+}
+
+/* ===== image handling ===== */
+function clearImagePreview() {
+  pendingImageBase64 = null;
+  previewImg.src = '';
+  previewStrip.classList.remove('show');
+}
+
+function readImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageSelect(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+
+  const dataUrl = await readImageFile(file);
+  previewImg.src = dataUrl;
+  previewStrip.classList.add('show');
+
+  // Extract base64 portion (remove "data:image/...;base64,")
+  pendingImageBase64 = dataUrl.split(',')[1];
+}
+
+/* ===== reset ===== */
+function resetConversation() {
+  conversationHistory = [];
+  questionsUsed = 0;
+  pendingImageBase64 = null;
+  updateRemain();
+  clearImagePreview();
+  quickBar.style.display = '';
+
+  chatArea.innerHTML = '';
+  const welcome = document.createElement('div');
+  welcome.className = 'welcome';
+  welcome.innerHTML =
+    '<div class="emoji">&#129302;</div>' +
+    '<h2>你好！我係數學小老師！</h2>' +
+    '<p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>';
+  chatArea.appendChild(welcome);
+}
+
+/* ===== event listeners ===== */
+btnSend.addEventListener('click', handleSend);
+
+userInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+
+userInput.addEventListener('input', () => autoGrow(userInput));
+
+btnPhoto.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files[0]) {
+    handleImageSelect(e.target.files[0]);
+  }
+  fileInput.value = '';
+});
+
+btnRemoveImg.addEventListener('click', clearImagePreview);
+
+btnReset.addEventListener('click', resetConversation);
+
+quickBar.addEventListener('click', (e) => {
+  const btn = e.target.closest('.quick-btn');
+  if (!btn) return;
+  userInput.value = btn.dataset.q;
+  autoGrow(userInput);
+  handleSend();
+});
+</script>
+</body>
+</html>

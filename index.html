@@ -1,0 +1,3826 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>樂善堂梁黃蕙芳紀念學校 - 數學AI學習區</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+/* ============================================================
+   GLOBAL STYLES & VARIABLES
+   ============================================================ */
+:root {
+    --primary: #1565C0;
+    --primary-light: #1E88E5;
+    --primary-dark: #0D47A1;
+    --gold: #FFC107;
+    --gold-light: #FFD54F;
+    --gold-dark: #FFA000;
+    --success: #4CAF50;
+    --error: #E53935;
+    --bg: #F5F7FA;
+    --card-bg: #FFFFFF;
+    --text: #263238;
+    --text-light: #546E7A;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-hover: 0 8px 30px rgba(0,0,0,0.15);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes confetti {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+.animate-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.animate-slide {
+    animation: slideIn 0.4s ease forwards;
+}
+
+.animate-scale {
+    animation: scaleIn 0.3s ease forwards;
+}
+
+/* ============================================================
+   PAGE SECTIONS (show/hide)
+   ============================================================ */
+.page {
+    display: none;
+    min-height: 100vh;
+}
+
+.page.active {
+    display: block;
+}
+
+/* ============================================================
+   LOGIN PAGE
+   ============================================================ */
+#loginPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+#loginPage::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 50%);
+    animation: float 8s ease-in-out infinite;
+}
+
+#loginPage::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: -20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.login-container {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 48px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+    animation: scaleIn 0.6s ease;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.login-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.login-header h2 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--gold-dark);
+    margin-bottom: 4px;
+}
+
+.login-header .subtitle {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-top: 8px;
+}
+
+.login-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    background: #F0F4F8;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.login-tab {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    color: var(--text-light);
+}
+
+.login-tab.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.login-form {
+    display: none;
+}
+
+.login-form.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #E0E7EE;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+    background: white;
+    color: var(--text);
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(21,101,192,0.1);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(21,101,192,0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(21,101,192,0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--text);
+    box-shadow: 0 4px 15px rgba(255,193,7,0.3);
+}
+
+.btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,193,7,0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-sm {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+}
+
+.login-error {
+    color: var(--error);
+    font-size: 0.85rem;
+    margin-top: 8px;
+    display: none;
+}
+
+/* ============================================================
+   TOP NAVIGATION BAR
+   ============================================================ */
+.topbar {
+    background: white;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.topbar-chapter {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    background: #F0F4F8;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.btn-logout {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    background: #F0F4F8;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    color: var(--text-light);
+}
+
+.btn-logout:hover {
+    background: #E0E7EE;
+    color: var(--error);
+}
+
+/* ============================================================
+   DASHBOARD LAYOUT
+   ============================================================ */
+.dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    background: white;
+    padding: 8px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.nav-tab {
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    color: var(--text-light);
+    white-space: nowrap;
+}
+
+.nav-tab.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(21,101,192,0.3);
+}
+
+.nav-tab:hover:not(.active) {
+    background: #F0F4F8;
+    color: var(--primary);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-4px);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.card-icon.blue { background: rgba(21,101,192,0.1); }
+.card-icon.gold { background: rgba(255,193,7,0.15); }
+.card-icon.green { background: rgba(76,175,80,0.1); }
+.card-icon.purple { background: rgba(156,39,176,0.1); }
+.card-icon.orange { background: rgba(255,152,0,0.1); }
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.card-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 2px;
+}
+
+.card-body {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ============================================================
+   SELF-STUDY SECTION
+   ============================================================ */
+.infographic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.infographic-thumb {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    aspect-ratio: 3/4;
+    background: #F0F4F8;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.infographic-thumb:hover {
+    border-color: var(--primary);
+    transform: scale(1.02);
+}
+
+.infographic-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.infographic-thumb .thumb-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.audio-player-wrapper {
+    margin-top: 12px;
+}
+
+.audio-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #F8FAFE;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+}
+
+.audio-item-icon {
+    font-size: 1.5rem;
+}
+
+.audio-item-info {
+    flex: 1;
+}
+
+.audio-item-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.audio-item audio {
+    width: 100%;
+    height: 36px;
+}
+
+.video-card-content {
+    position: relative;
+    margin-top: 12px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 16/9;
+    background: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-card-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+.video-play-btn {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: var(--transition);
+}
+
+.video-card-content:hover .video-play-btn {
+    transform: scale(1.1);
+    background: white;
+}
+
+/* ============================================================
+   QUIZ SECTION
+   ============================================================ */
+.quiz-card {
+    cursor: pointer;
+}
+
+.quiz-card .card-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--gold);
+    color: var(--text);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.quiz-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.quiz-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-bar {
+    width: 200px;
+    height: 8px;
+    background: #E0E7EE;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--gold) 100%);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.quiz-score {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.quiz-question-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow);
+    animation: fadeIn 0.4s ease;
+}
+
+.quiz-question-number {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 12px;
+}
+
+.quiz-question-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.quiz-question-img {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 24px;
+    display: block;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quiz-option {
+    padding: 16px 20px;
+    border: 2px solid #E0E7EE;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.quiz-option:hover:not(.disabled) {
+    border-color: var(--primary);
+    background: rgba(21,101,192,0.04);
+}
+
+.quiz-option .option-letter {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #F0F4F8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.quiz-option.correct {
+    border-color: var(--success);
+    background: rgba(76,175,80,0.08);
+}
+
+.quiz-option.correct .option-letter {
+    background: var(--success);
+    color: white;
+}
+
+.quiz-option.wrong {
+    border-color: var(--error);
+    background: rgba(229,57,53,0.05);
+}
+
+.quiz-option.wrong .option-letter {
+    background: var(--error);
+    color: white;
+}
+
+.quiz-option.disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.quiz-explanation {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    background: #F8FAFE;
+    border-left: 4px solid var(--primary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    display: none;
+}
+
+.quiz-explanation.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.quiz-answer-img {
+    width: 100%;
+    max-width: 600px;
+    margin: 16px auto;
+    display: block;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.quiz-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.quiz-result {
+    text-align: center;
+    padding: 40px;
+}
+
+.quiz-result-score {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.quiz-result-label {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 24px;
+}
+
+.quiz-result-stars {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+/* ============================================================
+   SCORES PAGE
+   ============================================================ */
+.scores-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.score-stat {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.score-stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+.score-stat-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+.score-history {
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.score-history h3 {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #F0F4F8;
+}
+
+.score-row:last-child {
+    border-bottom: none;
+}
+
+.score-row-label {
+    font-weight: 500;
+}
+
+.score-row-value {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.score-row-date {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.rewards-section {
+    margin-top: 28px;
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.rewards-section h3 {
+    margin-bottom: 16px;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    background: #FFFDE7;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,193,7,0.3);
+}
+
+.reward-item-points {
+    background: var(--gold);
+    color: var(--text);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.reward-item-name {
+    font-weight: 500;
+}
+
+/* ============================================================
+   TEACHER DASHBOARD
+   ============================================================ */
+.teacher-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.teacher-controls select {
+    padding: 10px 16px;
+    border: 2px solid #E0E7EE;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.stat-card-value {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+.stat-card-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+.data-table-wrapper {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.data-table th {
+    background: var(--primary);
+    color: white;
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #F0F4F8;
+}
+
+.data-table tr:hover td {
+    background: #F8FAFE;
+}
+
+.data-table tr:nth-child(even) td {
+    background: #FAFBFC;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: auto;
+    position: relative;
+    animation: scaleIn 0.3s ease;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: var(--transition);
+}
+
+.modal-close:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+.modal-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius);
+}
+
+/* ============================================================
+   PLACEHOLDER PAGES
+   ============================================================ */
+.placeholder-content {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.placeholder-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.placeholder-text {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.placeholder-sub {
+    font-size: 0.9rem;
+    color: #90A4AE;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 32px 24px;
+    }
+
+    .login-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .nav-tabs {
+        gap: 4px;
+        padding: 6px;
+    }
+
+    .nav-tab {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .infographic-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .topbar {
+        padding: 10px 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .topbar-left {
+        order: 1;
+    }
+
+    .topbar-right {
+        order: 2;
+    }
+
+    .quiz-question-text {
+        font-size: 1.1rem;
+    }
+
+    .dashboard {
+        padding: 16px;
+    }
+
+    .teacher-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .data-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .scores-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .infographic-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quiz-question-card {
+        padding: 20px;
+    }
+
+    .quiz-option {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================================================
+   BACK BUTTON
+   ============================================================ */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #F0F4F8;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    color: var(--text-light);
+    margin-bottom: 20px;
+}
+
+.back-btn:hover {
+    background: #E0E7EE;
+    color: var(--primary);
+}
+
+/* ============================================================
+   CONFETTI EFFECT
+   ============================================================ */
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    animation: confetti 1.5s ease-out forwards;
+}
+
+/* ============================================================
+   PROGRESSION FLOW (自學區)
+   ============================================================ */
+.progression-step {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; margin-bottom: 0;
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow); transition: var(--transition);
+    cursor: pointer; border-left: 4px solid #E0E7EE;
+}
+.progression-step:hover:not(.locked) { box-shadow: var(--shadow-hover); transform: translateX(4px); }
+.progression-step.completed { border-left-color: var(--success); background: #F1F8E9; }
+.progression-step.current { border-left-color: var(--primary); background: #E3F2FD; }
+.progression-step.locked { opacity: 0.45; cursor: default; }
+.progression-step-icon { font-size: 1.6rem; flex-shrink: 0; }
+.progression-step-info { flex: 1; }
+.progression-step-title { font-weight: 600; font-size: 1rem; }
+.progression-step-desc { font-size: 0.8rem; color: var(--text-light); margin-top: 2px; }
+.progression-step-badge {
+    font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; font-weight: 600; flex-shrink: 0;
+}
+.progression-step-badge.done { background: var(--success); color: white; }
+.progression-step-badge.active { background: var(--primary); color: white; }
+.progression-step-badge.lock { background: #CFD8DC; color: #78909C; }
+.progression-connector { width: 3px; height: 24px; background: #E0E7EE; margin: 0 0 0 34px; }
+.progression-connector.done { background: var(--success); }
+
+/* Slide viewer */
+.slide-viewer-wrap { max-width: 860px; margin: 0 auto; position: relative; }
+.slide-viewer-wrap img { width: 100%; border-radius: 12px; box-shadow: var(--shadow); }
+.slide-nav { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 14px; }
+/* Side arrow buttons */
+.slide-side-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+    width: 44px; height: 60px; border: none; border-radius: 8px; cursor: pointer;
+    font-size: 1.5rem; color: white; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); transition: var(--transition);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.slide-side-arrow:hover { background: rgba(0,0,0,0.6); }
+.slide-side-arrow.left { left: -22px; }
+.slide-side-arrow.right { right: -22px; }
+.slide-side-arrow:disabled { opacity: 0.2; cursor: default; }
+@media (max-width: 600px) { .slide-side-arrow.left { left: 4px; } .slide-side-arrow.right { right: 4px; } }
+.slide-counter { font-weight: 600; min-width: 60px; text-align: center; }
+.slide-dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+.slide-dot { width: 10px; height: 10px; border-radius: 50%; background: #CFD8DC; cursor: pointer; transition: var(--transition); }
+.slide-dot.active { background: var(--primary); transform: scale(1.3); }
+
+/* Infographic quiz */
+.iq-wrap { max-width: 800px; margin: 0 auto; }
+.iq-image { width: 100%; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 20px; }
+.iq-question { background: white; border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.iq-question-text { font-weight: 600; font-size: 1rem; margin-bottom: 12px; }
+.iq-mc-options { display: flex; flex-direction: column; gap: 8px; }
+.iq-mc-option { padding: 10px 16px; border: 2px solid #E0E7EE; border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 10px; }
+.iq-mc-option:hover { border-color: var(--primary-light); background: #E3F2FD; }
+.iq-mc-option.selected { border-color: var(--primary); background: #BBDEFB; }
+.iq-mc-option .opt-letter { width: 28px; height: 28px; border-radius: 50%; background: #E0E7EE; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+.iq-mc-option.selected .opt-letter { background: var(--primary); color: white; }
+.iq-textarea { width: 100%; min-height: 70px; border: 2px solid #E0E7EE; border-radius: var(--radius-sm); padding: 12px; font-family: inherit; font-size: 0.95rem; resize: vertical; transition: var(--transition); }
+.iq-textarea:focus { outline: none; border-color: var(--primary); }
+
+/* Assessment answer overlay */
+.assess-answer-overlay {
+    background: white; border-radius: var(--radius); padding: 16px 20px;
+    margin-top: 14px; box-shadow: var(--shadow); animation: fadeIn 0.3s ease;
+}
+.assess-answer-overlay h4 { font-size: 0.95rem; margin-bottom: 10px; }
+.assess-mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.assess-mc-btn {
+    padding: 12px 16px; border: 2px solid #E0E7EE; border-radius: var(--radius-sm);
+    background: white; cursor: pointer; font-size: 0.95rem; font-weight: 600;
+    transition: var(--transition); text-align: center;
+}
+.assess-mc-btn:hover { border-color: var(--primary-light); background: #E3F2FD; }
+.assess-mc-btn.correct { border-color: var(--success); background: #E8F5E9; color: var(--success); }
+.assess-mc-btn.wrong { border-color: var(--error); background: #FFEBEE; color: var(--error); animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.assess-hint { background: #FFF8E1; border-left: 4px solid var(--gold); padding: 10px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-top: 10px; font-size: 0.85rem; color: #5D4037; animation: fadeIn 0.3s ease; }
+.assess-fill-input {
+    width: 100%; padding: 12px; border: 2px solid #E0E7EE; border-radius: var(--radius-sm);
+    font-size: 1.1rem; font-family: inherit; text-align: center; transition: var(--transition);
+}
+.assess-fill-input:focus { outline: none; border-color: var(--primary); }
+.assess-coin-banner {
+    text-align: center; padding: 16px; background: linear-gradient(135deg, #FFF8E1, #FFFDE7);
+    border-radius: var(--radius); margin-top: 14px; animation: fadeIn 0.4s ease;
+}
+.assess-coin-banner .coin-count { font-size: 2rem; }
+
+/* Page-flip animation */
+.slide-flip-container { perspective: 1200px; }
+.slide-flip-container img {
+    transition: transform 0.5s ease, opacity 0.3s ease;
+    transform-origin: left center;
+}
+.slide-flip-container img.flip-out { transform: rotateY(-90deg); opacity: 0; }
+.slide-flip-container img.flip-in { animation: flipIn 0.5s ease forwards; }
+@keyframes flipIn {
+    0% { transform: rotateY(90deg); opacity: 0; }
+    100% { transform: rotateY(0deg); opacity: 1; }
+}
+.slide-flip-container img.flip-back-out { transform: rotateY(90deg); opacity: 0; }
+.slide-flip-container img.flip-back-in { animation: flipBackIn 0.5s ease forwards; }
+@keyframes flipBackIn {
+    0% { transform: rotateY(-90deg); opacity: 0; }
+    100% { transform: rotateY(0deg); opacity: 1; }
+}
+
+/* 西遊記 themed background */
+.dashboard { position: relative; }
+.dashboard::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+        radial-gradient(ellipse at 15% 85%, rgba(255,183,77,0.18) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 15%, rgba(198,40,40,0.12) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 30%, rgba(255,215,0,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 70%, rgba(0,150,136,0.06) 0%, transparent 40%),
+        linear-gradient(180deg, rgba(255,243,200,0.5) 0%, rgba(245,247,250,0.15) 40%, rgba(255,243,200,0.35) 100%);
+}
+.dashboard::after {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FFD700' stop-opacity='0.3'/%3E%3Cstop offset='1' stop-color='%23FF6F00' stop-opacity='0.1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 400 Q100 300 200 350 Q350 420 500 300 Q550 270 600 290' fill='none' stroke='url(%23g1)' stroke-width='2'/%3E%3Cpath d='M0 500 Q200 450 300 480 Q450 520 600 460' fill='none' stroke='%23BF360C' stroke-width='0.8' opacity='0.3'/%3E%3Ccircle cx='480' cy='100' r='50' fill='none' stroke='%23FFD700' stroke-width='1.5' opacity='0.4'/%3E%3Ccircle cx='480' cy='100' r='35' fill='none' stroke='%23FFA000' stroke-width='0.8' opacity='0.3'/%3E%3Cpath d='M50 150 Q80 80 150 100 Q200 120 180 180 Q160 220 100 200 Q60 190 50 150Z' fill='%23FFD700' opacity='0.05'/%3E%3Cpath d='M400 350 Q450 300 500 330 Q530 350 500 390 Q470 420 420 400 Q390 380 400 350Z' fill='%23FF6F00' opacity='0.04'/%3E%3Cpath d='M250 50 C280 20 320 30 310 60 C300 90 260 80 250 50Z' fill='%23FFD700' opacity='0.06'/%3E%3Cpath d='M100 450 C130 430 160 440 150 460 C140 480 110 470 100 450Z' fill='%23BF360C' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 600px 600px;
+}
+
+/* Game selector */
+.game-select-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 700px; margin: 0 auto; }
+.game-select-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; cursor: pointer; transition: var(--transition); text-align: center; border: 3px solid transparent; }
+.game-select-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-4px); border-color: var(--primary-light); }
+.game-select-card .game-icon { font-size: 3rem; margin-bottom: 12px; }
+.game-select-card .game-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+.game-select-card .game-desc { font-size: 0.85rem; color: var(--text-light); }
+
+@media (max-width: 600px) {
+    .progression-step { padding: 12px 14px; gap: 12px; }
+    .slide-viewer-wrap img { border-radius: 8px; }
+    .game-select-grid { grid-template-columns: 1fr; }
+}
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN PAGE
+     ============================================================ -->
+<div id="loginPage" class="page active">
+    <div class="login-container">
+        <div class="login-header">
+            <h1>樂善堂梁黃蕙芳紀念學校</h1>
+            <h2>數學AI學習區</h2>
+            <p class="subtitle">第十二章：有趣的乘法</p>
+        </div>
+
+        <div class="login-tabs">
+            <button class="login-tab active" onclick="switchLoginTab('student')">學生</button>
+            <button class="login-tab" onclick="switchLoginTab('teacher')">教師</button>
+        </div>
+
+        <div id="studentLoginForm" class="login-form active">
+            <div class="form-group">
+                <label>班別</label>
+                <select id="classSelect" onchange="updateStudentList()">
+                    <option value="">請選擇班別</option>
+                    <option value="5A">5A</option>
+                    <option value="5B">5B</option>
+                    <option value="5C">5C</option>
+                    <option value="5D">5D</option>
+                    <option value="5F">5F (測試)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>學號</label>
+                <select id="studentSelect" disabled>
+                    <option value="">請先選擇班別</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>密碼</label>
+                <input type="password" id="studentPassword" placeholder="請輸入密碼" maxlength="10" inputmode="numeric">
+                <div style="font-size:0.75rem; color:#90A4AE; margin-top:4px;">密碼提示：lst後的5位數字</div>
+            </div>
+            <div class="login-error" id="studentLoginError">請選擇班別、學號並輸入正確密碼</div>
+            <button class="btn btn-primary" onclick="studentLogin()">登入</button>
+        </div>
+
+        <div id="teacherLoginForm" class="login-form">
+            <div class="form-group">
+                <label>教師密碼</label>
+                <input type="password" id="teacherPassword" placeholder="請輸入密碼">
+            </div>
+            <div class="login-error" id="teacherLoginError">密碼錯誤</div>
+            <button class="btn btn-primary" onclick="teacherLogin()">登入</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     STUDENT DASHBOARD
+     ============================================================ -->
+<div id="studentPage" class="page">
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-logo">數學AI學習區</span>
+            <span class="topbar-chapter">Ch.12 有趣的乘法</span>
+        </div>
+        <div class="topbar-right">
+            <div id="coinDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFE082);padding:4px 12px;border-radius:20px;font-weight:700;color:#F57F17;font-size:0.9rem;box-shadow:0 2px 8px rgba(255,193,7,0.3);">
+                <img src="assets/ch12/images/coin_new.png" style="width:20px;height:20px;"><span id="coinCount">0</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar"></div>
+                <span id="userDisplayName"></span>
+            </div>
+            <button class="btn-logout" onclick="logout()">登出</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('study')">📚 自學區</button>
+            <button class="nav-tab" onclick="switchTab('quiz')">📝 測驗區</button>
+            <button class="nav-tab" onclick="switchTab('games')">🎮 遊戲區</button>
+            <button class="nav-tab" onclick="window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k','_blank')">🤖 AI問功課</button>
+            <button class="nav-tab" onclick="switchTab('scores')">🏆 我的成績</button>
+        </div>
+
+        <!-- 自學區 TAB -->
+        <div id="tabStudy" class="tab-content active">
+
+            <!-- 學習流程 (Progression) -->
+            <div id="studyProgressionView">
+                <h3 style="margin-bottom:16px; font-size:1.1rem;">📖 學習流程 <span style="font-size:0.8rem; color:var(--text-light); font-weight:400;">（完成每一步解鎖下一步）</span></h3>
+                <div id="progressionSteps"></div>
+            </div>
+
+            <!-- Slide Viewer (hidden by default) -->
+            <div id="slideViewer" style="display:none;">
+                <button class="back-btn" onclick="exitSlideViewer()">← 返回學習流程</button>
+                <h3 id="slideViewerTitle" style="text-align:center; margin-bottom:12px;"></h3>
+                <div class="slide-viewer-wrap slide-flip-container">
+                    <button class="slide-side-arrow left" id="slideLeftArrow" onclick="prevSlide()">◀</button>
+                    <button class="slide-side-arrow right" id="slideRightArrow" onclick="nextSlide()">▶</button>
+                    <img id="slideImage" src="" alt="簡報">
+                    <div class="slide-nav" style="display:none;">
+                        <span class="slide-counter" id="slideCounter">1 / 14</span>
+                    </div>
+                    <div class="slide-dots" id="slideDots"></div>
+                    <!-- Slide Quiz Overlay -->
+                    <!-- Lecture/TTS Button -->
+                    <div style="text-align:center; margin-top:12px;">
+                        <button class="btn btn-outline" id="lectureBtn" onclick="playSlideLecture()" style="background:linear-gradient(135deg,#E8EAF6,#C5CAE9);border:2px solid #3F51B5;color:#283593;font-weight:700;">
+                            🔊 <span id="lectureBtnCharacter">悟空</span>講解這一頁
+                        </button>
+                        <button class="btn btn-outline" id="stopLectureBtn" onclick="stopSlideLecture()" style="display:none;background:#FFEBEE;border:2px solid #F44336;color:#C62828;font-weight:700;">
+                            ⏹ 停止講解
+                        </button>
+                        <div id="lectureStatus" style="margin-top:6px;font-size:0.9rem;color:#666;"></div>
+                    </div>
+                    <div id="slideQuizOverlay" style="display:none;margin-top:12px;background:linear-gradient(135deg,#FFF8E1,#FFE0B2);border:2px solid #FF8F00;border-radius:16px;padding:20px;box-shadow:0 4px 20px rgba(255,143,0,0.3);animation:slideInUp 0.4s;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                            <img src="assets/ch12/images/monkey_think.png" style="width:40px;height:auto;">
+                            <h4 style="margin:0;color:#E65100;">🤔 悟空考考你！</h4>
+                        </div>
+                        <div id="slideQuizQuestion" style="font-size:1.1rem;font-weight:700;color:#333;margin-bottom:14px;"></div>
+                        <div id="slideQuizOptions"></div>
+                        <div id="slideQuizHint" style="margin-top:10px;"></div>
+                    </div>
+                    <div style="text-align:center; margin-top:16px;">
+                        <button class="btn btn-primary" id="slideCompleteBtn" style="display:none;" onclick="completeCurrentSlides()">✓ 完成簡報，進入問答</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infographic Quiz (hidden by default) -->
+            <div id="infographicQuiz" style="display:none;">
+                <button class="back-btn" onclick="exitInfographicQuiz()">← 返回學習流程</button>
+                <h3 id="iqTitle" style="text-align:center; margin-bottom:12px;"></h3>
+                <div class="iq-wrap">
+                    <img id="iqImage" class="iq-image" src="" alt="資訊圖像" onclick="showModal(this.src)">
+                    <div id="iqQuestions"></div>
+                    <div style="text-align:center; margin-top:16px;">
+                        <button class="btn btn-primary" onclick="submitInfographicQuiz()">提交答案，解鎖下一步 →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 補充教材 -->
+            <h3 style="margin:28px 0 16px; font-size:1.1rem;">📦 補充教材</h3>
+            <div class="cards-grid">
+                <!-- 溫習歌曲 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon gold">🎵</div>
+                        <div><div class="card-title">溫習歌曲</div><div class="card-subtitle">邊聽邊學</div></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="audio-player-wrapper">
+                            <div class="audio-item"><span class="audio-item-icon">🎶</span><div class="audio-item-info"><div class="audio-item-title">小數點跳跳跳</div><audio controls preload="none"><source src="assets/ch12/audio/song1.mp3" type="audio/mpeg"></audio></div></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 語音摘要 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon purple">🎧</div>
+                        <div><div class="card-title">語音摘要</div><div class="card-subtitle">重點整理</div></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="audio-player-wrapper">
+                            <div class="audio-item"><span class="audio-item-icon">📻</span><div class="audio-item-info"><div class="audio-item-title">第十二章重點摘要</div><audio controls preload="none"><source src="assets/ch12/audio/summary.mp4" type="audio/mp4"></audio></div></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 教學影片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon orange">📺</div>
+                        <div><div class="card-title">教學影片</div><div class="card-subtitle">觀看影片學習</div></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="video-card-content" id="videoCard">
+                            <img src="assets/ch12/slides1/p01.jpg" alt="教學影片" style="opacity:0.7;" onerror="this.style.display='none'">
+                            <div class="video-play-btn">▶</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 學習卡 -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <div class="card-header">
+                        <div class="card-icon green">📖</div>
+                        <div><div class="card-title">學習卡</div><div class="card-subtitle">快速複習要點（點擊翻轉）</div></div>
+                    </div>
+                    <div class="card-body" id="flashcardsContainer" style="display:flex; gap:12px; overflow-x:auto; padding:12px 0;"></div>
+                    <script>
+                    (function(){
+                      const FC_DATA = [
+                        {front:"一個數 × 10，小數點向哪邊移幾位？",back:"向右移 1 位"},
+                        {front:"一個數 × 100，小數點向哪邊移幾位？",back:"向右移 2 位"},
+                        {front:"一個數 × 1000，小數點向哪邊移幾位？",back:"向右移 3 位"},
+                        {front:"3 × 10 = ?",back:"30"},
+                        {front:"3 × 100 = ?",back:"300"},
+                        {front:"3 × 1000 = ?",back:"3000"},
+                        {front:"0.123 × 10 = ?",back:"1.23"},
+                        {front:"一個數 × 0.1，小數點向哪邊移幾位？",back:"向左移 1 位"},
+                        {front:"0.125 公斤 = ? 克",back:"125 克（×1000）"}
+                      ];
+                      const container = document.getElementById('flashcardsContainer');
+                      FC_DATA.forEach((c,i) => {
+                        const card = document.createElement('div');
+                        card.style.cssText = 'min-width:180px; height:140px; border-radius:12px; cursor:pointer; perspective:600px; flex-shrink:0;';
+                        card.innerHTML = `<div style="width:100%;height:100%;position:relative;transition:transform 0.6s;transform-style:preserve-3d;" onclick="this.style.transform=this.style.transform.includes('180')?'':'rotateY(180deg)'"><div style="position:absolute;inset:0;backface-visibility:hidden;background:linear-gradient(135deg,#1565C0,#1976D2);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:16px;color:white;font-size:14px;text-align:center;font-weight:600;">${c.front}</div><div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);background:linear-gradient(135deg,#FFC107,#FFB300);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:16px;color:#333;font-size:18px;text-align:center;font-weight:bold;">${c.back}</div></div>`;
+                        container.appendChild(card);
+                      });
+                    })();
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <!-- 測驗區 TAB -->
+        <div id="tabQuiz" class="tab-content">
+            <div id="quizList">
+                <!-- Part A: MC選擇題 -->
+                <h3 style="margin-bottom:12px;">📝 MC 選擇題</h3>
+                <div class="cards-grid">
+                    <div class="card quiz-card" onclick="startQuiz(1)">
+                        <div class="card-badge">12題</div>
+                        <div class="card-header">
+                            <div class="card-icon blue">📝</div>
+                            <div>
+                                <div class="card-title">測驗一：基礎練習</div>
+                                <div class="card-subtitle">選擇題 - 小數乘法</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            練習乘以10、100、1000及乘以0.1、0.01、0.001的計算。
+                            <div style="margin-top:8px;"><span class="progression-step-badge" style="background:#E3F2FD;color:#1565C0;">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                    <div class="card quiz-card" onclick="startQuiz(4)">
+                        <div class="card-badge">12題</div>
+                        <div class="card-header">
+                            <div class="card-icon gold">⚡</div>
+                            <div>
+                                <div class="card-title">測驗二：進階練習</div>
+                                <div class="card-subtitle">選擇題 - 逆向思考+單位轉換</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            求未知數、逆向推導、單位轉換等進階題目。
+                            <div style="margin-top:8px;"><span class="progression-step-badge" style="background:#E3F2FD;color:#1565C0;">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part B: 簡報式評估 -->
+                <h3 style="margin:24px 0 12px;">📋 簡報式評估</h3>
+                <div class="cards-grid">
+                    <div class="card quiz-card" id="assessCard1" onclick="openAssessViewer(1)">
+                        <div class="card-badge">7題</div>
+                        <div class="card-header">
+                            <div class="card-icon gold">⚔️</div>
+                            <div>
+                                <div class="card-title">評估1：基礎級</div>
+                                <div class="card-subtitle">翻頁看題+答案 - 西遊記主題</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            直接應用乘法規律，看題目想答案，翻頁對答案。
+                            <div style="margin-top:8px;" id="assessStatus1"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                    <div class="card quiz-card" id="assessCard2" onclick="openAssessViewer(2)">
+                        <div class="card-badge">7題</div>
+                        <div class="card-header">
+                            <div class="card-icon green">🔬</div>
+                            <div>
+                                <div class="card-title">評估2：中階級</div>
+                                <div class="card-subtitle">翻頁看題+答案 - 多步驟計算</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            需要2-3步驟計算或比較分析，挑戰思維能力。
+                            <div style="margin-top:8px;" id="assessStatus2"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                    <div class="card quiz-card" id="assessCard3" onclick="openAssessViewer(3)">
+                        <div class="card-badge">7題</div>
+                        <div class="card-header">
+                            <div class="card-icon purple">🏆</div>
+                            <div>
+                                <div class="card-title">評估3：挑戰級</div>
+                                <div class="card-subtitle">翻頁看題+答案 - 綜合應用</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            綜合應用、逆向思考、情境題。最強挑戰！
+                            <div style="margin-top:8px;" id="assessStatus3"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MC Quiz area (existing) -->
+            <div id="quizArea" style="display:none;">
+                <button class="back-btn" onclick="exitQuiz()">← 返回測驗列表</button>
+                <div class="quiz-container" id="quizContainer"></div>
+            </div>
+
+            <!-- Assessment Slide Viewer -->
+            <div id="assessViewer" style="display:none;">
+                <button class="back-btn" onclick="exitAssessViewer()">← 返回測驗列表</button>
+                <h3 id="assessTitle" style="text-align:center; margin-bottom:12px;"></h3>
+                <div class="slide-viewer-wrap slide-flip-container" style="max-width:860px; margin:0 auto;">
+                    <button class="slide-side-arrow left" id="assessLeftArrow" onclick="prevAssessSlide()">◀</button>
+                    <button class="slide-side-arrow right" id="assessRightArrow" onclick="nextAssessSlide()">▶</button>
+                    <img id="assessImage" src="" alt="評估" style="width:100%; border-radius:12px; box-shadow:var(--shadow);">
+                    <div class="slide-dots" id="assessDots" style="margin-top:10px;"></div>
+                    <div style="text-align:center; margin-top:6px; color:var(--text-light); font-size:0.85rem;">
+                        <span id="assessHint">📖 奇數頁 = 題目 | 偶數頁 = 答案解說</span>
+                    </div>
+                    <div id="assessAnswerOverlay"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 遊戲區 TAB -->
+        <div id="tabGames" class="tab-content">
+            <!-- Game selection screen -->
+            <div id="gameSelectScreen">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <h2 style="margin:0;">🎮 西遊記：數學大冒險</h2>
+                    <p style="color:#666; margin:4px 0;">選擇一個遊戲開始挑戰！</p>
+                </div>
+                <div class="game-select-grid">
+                    <div class="game-select-card" onclick="loadGame(1)">
+                        <div class="game-icon">⚔️</div>
+                        <div class="game-name">西遊記 RPG</div>
+                        <div class="game-desc">扮演悟空打妖怪！答對攻擊，答錯受傷。打敗10隻妖怪通關！</div>
+                        <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 金幣</span></div>
+                    </div>
+                    <div class="game-select-card" onclick="loadGame(2)">
+                        <div class="game-icon">⏱️</div>
+                        <div class="game-name">計時搶答挑戰</div>
+                        <div class="game-desc">60秒內答對最多題目！速度越快分數越高，挑戰連擊紀錄！</div>
+                        <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 金幣</span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Game iframe (hidden initially) -->
+            <div id="gameContainer" style="display:none;">
+                <button class="back-btn" onclick="exitGame()">← 返回遊戲選擇</button>
+                <div style="width:100%; max-width:900px; margin:0 auto; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+                    <iframe id="gameFrame" src="" style="width:100%; height:600px; border:none;" allow="autoplay"></iframe>
+                </div>
+                <p style="text-align:center; color:#999; font-size:13px; margin-top:12px;">遊戲分數會自動記錄到你的成績中</p>
+            </div>
+        </div>
+
+        <!-- AI問功課 TAB (now opens Gemini Gem in new tab) -->
+
+        <!-- 我的成績 TAB -->
+        <div id="tabScores" class="tab-content">
+            <div id="scoresContent"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     TEACHER DASHBOARD
+     ============================================================ -->
+<div id="teacherPage" class="page">
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-logo">數學AI學習區</span>
+            <span class="topbar-chapter">教師管理面板</span>
+        </div>
+        <div class="topbar-right">
+            <div class="user-info">
+                <div class="user-avatar" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white;">T</div>
+                <span>教師</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">登出</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="teacher-controls">
+            <select id="teacherClassFilter" onchange="renderTeacherData()">
+                <option value="all">全部班別</option>
+                <option value="5A">5A</option>
+                <option value="5B">5B</option>
+                <option value="5C">5C</option>
+                <option value="5D">5D</option>
+            </select>
+            <button class="btn btn-sm btn-outline" onclick="exportCSV()">📥 匯出 CSV</button>
+            <button class="btn btn-sm btn-outline" onclick="renderTeacherData()">🔄 刷新數據</button>
+        </div>
+
+        <div class="stats-grid" id="teacherStats"></div>
+
+        <!-- Infographic Quiz Class-wide Answers View -->
+        <div style="background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                <h3 style="margin:0;">❓ 資訊圖像預習問答 - 全班答案一覽</h3>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-sm" id="iqTab1" onclick="switchIQTeacherTab(1)" style="background:var(--primary);color:white;">問答1</button>
+                    <button class="btn btn-sm btn-outline" id="iqTab2" onclick="switchIQTeacherTab(2)">問答2</button>
+                    <button class="btn btn-sm btn-outline" id="iqTab3" onclick="switchIQTeacherTab(3)">問答3</button>
+                </div>
+            </div>
+            <div id="iqTeacherContent" style="max-height:500px;overflow-y:auto;"></div>
+        </div>
+
+        <!-- Student detail modal (hidden) -->
+        <div id="teacherDetailModal" style="display:none; background:white; border-radius:var(--radius); padding:24px; box-shadow:var(--shadow-hover); margin-bottom:20px; animation:fadeIn 0.3s;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 id="teacherDetailTitle" style="margin:0;"></h3>
+                <button class="btn btn-sm btn-outline" onclick="document.getElementById('teacherDetailModal').style.display='none'">✕ 關閉</button>
+            </div>
+            <div id="teacherDetailContent"></div>
+        </div>
+
+        <div class="data-table-wrapper">
+            <table class="data-table" id="teacherTable">
+                <thead>
+                    <tr>
+                        <th>班別</th>
+                        <th>學號</th>
+                        <th>姓名</th>
+                        <th>MC測驗1</th>
+                        <th>MC測驗2</th>
+                        <th>評估1</th>
+                        <th>評估2</th>
+                        <th>評估3</th>
+                        <th>遊戲</th>
+                        <th>進度</th>
+                        <th>金幣</th>
+                        <th>詳情</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL OVERLAY
+     ============================================================ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <img id="modalImage" src="" alt="">
+    </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ============================================================
+// STUDENT DATA
+// ============================================================
+const STUDENTS = [{"name":"陳曉樂","class":"5A","number":"01","pwdHash":"5bff797ab1fad63606a44493eafec6459dd49b3fb4d87fdb82429fdc3408129b"},{"name":"陳嘉晴","class":"5A","number":"02","pwdHash":"0839d1e4c6d77aaab9d7a273db53396670d88289c67964090a3bd91caff7753a"},{"name":"陳寶琳","class":"5A","number":"03","pwdHash":"782b3c78b5128f2885ab2f05a94748ab2380478d86db959f747353ecc92cdc2b"},{"name":"池錦明","class":"5A","number":"04","pwdHash":"9d455c9a64d5de26200efe710a771b0bd33fc07111a5f1ec3ed00b5d15f1781b"},{"name":"周靜霏","class":"5A","number":"05","pwdHash":"9f1b235f4f9158b3194b48a24fe92ff73e96d9a89f442500b940b5712f97dfd7"},{"name":"周穎淋","class":"5A","number":"06","pwdHash":"01f8424d1456aa59a94f3b3fcd34b0bb8a3d3dbaa193567a37f2120a5ceef5e0"},{"name":"鍾佩希","class":"5A","number":"07","pwdHash":"65b4ee38488dc435fcdaa001c59aa653ed65676cf53def21df80e24365a167d8"},{"name":"何梓胤","class":"5A","number":"08","pwdHash":"29e7f7acb7d6e18706678535eea71e58967ec77135f278cf5f7133e3aa71100f"},{"name":"葉峻麟","class":"5A","number":"09","pwdHash":"76407cc5620cf9c108619cbe9e9575a5a00805bad04d2fef7889d79d139ba1d2"},{"name":"江栢樂","class":"5A","number":"10","pwdHash":"aa89d8a3383953edf549686270bbb6bbee27cd69c90815fca4c8bd360debeabf"},{"name":"黎駿熙","class":"5A","number":"11","pwdHash":"4fe111a6d821531707aadcadbad679f5e057c15bfe7d34a1829ee74956e7d899"},{"name":"林以勒","class":"5A","number":"12","pwdHash":"d19c3e99d7a79c0f6764039b4890a0985db6e097004f6b8354849c0f76c40dbd"},{"name":"林凱恩","class":"5A","number":"13","pwdHash":"2af1cdf9d9ba8a0d1d14f88a21d6cc2f8e1422ef031f3edd7a4e65221a9b6a35"},{"name":"劉卓恆","class":"5A","number":"14","pwdHash":"7eb5ca2d286e1eb3e7c321e390db41b95365431380b8f1a64e91c9fca2233c78"},{"name":"李沇銒","class":"5A","number":"15","pwdHash":"07dd700ae6d9073a31e8d543363f01d43fd3965e5df8cadd24f6500d8e5fbfe9"},{"name":"李景睿","class":"5A","number":"16","pwdHash":"1f98278699f56b408e96c000bd0a9e6efbd33e0d4fcb123e56ade12f18ad966f"},{"name":"李思澄","class":"5A","number":"17","pwdHash":"499739b2deb0a7174bf48bb7f7afe02377bb8b26dd5582da3dedf7dedb3abe17"},{"name":"李祉瑩","class":"5A","number":"18","pwdHash":"d04e1e8e597af681ec21e478739a1694926702158238ff29b7ff7d210db21ef5"},{"name":"林可欣","class":"5A","number":"19","pwdHash":"d6ba578479ede7cfbea16c3505d3be0dbdd7136e067411505cd85559380b3d8b"},{"name":"劉天翔","class":"5A","number":"20","pwdHash":"054a5f86a5bdcf73d72aacff9c3163b55f5fe6eb3b5ada26344a4eee98e7296a"},{"name":"劉天宇","class":"5A","number":"21","pwdHash":"ac42cc6a0db425aa4dff796a3af3860234192ba9a0c8d762b2ed8ea0b520bd72"},{"name":"馬沁妍","class":"5A","number":"22","pwdHash":"b70763466adf9811a9e84a0fb568e74884c46914ccee5fe467ddeb2a146ddc9f"},{"name":"黃柏揚","class":"5A","number":"23","pwdHash":"ae295b16a5ed33466565626b2db7fb098c508836f701afff7dfb8c6dc8274720"},{"name":"黃賢熙","class":"5A","number":"24","pwdHash":"7f9d5a2984147659be7f9c8a40377b94c06c42c240962c0bdd2a7c1d7663d1ad"},{"name":"葉曉澄","class":"5A","number":"25","pwdHash":"f4e7aa00d090be3187451d8ec666ce83f146799fe353d7945eda8fabff5b4098"},{"name":"朱鋭軒","class":"5A","number":"26","pwdHash":"d6fb9cfda80fdf904007643b2d959ef5aad935bcd909f817a6512ca1787524bd"},{"name":"陳浩輝","class":"5B","number":"01","pwdHash":"b1fcd4fc3fdc8279b23667b76f7509cbbdd16f4da67296552086e884d72f291f"},{"name":"鍾苡淳","class":"5B","number":"02","pwdHash":"43458e283885dbbd64d1a06ab423e4c109715fe9a18409849f0048aba1cef486"},{"name":"樊希瞳","class":"5B","number":"03","pwdHash":"fce36ec99bd49122c97c2cd74f53038b58d351ea49db8b08f0b9ae5ca192029b"},{"name":"霍俊彥","class":"5B","number":"04","pwdHash":"b4618c89362ed54b8c1f1900e6084b6c7fdc173b2bda5bb2eb81e8e367286d7a"},{"name":"賴頌恩","class":"5B","number":"05","pwdHash":"509d329f8415e5682af9bed8d7b312056a50755ca5a9c7a1cf516edc04d08df8"},{"name":"劉梓婷","class":"5B","number":"06","pwdHash":"f3c0ede0690e009feeb2df5f8247d4872dd74fdd788003e723bd8398b4672bca"},{"name":"劉煒諾","class":"5B","number":"07","pwdHash":"fee95d67e174a152920bfeac138a03ee41d8fd32cfc191476d7c838bced69739"},{"name":"李紫曈","class":"5B","number":"08","pwdHash":"bd75b36042f6cb91230941c5ab53ed9e980ca9f554757ad8a045b91e73226732"},{"name":"梁凱俊","class":"5B","number":"09","pwdHash":"eb1ed985841db3ff97993da1d9dbd6ace4f744b14385765caed35c7576796555"},{"name":"梁諾軒","class":"5B","number":"10","pwdHash":"cc2c310036d09b07aff5d48b6da0712b41646a9d79bf0a39d628c7b05b4234a5"},{"name":"李凱玲","class":"5B","number":"11","pwdHash":"cf57a4ebdb3c941fec0a29ab9fb35b02dff472e9320cfc9ea2ed5b21223cf9d9"},{"name":"廖崴勇","class":"5B","number":"12","pwdHash":"d987f2ffc24cfc5a48364aa38ea1fb93f9e10457655c332a6c6c8f7e2defc255"},{"name":"麥紫盈","class":"5B","number":"13","pwdHash":"b291e6e3bf381f58d5886f3fe9ebc01f235d7f0fd0a7e48172b5241cdbf8945d"},{"name":"莫雨辰","class":"5B","number":"14","pwdHash":"34ef549f3b8fa5aa9b13107a0a8ecabf9591c9f227cc3e9835febf3485ae7fc7"},{"name":"夏明","class":"5B","number":"15","pwdHash":"d0ac4db195c066dcbcebc2649986d270f098b1df0cbc7bdc09ff9786fe0f94f3"},{"name":"田萱","class":"5B","number":"16","pwdHash":"de0a70374714b0eb9bb92dac3af5e16e30a578bd8b6de3448df49c0c1450105c"},{"name":"魏艾倫","class":"5B","number":"17","pwdHash":"059934d506c3d1db597950f91f53f2c230118ec4f50fce913d51e805d9b53316"},{"name":"葉芷芊","class":"5B","number":"18","pwdHash":"f184bcee9bb1b97ec0c4ef6b5eaf0f5a84f3bb0fc977517d388dd5d213f32c3f"},{"name":"楊紫悠","class":"5B","number":"19","pwdHash":"077bbe2cb57387326c500ab5f84239a186441fa75cca6cb3cd9f588e55699185"},{"name":"周志荣","class":"5B","number":"20","pwdHash":"ebc11e697c2b5b56df27e2c5bf36408b513db6da4701bb61837477f6fdb6ed09"},{"name":"黎振希","class":"5B","number":"21","pwdHash":"f9ae42f73d98ecacd2b0d37ac8a2d2fe92e30e371750719d687220ab257eb80a"},{"name":"曹恒銘","class":"5C","number":"01","pwdHash":"93698bd7177b8c4f573063bd00faf823692667d0eabd811549839ac001643706"},{"name":"陳誠泓","class":"5C","number":"02","pwdHash":"22be550ffdfaead128c1631600653f7ebf0126afe710b850582f3ceaff2bd6b8"},{"name":"鄭芷渝","class":"5C","number":"03","pwdHash":"25d5482b5ad7976ed3d9200f088ac0d0b1529aea6e6db63d63c03ad1d01118da"},{"name":"張晞朗","class":"5C","number":"04","pwdHash":"c28e284f63b2f822b62ee011a9fc2e2a35ad95ac7d333d83cfc3642f38f9ee99"},{"name":"張瀚陽","class":"5C","number":"05","pwdHash":"0084d970c44712ab3f84a5ae7d4c9439cd97b636bcf85b11b1484e6cbd2df1d4"},{"name":"張詠渝","class":"5C","number":"06","pwdHash":"5083a6a5a7429d9e403dda7a33995d71532b98d84a1763b87fc457ad7fe5ba65"},{"name":"周浚鈮","class":"5C","number":"07","pwdHash":"e7be4f88b98e7a13674856f62e00c27502229f818a44da85637776a6c6ecd2b5"},{"name":"朱逸僑","class":"5C","number":"08","pwdHash":"c768cd9e57bdc96d822c1e9b803211bf842d0ec3ba639774ee7d64f60cf68879"},{"name":"崔晉毅","class":"5C","number":"09","pwdHash":"e5740c808ff20a1bf539ce9dfce5e434582f2825501370923acf8f5e31fe860d"},{"name":"郭巧盈","class":"5C","number":"10","pwdHash":"255df8e7d2b8bdc4134d37cd1d0c0f3d8ad5e6178cb7badb7c1de581092568fa"},{"name":"黎曜滺","class":"5C","number":"11","pwdHash":"fce7d8f24c768d5c96579fcff76096c84a3a27c72e1dffae52fc1deac2be5627"},{"name":"林爾菲","class":"5C","number":"12","pwdHash":"ec144701ec50daed8316f192366a278d7bbafc89ee1976f8cc3b052971596944"},{"name":"羅毅喬","class":"5C","number":"13","pwdHash":"2c27c7288f70c082a116a56653897bc72c0030b33509724922a5a9b163cb5e46"},{"name":"李博燊","class":"5C","number":"14","pwdHash":"7ba146c8433af4693f865205a0c48aa1285c581d4b3402ae59af57094b4c0e9a"},{"name":"李瀚澄","class":"5C","number":"15","pwdHash":"2257868505ee83827987c7428cc7d9d986e21def227496bcba1a465f2a76c970"},{"name":"劉芷菡","class":"5C","number":"16","pwdHash":"5ef7916c97a33a3cbd770f8f50d155301f939fe0814cfb5902499fcd976d2901"},{"name":"文樂穎","class":"5C","number":"17","pwdHash":"0abe7569ba6fdb20236f042b48be15699f3e40b2de4917a1995a7554e3cd2d2a"},{"name":"莫睿熙","class":"5C","number":"18","pwdHash":"7887edafa1eb72cecf76bd70c7dfc4ad8c0d3a299328cc7e7687982522ec481c"},{"name":"吳奕熹","class":"5C","number":"19","pwdHash":"08df5d355793b8a1cb68f5ed5f777f4bcef739ad9410b342ea54bc23354e136e"},{"name":"吳蕊詩","class":"5C","number":"20","pwdHash":"59392d501ffa63a2f82c53c4975a1d319a889c1c58e172ea4366aaeaa714c316"},{"name":"鄧舒庭","class":"5C","number":"21","pwdHash":"d63f66d81e89b749b9a26d67616664543022675c7e9057a7e2b336e0896cc92c"},{"name":"曾浚鎬","class":"5C","number":"22","pwdHash":"cf558350059624fc5950b9e083f98968252efbbbf0bc58f257e7efb0eafc7910"},{"name":"曾穎芯","class":"5C","number":"23","pwdHash":"51093d22057b95450d51d5c527dc9db90f2216e38950c664389f200b35f05c25"},{"name":"王芷恩","class":"5C","number":"24","pwdHash":"7900099423109c3c796371644e03cafb7f9091d4b7f18fd69c45e53893dfa9af"},{"name":"黃靖宸","class":"5C","number":"25","pwdHash":"0b37e26c39921e1df57f77da6870c34103ab15c1c4e608015b4aa4216c639615"},{"name":"黃熙俊","class":"5C","number":"26","pwdHash":"6ffaadd03b9dffba8f1fe4b744584827b219c9ef983da2ca955f6bb6a255f844"},{"name":"楊程善","class":"5C","number":"27","pwdHash":"f97ca319ce607b4aad020f1704a97e5b8efaea2634e25a64a76999fc53329327"},{"name":"張芸菲","class":"5C","number":"28","pwdHash":"96a1a6873507318225c63cf11028dc5ff9270cd0c581cdc56828b8836cf1b58f"},{"name":"夏芊雯","class":"5D","number":"01","pwdHash":"fef080d6da2a276aeaa7b6a3ade8c5f5ec1dea0e9319cefd589900aacd6c5e72"},{"name":"AYESHA NOOR","class":"5D","number":"02","pwdHash":"ef196422411cc5db289bd7a192b12d2fd0d6437365d1839a572c79e641861e4a"},{"name":"陳俊杰","class":"5D","number":"03","pwdHash":"0f19cb7c5022613cb175469d978f2fedd26866c6df4fa6be440e016ffa04cd34"},{"name":"陳皙羽","class":"5D","number":"04","pwdHash":"399e94abf41b446d7ac3a98a6a6e787ae1d7e0eaa40da86510cfd9f88d1b1242"},{"name":"陳思穎","class":"5D","number":"05","pwdHash":"68b459665824ea318b62a7437402809d08ee7bcbcb6c3ac9d6128a8476165cfd"},{"name":"陳嘉燿","class":"5D","number":"06","pwdHash":"c3d76407907ecaa72edb4b1f6b6088e7b92cb529625ecae5e7731265f8894fdc"},{"name":"錢伊婷","class":"5D","number":"07","pwdHash":"5c512c5c8d38b866493840d8971db7061bbb060604821236629529fe6982dc3a"},{"name":"馬文利","class":"5D","number":"08","pwdHash":"fcf516620f5843e9eb1ffbdc6fcc57bc1c9f27dabf0350ffb565a0a7a2d05d31"},{"name":"候伯仲","class":"5D","number":"09","pwdHash":"3228be0a597502c728d7f1cdaa63d9a6c964f60089f07fe1ce364753805da73b"},{"name":"黃争苗","class":"5D","number":"10","pwdHash":"6e3791ac3c3f95bca48e1ca04e81696d1e8c5d2011740880a365f4f21021acc4"},{"name":"羅宇航","class":"5D","number":"11","pwdHash":"84e033f04115cb9ca6089a42f0d451a38b0c20ddffd776bfa9a5475f54a39890"},{"name":"藍一峰","class":"5D","number":"12","pwdHash":"eb17815fd683f15c889d46b04b2dbaafb0b95f5cd7ed36cf3867420dae708197"},{"name":"劉芍盈","class":"5D","number":"13","pwdHash":"63adac4a13ba1a7731832140e88f3afc18f57e22080520e502ca7ebf5e06be6f"},{"name":"劉咏艷","class":"5D","number":"14","pwdHash":"d2d1e9cd3fd801af164e75c8e270a851f6fbb9d3f3da40c62b0647c44cb94832"},{"name":"李騰俊","class":"5D","number":"15","pwdHash":"f6bb67ecdeed65a1e6ef32f93f6623a33487f17035d5b09276a88930f72732b2"},{"name":"吳卓軒","class":"5D","number":"16","pwdHash":"6563dd5ccfda5ac425821907eae5d8532136a15ed77700e40c4d136ba6d4752a"},{"name":"伍嘉琪","class":"5D","number":"17","pwdHash":"0deb8c05b8254176caa91816dfe3042382cfe6aaa41f56a66405d4c59c33b297"},{"name":"彭俊龍","class":"5D","number":"18","pwdHash":"95ea10a78ae26bf56012be0c16661d0fe5e3b309a28fb50a4551d58459261a37"},{"name":"貝文俊","class":"5D","number":"19","pwdHash":"a4e1be826c2b55502a6648e515ad3640ec65dbadf6023296f5586ce49102409d"},{"name":"黃梓晉","class":"5D","number":"20","pwdHash":"175266cffc06992b4a061acc5a75144f87db99b33e384db6b0e6409b9d594309"},{"name":"測試1","class":"7A","number":"01"},{"name":"測試2","class":"7A","number":"02"},{"name":"測試3","class":"7A","number":"03"},{"name":"測試4","class":"7A","number":"04"},{"name":"測試5","class":"7A","number":"05"},{"name":"測試6","class":"7A","number":"06"},{"name":"測試7","class":"7A","number":"07"},{"name":"測試8","class":"7A","number":"08"},{"name":"測試9","class":"7A","number":"09"},{"name":"測試10","class":"7A","number":"10"},{"name":"測試學生甲","class":"5F","number":"01","pwdHash":"6d1cfbaa9dc512b43615209d0b79c86f53c63859a599d99ec398b0bc544dc92f"},{"name":"測試學生乙","class":"5F","number":"02","pwdHash":"fbb5f3d8b5f281ddeda6824442739ce3819cfa4d36ec9221f1bab3f873e8f087"}];
+
+// ============================================================
+// QUIZ DATA
+// ============================================================
+const QUIZ1_DATA = [
+    { q: "0.36 × 10 = ?", options: ["3.6", "0.036", "36", "0.36"], correct: 0, explanation: "乘以10，小數點向右移1位" },
+    { q: "2.5 × 100 = ?", options: ["25", "250", "0.025", "2500"], correct: 1, explanation: "乘以100，小數點向右移2位" },
+    { q: "7 × 100 = ?", options: ["70", "7000", "700", "0.07"], correct: 2, explanation: "整數7後補小數點，向右移2位" },
+    { q: "15 × 1000 = ?", options: ["150", "1500", "15000", "150000"], correct: 2, explanation: "乘以1000，小數點向右移3位" },
+    { q: "0.05 × 1000 = ?", options: ["5", "50", "500", "0.5"], correct: 1, explanation: "0.05的小數點向右移3位=50" },
+    { q: "123.4 × 0.1 = ?", options: ["1234", "1.234", "12.34", "0.1234"], correct: 2, explanation: "乘以0.1，小數點向左移1位" },
+    { q: "27 × 0.001 = ?", options: ["0.27", "2.7", "0.027", "270"], correct: 2, explanation: "乘以0.001，小數點向左移3位" },
+    { q: "5.6 × 0.01 = ?", options: ["0.056", "0.56", "56", "560"], correct: 0, explanation: "乘以0.01，小數點向左移2位" },
+    { q: "0.125 公斤 = ? 克", options: ["12.5", "1.25", "125", "1250"], correct: 2, explanation: "1公斤=1000克，0.125×1000=125" },
+    { q: "3.5 公里 = ? 米", options: ["35", "350", "3500", "35000"], correct: 2, explanation: "1公里=1000米，3.5×1000=3500" },
+    { q: "0.46 × 10 = ?", options: ["0.046", "4.6", "46", "460"], correct: 1, explanation: "乘以10，小數點向右移1位" },
+    { q: "100.5 × 0.01 = ?", options: ["10.05", "1.005", "0.1005", "1005"], correct: 1, explanation: "乘以0.01，小數點向左移2位" }
+];
+
+const QUIZ2_MC_DATA = [
+    { q: "___× 10 = 4.5", options: ["45", "4.5", "0.45", "0.045"], correct: 2, explanation: "逆向思考：4.5÷10=0.45" },
+    { q: "0.008 × 1000 = ?", options: ["0.8", "8", "80", "800"], correct: 1, explanation: "乘以1000，小數點向右移3位" },
+    { q: "3.14 × 0.1 = ?", options: ["31.4", "0.314", "314", "0.0314"], correct: 1, explanation: "乘以0.1，小數點向左移1位" },
+    { q: "0.72 公里 = ? 米", options: ["7.2", "72", "720", "7200"], correct: 2, explanation: "1公里=1000米，0.72×1000=720" },
+    { q: "6.5 × 0.01 = ?", options: ["0.65", "0.065", "65", "650"], correct: 1, explanation: "乘以0.01，小數點向左移2位" },
+    { q: "2.08 × 100 = ?", options: ["20.8", "208", "2080", "0.0208"], correct: 1, explanation: "乘以100，小數點向右移2位" },
+    { q: "1.5 升 = ? 毫升", options: ["15", "150", "1500", "15000"], correct: 2, explanation: "1升=1000毫升，1.5×1000=1500" },
+    { q: "0.003 × 100 = ?", options: ["0.3", "3", "30", "0.03"], correct: 0, explanation: "乘以100，小數點向右移2位" },
+    { q: "___ × 0.1 = 2.5", options: ["0.25", "2.5", "25", "250"], correct: 2, explanation: "逆向：2.5÷0.1=25" },
+    { q: "4.2 公斤 = ? 克", options: ["42", "420", "4200", "42000"], correct: 2, explanation: "1公斤=1000克，4.2×1000=4200" },
+    { q: "50 × 0.001 = ?", options: ["5", "0.5", "0.05", "0.005"], correct: 2, explanation: "乘以0.001，小數點向左移3位" },
+    { q: "0.9 米 = ? 厘米", options: ["9", "90", "900", "0.09"], correct: 1, explanation: "1米=100厘米，0.9×100=90" }
+];
+
+const QUIZ2_DATA = [
+    { questionImg: "評估_第一部分_p01.png", answerImg: "評估_第一部分_p02.png", q: "悟空探路：解開火焰山的基礎封印", subQuestions: [
+        { q: "0.36 × 10 = ?", options: ["3.6", "0.036", "36", "0.306"], correct: 0 },
+        { q: "2.5 × 100 = ?", options: ["25", "250", "2500", "0.25"], correct: 1 }
+    ]},
+    { questionImg: "評估_第一部分_p03.png", answerImg: "評估_第一部分_p04.png", q: "八戒的糧食難題：整數的秘密", subQuestions: [
+        { q: "7 × 100 = ?", options: ["70", "700", "7000", "0.7"], correct: 1 },
+        { q: "15 × 1000 = ?", options: ["150", "1500", "15000", "150000"], correct: 2 }
+    ]},
+    { questionImg: "評估_第一部分_p05.png", answerImg: "評估_第一部分_p06.png", q: "白骨幻象：火眼金睛辨真偽", subQuestions: [
+        { q: "0.05 × 1000 = 500，對嗎？", options: ["對", "錯，答案是50", "錯，答案是5", "錯，答案是0.5"], correct: 1 },
+        { q: "0.15 × 100 = 15，對嗎？", options: ["對", "錯，答案是150", "錯，答案是1.5", "錯，答案是0.15"], correct: 0 }
+    ]},
+    { questionImg: "評估_第一部分_p07.png", answerImg: "評估_第一部分_p08.png", q: "沙僧的行李清點", subQuestions: [
+        { q: "0.008 × 1000 = ?", options: ["0.8", "8", "80", "800"], correct: 1 },
+        { q: "4.02 × 100 = ?", options: ["40.2", "402", "4020", "0.0402"], correct: 1 }
+    ]},
+    { questionImg: "評估_第一部分_p09.png", answerImg: "評估_第一部分_p10.png", q: "唐僧的考驗", subQuestions: [
+        { q: "0.123 × 1000 = ?", options: ["1.23", "12.3", "123", "1230"], correct: 2 },
+        { q: "56 × 10 = ?", options: ["5.6", "56", "560", "5600"], correct: 2 }
+    ]},
+    { questionImg: "評估_第一部分_p11.png", answerImg: "評估_第一部分_p12.png", q: "終極挑戰：取經路上的難題", subQuestions: [
+        { q: "0.7 × 100 = ?", options: ["7", "70", "700", "0.007"], correct: 1 },
+        { q: "3.456 × 10 = ?", options: ["0.3456", "34.56", "345.6", "3456"], correct: 1 }
+    ]}
+];
+
+const QUIZ3_DATA = [
+    { questionImg: "評估_第二部分_p01.png", answerImg: "評估_第二部分_p02.png", q: "第二部分挑戰開始", subQuestions: [
+        { q: "45 × 0.1 = ?", options: ["4.5", "0.45", "450", "0.045"], correct: 0 },
+        { q: "3.8 × 0.01 = ?", options: ["0.38", "0.038", "38", "380"], correct: 1 }
+    ]},
+    { questionImg: "評估_第二部分_p03.png", answerImg: "評估_第二部分_p04.png", q: "向左移動的奧秘", subQuestions: [
+        { q: "200 × 0.001 = ?", options: ["2", "0.2", "0.02", "20"], correct: 1 },
+        { q: "56.7 × 0.1 = ?", options: ["567", "5.67", "0.567", "56.7"], correct: 1 }
+    ]},
+    { questionImg: "評估_第二部分_p05.png", answerImg: "評估_第二部分_p06.png", q: "判斷對錯", subQuestions: [
+        { q: "0.5 × 0.1 = 0.05，對嗎？", options: ["對", "錯，答案是0.5", "錯，答案是5", "錯，答案是0.005"], correct: 0 },
+        { q: "12 × 0.01 = 1.2，對嗎？", options: ["對，答案是1.2", "錯，答案是0.12", "錯，答案是120", "錯，答案是0.012"], correct: 1 }
+    ]},
+    { questionImg: "評估_第二部分_p07.png", answerImg: "評估_第二部分_p08.png", q: "單位轉換初探", subQuestions: [
+        { q: "2.5 公里 = ? 米", options: ["25", "250", "2500", "25000"], correct: 2 },
+        { q: "0.75 公斤 = ? 克", options: ["7.5", "75", "750", "7500"], correct: 2 }
+    ]},
+    { questionImg: "評估_第二部分_p09.png", answerImg: "評估_第二部分_p10.png", q: "進階單位換算", subQuestions: [
+        { q: "3.2 米 = ? 厘米", options: ["32", "320", "3200", "0.032"], correct: 1 },
+        { q: "0.5 升 = ? 毫升", options: ["5", "50", "500", "5000"], correct: 2 }
+    ]},
+    { questionImg: "評估_第二部分_p11.png", answerImg: "評估_第二部分_p12.png", q: "終極應用題", subQuestions: [
+        { q: "1.25 公里 = ? 米", options: ["125", "1250", "12500", "12.5"], correct: 1 },
+        { q: "0.08 公斤 = ? 克", options: ["0.8", "8", "80", "800"], correct: 2 }
+    ]}
+];
+
+// ============================================================
+// APP STATE
+// ============================================================
+let currentUser = null;
+let currentQuiz = null;
+let quizState = {};
+
+// ============================================================
+// LOGIN FUNCTIONS
+// ============================================================
+function switchLoginTab(type) {
+    document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+
+    if (type === 'student') {
+        document.querySelectorAll('.login-tab')[0].classList.add('active');
+        document.getElementById('studentLoginForm').classList.add('active');
+    } else {
+        document.querySelectorAll('.login-tab')[1].classList.add('active');
+        document.getElementById('teacherLoginForm').classList.add('active');
+    }
+}
+
+function updateStudentList() {
+    const cls = document.getElementById('classSelect').value;
+    const sel = document.getElementById('studentSelect');
+    sel.innerHTML = '';
+
+    if (!cls) {
+        sel.innerHTML = '<option value="">請先選擇班別</option>';
+        sel.disabled = true;
+        return;
+    }
+
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">請選擇學號</option>';
+
+    const classStudents = STUDENTS.filter(s => s.class === cls);
+    classStudents.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.number;
+        opt.textContent = `${s.number} - ${s.name}`;
+        sel.appendChild(opt);
+    });
+}
+
+async function hashPassword(pwd, cls, num) {
+    const salt = `lwwf_${cls}_${num}`;
+    const data = new TextEncoder().encode(salt + pwd + salt);
+    const buf = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function studentLogin() {
+    const cls = document.getElementById('classSelect').value;
+    const num = document.getElementById('studentSelect').value;
+    const pwd = document.getElementById('studentPassword').value.trim();
+    const errorEl = document.getElementById('studentLoginError');
+
+    if (!cls || !num) {
+        errorEl.textContent = '請選擇班別和學號';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    const student = STUDENTS.find(s => s.class === cls && s.number === num);
+
+    if (student) {
+        // Test accounts (7A) have no password (no pwdHash field)
+        if (student.pwdHash) {
+            const inputHash = await hashPassword(pwd, cls, num);
+            if (inputHash !== student.pwdHash) {
+                errorEl.textContent = '密碼錯誤，請重新輸入（提示：lst後的5位數字）';
+                errorEl.style.display = 'block';
+                return;
+            }
+        }
+        errorEl.style.display = 'none';
+        currentUser = { ...student, role: 'student' };
+        showStudentDashboard();
+    }
+}
+
+function teacherLogin() {
+    const pwd = document.getElementById('teacherPassword').value;
+    const errorEl = document.getElementById('teacherLoginError');
+
+    if (pwd === 'lstlwwf') {
+        errorEl.style.display = 'none';
+        currentUser = { role: 'teacher', name: '教師' };
+        showTeacherDashboard();
+    } else {
+        errorEl.style.display = 'block';
+    }
+}
+
+function logout() {
+    currentUser = null;
+    currentQuiz = null;
+    document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+    document.getElementById('loginPage').classList.add('active');
+    document.getElementById('loginPage').style.display = 'block';
+    window.scrollTo(0, 0);
+    // Reset forms
+    document.getElementById('classSelect').value = '';
+    document.getElementById('studentSelect').innerHTML = '<option value="">請先選擇班別</option>';
+    document.getElementById('studentSelect').disabled = true;
+    document.getElementById('teacherPassword').value = '';
+}
+
+// ============================================================
+// DASHBOARD FUNCTIONS
+// ============================================================
+function showStudentDashboard() {
+    document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+    document.getElementById('studentPage').classList.add('active');
+    document.getElementById('studentPage').style.display = 'block';
+
+    // Update user info display
+    document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+    document.getElementById('userDisplayName').textContent = `${currentUser.class} ${currentUser.number} ${currentUser.name}`;
+
+    // Reset tabs
+    switchTab('study');
+    renderProgression();
+    updateCoinDisplay();
+    window.scrollTo(0, 0);
+}
+
+// COIN ALLOCATION (total 33):
+// 簡報1/2/3 MC questions: 2 each = 6
+// 資訊圖像問答1/2/3:      1 each = 3
+// MC測驗1/2:               2 each = 4
+// 評估1/2/3:               3 each = 9
+// 遊戲1/2:                 3 each = 6
+// 國安教育:                 3       = 3
+// 補充教材:                 2       = 2
+// TOTAL = 6+3+4+9+6+3+2 = 33
+
+function updateCoinDisplay() {
+    if (!currentUser) return;
+    const key = `scores_${currentUser.class}_${currentUser.number}`;
+    const scores = JSON.parse(localStorage.getItem(key) || '{}');
+    let coins = 0;
+    // Slide deck MC coins (2 each, max 6)
+    ['slides1','slides2','slides3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    // Infographic quiz coins (1 each, max 3)
+    ['iq_quiz1','iq_quiz2','iq_quiz3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    // MC quiz coins (2 each, max 4)
+    ['quiz1','quiz4'].forEach(k => { if (scores[k]) coins += Math.min(2, Math.round((scores[k].score / scores[k].total) * 2)); });
+    // Assessment coins (3 each, max 9)
+    ['assess1','assess2','assess3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    // Game coins (3 each, max 6)
+    ['game1','game2'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    if (scores.game) coins += Math.min(3, Math.round((scores.game.correct || 0) / (scores.game.total || 10) * 3));
+    // 國安教育 coins (max 3)
+    if (scores.national) coins += scores.national.coins || 0;
+    // 補充教材 coins (max 2)
+    if (scores.supplementary) coins += scores.supplementary.coins || 0;
+    document.getElementById('coinCount').textContent = coins;
+    updateAssessCardStatus(scores);
+}
+
+function updateAssessCardStatus(scores) {
+    [1,2,3].forEach(n => {
+        const el = document.getElementById('assessStatus' + n);
+        const card = document.getElementById('assessCard' + n);
+        if (!el) return;
+        const a = scores['assess' + n];
+        if (a && a.correct === a.total) {
+            // All correct — completed, locked
+            el.innerHTML = '<span class="progression-step-badge" style="background:#E8F5E9;color:#2E7D32;">✅ 已完成 ' + a.coins + ' <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span>';
+            if (card) card.style.opacity = '0.7';
+        } else if (a && a.coins > 0) {
+            // Partially done — can retry
+            el.innerHTML = '<span class="progression-step-badge active">' + a.coins + '/3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"> 可重試</span>';
+        } else {
+            el.innerHTML = '<span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span>';
+        }
+    });
+}
+
+function showTeacherDashboard() {
+    document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+    document.getElementById('teacherPage').classList.add('active');
+    document.getElementById('teacherPage').style.display = 'block';
+    window.scrollTo(0, 0);
+    renderTeacherData();
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+    const tabMap = { study: 'tabStudy', quiz: 'tabQuiz', games: 'tabGames', ai: 'tabAi', scores: 'tabScores' };
+    document.getElementById(tabMap[tab]).classList.add('active');
+
+    // Find and activate the correct tab button
+    const tabs = document.querySelectorAll('.nav-tab');
+    const tabIndex = ['study', 'quiz', 'games', 'ai', 'scores'].indexOf(tab);
+    if (tabIndex >= 0) tabs[tabIndex].classList.add('active');
+
+    // Load scores if needed
+    if (tab === 'scores') renderScores();
+
+    // Render progression flow
+    if (tab === 'study') renderProgression();
+
+    // Reset game view
+    if (tab === 'games') exitGame();
+
+
+    // Reset quiz view
+    if (tab === 'quiz') {
+        document.getElementById('quizList').style.display = 'block';
+        document.getElementById('quizArea').style.display = 'none';
+    }
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function showModal(imgSrc) {
+    document.getElementById('modalImage').src = imgSrc;
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal(event) {
+    if (!event || event.target === document.getElementById('modalOverlay')) {
+        document.getElementById('modalOverlay').classList.remove('active');
+    }
+}
+
+// ============================================================
+// QUIZ ENGINE
+// ============================================================
+const MAX_WRONG = 5; // 答錯5題需重做
+
+// Shuffle options and return {shuffledOptions, correctIndex}
+function shuffleOptions(options, correctIdx) {
+    const indexed = options.map((opt, i) => ({ opt, isCorrect: i === correctIdx }));
+    for (let i = indexed.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
+    }
+    return {
+        shuffledOptions: indexed.map(x => x.opt),
+        correctIndex: indexed.findIndex(x => x.isCorrect)
+    };
+}
+
+function startQuiz(quizNum) {
+    currentQuiz = quizNum;
+    quizState = {
+        currentQuestion: 0,
+        score: 0,
+        wrongCount: 0,
+        totalQuestions: 0,
+        answers: [],
+        subQuestionIndex: 0,
+        shuffledData: null
+    };
+
+    if (quizNum === 1) {
+        quizState.totalQuestions = QUIZ1_DATA.length;
+    } else if (quizNum === 4) {
+        quizState.totalQuestions = QUIZ2_MC_DATA.length;
+    } else if (quizNum === 2) {
+        quizState.totalQuestions = QUIZ2_DATA.length * 2;
+    } else {
+        quizState.totalQuestions = QUIZ3_DATA.length * 2;
+    }
+
+    document.getElementById('quizList').style.display = 'none';
+    document.getElementById('quizArea').style.display = 'block';
+
+    renderQuizQuestion();
+}
+
+function exitQuiz() {
+    currentQuiz = null;
+    document.getElementById('quizList').style.display = 'block';
+    document.getElementById('quizArea').style.display = 'none';
+}
+
+function renderQuizQuestion() {
+    const container = document.getElementById('quizContainer');
+
+    if (currentQuiz === 1 || currentQuiz === 4) {
+        renderQuiz1Question(container);
+    } else {
+        renderQuiz23Question(container);
+    }
+}
+
+function renderQuiz1Question(container) {
+    const DATA = currentQuiz === 4 ? QUIZ2_MC_DATA : QUIZ1_DATA;
+    const TITLE = currentQuiz === 4 ? '測驗二 - 進階練習' : '測驗一 - 基礎練習';
+    const qIndex = quizState.currentQuestion;
+
+    if (qIndex >= DATA.length) {
+        renderQuizResult(container);
+        return;
+    }
+
+    // Check wrong limit
+    if (quizState.wrongCount >= MAX_WRONG) {
+        container.innerHTML = `<div class="quiz-question-card" style="text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">😓</div><h3>答錯了${MAX_WRONG}題，需要重做！</h3><p style="color:var(--text-light);margin:12px 0;">再接再厲，重新挑戰吧！</p><button class="btn btn-primary" onclick="startQuiz(${currentQuiz})">重新開始</button></div>`;
+        return;
+    }
+
+    const qData = DATA[qIndex];
+    const { shuffledOptions, correctIndex } = shuffleOptions(qData.options, qData.correct);
+    quizState._currentCorrect = correctIndex;
+    const progress = ((qIndex) / DATA.length) * 100;
+    const letters = ['A', 'B', 'C', 'D'];
+
+    container.innerHTML = `
+        <div class="quiz-header">
+            <div class="quiz-progress">
+                <span>第 ${qIndex + 1}/${DATA.length} 題 <span style="color:var(--error);font-size:0.8rem;">❌${quizState.wrongCount}/${MAX_WRONG}</span></span>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+            </div>
+            <div class="quiz-score">得分：${quizState.score * 10}</div>
+        </div>
+        <div class="quiz-question-card">
+            <div class="quiz-question-number">${TITLE}</div>
+            <div class="quiz-question-text">${qData.q}</div>
+            <div class="quiz-options">
+                ${shuffledOptions.map((opt, i) => `
+                    <div class="quiz-option" onclick="answerQuiz1(${i})" id="opt${i}">
+                        <span class="option-letter">${letters[i]}</span>
+                        <span>${opt}</span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="quiz-explanation" id="quizExplanation">
+                💡 ${qData.explanation}
+            </div>
+            <div class="quiz-nav" id="quizNav" style="display:none;">
+                <button class="btn btn-primary btn-sm" onclick="nextQuiz1Question()">下一題 →</button>
+            </div>
+        </div>
+    `;
+}
+
+function answerQuiz1(selected) {
+    const correctIdx = quizState._currentCorrect;
+    const options = document.querySelectorAll('.quiz-option');
+
+    options.forEach(opt => opt.classList.add('disabled'));
+
+    if (selected === correctIdx) {
+        options[selected].classList.add('correct');
+        quizState.score++;
+        showConfetti();
+    } else {
+        options[selected].classList.add('wrong');
+        options[correctIdx].classList.add('correct');
+        quizState.wrongCount++;
+    }
+
+    quizState.answers.push(selected === correctIdx);
+
+    document.getElementById('quizExplanation').classList.add('show');
+    document.getElementById('quizNav').style.display = 'flex';
+}
+
+function nextQuiz1Question() {
+    quizState.currentQuestion++;
+    renderQuizQuestion();
+}
+
+function renderQuiz23Question(container) {
+    const data = currentQuiz === 2 ? QUIZ2_DATA : QUIZ3_DATA;
+    const groupIndex = quizState.currentQuestion;
+
+    if (groupIndex >= data.length) {
+        renderQuizResult(container);
+        return;
+    }
+
+    const group = data[groupIndex];
+    const subIndex = quizState.subQuestionIndex;
+    const subQ = group.subQuestions[subIndex];
+    const totalAnswered = groupIndex * 2 + subIndex;
+    const totalQ = data.length * 2;
+    const progress = (totalAnswered / totalQ) * 100;
+    const letters = ['A', 'B', 'C', 'D'];
+    const imgPath = 'assets/ch12/quiz-images/';
+
+    container.innerHTML = `
+        <div class="quiz-header">
+            <div class="quiz-progress">
+                <span>第 ${groupIndex + 1} 組 - 小題 ${subIndex + 1}/2</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+            </div>
+            <div class="quiz-score">得分：${quizState.score * 10}</div>
+        </div>
+        <div class="quiz-question-card">
+            <div class="quiz-question-number">${currentQuiz === 2 ? '測驗二' : '測驗三'} - ${group.q}</div>
+            <img class="quiz-question-img" src="${imgPath}${group.questionImg}" alt="題目圖片" onerror="this.style.display='none'">
+            <div class="quiz-question-text">${subQ.q}</div>
+            <div class="quiz-options">
+                ${subQ.options.map((opt, i) => `
+                    <div class="quiz-option" onclick="answerQuiz23(${i})" id="opt${i}">
+                        <span class="option-letter">${letters[i]}</span>
+                        <span>${opt}</span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="quiz-explanation" id="quizExplanation"></div>
+            <div id="answerImgArea"></div>
+            <div class="quiz-nav" id="quizNav" style="display:none;">
+                <button class="btn btn-primary btn-sm" onclick="nextQuiz23Question()">
+                    ${subIndex === 0 ? '下一小題 →' : '下一組 →'}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function answerQuiz23(selected) {
+    const data = currentQuiz === 2 ? QUIZ2_DATA : QUIZ3_DATA;
+    const group = data[quizState.currentQuestion];
+    const subQ = group.subQuestions[quizState.subQuestionIndex];
+    const options = document.querySelectorAll('.quiz-option');
+
+    options.forEach(opt => opt.classList.add('disabled'));
+
+    const isCorrect = selected === subQ.correct;
+    if (isCorrect) {
+        options[selected].classList.add('correct');
+        quizState.score++;
+        showConfetti();
+    } else {
+        options[selected].classList.add('wrong');
+        options[subQ.correct].classList.add('correct');
+    }
+
+    quizState.answers.push(isCorrect);
+
+    // Show explanation
+    const expEl = document.getElementById('quizExplanation');
+    expEl.innerHTML = isCorrect ? '✅ 答對了！做得好！' : `❌ 答錯了！正確答案是：${subQ.options[subQ.correct]}`;
+    expEl.classList.add('show');
+
+    // Show answer image if both sub-questions answered
+    if (quizState.subQuestionIndex === 1) {
+        const imgPath = 'assets/ch12/quiz-images/';
+        document.getElementById('answerImgArea').innerHTML = `
+            <img class="quiz-answer-img" src="${imgPath}${group.answerImg}" alt="答案圖片" onerror="this.style.display='none'">
+        `;
+    }
+
+    document.getElementById('quizNav').style.display = 'flex';
+}
+
+function nextQuiz23Question() {
+    if (quizState.subQuestionIndex === 0) {
+        quizState.subQuestionIndex = 1;
+    } else {
+        quizState.subQuestionIndex = 0;
+        quizState.currentQuestion++;
+    }
+    renderQuizQuestion();
+}
+
+function renderQuizResult(container) {
+    const totalQ = quizState.totalQuestions;
+    const correct = quizState.score;
+    const percentage = Math.round((correct / totalQ) * 100);
+    let stars = '';
+
+    if (percentage >= 90) stars = '⭐⭐⭐';
+    else if (percentage >= 70) stars = '⭐⭐';
+    else if (percentage >= 50) stars = '⭐';
+    else stars = '💪';
+
+    const points = correct * 10;
+
+    container.innerHTML = `
+        <div class="quiz-question-card">
+            <div class="quiz-result">
+                <div class="quiz-result-stars">${stars}</div>
+                <div class="quiz-result-score">${correct}/${totalQ}</div>
+                <div class="quiz-result-label">答對 ${correct} 題，獲得 ${points} 分！</div>
+                <p style="color: var(--text-light); margin-bottom: 24px;">正確率：${percentage}%</p>
+                <button class="btn btn-primary" onclick="saveQuizScore(); exitQuiz();">完成並儲存成績</button>
+            </div>
+        </div>
+    `;
+
+    // Auto-save
+    saveQuizScore();
+
+    if (percentage >= 70) {
+        showConfetti();
+    }
+}
+
+function saveQuizScore() {
+    if (!currentUser || currentUser.role !== 'student') return;
+
+    const key = `scores_${currentUser.class}_${currentUser.number}`;
+    let scores = JSON.parse(localStorage.getItem(key) || '{}');
+
+    const quizKey = `quiz${currentQuiz}`;
+    const result = {
+        score: quizState.score,
+        total: quizState.totalQuestions,
+        date: new Date().toLocaleDateString('zh-TW'),
+        points: quizState.score * 10
+    };
+
+    scores[quizKey] = result;
+
+    // Calculate total points
+    let totalPoints = 0;
+    ['quiz1', 'quiz2', 'quiz3'].forEach(qk => {
+        if (scores[qk]) totalPoints += scores[qk].points;
+    });
+    scores.totalPoints = totalPoints;
+
+    localStorage.setItem(key, JSON.stringify(scores));
+}
+
+// ============================================================
+// SCORES PAGE
+// ============================================================
+function renderScores() {
+    if (!currentUser || currentUser.role !== 'student') return;
+
+    const key = `scores_${currentUser.class}_${currentUser.number}`;
+    const scores = JSON.parse(localStorage.getItem(key) || '{}');
+    const totalPoints = scores.totalPoints || 0;
+
+    const container = document.getElementById('scoresContent');
+
+    container.innerHTML = `
+        <div class="scores-summary">
+            <div class="score-stat">
+                <div class="score-stat-value">${totalPoints}</div>
+                <div class="score-stat-label">累計總分</div>
+            </div>
+            <div class="score-stat">
+                <div class="score-stat-value">${scores.quiz1 ? scores.quiz1.score + '/' + scores.quiz1.total : '--'}</div>
+                <div class="score-stat-label">測驗一</div>
+            </div>
+            <div class="score-stat">
+                <div class="score-stat-value">${scores.quiz2 ? scores.quiz2.score + '/' + scores.quiz2.total : '--'}</div>
+                <div class="score-stat-label">測驗二</div>
+            </div>
+            <div class="score-stat">
+                <div class="score-stat-value">${scores.quiz3 ? scores.quiz3.score + '/' + scores.quiz3.total : '--'}</div>
+                <div class="score-stat-label">測驗三</div>
+            </div>
+        </div>
+
+        <div class="score-history">
+            <h3>📋 成績記錄</h3>
+            ${renderScoreRow('測驗一：基礎練習', scores.quiz1)}
+            ${renderScoreRow('測驗二：評估挑戰（乘大數）', scores.quiz2)}
+            ${renderScoreRow('測驗三：評估挑戰（乘小數及單位轉換）', scores.quiz3)}
+        </div>
+
+        <div class="rewards-section">
+            <h3>🎁 獎勵兌換</h3>
+            <p style="color: var(--text-light); margin-bottom: 16px; font-size: 0.9rem;">你的累計分數：<strong>${totalPoints} 分</strong></p>
+            <div class="reward-item ${totalPoints >= 50 ? '' : 'style="opacity:0.5"'}">
+                <span class="reward-item-points">50 分</span>
+                <span class="reward-item-name">🎈 小獎勵 - 貼紙一張</span>
+                ${totalPoints >= 50 ? '<span style="color:var(--success);font-weight:600;">可兌換</span>' : '<span style="color:var(--text-light);">未達標</span>'}
+            </div>
+            <div class="reward-item" ${totalPoints >= 100 ? '' : 'style="opacity:0.5"'}>
+                <span class="reward-item-points">100 分</span>
+                <span class="reward-item-name">🎯 中獎勵 - 小禮物一份</span>
+                ${totalPoints >= 100 ? '<span style="color:var(--success);font-weight:600;">可兌換</span>' : '<span style="color:var(--text-light);">未達標</span>'}
+            </div>
+            <div class="reward-item" ${totalPoints >= 200 ? '' : 'style="opacity:0.5"'}>
+                <span class="reward-item-points">200 分</span>
+                <span class="reward-item-name">🏆 大獎勵 - 特別獎品</span>
+                ${totalPoints >= 200 ? '<span style="color:var(--success);font-weight:600;">可兌換</span>' : '<span style="color:var(--text-light);">未達標</span>'}
+            </div>
+        </div>
+    `;
+}
+
+function renderScoreRow(label, data) {
+    if (!data) {
+        return `
+            <div class="score-row">
+                <span class="score-row-label">${label}</span>
+                <span class="score-row-value" style="color: var(--text-light);">未完成</span>
+            </div>
+        `;
+    }
+    return `
+        <div class="score-row">
+            <div>
+                <div class="score-row-label">${label}</div>
+                <div class="score-row-date">${data.date}</div>
+            </div>
+            <span class="score-row-value">${data.score}/${data.total} (${data.points}分)</span>
+        </div>
+    `;
+}
+
+// ============================================================
+// TEACHER DASHBOARD
+// ============================================================
+function getStudentAllData(s) {
+    const key = `scores_${s.class}_${s.number}`;
+    const scores = JSON.parse(localStorage.getItem(key) || '{}');
+    const progKey = `progress_ch12_${s.class}_${s.number}`;
+    const progress = JSON.parse(localStorage.getItem(progKey) || '{}');
+    const stepsCompleted = ['slides1','quiz1','slides2','quiz2','slides3','quiz3'].filter(k => progress[k]?.done).length;
+    const totalCoins = (scores.assess1?.coins||0) + (scores.assess2?.coins||0) + (scores.assess3?.coins||0);
+    return { scores, progress, stepsCompleted, totalCoins };
+}
+
+function renderTeacherData() {
+    const filter = document.getElementById('teacherClassFilter').value;
+    const students = STUDENTS.filter(s => {
+        if (s.class === '7A') return false;
+        if (filter === 'all') return true;
+        return s.class === filter;
+    });
+
+    let totalStudents = students.length;
+    let cMC1=0, cMC2=0, cA1=0, cA2=0, cA3=0, totalCoins=0;
+
+    const tbody = document.getElementById('teacherTableBody');
+    tbody.innerHTML = '';
+
+    students.forEach(s => {
+        const d = getStudentAllData(s);
+        const sc = d.scores;
+
+        const mc1 = sc.quiz1 ? `${sc.quiz1.score}/${sc.quiz1.total}` : '-';
+        const mc2 = sc.quiz4 ? `${sc.quiz4.score}/${sc.quiz4.total}` : '-';
+        const a1 = sc.assess1 ? `${sc.assess1.correct}/7 🪙${sc.assess1.coins}` : '-';
+        const a2 = sc.assess2 ? `${sc.assess2.correct}/7 🪙${sc.assess2.coins}` : '-';
+        const a3 = sc.assess3 ? `${sc.assess3.correct}/7 🪙${sc.assess3.coins}` : '-';
+        const game = sc.game ? `${sc.game.correct||sc.game.score}` : (sc.game1 ? '✓' : '-');
+        const prog = `${d.stepsCompleted}/6`;
+
+        if (sc.quiz1) cMC1++;
+        if (sc.quiz4) cMC2++;
+        if (sc.assess1) cA1++;
+        if (sc.assess2) cA2++;
+        if (sc.assess3) cA3++;
+        totalCoins += d.totalCoins;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${s.class}</td>
+            <td>${s.number}</td>
+            <td>${s.name}</td>
+            <td>${mc1}</td>
+            <td>${mc2}</td>
+            <td>${a1}</td>
+            <td>${a2}</td>
+            <td>${a3}</td>
+            <td>${game}</td>
+            <td>${prog}</td>
+            <td>🪙${d.totalCoins}</td>
+            <td><button class="btn btn-sm btn-outline" onclick="showStudentDetail('${s.class}','${s.number}','${s.name}')">查看</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('teacherStats').innerHTML = `
+        <div class="stat-card"><div class="stat-card-value">${totalStudents}</div><div class="stat-card-label">學生人數</div></div>
+        <div class="stat-card"><div class="stat-card-value">${cMC1}</div><div class="stat-card-label">完成MC測驗1</div></div>
+        <div class="stat-card"><div class="stat-card-value">${cMC2}</div><div class="stat-card-label">完成MC測驗2</div></div>
+        <div class="stat-card"><div class="stat-card-value">${cA1}/${cA2}/${cA3}</div><div class="stat-card-label">完成評估 1/2/3</div></div>
+        <div class="stat-card"><div class="stat-card-value">🪙${totalCoins}</div><div class="stat-card-label">總金幣</div></div>
+    `;
+
+    // Re-render IQ teacher view with current class filter
+    renderIQTeacherView(currentIQTeacherTab || 1);
+}
+
+// Class-wide Infographic Quiz view for teacher
+let currentIQTeacherTab = 1;
+function switchIQTeacherTab(n) {
+    currentIQTeacherTab = n;
+    // Update tab button styles
+    [1,2,3].forEach(i => {
+        const btn = document.getElementById('iqTab' + i);
+        if (!btn) return;
+        if (i === n) {
+            btn.classList.remove('btn-outline');
+            btn.style.background = 'var(--primary)';
+            btn.style.color = 'white';
+        } else {
+            btn.classList.add('btn-outline');
+            btn.style.background = '';
+            btn.style.color = '';
+        }
+    });
+    renderIQTeacherView(n);
+}
+
+function renderIQTeacherView(quizNum) {
+    const container = document.getElementById('iqTeacherContent');
+    if (!container) return;
+    const filter = document.getElementById('teacherClassFilter').value;
+    const students = STUDENTS.filter(s => {
+        if (s.class === '7A') return false;
+        if (filter === 'all') return true;
+        return s.class === filter;
+    });
+
+    // Find the infographic quiz step to get the questions
+    const stepKey = 'quiz' + quizNum;
+    const step = PROGRESSION_STEPS.find(s => s.id === stepKey);
+    if (!step) {
+        container.innerHTML = '<p style="color:#999;">冇呢個問答資料</p>';
+        return;
+    }
+
+    // Collect all student answers
+    const studentAnswers = students.map(s => {
+        const scoreKey = `scores_${s.class}_${s.number}`;
+        const scores = JSON.parse(localStorage.getItem(scoreKey) || '{}');
+        const iq = scores[`iq_${stepKey}`];
+        return { student: s, answered: !!iq, answers: iq?.answers || [], date: iq?.date };
+    });
+
+    const completedCount = studentAnswers.filter(sa => sa.answered).length;
+
+    // Build HTML
+    let html = `<div style="margin-bottom:12px;padding:10px;background:#F5F5F5;border-radius:8px;">
+        <b>問答 ${quizNum}：${step.title}</b><br>
+        <span style="color:#666;font-size:0.9rem;">完成人數：${completedCount} / ${students.length}</span>
+    </div>`;
+
+    // For each question, show all students' answers
+    step.questions.forEach((q, qi) => {
+        html += `<div style="margin-bottom:20px;padding:14px;border:2px solid #E0E0E0;border-radius:10px;">
+            <div style="font-weight:700;color:#1565C0;margin-bottom:10px;">
+                第 ${qi+1} 題 (${q.type === 'mc' ? '選擇題' : '文字題'})：${q.q}
+            </div>`;
+
+        if (q.type === 'mc') {
+            // MC: count each option
+            const counts = {};
+            studentAnswers.forEach(sa => {
+                if (sa.answered && sa.answers[qi]) {
+                    const ans = sa.answers[qi].answer;
+                    counts[ans] = (counts[ans] || 0) + 1;
+                }
+            });
+            // Show counts with % bars
+            q.options.forEach((opt, oi) => {
+                const count = counts[opt] || 0;
+                const pct = completedCount > 0 ? Math.round(count / completedCount * 100) : 0;
+                const isCorrect = oi === q.correct;
+                html += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                    <div style="width:180px;font-weight:${isCorrect?'700':'normal'};color:${isCorrect?'#2E7D32':'#333'};">
+                        ${isCorrect ? '✅ ' : ''}${opt}
+                    </div>
+                    <div style="flex:1;background:#EEE;border-radius:6px;overflow:hidden;height:20px;position:relative;">
+                        <div style="width:${pct}%;background:${isCorrect?'#4CAF50':'#90CAF9'};height:100%;"></div>
+                        <span style="position:absolute;left:8px;top:0;line-height:20px;font-size:0.85rem;font-weight:600;">${count} 人 (${pct}%)</span>
+                    </div>
+                </div>`;
+            });
+            // Individual student answers
+            html += `<details style="margin-top:10px;"><summary style="cursor:pointer;color:#666;font-size:0.9rem;">▸ 顯示每個學生的答案</summary>
+                <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;">`;
+            studentAnswers.forEach(sa => {
+                const ans = sa.answered && sa.answers[qi] ? sa.answers[qi].answer : '';
+                const isCorrect = ans === q.options[q.correct];
+                const bg = !sa.answered ? '#F5F5F5' : (isCorrect ? '#E8F5E9' : '#FFF3E0');
+                const icon = !sa.answered ? '⏸' : (isCorrect ? '✅' : '⚠️');
+                html += `<div style="padding:8px;background:${bg};border-radius:6px;font-size:0.85rem;">
+                    <div style="font-weight:600;">${icon} ${sa.student.class} ${sa.student.number} ${sa.student.name}</div>
+                    <div style="color:#555;margin-top:2px;">${sa.answered ? ans : '<i>未作答</i>'}</div>
+                </div>`;
+            });
+            html += `</div></details>`;
+        } else {
+            // Text question: show all answers in a list
+            html += `<div style="max-height:300px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;">`;
+            studentAnswers.forEach(sa => {
+                const ans = sa.answered && sa.answers[qi] ? sa.answers[qi].answer : '';
+                const bg = sa.answered ? '#E3F2FD' : '#F5F5F5';
+                html += `<div style="padding:10px;background:${bg};border-radius:8px;font-size:0.9rem;">
+                    <div style="font-weight:600;color:#1565C0;">${sa.student.class} ${sa.student.number} ${sa.student.name}</div>
+                    <div style="margin-top:4px;color:#333;">${sa.answered ? ans : '<i style="color:#999;">未作答</i>'}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+
+        html += `</div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+function showStudentDetail(cls, num, name) {
+    const key = `scores_${cls}_${num}`;
+    const scores = JSON.parse(localStorage.getItem(key) || '{}');
+    const progKey = `progress_ch12_${cls}_${num}`;
+    const progress = JSON.parse(localStorage.getItem(progKey) || '{}');
+
+    document.getElementById('teacherDetailTitle').textContent = `${cls} ${num} ${name} 的詳細成績`;
+    const modal = document.getElementById('teacherDetailModal');
+    modal.style.display = '';
+
+    let html = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;">';
+
+    // MC Quizzes
+    html += '<div style="background:#E3F2FD;padding:16px;border-radius:12px;"><h4>📝 MC 測驗</h4>';
+    html += scores.quiz1 ? `<p>測驗一：${scores.quiz1.score}/${scores.quiz1.total}（${scores.quiz1.date}）</p>` : '<p>測驗一：未完成</p>';
+    html += scores.quiz4 ? `<p>測驗二：${scores.quiz4.score}/${scores.quiz4.total}（${scores.quiz4.date}）</p>` : '<p>測驗二：未完成</p>';
+    html += '</div>';
+
+    // Assessments
+    html += '<div style="background:#FFF8E1;padding:16px;border-radius:12px;"><h4>📋 簡報評估</h4>';
+    [1,2,3].forEach(n => {
+        const a = scores[`assess${n}`];
+        html += a ? `<p>評估${n}：${a.correct}/${a.total} 🪙${a.coins}（${a.date}）</p>` : `<p>評估${n}：未完成</p>`;
+    });
+    html += '</div>';
+
+    // Progression
+    html += '<div style="background:#E8F5E9;padding:16px;border-radius:12px;"><h4>📖 學習進度</h4>';
+    ['slides1','quiz1','slides2','quiz2','slides3','quiz3'].forEach(k => {
+        const labels = {slides1:'簡報1',quiz1:'問答1',slides2:'簡報2',quiz2:'問答2',slides3:'簡報3',quiz3:'問答3'};
+        const p = progress[k];
+        html += `<p>${p?.done ? '✅' : '⬜'} ${labels[k]} ${p?.done ? new Date(p.date).toLocaleDateString('zh-TW') : ''}</p>`;
+    });
+    html += '</div>';
+
+    // Infographic Quiz Answers
+    html += '<div style="background:#F3E5F5;padding:16px;border-radius:12px;grid-column:1/-1;"><h4>❓ 預習問答回答</h4>';
+    let hasIQ = false;
+    ['quiz1','quiz2','quiz3'].forEach(qk => {
+        const iq = scores[`iq_${qk}`];
+        if (iq) {
+            hasIQ = true;
+            const qLabels = {quiz1:'問答1（放大法術）',quiz2:'問答2（縮小心法）',quiz3:'問答3（單位轉換）'};
+            html += `<div style="margin-bottom:12px;"><strong>${qLabels[qk]}</strong>（${iq.date}）<ul style="margin:4px 0 0 20px;">`;
+            iq.answers.forEach(a => {
+                html += `<li><em>${a.q}</em><br>→ <strong>${a.answer}</strong></li>`;
+            });
+            html += '</ul></div>';
+        }
+    });
+    if (!hasIQ) html += '<p style="color:#999;">尚未完成任何預習問答</p>';
+    html += '</div>';
+
+    // Games
+    html += '<div style="background:#FBE9E7;padding:16px;border-radius:12px;"><h4>🎮 遊戲</h4>';
+    if (scores.game) html += `<p>遊戲：分數${scores.game.score}（${scores.game.date}）</p>`;
+    else if (scores.game1) html += `<p>RPG遊戲：已完成</p>`;
+    else html += '<p>未完成</p>';
+    html += '</div>';
+
+    html += '</div>';
+    document.getElementById('teacherDetailContent').innerHTML = html;
+    modal.scrollIntoView({ behavior: 'smooth' });
+}
+
+function exportCSV() {
+    const filter = document.getElementById('teacherClassFilter').value;
+    const students = STUDENTS.filter(s => {
+        if (s.class === '7A') return false;
+        if (filter === 'all') return true;
+        return s.class === filter;
+    });
+
+    let csv = '\uFEFF班別,學號,姓名,MC測驗1,MC測驗2,評估1,評估2,評估3,進度,金幣\n';
+
+    students.forEach(s => {
+        const d = getStudentAllData(s);
+        const sc = d.scores;
+        const mc1 = sc.quiz1 ? `${sc.quiz1.score}/${sc.quiz1.total}` : '-';
+        const mc2 = sc.quiz4 ? `${sc.quiz4.score}/${sc.quiz4.total}` : '-';
+        const a1 = sc.assess1 ? `${sc.assess1.correct}/7` : '-';
+        const a2 = sc.assess2 ? `${sc.assess2.correct}/7` : '-';
+        const a3 = sc.assess3 ? `${sc.assess3.correct}/7` : '-';
+        csv += `${s.class},${s.number},${s.name},${mc1},${mc2},${a1},${a2},${a3},${d.stepsCompleted}/6,${d.totalCoins}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `數學成績_${filter}_${new Date().toLocaleDateString('zh-TW')}.csv`;
+    link.click();
+}
+
+// ============================================================
+// CONFETTI EFFECT
+// ============================================================
+function showConfetti() {
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+
+    const colors = ['#FFC107', '#1565C0', '#4CAF50', '#E53935', '#9C27B0', '#FF9800'];
+
+    for (let i = 0; i < 30; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.top = Math.random() * 60 + 40 + '%';
+        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        piece.style.animationDelay = Math.random() * 0.5 + 's';
+        piece.style.animationDuration = (1 + Math.random()) + 's';
+        container.appendChild(piece);
+    }
+
+    setTimeout(() => container.remove(), 2000);
+}
+
+// ============================================================
+// KEYBOARD EVENTS
+// ============================================================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+    if (e.key === 'Enter') {
+        if (document.getElementById('teacherLoginForm').classList.contains('active')) {
+            teacherLogin();
+        }
+    }
+});
+
+// ============================================================
+// PROGRESSION FLOW (自學區)
+// ============================================================
+const PROGRESSION_STEPS = [
+    { id:'slides1', type:'slides', title:'簡報1：悟空的放大法術', desc:'×10 / ×100 / ×1000', folder:'slides1', total:14, icon:'📗' },
+    { id:'quiz1', type:'infoquiz', title:'問答1：放大法術小測', desc:'回答2題解鎖簡報2', icon:'❓',
+      image:'assets/ch12/infographics/quiz1.png',
+      questions:[
+        { q:'0.45 × 10 = ?', type:'mc', options:['0.045','4.5','45','450'], correct:1 },
+        { q:'為什麼 4 × 100 = 400？用小數點移動來解釋。', type:'text' }
+      ]},
+    { id:'slides2', type:'slides', title:'簡報2：唐僧的縮小心法', desc:'×0.1 / ×0.01 / ×0.001', folder:'slides2', total:14, icon:'📘' },
+    { id:'quiz2', type:'infoquiz', title:'問答2：縮小心法小測', desc:'回答2題解鎖簡報3', icon:'❓',
+      image:'assets/ch12/infographics/quiz2.png',
+      questions:[
+        { q:'2.6 × 0.001 = ?', type:'mc', options:['260','0.26','0.026','0.0026'], correct:3 },
+        { q:'乘以 0.1 等於除以幾？為什麼？', type:'text' }
+      ]},
+    { id:'slides3', type:'slides', title:'簡報3：單位轉換大冒險', desc:'公里↔米 / 公斤↔克 / 升↔毫升', folder:'slides3', total:14, icon:'📙' },
+    { id:'quiz3', type:'infoquiz', title:'問答3：單位轉換小測', desc:'回答2題解鎖評估區', icon:'❓',
+      image:'assets/ch12/infographics/quiz3.png',
+      questions:[
+        { q:'0.72 公里 = ? 米', type:'mc', options:['7.2','72','720','7200'], correct:2 },
+        { q:'大單位轉小單位，用乘法還是除法？舉一個例子說明。', type:'text' }
+      ]}
+];
+
+let currentSlideStep = null;
+let currentSlideIndex = 0;
+let currentQuizStep = null;
+let slideQuizAnswered = {}; // tracks answered questions per deck: { slides1: {4:true, 8:true}, ... }
+
+// Slide questions — mix of MC (type:'mc' default) and fill-in (type:'fill')
+// For fill-in: use `accept` array with acceptable answer strings
+// Questions match the exercises shown on each slide page
+const SLIDE_QUESTIONS = {
+  slides1: [
+    // p07: 小徒弟的試煉 — 0.36×10 (MC) and 2.5×100 (fill)
+    { afterPage:7, type:'mc', q:'簡報練習：0.36 × 10 = ?',
+      options:['0.036','3.6','36','360'], correct:1,
+      hint:'×10：小數點向右移 1 位。0.36 → 3.6' },
+    { afterPage:7, type:'fill', q:'簡報練習：2.5 × 100 = ?',
+      accept:['250','250.0','250.00'],
+      hint:'×100：小數點向右移 2 位。2.5 → 250' },
+    // p08: 妖怪迷魂陣 — 0.05×1000 (fill) and 100×3.057 (MC)
+    { afterPage:8, type:'fill', q:'簡報練習：0.05 × 1000 = ?',
+      accept:['50','50.0','50.00'],
+      hint:'×1000：小數點向右移 3 位。0.050 → 50' },
+    { afterPage:8, type:'mc', q:'簡報練習：100 × 3.057 = ?',
+      options:['30.57','305.7','3057','30570'], correct:1,
+      hint:'×100：小數點向右移 2 位。3.057 → 305.7' },
+    // p13: 總結口訣確認題 (fill)
+    { afterPage:13, type:'fill', q:'口訣：乘以 1000，小數點要向 (左／右) 移 ___ 位？（只需填數字）',
+      accept:['3','三','3位'],
+      hint:'1000 有 3 個 0，所以小數點向右移 3 位' },
+  ],
+  slides2: [
+    // p05: 基礎試煉 — 4.8×0.1 (MC) and 56×0.1 (fill)
+    { afterPage:5, type:'mc', q:'簡報練習：4.8 × 0.1 = ?',
+      options:['48','0.48','0.048','4.8'], correct:1,
+      hint:'×0.1：小數點向左移 1 位。4.8 → 0.48' },
+    { afterPage:5, type:'fill', q:'簡報練習：56 × 0.1 = ?',
+      accept:['5.6','5.60'],
+      hint:'×0.1：小數點向左移 1 位。56. → 5.6' },
+    // p08: 降妖除魔 — 3000×0.01 (fill) and 50×0.001 (MC)
+    { afterPage:8, type:'fill', q:'簡報練習：3000 × 0.01 = ?',
+      accept:['30','30.0','30.00'],
+      hint:'×0.01：小數點向左移 2 位。3000. → 30' },
+    { afterPage:8, type:'mc', q:'簡報練習：50 × 0.001 = ?',
+      options:['5','0.5','0.05','0.005'], correct:2,
+      hint:'×0.001：小數點向左移 3 位。50. → 0.050 → 0.05' },
+    // p12: 八戒改錯題 (fill) — 測試方向感
+    { afterPage:12, type:'fill', q:'幫八戒改正：0.35 × 0.1 = ?（留意方向！）',
+      accept:['0.035','.035'],
+      hint:'乘小數數字要變細，小數點向左移 1 位：0.35 → 0.035' },
+  ],
+  slides3: [
+    // p06: 實戰演練 — 0.024公里=?米 (fill) and 3.07公斤=?克 (MC)
+    { afterPage:6, type:'fill', q:'簡報練習：0.024 公里 = ? 米',
+      accept:['24','24.0','24.00','24米','24 米'],
+      hint:'1 公里 = 1000 米，0.024 × 1000 = 24' },
+    { afterPage:6, type:'mc', q:'簡報練習：3.07 公斤 = ? 克',
+      options:['30.7','307','3070','30700'], correct:2,
+      hint:'1 公斤 = 1000 克，3.07 × 1000 = 3070' },
+    // p08: 破解地形陷阱 — 2.8米=?厘米 (MC) and 1.25升=?毫升 (fill)
+    { afterPage:8, type:'mc', q:'簡報練習：2.8 米 = ? 厘米',
+      options:['28','280','2800','0.028'], correct:1,
+      hint:'1 米 = 100 厘米，2.8 × 100 = 280' },
+    { afterPage:8, type:'fill', q:'簡報練習：1.25 升 = ? 毫升',
+      accept:['1250','1250.0','1250毫升','1250 毫升'],
+      hint:'1 升 = 1000 毫升，1.25 × 1000 = 1250' },
+    // p13: 綜合應用 (fill)
+    { afterPage:13, type:'fill', q:'應用題：一條3.5米長嘅繩子，等於幾多厘米？（只填數字）',
+      accept:['350','350.0','350.00'],
+      hint:'1 米 = 100 厘米，3.5 × 100 = 350' },
+  ]
+};
+
+// Pre-written lecture text for each slide page (~20-30 seconds of speech each)
+const SLIDE_EXPLANATIONS = {
+  slides1: {
+    1:'歡迎嚟到有趣嘅乘法，第一集「悟空嘅放大法術」！呢一課我哋會學三個修煉目標：第一，學識乘以10、100同1000嘅變大魔法；第二，學識乘以0.1、0.01同0.001嘅縮小心法；第三，係終極試煉，生活中嘅單位轉換。跟住西遊師徒，一齊解開數字變大嘅秘密！',
+    2:'呢一頁引入乘以10嘅概念。想像小數點係一個金丹，每次乘以10，個金丹就會向右跳一位。例如3.5乘以10等於35，小數點由3同5之間跳到5嘅右邊。記住，乘以越大嘅數，個結果就越大，小數點要向右移！',
+    3:'乘以10嘅法術規則：小數點向右移一位。如果位數唔夠，就要加零幫手填位。例如0.7乘以10等於7，小數點由0同7之間跳到7嘅右邊。當後面冇位時，7就啱啱好係答案。',
+    4:'注入更多法力：乘以100同乘以1000。乘以100有兩個零，小數點要向右移兩位；乘以1000有三個零，要向右移三位。遇到整數嘅時候，記住呼喚隱形嘅小數點，佢永遠收喺個位嘅右邊。例如4可以當成4點0，咁乘以10就變成40。',
+    5:'沙僧嘅挑水任務，基礎示範。0.45乘以10等於4.5，小數點向右移一位。3.8乘以100等於380，3.8向右移兩位：先變成38，再變成380，尾位用零填補。記住遇到空位，就請零嚟幫忙佔位！',
+    6:'悟空嘅筋斗雲示範。0.007乘以1000等於7，小數點向右移三位，之後0變成無效零，要掃乾淨。5.11乘以10等於51.1，小數點向右移一位。最前面嘅無效零記得要刪除，結果先至整齊。',
+    7:'小徒弟嘅試煉！請喺白板或紙上寫低答案同跳躍路徑。0.36乘以10等於幾多？有一個零，移一位。2.5乘以100等於幾多？有兩個零，移兩位，唔夠位嘅時候記得請零幫忙。諗清楚先答！',
+    8:'小心妖怪嘅迷魂陣！陷阱題來了。0.05乘以1000等於幾多？記住唔好只喺後面加三個零，要向右移小數點。100乘以3.057等於幾多？數字交換位置，乘出嚟嘅結果係一樣，呢個叫做乘法交換律。',
+    9:'牛魔王發出挑戰：求出未知嘅法力！Warm up題：0.003乘以1000等於3。逆向題：幾多乘以10等於8.5？結果係8.5表示向右移咗一位，所以原本係0.85，要將時間倒轉退返去！反逆思考好重要。',
+    10:'穿越火燄山！大數字同未知數嘅終極考驗。15乘以1000等於15000，三個零，小數點向右移三位。逆向題：幾多乘以100等於50？結果50除以100等於0.5，即係小數點向左移兩位，返返去搵原形。',
+    11:'八戒又犯錯啦！八戒將3.5乘以10寫做3.50，佢以為係喺後面加零，其實要將小數點向右移一位，答案係35。大家千祈唔好學八戒，要記住係移小數點，唔係加零！',
+    12:'八戒又犯錯啦第二集。八戒將0.8乘以100寫成0.800，又錯啦！正確做法係小數點向右移兩位，0.8變成80。大家要記住：乘大右移變更大，小數點跳幾多位就睇個乘數有幾多個零。',
+    13:'取得真經：放大法術秘訣總結！終極口訣係：乘嘅數有幾多個零，小數點就向右移幾多位。乘以10移一位，乘以100移兩位，乘以1000移三位。施法注意事項：空位要補零，前面多餘嘅零可以消滅，整數嘅小數點喺最右邊！',
+    14:'預告下一部分嘅故事。放大法術學完啦，下一集我哋會學習唐僧嘅縮小心法。準備好迎接新嘅挑戰，學習乘以0.1、乘以0.01同乘以0.001嘅秘密啦！'
+  },
+  slides2: {
+    1:'歡迎嚟到有趣嘅乘法，第二集「唐僧嘅縮小心法」！上集大師兄悟空傳授咗放大法術，今集我哋會學緊乘以0.1、0.01、0.001嘅縮小心法，數字會越嚟越細。準備好學習師父嘅絕學未？',
+    2:'乘以0.1嘅縮小心法：小數點向左移一位。例如5乘以0.1等於0.5，50乘以0.1等於5。遇到小數嘅時候，例如4.8乘以0.1就變成0.48。乘細數，結果會變細，小數點要向左移！',
+    3:'乘以0.01同乘以0.001嘅比較。乘以0.01：小數點向左移兩位；乘以0.001：小數點向左移三位。例如123.4乘以0.01等於1.234，小數點從3同4之間跳返去1同2之間。',
+    4:'第二層心法：位數加深同「虛空補零」。123.4乘以0.01等於1.234，向左移兩位。123.4乘以0.001等於0.1234。唐僧特別叮嚀：如果向左移動時前面位數唔夠，就要用0嚟填補！心法有云，空即是色，冇數字嘅地方就用0來填！',
+    5:'徒弟們嘅基礎試煉上集。試煉一：4.8乘以0.1等於0.48，秘訣係乘0.1向左移一位。試煉二：56乘以0.1等於5.6，整數嘅小數點藏喺最後面，即係56點，向左移一位變成5.6。',
+    6:'徒弟們嘅基礎試煉下集。續續練習更多例題，強化縮小心法。記住口訣：乘小左移變更小，小數點跳幾位就睇乘數小數點後面幾多個零。慢慢嚟，每一步都要清晰！',
+    7:'降妖除魔實戰演練上集！遇到妖怪，快用縮小心法擊破佢哋嘅數字護盾。妖怪護盾一：0.05乘以0.01等於0.0005，乘0.01，小數點向左移兩位。妖怪護盾二：0.1乘以0.35等於0.035，可以先交換位置諗成0.35乘以0.1會易啲算！',
+    8:'降妖除魔實戰演練下集！當遇到巨大嘅整數妖怪，縮小心法特別好用。妖怪護盾三：3000乘以0.01等於30，從3000點開始向左移兩位，多餘嘅零可以消除。妖怪護盾四：50乘以0.001等於0.05，從50點開始向左移三位，前面記得補零。',
+    9:'沙僧嘅進階挑戰上集。面對更複雜嘅小數乘法題，要小心思考方向同位數。每一題都要諗清楚係放大定縮小，小數點向左定向右移。熟能生巧，大家加油！',
+    10:'沙僧嘅進階挑戰下集：法術混合同終極反推！迷魂陣三：0.5乘以10再乘以0.01等於0.05，先向右移一位，再向左移兩位，總共向左移一位。迷魂陣四：反推題，幾多乘以0.001等於0.008？答案係8，將小數點推返右邊三位。',
+    11:'八戒又犯錯啦上集。八戒最怕方向感，成日將左右搞亂。記住：乘大數向右移，乘小數向左移。千祈唔好搞錯方向，否則會被妖怪笑！',
+    12:'八戒又犯錯啦下集。八戒將0.1乘以0.35寫成3.5，方向完全搞反啦！正確答案係0.035，要向左移一位。師父嘅嚴格診斷：乘小數數字必須變小，要向左移！八戒嘅罰寫筆記：乘小數，向左移！',
+    13:'取經秘笈：乘法移位總心法！記住呢句口訣：乘大右移變更大，乘小左移變更小。悟空嘅放大法術係乘以10、100、1000，小數點向右移1、2、3位。唐僧嘅縮小心法係乘以0.1、0.01、0.001，小數點向左移1、2、3位。',
+    14:'預告下一集：取經路上嘅單位轉換大冒險！學識咗放大同縮小之後，最後一集我哋會學將呢啲技巧應用喺生活中嘅單位轉換，例如公里同米、公斤同克。準備好挑戰最終章未？'
+  },
+  slides3: {
+    1:'歡迎嚟到終極一集：取經路上嘅單位轉換大冒險！掌握咗放大法術同縮小心法之後，今集我哋會用呢啲魔法嚟解決生活中嘅單位轉換問題。呢個係掌握小數點空間魔法嘅最終章！',
+    2:'單位轉換嘅基本原理：大單位變細單位用放大法術，細單位變大單位用縮小心法。例如1米等於100厘米，1公里等於1000米，1公斤等於1000克，1升等於1000毫升。呢啲關係要記熟！',
+    3:'悟空示範：用放大法術做單位轉換。1.05米等於幾多厘米？算式係1.05乘以100，等於105厘米。0.72公里等於幾多米？算式係0.72乘以1000，等於720米。記住從大變細，數字要增加，用乘法！',
+    4:'悟空示範更多例子。由大單位轉細單位，即係用乘以10、100、1000，小數點向右移。例如將公里轉做米，乘以1000；將米轉做厘米，乘以100；將公斤轉做克，乘以1000。識咗呢啲就識做大部分題目！',
+    5:'唐僧示範：用縮小心法做單位轉換。將細單位轉做大單位，例如將米轉做公里，要除以1000即係乘以0.001；將克轉做公斤都係乘以0.001。呢類題目數字會縮細，小數點向左移！',
+    6:'實戰演練上集：擊退數字小妖。題目三：0.024公里等於幾多米？算式係0.024乘以1000，等於24米。題目四：3.07公斤等於幾多克？算式係3.07乘以1000，等於3070克。法術詠唱提示：乘以1000，金丹向右移3位！',
+    7:'實戰演練下集。繼續練習更多類型嘅單位轉換題。每題都要分析：係大變細定細變大？然後選擇乘以邊個數字，最後諗清楚小數點要向邊個方向移。一步一步，就唔會出錯！',
+    8:'取經挑戰：破解地形陷阱下集。任務三：沙僧搵到一條2.8米嘅堅韌藤條準備攀岩，換成厘米係幾多？答案係2.8乘以100等於280厘米。任務四：唐僧得1.25升嘅甘泉水恢復體力，係幾多毫升？答案係1.25乘以1000等於1250毫升。',
+    9:'迎戰守關大將：四大謎題上集。謎題一長度題：唐僧今天徒步走咗0.85公里，即係幾多米？正解0.85乘以1000等於850米。謎題二重量題：八戒抱緊一顆重2.3公斤嘅西瓜，即係幾多克？正解2.3乘以1000等於2300克。',
+    10:'迎戰守關大將：四大謎題下集。謎題三容量題：沙僧嘅水壺裝滿咗1.5升嘅水，即係幾多毫升？正解1.5乘以1000等於1500毫升。謎題四長度題：悟空揮舞長3.6米嘅金箍棒，即係幾多厘米？正解3.6乘以100等於360厘米。',
+    11:'常見錯誤分析：唔好搞亂方向。好多同學做單位轉換時會唔肯定係乘定除。記住：大變細就乘，細變大就除。例如公里係大單位，米係細單位，所以公里變米要乘以1000；相反米變公里要除以1000。',
+    12:'常見錯誤分析：記錯關係。有啲同學會記錯單位之間嘅倍數關係。最好記住呢啲常用嘅：1米等於100厘米，1公里等於1000米，1公斤等於1000克，1升等於1000毫升。多練習自然會記得熟！',
+    13:'取得真經：單位轉換速記表。悟空嘅放大法術：大單位變細單位，用整數乘法，即係乘以10、100、1000，小數點金丹向右移。唐僧嘅縮小心法：細單位變大單位，用小數乘法，即係乘以0.1、0.01、0.001，小數點金丹向左移。總結口訣：幾多個零或者小數點後有幾多位，金丹就跳幾多步！',
+    14:'恭喜完成所有三集嘅修煉！你已經掌握咗有趣嘅乘法同單位轉換嘅精髓。接落嚟可以挑戰評估區同遊戲區，測試自己嘅功力。繼續加油，成為小數點嘅大魔法師！'
+  }
+};
+
+// ===== TTS Lecture System =====
+let currentUtterance = null;
+let currentLectureSlide = null;
+
+// Current chapter theme — update when multi-chapter support is added
+const CURRENT_CHAPTER_THEME = '西遊記';
+
+// Voice config per cultural theme
+// gender: 'male' or 'female' — selects Danny or Tracy (or zh-TW male/female fallback)
+// pitch: 0.5-2.0 (1.0 = normal)
+// rate: 0.5-2.0 (1.0 = normal)
+// intro: short greeting read before the lecture to give character personality
+const THEME_VOICES = {
+    '西遊記':       { gender:'male',   pitch:0.95, rate:1.05, character:'孫悟空', intro:'俺老孫嚟啦！' },
+    '哆啦A夢':     { gender:'female', pitch:1.30, rate:1.10, character:'哆啦A夢', intro:'大雄！' },
+    '三國演義':    { gender:'male',   pitch:0.85, rate:0.95, character:'諸葛軍師', intro:'諸君聽令！' },
+    '名偵探柯南':  { gender:'female', pitch:1.15, rate:1.05, character:'柯南', intro:'真相只有一個！' },
+    '海賊王':      { gender:'male',   pitch:1.10, rate:1.10, character:'魯夫', intro:'俺係魯夫！' },
+    '鬼滅之刃':    { gender:'male',   pitch:1.05, rate:1.00, character:'炭治郎', intro:'全集中呼吸！' },
+    '寶可夢':      { gender:'female', pitch:1.20, rate:1.15, character:'小智', intro:'精靈球，去！' },
+    '數碼暴龍':    { gender:'male',   pitch:1.00, rate:1.05, character:'太一', intro:'進化啦！' },
+    '龍珠':        { gender:'male',   pitch:1.05, rate:1.05, character:'悟空', intro:'龜波氣功！' },
+    '間諜家家酒':  { gender:'male',   pitch:0.90, rate:0.95, character:'洛伊德', intro:'任務開始。' }
+};
+
+function getChineseVoice(preferredGender) {
+    const voices = speechSynthesis.getVoices();
+    if (!voices.length) return null;
+
+    // Priority: zh-HK matching gender → zh-HK any → zh-TW matching gender → zh-TW any → any zh
+    const hkVoices = voices.filter(v => v.lang === 'zh-HK' || v.lang.startsWith('yue'));
+    const twVoices = voices.filter(v => v.lang.startsWith('zh-TW') || v.lang.startsWith('zh-Hant'));
+
+    // Name-based gender detection (works for Microsoft voices)
+    const isMale = (v) => /Danny|Zhiwei|Kangkang|Yunyang|Yunxi|Yunjian/i.test(v.name);
+    const isFemale = (v) => /Tracy|Hanhan|Yating|Huihui|Xiaoxiao|Xiaoyi/i.test(v.name);
+
+    if (preferredGender === 'male') {
+        return hkVoices.find(isMale) || twVoices.find(isMale) || hkVoices[0] || twVoices[0] || voices.find(v => v.lang.startsWith('zh'));
+    }
+    if (preferredGender === 'female') {
+        return hkVoices.find(isFemale) || twVoices.find(isFemale) || hkVoices[0] || twVoices[0] || voices.find(v => v.lang.startsWith('zh'));
+    }
+    return hkVoices[0] || twVoices[0] || voices.find(v => v.lang.startsWith('zh')) || voices[0];
+}
+
+function getCurrentThemeVoiceConfig() {
+    return THEME_VOICES[CURRENT_CHAPTER_THEME] || THEME_VOICES['西遊記'];
+}
+
+function playSlideLecture() {
+    if (currentSlideStep === null || currentSlideStep === undefined) return;
+    const step = PROGRESSION_STEPS[currentSlideStep];
+    const pageNum = currentSlideIndex + 1;
+    const text = SLIDE_EXPLANATIONS[step.folder]?.[pageNum];
+
+    if (!text) {
+        document.getElementById('lectureStatus').textContent = '⚠️ 呢一頁冇講解';
+        return;
+    }
+
+    stopSlideLecture();
+
+    if (!window.speechSynthesis) {
+        document.getElementById('lectureStatus').textContent = '⚠️ 你嘅瀏覽器唔支援語音';
+        return;
+    }
+
+    const cfg = getCurrentThemeVoiceConfig();
+    const voice = getChineseVoice(cfg.gender);
+
+    // Only add intro for page 1 (opening) to keep it fresh
+    const fullText = (pageNum === 1 && cfg.intro) ? (cfg.intro + ' ' + text) : text;
+
+    const utterance = new SpeechSynthesisUtterance(fullText);
+    if (voice) utterance.voice = voice;
+    utterance.lang = voice?.lang || 'zh-HK';
+    utterance.rate = cfg.rate;
+    utterance.pitch = cfg.pitch;
+    utterance.volume = 0.95;
+
+    utterance.onstart = () => {
+        document.getElementById('lectureBtn').style.display = 'none';
+        document.getElementById('stopLectureBtn').style.display = '';
+        document.getElementById('lectureStatus').innerHTML = `🔊 ${cfg.character}講解中...<span style="display:inline-block;margin-left:8px;animation:pulse 1s infinite;">🎙️</span>`;
+    };
+    utterance.onend = () => {
+        document.getElementById('lectureBtn').style.display = '';
+        document.getElementById('stopLectureBtn').style.display = 'none';
+        document.getElementById('lectureStatus').textContent = '✅ 講解完成';
+        setTimeout(() => { if(document.getElementById('lectureStatus').textContent==='✅ 講解完成') document.getElementById('lectureStatus').textContent=''; }, 2000);
+        currentUtterance = null;
+    };
+    utterance.onerror = () => {
+        document.getElementById('lectureBtn').style.display = '';
+        document.getElementById('stopLectureBtn').style.display = 'none';
+        document.getElementById('lectureStatus').textContent = '⚠️ 播放失敗';
+        currentUtterance = null;
+    };
+
+    currentUtterance = utterance;
+    currentLectureSlide = step.folder + '_' + pageNum;
+    speechSynthesis.speak(utterance);
+}
+
+function stopSlideLecture() {
+    if (window.speechSynthesis) {
+        speechSynthesis.cancel();
+    }
+    currentUtterance = null;
+    const btn = document.getElementById('lectureBtn');
+    const stopBtn = document.getElementById('stopLectureBtn');
+    if (btn) btn.style.display = '';
+    if (stopBtn) stopBtn.style.display = 'none';
+    const status = document.getElementById('lectureStatus');
+    if (status) status.textContent = '';
+}
+
+// Load voices when they become available
+if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = () => { /* voices ready */ };
+}
+
+function getProgressKey() {
+    if (!currentUser) return 'progress_ch12_guest';
+    return `progress_ch12_${currentUser.class}_${currentUser.number}`;
+}
+function getProgress() { return JSON.parse(localStorage.getItem(getProgressKey()) || '{}'); }
+function setStepComplete(stepId) {
+    const p = getProgress();
+    p[stepId] = { done: true, date: new Date().toISOString() };
+    localStorage.setItem(getProgressKey(), JSON.stringify(p));
+}
+function isStepDone(stepId) { return getProgress()[stepId]?.done === true; }
+function isStepUnlocked(idx) {
+    if (idx === 0) return true;
+    return isStepDone(PROGRESSION_STEPS[idx - 1].id);
+}
+
+function renderProgression() {
+    const container = document.getElementById('progressionSteps');
+    if (!container) return;
+    let html = '';
+    const scoreKey = currentUser ? `scores_${currentUser.class}_${currentUser.number}` : null;
+    const userScores = scoreKey ? JSON.parse(localStorage.getItem(scoreKey) || '{}') : {};
+    PROGRESSION_STEPS.forEach((step, i) => {
+        const done = isStepDone(step.id);
+        const unlocked = isStepUnlocked(i);
+        const cls = done ? 'completed' : (unlocked ? 'current' : 'locked');
+        // Coin info for slide steps
+        let coinInfo = '';
+        if (step.type === 'slides' && SLIDE_QUESTIONS[step.folder]) {
+            const sc = userScores[step.folder];
+            coinInfo = sc && sc.coins ? ` <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"> ${sc.coins}/2` : ' · 最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">';
+        }
+        const badge = done ? `<span class="progression-step-badge done">✓ 已完成${coinInfo}</span>`
+            : unlocked ? `<span class="progression-step-badge active">進行中${coinInfo}</span>`
+            : '<span class="progression-step-badge lock">🔒 未解鎖</span>';
+        const onclick = unlocked && !done ? (step.type === 'slides' ? `openSlideViewer(${i})` : `openInfographicQuiz(${i})`)
+            : done ? (step.type === 'slides' ? `openSlideViewer(${i})` : `openInfographicQuiz(${i})`) : '';
+        html += `<div class="progression-step ${cls}" ${onclick ? `onclick="${onclick}"` : ''}>`
+            + `<div class="progression-step-icon">${step.icon}</div>`
+            + `<div class="progression-step-info"><div class="progression-step-title">${step.title}</div><div class="progression-step-desc">${step.desc}</div></div>`
+            + badge + `</div>`;
+        if (i < PROGRESSION_STEPS.length - 1) {
+            html += `<div class="progression-connector${done ? ' done' : ''}"></div>`;
+        }
+    });
+    // Final unlock indicator
+    const allDone = PROGRESSION_STEPS.every(s => isStepDone(s.id));
+    html += `<div class="progression-connector${allDone ? ' done' : ''}"></div>`;
+    html += `<div class="progression-step ${allDone ? 'completed' : 'locked'}"><div class="progression-step-icon">📝</div><div class="progression-step-info"><div class="progression-step-title">評估區已${allDone ? '解鎖' : '鎖定'}</div><div class="progression-step-desc">完成所有簡報及問答後可進入測驗區</div></div>${allDone ? '<span class="progression-step-badge done">✓</span>' : '<span class="progression-step-badge lock">🔒</span>'}</div>`;
+    container.innerHTML = html;
+
+    // Show/hide views
+    document.getElementById('studyProgressionView').style.display = '';
+    document.getElementById('slideViewer').style.display = 'none';
+    document.getElementById('infographicQuiz').style.display = 'none';
+}
+
+// --- Slide Viewer ---
+function openSlideViewer(stepIdx) {
+    const step = PROGRESSION_STEPS[stepIdx];
+    if (step.type !== 'slides') return;
+    currentSlideStep = stepIdx;
+    currentSlideIndex = 0;
+    document.getElementById('slideViewerTitle').textContent = step.title;
+    document.getElementById('studyProgressionView').style.display = 'none';
+    document.getElementById('slideViewer').style.display = '';
+    // Update lecture button character name based on current theme
+    const cfg = getCurrentThemeVoiceConfig();
+    const charSpan = document.getElementById('lectureBtnCharacter');
+    if (charSpan) charSpan.textContent = cfg.character;
+    // Build dots
+    let dots = '';
+    for (let i = 0; i < step.total; i++) dots += `<div class="slide-dot${i===0?' active':''}" onclick="goToSlide(${i})"></div>`;
+    document.getElementById('slideDots').innerHTML = dots;
+    updateSlideView();
+}
+function updateSlideView() {
+    const step = PROGRESSION_STEPS[currentSlideStep];
+    const idx = currentSlideIndex;
+    const pad = String(idx + 1).padStart(2, '0');
+    document.getElementById('slideImage').src = `assets/ch12/${step.folder}/p${pad}.jpg`;
+    document.getElementById('slideCounter').textContent = `${idx + 1} / ${step.total}`;
+    // Dots
+    document.querySelectorAll('#slideDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    // Show complete button on last slide
+    document.getElementById('slideCompleteBtn').style.display = (idx === step.total - 1) ? '' : 'none';
+}
+function prevSlide() {
+    if (currentSlideIndex > 0) {
+        stopSlideLecture();
+        document.getElementById('slideQuizOverlay').style.display = 'none';
+        flipSlide(document.getElementById('slideImage'), 'back');
+        currentSlideIndex--;
+        setTimeout(() => updateSlideView(), 250);
+    }
+}
+function getUnansweredQ(folder, pageNum) {
+    // Find ALL questions for this page, return first unanswered
+    const qs = SLIDE_QUESTIONS[folder];
+    if (!qs) return null;
+    const pageQs = qs.filter(x => x.afterPage === pageNum);
+    const answered = slideQuizAnswered[folder] || {};
+    for (let i = 0; i < pageQs.length; i++) {
+        const key = pageNum + '_' + i;
+        if (!answered[key]) return { q: pageQs[i], idx: i, key };
+    }
+    return null;
+}
+
+function nextSlide() {
+    const step = PROGRESSION_STEPS[currentSlideStep];
+    if (currentSlideIndex >= step.total - 1) return;
+    // Check if there's an unanswered question after this page
+    const pageNum = currentSlideIndex + 1; // 1-based
+    const uq = getUnansweredQ(step.folder, pageNum);
+    if (uq) {
+        showSlideQuiz(uq.q, step.folder, uq.key, pageNum);
+        return;
+    }
+    stopSlideLecture();
+    document.getElementById('slideQuizOverlay').style.display = 'none';
+    flipSlide(document.getElementById('slideImage'), 'forward');
+    currentSlideIndex++;
+    setTimeout(() => updateSlideView(), 250);
+}
+function goToSlide(i) {
+    const step = PROGRESSION_STEPS[currentSlideStep];
+    if (i > currentSlideIndex) {
+        for (let p = currentSlideIndex + 1; p <= i; p++) {
+            const uq = getUnansweredQ(step.folder, p);
+            if (uq) {
+                // Must go to that page first then show quiz
+                currentSlideIndex = p - 1;
+                updateSlideView();
+                showSlideQuiz(uq.q, step.folder, uq.key, p);
+                return;
+            }
+        }
+    }
+    document.getElementById('slideQuizOverlay').style.display = 'none';
+    currentSlideIndex = i;
+    updateSlideView();
+}
+
+function showSlideQuiz(q, folder, ansKey, pageNum) {
+    // Show ALL questions for this page at once (supports both MC and fill-in)
+    const qs = SLIDE_QUESTIONS[folder];
+    const pageQs = qs.filter(x => x.afterPage === pageNum);
+    const overlay = document.getElementById('slideQuizOverlay');
+    const answered = slideQuizAnswered[folder] || {};
+
+    let html = '';
+    pageQs.forEach((pq, idx) => {
+        const key = pageNum + '_' + idx;
+        const done = answered[key];
+        const qType = pq.type || 'mc';
+        const typeBadge = qType === 'fill' ? '<span style="background:#7B1FA2;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">填充題</span>' : '<span style="background:#1565C0;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">選擇題</span>';
+        html += `<div id="sqBlock${idx}" style="margin-bottom:16px;padding:14px;border-radius:12px;background:${done?'#E8F5E9':'white'};border:2px solid ${done?'#4CAF50':'#FFB74D'};">`;
+        html += `<div style="font-weight:700;color:${done?'#2E7D32':'#333'};margin-bottom:10px;">${done?'✅ ':''}第${idx+1}題${typeBadge}：${pq.q}</div>`;
+        if (done) {
+            html += `<div style="color:#2E7D32;font-weight:600;">答啱！</div>`;
+        } else if (qType === 'fill') {
+            html += `<div class="sq-fill" data-qidx="${idx}" data-key="${key}" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">`;
+            html += `<input type="text" class="sq-fill-input" placeholder="輸入答案..." style="flex:1;min-width:180px;padding:10px 14px;border:2px solid #FFB74D;border-radius:8px;font-size:1rem;color:#333;outline:none;">`;
+            html += `<button class="sq-fill-btn" style="padding:10px 20px;border:2px solid #FF8F00;border-radius:8px;background:linear-gradient(135deg,#FFB74D,#FF8F00);color:white;font-size:0.95rem;font-weight:700;cursor:pointer;">提交</button>`;
+            html += `</div><div id="sqHint${idx}" style="margin-top:6px;"></div>`;
+        } else {
+            html += `<div class="sq-opts" data-qidx="${idx}" data-key="${key}" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">`;
+            ['A','B','C','D'].forEach((l, i) => {
+                html += `<button class="sq-opt-btn" data-ci="${i}" style="padding:10px;border:2px solid #FFB74D;border-radius:8px;background:white;font-size:0.95rem;font-weight:600;cursor:pointer;color:#333;">${l}. ${pq.options[i]}</button>`;
+            });
+            html += `</div><div id="sqHint${idx}" style="margin-top:6px;"></div>`;
+        }
+        html += `</div>`;
+    });
+
+    document.getElementById('slideQuizQuestion').textContent = '';
+    document.getElementById('slideQuizOptions').innerHTML = html;
+    document.getElementById('slideQuizHint').innerHTML = '';
+    overlay.style.display = '';
+    overlay.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+    // Attach handlers
+    pageQs.forEach((pq, idx) => {
+        const key = pageNum + '_' + idx;
+        if (answered[key]) return;
+        const qType = pq.type || 'mc';
+        if (qType === 'fill') {
+            const wrap = document.querySelector(`.sq-fill[data-qidx="${idx}"]`);
+            if (!wrap) return;
+            const input = wrap.querySelector('.sq-fill-input');
+            const btn = wrap.querySelector('.sq-fill-btn');
+            const submit = () => checkSlideQuizFill(input.value.trim(), pq, folder, key, idx, pageNum, input, btn);
+            btn.onclick = submit;
+            input.onkeydown = (e) => { if (e.key === 'Enter') submit(); };
+        } else {
+            const grid = document.querySelector(`.sq-opts[data-qidx="${idx}"]`);
+            if (!grid) return;
+            grid.querySelectorAll('.sq-opt-btn').forEach(btn => {
+                btn.onclick = () => checkSlideQuizMulti(parseInt(btn.dataset.ci), pq, folder, key, idx, pageNum, btn, grid);
+            });
+        }
+    });
+}
+
+function markSlideQuizCorrect(folder, ansKey, qIdx, pageNum) {
+    if (!slideQuizAnswered[folder]) slideQuizAnswered[folder] = {};
+    slideQuizAnswered[folder][ansKey] = true;
+    document.getElementById('sqHint'+qIdx).innerHTML = '<div style="color:#2E7D32;font-weight:600;">✅ 答啱！</div>';
+    const block = document.getElementById('sqBlock'+qIdx);
+    if (block) { block.style.background = '#E8F5E9'; block.style.borderColor = '#4CAF50'; }
+    // Auto-advance if all questions for this page answered
+    setTimeout(() => {
+        const uq = getUnansweredQ(folder, pageNum);
+        if (!uq) {
+            setTimeout(() => {
+                document.getElementById('slideQuizOverlay').style.display = 'none';
+                flipSlide(document.getElementById('slideImage'), 'forward');
+                currentSlideIndex++;
+                setTimeout(() => {
+                    updateSlideView();
+                    checkSlideQuizCompletion(folder);
+                }, 250);
+            }, 600);
+        }
+    }, 300);
+}
+
+function checkSlideQuizMulti(selected, q, folder, ansKey, qIdx, pageNum, btnEl, optGrid) {
+    if (selected === q.correct) {
+        btnEl.style.borderColor = '#4CAF50';
+        btnEl.style.background = '#E8F5E9';
+        btnEl.style.color = '#2E7D32';
+        optGrid.querySelectorAll('button').forEach(b => b.disabled = true);
+        markSlideQuizCorrect(folder, ansKey, qIdx, pageNum);
+    } else {
+        btnEl.style.borderColor = '#F44336';
+        btnEl.style.background = '#FFEBEE';
+        btnEl.style.color = '#C62828';
+        btnEl.disabled = true;
+        document.getElementById('sqHint'+qIdx).innerHTML = `<div style="color:#C62828;">❌ 再試！<span style="color:#666;font-size:0.85rem;"> 💡 ${q.hint}</span></div>`;
+    }
+}
+
+function checkSlideQuizFill(val, q, folder, ansKey, qIdx, pageNum, inputEl, btnEl) {
+    const accept = q.accept || [];
+    const normalize = (s) => String(s).trim().replace(/\s+/g,'').replace(/，/g,',');
+    const userAns = normalize(val);
+    const isCorrect = accept.some(a => normalize(a) === userAns);
+    if (isCorrect) {
+        inputEl.style.borderColor = '#4CAF50';
+        inputEl.style.background = '#E8F5E9';
+        inputEl.style.color = '#2E7D32';
+        inputEl.disabled = true;
+        btnEl.disabled = true;
+        btnEl.style.opacity = '0.6';
+        markSlideQuizCorrect(folder, ansKey, qIdx, pageNum);
+    } else {
+        inputEl.style.borderColor = '#F44336';
+        inputEl.style.animation = 'shake 0.4s';
+        setTimeout(() => inputEl.style.animation = '', 400);
+        document.getElementById('sqHint'+qIdx).innerHTML = `<div style="color:#C62828;">❌ 再試！<span style="color:#666;font-size:0.85rem;"> 💡 ${q.hint}</span></div>`;
+    }
+}
+
+function checkSlideQuizCompletion(folder) {
+    const qs = SLIDE_QUESTIONS[folder];
+    if (!qs) return;
+    const answered = slideQuizAnswered[folder] || {};
+    // Check all questions answered using page_idx keys
+    let allDone = true;
+    const pageGroups = {};
+    qs.forEach((q, i) => {
+        if (!pageGroups[q.afterPage]) pageGroups[q.afterPage] = 0;
+        const key = q.afterPage + '_' + pageGroups[q.afterPage];
+        pageGroups[q.afterPage]++;
+        if (!answered[key]) allDone = false;
+    });
+    if (allDone && currentUser) {
+        const key = `scores_${currentUser.class}_${currentUser.number}`;
+        const scores = JSON.parse(localStorage.getItem(key) || '{}');
+        if (!scores[folder] || !scores[folder].coins) {
+            scores[folder] = { coins: 2, total: qs.length, correct: qs.length, date: new Date().toLocaleDateString('zh-TW') };
+            localStorage.setItem(key, JSON.stringify(scores));
+            updateCoinDisplay();
+        }
+    }
+}
+
+function completeCurrentSlides() {
+    const step = PROGRESSION_STEPS[currentSlideStep];
+    // Check all slide questions answered (using pageNum_idx key format)
+    const qs = SLIDE_QUESTIONS[step.folder];
+    if (qs) {
+        const answered = slideQuizAnswered[step.folder] || {};
+        const pageGroups = {};
+        let allDone = true;
+        qs.forEach(q => {
+            if (!pageGroups[q.afterPage]) pageGroups[q.afterPage] = 0;
+            const key = q.afterPage + '_' + pageGroups[q.afterPage];
+            pageGroups[q.afterPage]++;
+            if (!answered[key]) allDone = false;
+        });
+        if (!allDone) {
+            alert('請先回答所有簡報內的問題才能完成！');
+            return;
+        }
+    }
+    setStepComplete(step.id);
+    checkSlideQuizCompletion(step.folder);
+    exitSlideViewer();
+}
+function exitSlideViewer() {
+    stopSlideLecture();
+    document.getElementById('slideViewer').style.display = 'none';
+    document.getElementById('slideQuizOverlay').style.display = 'none';
+    renderProgression();
+}
+
+// --- Infographic Quiz ---
+function openInfographicQuiz(stepIdx) {
+    const step = PROGRESSION_STEPS[stepIdx];
+    if (step.type !== 'infoquiz') return;
+    currentQuizStep = stepIdx;
+    document.getElementById('iqTitle').textContent = step.title;
+    document.getElementById('iqImage').src = step.image;
+    document.getElementById('studyProgressionView').style.display = 'none';
+    document.getElementById('infographicQuiz').style.display = '';
+    // Render questions
+    let html = '';
+    step.questions.forEach((q, qi) => {
+        html += `<div class="iq-question"><div class="iq-question-text">第${qi+1}題：${q.q}</div>`;
+        if (q.type === 'mc') {
+            const letters = ['A','B','C','D'];
+            html += `<div class="iq-mc-options" id="iqMC${qi}">`;
+            q.options.forEach((opt, oi) => {
+                html += `<div class="iq-mc-option" onclick="selectIQOption(${qi},${oi})"><span class="opt-letter">${letters[oi]}</span><span>${opt}</span></div>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `<textarea class="iq-textarea" id="iqText${qi}" placeholder="請輸入你的答案..."></textarea>`;
+        }
+        html += `</div>`;
+    });
+    document.getElementById('iqQuestions').innerHTML = html;
+}
+function selectIQOption(qi, oi) {
+    const opts = document.querySelectorAll(`#iqMC${qi} .iq-mc-option`);
+    opts.forEach((o, i) => o.classList.toggle('selected', i === oi));
+}
+function submitInfographicQuiz() {
+    const step = PROGRESSION_STEPS[currentQuizStep];
+    // Validate: each question must have an answer
+    let allAnswered = true;
+    step.questions.forEach((q, qi) => {
+        if (q.type === 'mc') {
+            const selected = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
+            if (!selected) allAnswered = false;
+        } else {
+            const val = document.getElementById(`iqText${qi}`).value.trim();
+            if (!val) allAnswered = false;
+        }
+    });
+    if (!allAnswered) { alert('請回答所有問題後再提交！'); return; }
+    // Save answers to localStorage for teacher review
+    if (currentUser) {
+        const answers = [];
+        step.questions.forEach((q, qi) => {
+            if (q.type === 'mc') {
+                const sel = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
+                answers.push({ q: q.q, type: 'mc', answer: sel ? sel.textContent.trim() : '' });
+            } else {
+                answers.push({ q: q.q, type: 'text', answer: document.getElementById(`iqText${qi}`).value.trim() });
+            }
+        });
+        const key = `scores_${currentUser.class}_${currentUser.number}`;
+        const scores = JSON.parse(localStorage.getItem(key) || '{}');
+        scores[`iq_${step.id}`] = { answers, coins: 1, date: new Date().toLocaleDateString('zh-TW') };
+        localStorage.setItem(key, JSON.stringify(scores));
+        updateCoinDisplay();
+    }
+    setStepComplete(step.id);
+    exitInfographicQuiz();
+}
+function exitInfographicQuiz() {
+    document.getElementById('infographicQuiz').style.display = 'none';
+    renderProgression();
+}
+
+// --- Assessment Answer Data ---
+const ASSESS_DATA = {
+    1: [
+        { correct: 1, hint: '乘以10，小數點向右移1位：0.45→4.5' },
+        { correct: 2, hint: '乘以100，小數點向右移2位：3.8→380' },
+        { correct: 1, hint: '乘以0.1＝÷10，小數點向左移1位：56→5.6' },
+        { correct: 3, hint: '乘以0.01，小數點向左移2位：2.6→0.026，注意要補0' },
+        { correct: 1, hint: '1米＝100厘米，1.05×100＝105' },
+        { correct: 1, hint: '乘以1000，小數點向右移3位：0.007→7' },
+        { correct: 2, hint: '1公斤＝1000克，4.5×1000＝4500' }
+    ],
+    2: [
+        { correct: 2, hint: '逆向思考：8.5÷10＝0.85，所以答案是C' },
+        { correct: 1, hint: '0.05只有兩位小數，×1000移3位＝50，不是500！答案是「錯」', labels:['A) 對，答案是500','B) 錯，答案是50','C) 錯，答案是5','D) 無法判斷'] },
+        { correct: 1, hint: '分步算：0.5×10＝5，再5×0.01＝0.05' },
+        { correct: 2, hint: '0.72公里＝0.72×1000＝720米，一樣長！' },
+        { correct: 2, hint: '逆向：3.5÷0.1＝35' },
+        { correct: 2, hint: '5×0.85＝4.25米，4.25×100＝425厘米' },
+        { correct: 2, hint: '0.003×1000＝3，但3×0.001＝0.003，結果不同！' }
+    ],
+    3: [
+        { type:'fill', accept:['850'], hint: '0.85×1000＝850米', label:'0.85公里＝?米' },
+        { type:'fill', accept:['0.5','5'], hint: '50÷100＝0.5，0.05÷0.01＝5', label:'___×100＝50，求未知數' },
+        { type:'fill', accept:['750'], hint: '1.25−0.5＝0.75升，0.75×1000＝750', label:'剩餘多少毫升？' },
+        { type:'fill', accept:['5','500'], hint: '0.005×1000＝5米，5×100＝500厘米', label:'0.005公里＝?米' },
+        { type:'fill', accept:['一樣','相同','一样'], hint: '3.5公斤＝3500克＝0.035公噸，都一樣大！', label:'三個重量比較大小（一樣/不同）' },
+        { type:'fill', accept:['一樣','相同','0'], hint: '7.2公斤＝7200克，一樣重！', label:'誰較重？相差多少克？' },
+        { type:'fill', accept:['100'], hint: '0.006×100＝0.6，規律：每次×10', label:'0.006×___＝0.6' }
+    ]
+};
+
+// --- Assessment Slide Viewer ---
+let currentAssessNum = null;
+let currentAssessIndex = 0;
+let assessScore = {};
+const ASSESS_TOTAL = 14;
+
+function getAssessCoins(correct, total) {
+    if (correct >= total) return 3;
+    if (correct >= total - 2) return 2;
+    return correct > 0 ? 1 : 0;
+}
+
+function openAssessViewer(num) {
+    // Check if already completed with max coins
+    if (currentUser) {
+        const key = `scores_${currentUser.class}_${currentUser.number}`;
+        const scores = JSON.parse(localStorage.getItem(key) || '{}');
+        const aKey = `assess${num}`;
+        if (scores[aKey] && scores[aKey].correct === scores[aKey].total) {
+            alert('🎉 你已全部答對此評估，獲得 ' + scores[aKey].coins + ' 金幣！不需重做。');
+            return;
+        }
+    }
+    currentAssessNum = num;
+    currentAssessIndex = 0;
+    assessScore[num] = assessScore[num] || { correct: 0, wrongCount: 0, answered: {} };
+    const titles = { 1: '評估1：基礎級', 2: '評估2：中階級', 3: '評估3：挑戰級' };
+    document.getElementById('assessTitle').textContent = titles[num];
+    document.getElementById('quizList').style.display = 'none';
+    document.getElementById('assessViewer').style.display = '';
+    let dots = '';
+    for (let i = 0; i < ASSESS_TOTAL; i++) dots += `<div class="slide-dot${i===0?' active':''}" onclick="goToAssessSlide(${i})"></div>`;
+    document.getElementById('assessDots').innerHTML = dots;
+    updateAssessView();
+}
+
+function updateAssessView() {
+    const pad = String(currentAssessIndex + 1).padStart(2, '0');
+    const img = document.getElementById('assessImage');
+    img.src = `assets/ch12/assess${currentAssessNum}/p${pad}.jpg`;
+    document.querySelectorAll('#assessDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === currentAssessIndex));
+
+    // Update side arrows
+    const la = document.getElementById('assessLeftArrow');
+    const ra = document.getElementById('assessRightArrow');
+    if (la) la.disabled = currentAssessIndex === 0;
+    if (ra) ra.disabled = currentAssessIndex >= ASSESS_TOTAL - 1;
+
+    const isQuestion = currentAssessIndex % 2 === 0;
+    const qIdx = Math.floor(currentAssessIndex / 2);
+    const overlay = document.getElementById('assessAnswerOverlay');
+    const hintEl = document.getElementById('assessHint');
+
+    if (isQuestion) {
+        const qData = ASSESS_DATA[currentAssessNum][qIdx];
+        const answered = assessScore[currentAssessNum].answered[qIdx];
+        if (answered) {
+            hintEl.textContent = '✅ 已答對！可翻到下一頁看解說';
+            overlay.innerHTML = '<div class="assess-answer-overlay" style="background:#E8F5E9;text-align:center;"><span style="font-size:1.5rem;">✅</span> 已答對此題！<button class="btn btn-sm btn-primary" style="margin-left:12px;" onclick="nextAssessSlide()">看解說 →</button></div>';
+        } else if (qData.type === 'fill') {
+            hintEl.textContent = '✍️ 填充題 — 輸入答案後按提交';
+            overlay.innerHTML = `<div class="assess-answer-overlay"><h4>第${qIdx+1}題：${qData.label||'請輸入答案'}</h4><div style="display:flex;gap:8px;"><input class="assess-fill-input" id="assessFillInput" placeholder="輸入答案..." onkeydown="if(event.key==='Enter')checkAssessFill()"><button class="btn btn-primary btn-sm" onclick="checkAssessFill()">提交</button></div><div id="assessFillHint"></div></div>`;
+        } else {
+            const letters = ['A','B','C','D'];
+            const labels = qData.labels || letters.map(l => l);
+            hintEl.textContent = '🤔 選擇正確答案';
+            overlay.innerHTML = `<div class="assess-answer-overlay"><h4>第${qIdx+1}題：選擇答案</h4><div class="assess-mc-grid">${labels.map((l,i) => `<button class="assess-mc-btn" onclick="checkAssessMC(${i})">${l}</button>`).join('')}</div><div id="assessMCHint"></div></div>`;
+        }
+    } else {
+        hintEl.textContent = '✅ 答案解說頁';
+        // Check if all done
+        const total = ASSESS_DATA[currentAssessNum].length;
+        const correctCount = Object.keys(assessScore[currentAssessNum].answered).length;
+        if (currentAssessIndex === ASSESS_TOTAL - 1 || correctCount === total) {
+            const coins = getAssessCoins(correctCount, total);
+            const coinImgs = Array(coins).fill('<img src="assets/ch12/images/coin_new.png" style="width:28px;height:28px;vertical-align:middle;">').join('');
+            overlay.innerHTML = `<div class="assess-coin-banner"><div class="coin-count">${coinImgs} ${coins} 金幣</div><div>答對 ${correctCount}/${total} 題</div>${correctCount < total ? '<button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="retryAssess()">重試拿滿金幣</button>' : '<div style="color:var(--success);font-weight:700;margin-top:4px;">🎉 全部答對！</div>'}</div>`;
+            // Save coins
+            if (currentUser) {
+                const key = `scores_${currentUser.class}_${currentUser.number}`;
+                const scores = JSON.parse(localStorage.getItem(key) || '{}');
+                const aKey = `assess${currentAssessNum}`;
+                if (!scores[aKey] || scores[aKey].coins < coins) {
+                    scores[aKey] = { correct: correctCount, total, coins, date: new Date().toLocaleDateString('zh-TW') };
+                    localStorage.setItem(key, JSON.stringify(scores));
+                    updateCoinDisplay();
+                }
+            }
+        } else {
+            overlay.innerHTML = `<div style="text-align:center;margin-top:12px;"><button class="btn btn-primary btn-sm" onclick="nextAssessSlide()">下一題 →</button></div>`;
+        }
+    }
+}
+
+function checkAssessMC(selected) {
+    const qIdx = Math.floor(currentAssessIndex / 2);
+    const qData = ASSESS_DATA[currentAssessNum][qIdx];
+    const btns = document.querySelectorAll('.assess-mc-btn');
+
+    if (selected === qData.correct) {
+        btns[selected].classList.add('correct');
+        assessScore[currentAssessNum].answered[qIdx] = true;
+        assessScore[currentAssessNum].correct++;
+        setTimeout(() => {
+            flipSlide(document.getElementById('assessImage'), 'forward');
+            currentAssessIndex++;
+            setTimeout(() => updateAssessView(), 250);
+        }, 800);
+    } else {
+        btns[selected].classList.add('wrong');
+        btns[selected].disabled = true;
+        assessScore[currentAssessNum].wrongCount = (assessScore[currentAssessNum].wrongCount || 0) + 1;
+        if (assessScore[currentAssessNum].wrongCount >= MAX_WRONG) {
+            document.getElementById('assessAnswerOverlay').innerHTML = `<div class="assess-answer-overlay" style="text-align:center;"><div style="font-size:3rem;margin-bottom:12px;">😓</div><h4>答錯了${MAX_WRONG}題，需要重做！</h4><p style="color:var(--text-light);margin:8px 0;">再接再厲！</p><button class="btn btn-primary" onclick="retryAssess()">重新開始</button></div>`;
+        } else {
+            document.getElementById('assessMCHint').innerHTML = `<div class="assess-hint">💡 提示：${qData.hint}　<span style="color:var(--error);">（❌ ${assessScore[currentAssessNum].wrongCount}/${MAX_WRONG}）</span></div>`;
+        }
+    }
+}
+
+function checkAssessFill() {
+    const input = document.getElementById('assessFillInput');
+    const val = input.value.trim();
+    const qIdx = Math.floor(currentAssessIndex / 2);
+    const qData = ASSESS_DATA[currentAssessNum][qIdx];
+
+    if (qData.accept.some(a => val === a || val.includes(a))) {
+        input.style.borderColor = 'var(--success)';
+        input.style.background = '#E8F5E9';
+        assessScore[currentAssessNum].answered[qIdx] = true;
+        assessScore[currentAssessNum].correct++;
+        setTimeout(() => {
+            flipSlide(document.getElementById('assessImage'), 'forward');
+            currentAssessIndex++;
+            setTimeout(() => updateAssessView(), 250);
+        }, 800);
+    } else {
+        input.style.borderColor = 'var(--error)';
+        input.classList.add('wrong');
+        setTimeout(() => input.classList.remove('wrong'), 400);
+        assessScore[currentAssessNum].wrongCount = (assessScore[currentAssessNum].wrongCount || 0) + 1;
+        if (assessScore[currentAssessNum].wrongCount >= MAX_WRONG) {
+            document.getElementById('assessAnswerOverlay').innerHTML = `<div class="assess-answer-overlay" style="text-align:center;"><div style="font-size:3rem;margin-bottom:12px;">😓</div><h4>答錯了${MAX_WRONG}題，需要重做！</h4><button class="btn btn-primary" style="margin-top:12px;" onclick="retryAssess()">重新開始</button></div>`;
+        } else {
+            document.getElementById('assessFillHint').innerHTML = `<div class="assess-hint">💡 提示：${qData.hint}　<span style="color:var(--error);">（❌ ${assessScore[currentAssessNum].wrongCount}/${MAX_WRONG}）</span></div>`;
+        }
+    }
+}
+
+function retryAssess() {
+    assessScore[currentAssessNum] = { correct: 0, wrongCount: 0, answered: {} };
+    currentAssessIndex = 0;
+    updateAssessView();
+}
+
+function prevAssessSlide() {
+    if (currentAssessIndex > 0) {
+        flipSlide(document.getElementById('assessImage'), 'back');
+        currentAssessIndex--;
+        setTimeout(() => updateAssessView(), 250);
+    }
+}
+function nextAssessSlide() {
+    if (currentAssessIndex < ASSESS_TOTAL - 1) {
+        // Block going to answer page if question not answered
+        const isQuestion = currentAssessIndex % 2 === 0;
+        if (isQuestion) {
+            const qIdx = Math.floor(currentAssessIndex / 2);
+            if (!assessScore[currentAssessNum]?.answered[qIdx]) {
+                // Shake the overlay to indicate must answer
+                const overlay = document.getElementById('assessAnswerOverlay');
+                overlay.style.animation = 'none';
+                overlay.offsetHeight; // reflow
+                overlay.style.animation = 'shake 0.4s ease';
+                return;
+            }
+        }
+        flipSlide(document.getElementById('assessImage'), 'forward');
+        currentAssessIndex++;
+        setTimeout(() => updateAssessView(), 250);
+    }
+}
+function goToAssessSlide(i) {
+    // Block jumping to answer pages if question not answered
+    if (i % 2 === 1) {
+        const qIdx = Math.floor(i / 2);
+        if (!assessScore[currentAssessNum]?.answered[qIdx]) return;
+    }
+    currentAssessIndex = i;
+    updateAssessView();
+}
+function exitAssessViewer() {
+    document.getElementById('assessViewer').style.display = 'none';
+    document.getElementById('quizList').style.display = '';
+}
+
+// --- Slide Flip Helper ---
+function flipSlide(img, direction) {
+    const cls = direction === 'forward' ? 'flip-out' : 'flip-back-out';
+    const clsIn = direction === 'forward' ? 'flip-in' : 'flip-back-in';
+    img.classList.add(cls);
+    setTimeout(() => {
+        img.classList.remove(cls);
+        img.classList.add(clsIn);
+        setTimeout(() => img.classList.remove(clsIn), 500);
+    }, 250);
+}
+
+// --- Game Functions ---
+function loadGame(num) {
+    document.getElementById('gameSelectScreen').style.display = 'none';
+    document.getElementById('gameContainer').style.display = 'block';
+    document.getElementById('gameFrame').src = 'assets/ch12/game' + num + '.html?v=' + Date.now();
+}
+function exitGame() {
+    document.getElementById('gameFrame').src = '';
+    document.getElementById('gameContainer').style.display = 'none';
+    document.getElementById('gameSelectScreen').style.display = 'block';
+}
+
+// --- Video player ---
+document.addEventListener('DOMContentLoaded', function() {
+    const vc = document.getElementById('videoCard');
+    if (vc) {
+        vc.onclick = function() {
+            vc.innerHTML = `<iframe src="https://drive.google.com/file/d/1Dyn_kEOj2vR9JoaVFfQkNOkc2l2IJOlA/preview" style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        };
+    }
+});
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('數學AI學習區已載入');
+
+    // Listen for game score messages from iframe
+    window.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'gameScore' && currentUser) {
+            const key = `scores_${currentUser.class}_${currentUser.number}`;
+            const scores = JSON.parse(localStorage.getItem(key) || '{}');
+            const gameKey = e.data.gameId || 'game';
+            scores[gameKey] = { score: e.data.score, correct: e.data.correct, total: e.data.total, date: new Date().toLocaleDateString('zh-TW') };
+            scores.totalPoints = (scores.totalPoints || 0) + e.data.score;
+            localStorage.setItem(key, JSON.stringify(scores));
+            console.log('遊戲分數已記錄:', gameKey, e.data.score);
+        }
+    });
+});
+</script>
+</body>
+</html>
