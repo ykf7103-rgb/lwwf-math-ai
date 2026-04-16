@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>第12課 小數點金丹魔法</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif}
+html,body{height:100%;overflow:hidden;background:#000}
+body{
+  background:linear-gradient(180deg,#1a0f2e 0%,#2d1b4e 50%,#4a1942 100%);
+  color:#fff5e6;min-height:100vh;display:flex;flex-direction:column;
+}
+.screen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;overflow-y:auto}
+.screen.active{display:flex}
+
+/* Start */
+#startScreen h1{font-family:'Noto Serif TC',serif;font-size:clamp(28px,6vw,48px);color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:10px;font-weight:900;}
+#startScreen h2{font-size:clamp(14px,3vw,20px);color:#f5c76a;margin-bottom:20px}
+#startScreen .hero{width:min(160px,35vw);margin:12px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6));animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+#startScreen p{max-width:480px;font-size:clamp(13px,2.5vw,16px);line-height:1.7;background:rgba(0,0,0,0.5);padding:14px 18px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin-bottom:16px;}
+.btn-start{font-size:clamp(16px,3.5vw,22px);padding:12px 32px;font-weight:700;background:linear-gradient(135deg,#FFD700,#FF8C00);color:#2a1400;border:none;border-radius:30px;cursor:pointer;box-shadow:0 6px 20px rgba(255,140,0,0.5);transition:all 0.2s;}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,140,0,0.7)}
+
+/* Play */
+#playScreen{justify-content:flex-start;padding:8px}
+.hud{width:100%;max-width:900px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.65);padding:10px 16px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin-bottom:8px;flex-wrap:wrap;gap:8px;}
+.hud-score{font-size:clamp(20px,4vw,28px);font-weight:900;color:#FFD700}
+.hp-bar{flex:1;min-width:150px;max-width:260px}
+.hp-label{font-size:12px;color:#FFD700;margin-bottom:4px;display:flex;justify-content:space-between}
+.hp-track{height:14px;background:rgba(255,255,255,0.1);border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.hp-fill{height:100%;background:linear-gradient(90deg,#ff4040,#ffaa00,#40ff40);transition:width 0.5s ease;border-radius:7px}
+
+/* Battle area */
+.arena{width:100%;max-width:900px;height:min(140px,20vh);display:flex;justify-content:space-around;align-items:center;position:relative;padding:0 20px;margin-bottom:8px;}
+.char-img{width:clamp(70px,13vw,110px);height:auto;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.7));transition:transform 0.3s;}
+.char-img.attack{animation:heroAttack 0.6s}
+.char-img.hit{animation:shake 0.4s}
+@keyframes heroAttack{0%,100%{transform:translateX(0)}30%{transform:translateX(80px) scale(1.15)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+.char-label{text-align:center;font-size:12px;color:#FFD700;font-weight:700}
+
+/* Target display */
+.target-panel{width:100%;max-width:900px;background:rgba(20,10,0,0.92);border:2px solid #8B6914;border-radius:16px;padding:14px 20px;margin-bottom:12px;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
+.target-instruction{font-size:clamp(14px,2.8vw,18px);color:#f5c76a;margin-bottom:10px;}
+.target-number{font-size:clamp(36px,7vw,60px);font-weight:900;color:#40ff40;text-shadow:0 0 20px rgba(64,255,64,0.6);margin-bottom:16px;font-family:'Noto Serif TC',serif;}
+.current-label{font-size:clamp(13px,2.5vw,16px);color:#FFD700;margin-bottom:6px;}
+
+/* Decimal slider */
+.number-display{display:inline-flex;align-items:center;justify-content:center;gap:0;font-size:clamp(38px,7vw,64px);font-weight:900;color:#FFD700;background:rgba(0,0,0,0.6);padding:12px 24px;border-radius:12px;font-family:'Noto Serif TC',serif;user-select:none;min-width:320px;}
+.digit{display:inline-block;padding:0 2px;}
+.decimal-dot{display:inline-block;cursor:grab;color:#FF4500;text-shadow:0 0 18px rgba(255,69,0,1);font-size:1.2em;padding:0 4px;transform:translateY(0.05em);transition:transform 0.15s;touch-action:none;}
+.decimal-dot.dragging{cursor:grabbing;transform:translateY(0.05em) scale(1.4);color:#FFF;text-shadow:0 0 25px rgba(255,215,0,1);}
+.position-hint{font-size:13px;color:#999;margin-top:10px;}
+.slot-indicator{display:inline-block;width:6px;height:4px;background:rgba(255,69,0,0.4);border-radius:2px;margin:0 1px;vertical-align:middle;}
+.slot-indicator.active{background:#FFD700;box-shadow:0 0 8px #FFD700;}
+
+/* Action buttons */
+.action-row{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-action{padding:10px 24px;font-size:clamp(14px,2.8vw,17px);font-weight:700;border:none;border-radius:20px;cursor:pointer;transition:all 0.2s;}
+.btn-check{background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;}
+.btn-check:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(76,175,80,0.5);}
+.btn-reset{background:rgba(255,255,255,0.1);color:#f5c76a;border:1px solid rgba(255,215,0,0.4);}
+.btn-reset:hover{background:rgba(255,255,255,0.2);}
+
+/* Feedback */
+.feedback{margin-top:14px;padding:10px 16px;border-radius:10px;font-size:clamp(14px,2.7vw,17px);font-weight:600;display:none;}
+.feedback.show{display:block;animation:fadeIn 0.4s;}
+.feedback.correct{background:rgba(76,175,80,0.3);color:#80ff80;border:2px solid #4CAF50;}
+.feedback.wrong{background:rgba(244,67,54,0.3);color:#ffbbbb;border:2px solid #F44336;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* End */
+#endScreen{justify-content:flex-start;padding-top:20px;}
+.end-title{font-family:'Noto Serif TC',serif;font-size:clamp(30px,6vw,52px);color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;}
+.end-character{width:min(140px,30vw);margin:8px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
+.coins-row{display:flex;gap:12px;justify-content:center;margin:12px 0}
+.coin-img{width:clamp(44px,9vw,64px);height:clamp(44px,9vw,64px);opacity:0.3;transition:all 0.6s}
+.coin-img.earned{opacity:1;filter:drop-shadow(0 0 16px #FFD700);animation:coinPop 0.6s ease}
+@keyframes coinPop{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+.stats{background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin:10px 0;font-size:clamp(13px,2.5vw,15px);line-height:1.6;color:#fff5e6;}
+
+/* Mute button */
+.mute-btn{position:fixed;top:10px;right:10px;z-index:9999;background:rgba(20,10,40,0.85);border:1px solid rgba(255,215,0,0.4);color:#FFD700;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+
+<button class="mute-btn" id="muteBtn">🔊</button>
+
+<!-- ===== START SCREEN ===== -->
+<div id="startScreen" class="screen active">
+  <h1>✨ 小數點金丹魔法 ✨</h1>
+  <h2>第12課 小數乘法 · 西遊記</h2>
+  <img src="images/monkey_happy.png" class="hero" alt="悟空">
+  <p>拖動神秘嘅「小數點金丹」去左或右，將數字變成目標值！<br>
+  每答對一題，悟空就會揮舞金箍棒擊敗小數妖怪。<br>
+  <b>10 關</b>挑戰，最多獲得 <b>3 金幣</b>！</p>
+  <button class="btn-start" onclick="startGame()">開始冒險 ⚔️</button>
+</div>
+
+<!-- ===== PLAY SCREEN ===== -->
+<div id="playScreen" class="screen">
+  <div class="hud">
+    <div class="hp-bar">
+      <div class="hp-label"><span>悟空 HP</span><span id="hpText">100/100</span></div>
+      <div class="hp-track"><div class="hp-fill" id="hpFill" style="width:100%"></div></div>
+    </div>
+    <div class="hud-score"><span id="scoreText">0</span> 分</div>
+    <div style="color:#f5c76a;font-size:14px;">關 <span id="levelText">1</span>/10</div>
+  </div>
+  <div class="arena">
+    <div style="text-align:center;"><img id="heroImg" src="images/monkey_happy.png" class="char-img"><div class="char-label">悟空</div></div>
+    <div style="font-size:clamp(28px,6vw,44px);color:#FF4500;font-weight:900;text-shadow:0 0 20px rgba(255,69,0,0.8);">VS</div>
+    <div style="text-align:center;"><img id="enemyImg" src="images/demon_ox.png" class="char-img"><div class="char-label" id="enemyName">牛魔王</div></div>
+  </div>
+  <div class="target-panel">
+    <div class="target-instruction" id="instructionText">將數字變成目標值，拖動小數點金丹！</div>
+    <div style="font-size:clamp(13px,2.5vw,15px);color:#f5c76a;margin-bottom:4px;">目標：</div>
+    <div class="target-number" id="targetNumber">345.6</div>
+    <div class="current-label">你嘅答案：</div>
+    <div class="number-display" id="numberDisplay"></div>
+    <div class="position-hint" id="positionHint">⬅ 拖動小數點 ➡ 到正確位置</div>
+    <div class="action-row">
+      <button class="btn-action btn-reset" onclick="resetPosition()">🔄 重設</button>
+      <button class="btn-action btn-check" onclick="checkAnswer()">✅ 提交</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<!-- ===== END SCREEN ===== -->
+<div id="endScreen" class="screen">
+  <div class="end-title" id="endTitle">任務完成！</div>
+  <img id="endChar" src="images/monkey_win.png" class="end-character">
+  <div class="coins-row">
+    <img src="images/coin_new.png" class="coin-img" id="coin1">
+    <img src="images/coin_new.png" class="coin-img" id="coin2">
+    <img src="images/coin_new.png" class="coin-img" id="coin3">
+  </div>
+  <div class="stats" id="stats"></div>
+  <button class="btn-start" onclick="restart()">再玩一次 🔄</button>
+</div>
+
+<!-- BGM Audio -->
+<audio id="bgmIntro" src="audio/game/bgm_intro.mp3" loop preload="auto"></audio>
+<audio id="bgmBattle" src="audio/game/bgm_battle.mp3" loop preload="auto"></audio>
+<audio id="bgmVictory" src="audio/game/bgm_victory.mp3" preload="auto"></audio>
+<audio id="bgmDefeat" src="audio/game/bgm_defeat.mp3" preload="auto"></audio>
+
+<script>
+// ============================================================
+// ROUNDS DATA — each round has a start number + target (decimal point position)
+// Student drags decimal point to correct slot index
+// ============================================================
+const ROUNDS = [
+  // Round 1-3: ×10/100/1000 (move right)
+  { digits:'3456', startPos:2, targetPos:4, targetDisplay:'3456', instruction:'將 34.56 × 100，小數點去邊？', category:'×100', enemy:'demon_ox', enemyName:'牛魔王' },
+  { digits:'0567', startPos:1, targetPos:2, targetDisplay:'5.67', instruction:'將 0.567 × 10 = ?', category:'×10', enemy:'demon_bone', enemyName:'白骨精' },
+  { digits:'8901', startPos:1, targetPos:4, targetDisplay:'8901', instruction:'將 0.8901 × 10000 = ?（多一位）將 ×1000 變成 890.1，小數點去邊？', category:'×1000', enemy:'demon_ox', enemyName:'牛魔王' },
+  // Round 4-6: ×0.1/0.01/0.001 (move left)
+  { digits:'2400', startPos:4, targetPos:3, targetDisplay:'240.0', instruction:'將 2400 × 0.1 = ?', category:'×0.1', enemy:'demon_bone', enemyName:'白骨精' },
+  { digits:'0500', startPos:4, targetPos:2, targetDisplay:'5.00', instruction:'將 500 × 0.01 = ?', category:'×0.01', enemy:'demon_ox', enemyName:'牛魔王' },
+  { digits:'7000', startPos:4, targetPos:1, targetDisplay:'0.7000', instruction:'將 7000 × 0.0001 = 0.7000? 其實係 ×0.001，小數點向左移 3 位：7000 → ?', category:'×0.001', enemy:'demon_bone', enemyName:'白骨精' },
+  // Round 7-10: Unit conversion
+  { digits:'3200', startPos:4, targetPos:3, targetDisplay:'320.0', instruction:'將 3.2 公里 = ? 米（×1000）。已經係 3200，將小數點放返去整數位：', category:'公里→米', enemy:'demon_ox', enemyName:'牛魔王' },
+  { digits:'0850', startPos:4, targetPos:3, targetDisplay:'085.0', instruction:'850 克 = 0.85 公斤。將 850 × 0.001，小數點向左移 3 位。請移動：', category:'克→公斤', enemy:'demon_bone', enemyName:'白骨精' },
+  { digits:'1500', startPos:4, targetPos:4, targetDisplay:'1500', instruction:'1.5 升 = 1500 毫升。將 1.5 × 1000，小數點向右移 3 位至最末：', category:'升→毫升', enemy:'demon_ox', enemyName:'牛魔王' },
+  { digits:'0360', startPos:4, targetPos:3, targetDisplay:'036.0', instruction:'最終關！3.6 米 = 360 厘米。將 3.6 × 100，小數點向右移到…等等其實結果係 360！嘗試用 0360 起始，移到正確位置（代表 36.0 呢個中間步驟）：', category:'米→厘米', enemy:'demon_ox', enemyName:'牛魔王（最終）' },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = { round:0, score:0, hp:100, correctCount:0, startTime:0, currentPos:0 };
+let draggingDecimal = false;
+
+// ============================================================
+// BGM (MP3)
+// ============================================================
+const bgMusic = (() => {
+  const tracks = {};
+  let current = null, muted = false;
+  function init() {
+    tracks.intro = document.getElementById('bgmIntro');
+    tracks.battle = document.getElementById('bgmBattle');
+    tracks.victory = document.getElementById('bgmVictory');
+    tracks.defeat = document.getElementById('bgmDefeat');
+    Object.values(tracks).forEach(t => { if(t) t.volume = 0.4; });
+  }
+  return {
+    start() { init(); this.play('battle'); },
+    play(name) { if (current) { current.pause(); current.currentTime = 0; } current = tracks[name]; if (current && !muted) current.play().catch(()=>{}); },
+    stop() { if (current) { current.pause(); current.currentTime = 0; current = null; } },
+    toggle() { muted = !muted; if (current) { if (muted) current.pause(); else current.play().catch(()=>{}); } document.getElementById('muteBtn').textContent = muted ? '\uD83D\uDD07' : '\uD83D\uDD0A'; }
+  };
+})();
+document.getElementById('muteBtn').onclick = () => bgMusic.toggle();
+
+// SFX (Web Audio)
+function playTone(freq, dur, type='triangle') {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + dur);
+    setTimeout(()=>ctx.close(), (dur+0.1)*1000);
+  } catch(e){}
+}
+
+// ============================================================
+// SCREEN
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  state = { round:0, score:0, hp:100, correctCount:0, startTime:Date.now(), currentPos:0 };
+  showScreen('playScreen');
+  bgMusic.start();
+  loadRound();
+}
+
+function restart() { showScreen('startScreen'); }
+
+// ============================================================
+// RENDER NUMBER with draggable decimal point
+// ============================================================
+function renderNumber(digits, pos) {
+  // Build display: digits with decimal dot at position `pos`
+  // pos 0 = before all digits (e.g. .1234)
+  // pos = digits.length = after all digits (e.g. 1234.)
+  const container = document.getElementById('numberDisplay');
+  let html = '';
+  for (let i = 0; i <= digits.length; i++) {
+    if (i === pos) {
+      html += `<span class="decimal-dot" id="decDot" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">.</span>`;
+    }
+    if (i < digits.length) {
+      html += `<span class="digit">${digits[i]}</span>`;
+    }
+  }
+  container.innerHTML = html;
+
+  // Hint bar showing slot positions
+  let hints = '';
+  for (let i = 0; i <= digits.length; i++) {
+    hints += `<span class="slot-indicator ${i === pos ? 'active' : ''}"></span>`;
+    if (i < digits.length) hints += `<span style="width:18px;display:inline-block;"></span>`;
+  }
+  document.getElementById('positionHint').innerHTML = hints + '<div style="margin-top:6px;font-size:12px;">⬅ 拖動小數點到正確位置 ➡</div>';
+}
+
+function loadRound() {
+  const r = ROUNDS[state.round];
+  state.currentPos = r.startPos;
+  document.getElementById('levelText').textContent = state.round + 1;
+  document.getElementById('scoreText').textContent = state.score;
+  document.getElementById('hpFill').style.width = state.hp + '%';
+  document.getElementById('hpText').textContent = state.hp + '/100';
+  document.getElementById('instructionText').textContent = r.instruction;
+  document.getElementById('targetNumber').textContent = r.targetDisplay;
+  document.getElementById('enemyImg').src = 'images/' + r.enemy + '.png';
+  document.getElementById('enemyName').textContent = r.enemyName;
+  document.getElementById('heroImg').src = 'images/monkey_happy.png';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').style.display = 'none';
+  renderNumber(r.digits, state.currentPos);
+}
+
+function resetPosition() {
+  const r = ROUNDS[state.round];
+  state.currentPos = r.startPos;
+  renderNumber(r.digits, state.currentPos);
+  document.getElementById('feedback').style.display = 'none';
+}
+
+// ============================================================
+// DRAG handling
+// ============================================================
+let dragStartX = 0;
+function startDrag(e) {
+  e.preventDefault();
+  draggingDecimal = true;
+  const dot = document.getElementById('decDot');
+  if (dot) dot.classList.add('dragging');
+  dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchmove', onDrag, {passive: false});
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+}
+
+function onDrag(e) {
+  if (!draggingDecimal) return;
+  e.preventDefault();
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  const dx = x - dragStartX;
+  const r = ROUNDS[state.round];
+  const stepWidth = 40; // approx px per digit
+  const deltaSlots = Math.round(dx / stepWidth);
+  if (deltaSlots !== 0) {
+    const newPos = Math.max(0, Math.min(r.digits.length, state.currentPos + deltaSlots));
+    if (newPos !== state.currentPos) {
+      state.currentPos = newPos;
+      dragStartX = x;
+      renderNumber(r.digits, state.currentPos);
+      playTone(400 + newPos * 60, 0.06, 'sine');
+    }
+  }
+}
+
+function endDrag() {
+  draggingDecimal = false;
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('mouseup', endDrag);
+  document.removeEventListener('touchend', endDrag);
+  const dot = document.getElementById('decDot');
+  if (dot) dot.classList.remove('dragging');
+}
+
+// ============================================================
+// CHECK ANSWER
+// ============================================================
+function checkAnswer() {
+  const r = ROUNDS[state.round];
+  const isCorrect = state.currentPos === r.targetPos;
+  const fb = document.getElementById('feedback');
+
+  if (isCorrect) {
+    state.score += 10;
+    state.correctCount += 1;
+    document.getElementById('heroImg').className = 'char-img attack';
+    document.getElementById('enemyImg').className = 'char-img hit';
+    document.getElementById('heroImg').src = 'images/monkey_win.png';
+    fb.className = 'feedback show correct';
+    fb.innerHTML = `✅ 正確！悟空金箍棒出擊擊敗${r.enemyName}！ +10 分`;
+    playTone(660, 0.15); setTimeout(()=>playTone(880, 0.2), 120);
+
+    setTimeout(() => {
+      state.round += 1;
+      if (state.round >= ROUNDS.length) endGame();
+      else loadRound();
+    }, 1500);
+  } else {
+    state.hp = Math.max(0, state.hp - 15);
+    document.getElementById('heroImg').className = 'char-img hit';
+    document.getElementById('enemyImg').className = 'char-img attack';
+    document.getElementById('heroImg').src = 'images/monkey_think.png';
+    document.getElementById('hpFill').style.width = state.hp + '%';
+    document.getElementById('hpText').textContent = state.hp + '/100';
+    fb.className = 'feedback show wrong';
+    fb.innerHTML = `❌ 小數點位置錯咗（你揀咗位 ${state.currentPos}，正確位 ${r.targetPos}）。再試！`;
+    playTone(220, 0.3, 'sawtooth');
+
+    if (state.hp <= 0) {
+      setTimeout(() => endGame(), 1000);
+    } else {
+      setTimeout(() => {
+        document.getElementById('heroImg').className = 'char-img';
+        document.getElementById('enemyImg').className = 'char-img';
+      }, 600);
+    }
+  }
+}
+
+// ============================================================
+// END
+// ============================================================
+function endGame() {
+  bgMusic.stop();
+  const elapsed = Math.floor((Date.now() - state.startTime)/1000);
+  const won = state.hp > 0 && state.correctCount >= 6;
+  bgMusic.play(won ? 'victory' : 'defeat');
+
+  document.getElementById('endTitle').textContent = won ? '🎉 金丹魔法精通！' : '💔 再接再厲！';
+  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_think.png';
+
+  // Coins: 1 per 3.5 correct, cap 3
+  let coins = 0;
+  if (state.correctCount >= 10) coins = 3;
+  else if (state.correctCount >= 7) coins = 2;
+  else if (state.correctCount >= 4) coins = 1;
+  ['coin1','coin2','coin3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (i < coins) setTimeout(()=>el.classList.add('earned'), 300 + i*220);
+    else el.classList.remove('earned');
+  });
+
+  document.getElementById('stats').innerHTML =
+    '✅ 答啱：<b>' + state.correctCount + ' / ' + ROUNDS.length + '</b> 題<br>' +
+    '💯 分數：<b>' + state.score + ' 分</b><br>' +
+    '⏱️ 時間：<b>' + Math.floor(elapsed/60) + ' 分 ' + (elapsed%60) + ' 秒</b><br>' +
+    '🪙 金幣：<b>' + coins + ' / 3 枚</b>';
+
+  // Report to parent
+  try {
+    window.parent.postMessage({
+      type:'gameScore', game:'game3',
+      score: state.score, correct: state.correctCount, total: ROUNDS.length, coins
+    }, '*');
+  } catch(e) {}
+
+  showScreen('endScreen');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>第12課 取經路塔防戰</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif}
+html,body{height:100%;overflow:hidden;background:#000}
+body{
+  background:
+    linear-gradient(to bottom,rgba(20,5,0,0.5),rgba(60,20,0,0.7)),
+    url('images/bg_mountain.png') center/cover no-repeat;
+  color:#fff5e6;min-height:100vh;display:flex;flex-direction:column;
+}
+.screen{display:none;flex:1;flex-direction:column;align-items:center;padding:12px;text-align:center;overflow-y:auto}
+.screen.active{display:flex}
+
+/* Start */
+#startScreen{justify-content:center;}
+#startScreen h1{font-family:'Noto Serif TC',serif;font-size:clamp(28px,6vw,48px);color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;}
+#startScreen h2{font-size:clamp(14px,3vw,20px);color:#f5c76a;margin-bottom:20px}
+#startScreen .hero{width:min(140px,30vw);margin:10px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6));animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+#startScreen p{max-width:480px;font-size:clamp(13px,2.5vw,16px);line-height:1.7;background:rgba(0,0,0,0.5);padding:14px 18px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin-bottom:16px;}
+.btn-start{font-size:clamp(16px,3.5vw,22px);padding:12px 32px;font-weight:700;background:linear-gradient(135deg,#FFD700,#FF8C00);color:#2a1400;border:none;border-radius:30px;cursor:pointer;box-shadow:0 6px 20px rgba(255,140,0,0.5);transition:all 0.2s;}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,140,0,0.7)}
+
+/* Play */
+#playScreen{justify-content:flex-start;padding:8px}
+.hud{width:100%;max-width:900px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.7);padding:10px 14px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin-bottom:8px;flex-wrap:wrap;gap:8px;}
+.hud-item{display:flex;align-items:center;gap:6px;font-size:clamp(13px,2.5vw,15px);color:#FFD700;font-weight:700;}
+.hud-item b{font-size:clamp(18px,3.5vw,24px);}
+.hp-track{width:100px;height:12px;background:rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.hp-fill{height:100%;background:linear-gradient(90deg,#ff4040,#ffaa00,#40ff40);transition:width 0.5s ease;border-radius:6px}
+
+/* Battlefield */
+.battlefield{width:100%;max-width:900px;height:min(260px,35vh);background:rgba(0,0,0,0.5);border:2px solid #8B6914;border-radius:16px;position:relative;overflow:hidden;margin-bottom:10px;}
+.battle-bg{position:absolute;inset:0;background:linear-gradient(to right, rgba(20,10,0,0.3) 0%, rgba(40,20,0,0.5) 50%, rgba(80,40,0,0.7) 100%);}
+.path-line{position:absolute;left:0;right:80px;top:50%;height:3px;background:repeating-linear-gradient(to right,#8B6914 0 10px,transparent 10px 20px);transform:translateY(-50%);opacity:0.6;}
+.base-station{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;z-index:5;}
+.base-station img{width:70px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));}
+.base-label{font-size:10px;color:#FFD700;font-weight:700;margin-top:2px;}
+.tower{position:absolute;right:100px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;z-index:5;}
+.tower img{width:60px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));}
+.tower .tower-char{width:50px;position:absolute;top:-15px;}
+
+/* Enemies */
+.enemy{position:absolute;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:all 0.3s;z-index:4;}
+.enemy:hover{filter:brightness(1.3);}
+.enemy img{width:52px;filter:drop-shadow(0 4px 10px rgba(255,0,0,0.5));}
+.enemy.dying{animation:enemyDie 0.4s forwards;}
+@keyframes enemyDie{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8) rotate(90deg);opacity:0;}}
+.enemy-label{background:rgba(255,255,255,0.95);color:#000;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:2px;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis;}
+
+/* Projectile */
+.projectile{position:absolute;width:40px;height:10px;background:linear-gradient(90deg,#FFD700,#FF8C00);border-radius:5px;box-shadow:0 0 12px #FFD700;z-index:6;pointer-events:none;}
+
+/* Question panel */
+.q-panel{width:100%;max-width:900px;background:rgba(20,10,0,0.92);border:2px solid #8B6914;border-radius:16px;padding:12px 16px;margin-bottom:8px;display:none;}
+.q-panel.show{display:block;animation:panelIn 0.3s ease;}
+@keyframes panelIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.q-text{font-size:clamp(18px,4vw,26px);color:#FFD700;font-weight:700;margin-bottom:10px;text-align:center;}
+.q-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;}
+.q-opt{padding:10px 14px;border:2px solid #8B6914;background:rgba(139,105,20,0.2);color:#fff5e6;border-radius:10px;cursor:pointer;font-size:clamp(13px,2.5vw,16px);font-weight:600;transition:all 0.2s;}
+.q-opt:hover:not(:disabled){border-color:#FFD700;background:rgba(139,105,20,0.4);transform:translateY(-2px);}
+.q-opt.correct{border-color:#40ff40;background:rgba(0,180,0,0.3);color:#80ff80;}
+.q-opt.wrong{border-color:#ff4040;background:rgba(180,0,0,0.3);color:#ff8080;}
+
+/* End */
+#endScreen{justify-content:flex-start;padding-top:20px;}
+.end-title{font-family:'Noto Serif TC',serif;font-size:clamp(30px,6vw,52px);color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;}
+.end-character{width:min(140px,30vw);margin:8px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
+.coins-row{display:flex;gap:12px;justify-content:center;margin:12px 0}
+.coin-img{width:clamp(44px,9vw,64px);height:clamp(44px,9vw,64px);opacity:0.3;transition:all 0.6s}
+.coin-img.earned{opacity:1;filter:drop-shadow(0 0 16px #FFD700);animation:coinPop 0.6s ease}
+@keyframes coinPop{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+.stats{background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin:10px 0;font-size:clamp(13px,2.5vw,15px);line-height:1.6;color:#fff5e6;}
+
+.mute-btn{position:fixed;top:10px;right:10px;z-index:9999;background:rgba(20,10,40,0.85);border:1px solid rgba(255,215,0,0.4);color:#FFD700;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+.wave-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);border:3px solid #FFD700;color:#FFD700;padding:16px 32px;border-radius:16px;font-size:clamp(20px,4vw,32px);font-weight:900;text-shadow:0 0 10px rgba(255,215,0,0.5);z-index:20;animation:waveBanner 1.5s ease-out forwards;pointer-events:none;}
+@keyframes waveBanner{0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}40%{transform:translate(-50%,-50%) scale(1);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2);}}
+</style>
+</head>
+<body>
+
+<button class="mute-btn" id="muteBtn">🔊</button>
+
+<!-- ===== START SCREEN ===== -->
+<div id="startScreen" class="screen active">
+  <h1>🛡️ 取經路塔防戰 🛡️</h1>
+  <h2>第12課 單位轉換 · 西遊記</h2>
+  <img src="images/monkey_tower.png" class="hero" alt="悟空">
+  <p>妖怪從西方進攻唐僧！每隻妖怪都帶住一條<b>單位轉換題</b>。<br>
+  點擊妖怪，答啱嘅話悟空就會發射金箍棒擊殺佢！<br>
+  <b>10 波攻勢</b>，保護唐僧成功就贏！</p>
+  <button class="btn-start" onclick="startGame()">守護唐僧 ⚔️</button>
+</div>
+
+<!-- ===== PLAY SCREEN ===== -->
+<div id="playScreen" class="screen">
+  <div class="hud">
+    <div class="hud-item">🏅 <b id="scoreText">0</b> 分</div>
+    <div class="hud-item">⚔️ 波 <b id="waveText">1</b>/10</div>
+    <div class="hud-item">💀 擊殺 <b id="killText">0</b></div>
+    <div class="hud-item">唐僧 HP <div class="hp-track"><div class="hp-fill" id="hpFill" style="width:100%"></div></div> <span id="hpText">100</span></div>
+  </div>
+  <div class="battlefield" id="battlefield">
+    <div class="battle-bg"></div>
+    <div class="path-line"></div>
+    <div class="tower"><img src="images/monkey_tower.png"></div>
+    <div class="base-station"><img src="images/tang_monk_praying.png"><div class="base-label">唐僧</div></div>
+  </div>
+  <div class="q-panel" id="qPanel">
+    <div class="q-text" id="qText">—</div>
+    <div class="q-options" id="qOpts"></div>
+  </div>
+</div>
+
+<!-- ===== END SCREEN ===== -->
+<div id="endScreen" class="screen">
+  <div class="end-title" id="endTitle">—</div>
+  <img id="endChar" src="images/monkey_win.png" class="end-character">
+  <div class="coins-row">
+    <img src="images/coin_new.png" class="coin-img" id="coin1">
+    <img src="images/coin_new.png" class="coin-img" id="coin2">
+    <img src="images/coin_new.png" class="coin-img" id="coin3">
+  </div>
+  <div class="stats" id="stats"></div>
+  <button class="btn-start" onclick="restart()">再玩一次 🔄</button>
+</div>
+
+<!-- BGM -->
+<audio id="bgmIntro" src="audio/game/bgm_intro.mp3" loop preload="auto"></audio>
+<audio id="bgmBattle" src="audio/game/bgm_battle.mp3" loop preload="auto"></audio>
+<audio id="bgmVictory" src="audio/game/bgm_victory.mp3" preload="auto"></audio>
+<audio id="bgmDefeat" src="audio/game/bgm_defeat.mp3" preload="auto"></audio>
+
+<script>
+// ============================================================
+// QUESTION POOL — unit conversion
+// ============================================================
+const QUESTIONS = [
+  { q:'3.5 公里 = ? 米',       options:['35','350','3500','35000'], correct:2, hint:'×1000' },
+  { q:'0.72 公里 = ? 米',      options:['7.2','72','720','7200'], correct:2 },
+  { q:'250 克 = ? 公斤',        options:['2.5','0.25','25','0.025'], correct:1 },
+  { q:'1.5 升 = ? 毫升',        options:['15','150','1500','15000'], correct:2 },
+  { q:'0.85 公里 = ? 米',      options:['85','850','8.5','8500'], correct:1 },
+  { q:'2.3 公斤 = ? 克',        options:['23','230','2300','23000'], correct:2 },
+  { q:'1.05 米 = ? 厘米',      options:['10.5','105','1050','10500'], correct:1 },
+  { q:'3.07 公斤 = ? 克',      options:['30.7','307','3070','30700'], correct:2 },
+  { q:'0.024 公里 = ? 米',     options:['0.24','2.4','24','240'], correct:2 },
+  { q:'500 毫升 = ? 升',        options:['5','0.5','0.05','50'], correct:1 },
+  { q:'80 厘米 = ? 米',        options:['0.08','0.8','8','80'], correct:1 },
+  { q:'3.6 米 = ? 厘米',       options:['36','360','3600','0.36'], correct:1 },
+  { q:'0.007 公里 = ? 米',     options:['0.07','0.7','7','70'], correct:2 },
+  { q:'120 克 = ? 公斤',        options:['1.2','0.12','12','0.012'], correct:1 },
+  { q:'2.8 升 = ? 毫升',        options:['28','280','2800','28000'], correct:2 },
+  { q:'450 毫升 = ? 升',        options:['4.5','0.45','45','0.045'], correct:1 },
+  { q:'4.5 公斤 = ? 克',        options:['45','450','4500','45000'], correct:2 },
+  { q:'0.05 公里 = ? 米',      options:['0.5','5','50','500'], correct:2 },
+  { q:'360 厘米 = ? 米',       options:['3.6','36','0.36','0.036'], correct:0 },
+  { q:'7.5 升 = ? 毫升',        options:['75','750','7500','75000'], correct:2 },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = { score:0, wave:0, kills:0, hp:100, enemies:[], activeQ:null, startTime:0, waveActive:false, used:new Set() };
+const TOTAL_WAVES = 10;
+const ENEMIES_PER_WAVE = 2;  // 2 enemies per wave = 20 total
+const WALK_DURATION = 14000; // 14s to reach base
+const ENEMY_IMAGES = ['demon_walking.png', 'demon_ox.png', 'demon_bone.png'];
+
+// ============================================================
+// BGM
+// ============================================================
+const bgMusic = (() => {
+  const tracks = {}; let current = null, muted = false;
+  function init() {
+    tracks.intro = document.getElementById('bgmIntro');
+    tracks.battle = document.getElementById('bgmBattle');
+    tracks.victory = document.getElementById('bgmVictory');
+    tracks.defeat = document.getElementById('bgmDefeat');
+    Object.values(tracks).forEach(t => { if(t) t.volume = 0.4; });
+  }
+  return {
+    start() { init(); this.play('battle'); },
+    play(name) { if(current) { current.pause(); current.currentTime = 0; } current = tracks[name]; if(current && !muted) current.play().catch(()=>{}); },
+    stop() { if(current) { current.pause(); current.currentTime = 0; current = null; } },
+    toggle() { muted = !muted; if(current) { if(muted) current.pause(); else current.play().catch(()=>{}); } document.getElementById('muteBtn').textContent = muted ? '\uD83D\uDD07' : '\uD83D\uDD0A'; }
+  };
+})();
+document.getElementById('muteBtn').onclick = () => bgMusic.toggle();
+
+function playTone(freq, dur, type='triangle') {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + dur);
+    setTimeout(()=>ctx.close(), (dur+0.1)*1000);
+  } catch(e){}
+}
+
+// ============================================================
+// SCREEN
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  state = { score:0, wave:0, kills:0, hp:100, enemies:[], activeQ:null, startTime:Date.now(), waveActive:false, used:new Set() };
+  showScreen('playScreen');
+  bgMusic.start();
+  setTimeout(() => nextWave(), 500);
+}
+
+function restart() { showScreen('startScreen'); }
+
+// ============================================================
+// WAVE + ENEMY SPAWNING
+// ============================================================
+function updateHUD() {
+  document.getElementById('scoreText').textContent = state.score;
+  document.getElementById('waveText').textContent = Math.min(state.wave, TOTAL_WAVES);
+  document.getElementById('killText').textContent = state.kills;
+  document.getElementById('hpFill').style.width = state.hp + '%';
+  document.getElementById('hpText').textContent = state.hp;
+}
+
+function pickQuestion() {
+  let idx;
+  let tries = 0;
+  do {
+    idx = Math.floor(Math.random() * QUESTIONS.length);
+    tries++;
+  } while (state.used.has(idx) && tries < 20);
+  state.used.add(idx);
+  if (state.used.size >= QUESTIONS.length) state.used.clear();
+  return { ...QUESTIONS[idx], _idx: idx };
+}
+
+function showWaveBanner(text) {
+  const bf = document.getElementById('battlefield');
+  const banner = document.createElement('div');
+  banner.className = 'wave-banner';
+  banner.textContent = text;
+  bf.appendChild(banner);
+  setTimeout(() => banner.remove(), 1500);
+}
+
+function nextWave() {
+  state.wave++;
+  if (state.wave > TOTAL_WAVES) {
+    endGame();
+    return;
+  }
+  state.waveActive = true;
+  updateHUD();
+  showWaveBanner('第 ' + state.wave + ' 波 來了！');
+  playTone(880, 0.2); setTimeout(()=>playTone(660, 0.3), 200);
+
+  // Spawn enemies staggered
+  for (let i = 0; i < ENEMIES_PER_WAVE; i++) {
+    setTimeout(() => spawnEnemy(), 1500 + i * 3500);
+  }
+  // Check wave complete after all enemies should have finished or died
+  const checkWaveTimer = setInterval(() => {
+    if (state.enemies.length === 0 && state.wave <= TOTAL_WAVES) {
+      clearInterval(checkWaveTimer);
+      if (state.hp > 0 && state.waveActive) {
+        state.waveActive = false;
+        setTimeout(() => nextWave(), 1500);
+      }
+    }
+    if (state.hp <= 0) clearInterval(checkWaveTimer);
+  }, 500);
+}
+
+function spawnEnemy() {
+  if (state.hp <= 0) return;
+  const q = pickQuestion();
+  const id = 'e' + Date.now() + Math.random();
+  const bf = document.getElementById('battlefield');
+  const imgSrc = ENEMY_IMAGES[Math.floor(Math.random() * ENEMY_IMAGES.length)];
+
+  const div = document.createElement('div');
+  div.className = 'enemy';
+  div.id = id;
+  div.style.left = '0%';
+  div.innerHTML = `
+    <img src="images/${imgSrc}" alt="妖怪">
+    <div class="enemy-label">${q.q}</div>
+  `;
+  div.onclick = () => openQuestion(id, q);
+  bf.appendChild(div);
+
+  const enemyObj = { id, q, div, startTime: Date.now(), finished: false };
+  state.enemies.push(enemyObj);
+
+  // Animate walking
+  const bfRect = bf.getBoundingClientRect();
+  const endX = 88; // percent — stops right before tower
+  const step = () => {
+    if (enemyObj.finished) return;
+    const elapsed = Date.now() - enemyObj.startTime;
+    const progress = Math.min(1, elapsed / WALK_DURATION);
+    div.style.left = (progress * endX) + '%';
+    if (progress >= 1 && !enemyObj.finished) {
+      enemyHitsBase(enemyObj);
+    } else if (!enemyObj.finished) {
+      requestAnimationFrame(step);
+    }
+  };
+  requestAnimationFrame(step);
+}
+
+function enemyHitsBase(enemyObj) {
+  enemyObj.finished = true;
+  state.hp = Math.max(0, state.hp - 20);
+  enemyObj.div.remove();
+  state.enemies = state.enemies.filter(e => e.id !== enemyObj.id);
+  playTone(200, 0.4, 'sawtooth');
+  updateHUD();
+  if (state.hp <= 0) endGame();
+}
+
+// ============================================================
+// QUESTION HANDLING
+// ============================================================
+function openQuestion(enemyId, q) {
+  if (state.activeQ) return; // only one at a time
+  state.activeQ = { enemyId, q };
+
+  const panel = document.getElementById('qPanel');
+  document.getElementById('qText').textContent = q.q;
+  const opts = document.getElementById('qOpts');
+  opts.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'q-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answerQuestion(i, btn);
+    opts.appendChild(btn);
+  });
+  panel.classList.add('show');
+}
+
+function answerQuestion(selected, btnEl) {
+  if (!state.activeQ) return;
+  const { enemyId, q } = state.activeQ;
+  const enemyObj = state.enemies.find(e => e.id === enemyId);
+  const panel = document.getElementById('qPanel');
+  const btns = document.querySelectorAll('.q-opt');
+
+  if (selected === q.correct) {
+    btnEl.classList.add('correct');
+    btns.forEach(b => b.disabled = true);
+    playTone(660, 0.15); setTimeout(()=>playTone(880, 0.2), 120);
+    state.score += 10;
+    state.kills += 1;
+    updateHUD();
+    // Fire projectile + kill enemy
+    if (enemyObj && !enemyObj.finished) fireProjectile(enemyObj);
+    setTimeout(() => {
+      panel.classList.remove('show');
+      state.activeQ = null;
+    }, 500);
+  } else {
+    btnEl.classList.add('wrong');
+    btnEl.disabled = true;
+    playTone(220, 0.3, 'sawtooth');
+    // Keep enemy walking, show correct after all wrong or close
+  }
+}
+
+function fireProjectile(enemyObj) {
+  const bf = document.getElementById('battlefield');
+  const towerEl = document.querySelector('.tower');
+  const towerRect = towerEl.getBoundingClientRect();
+  const enemyRect = enemyObj.div.getBoundingClientRect();
+  const bfRect = bf.getBoundingClientRect();
+
+  const proj = document.createElement('div');
+  proj.className = 'projectile';
+  const startX = towerRect.left - bfRect.left + 10;
+  const startY = towerRect.top - bfRect.top + 25;
+  const endX = enemyRect.left - bfRect.left + 20;
+  const endY = enemyRect.top - bfRect.top + 20;
+  proj.style.left = startX + 'px';
+  proj.style.top = startY + 'px';
+  bf.appendChild(proj);
+  const dx = endX - startX, dy = endY - startY;
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  proj.style.transform = 'rotate(' + angle + 'deg)';
+  proj.style.transition = 'left 0.3s linear, top 0.3s linear';
+  requestAnimationFrame(() => {
+    proj.style.left = endX + 'px';
+    proj.style.top = endY + 'px';
+  });
+  setTimeout(() => {
+    proj.remove();
+    // Enemy dies
+    enemyObj.finished = true;
+    enemyObj.div.classList.add('dying');
+    setTimeout(() => {
+      enemyObj.div.remove();
+      state.enemies = state.enemies.filter(e => e.id !== enemyObj.id);
+    }, 400);
+  }, 320);
+}
+
+// ============================================================
+// END
+// ============================================================
+function endGame() {
+  bgMusic.stop();
+  const elapsed = Math.floor((Date.now() - state.startTime)/1000);
+  const won = state.hp > 0 && state.kills >= 12;
+  bgMusic.play(won ? 'victory' : 'defeat');
+
+  document.getElementById('endTitle').textContent = won ? '🎉 成功守護唐僧！' : '💔 唐僧被擒...';
+  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_think.png';
+
+  // Coins: based on kills
+  let coins = 0;
+  if (state.kills >= 18) coins = 3;
+  else if (state.kills >= 12) coins = 2;
+  else if (state.kills >= 6) coins = 1;
+  ['coin1','coin2','coin3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (i < coins) setTimeout(()=>el.classList.add('earned'), 300 + i*220);
+    else el.classList.remove('earned');
+  });
+
+  document.getElementById('stats').innerHTML =
+    '💀 擊殺妖怪：<b>' + state.kills + ' 隻</b><br>' +
+    '🛡️ 唐僧 HP 剩餘：<b>' + state.hp + '/100</b><br>' +
+    '💯 分數：<b>' + state.score + ' 分</b><br>' +
+    '⏱️ 時間：<b>' + Math.floor(elapsed/60) + ' 分 ' + (elapsed%60) + ' 秒</b><br>' +
+    '🪙 金幣：<b>' + coins + ' / 3 枚</b>';
+
+  try {
+    window.parent.postMessage({
+      type:'gameScore', game:'game4',
+      score: state.score, correct: state.kills, total: TOTAL_WAVES * ENEMIES_PER_WAVE, coins
+    }, '*');
+  } catch(e) {}
+
+  // Clear remaining enemies from field
+  state.enemies.forEach(e => { e.finished = true; if (e.div) e.div.remove(); });
+  state.enemies = [];
+
+  showScreen('endScreen');
+}
+</script>
+</body>
+</html>

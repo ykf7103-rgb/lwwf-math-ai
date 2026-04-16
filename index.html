@@ -1385,6 +1385,7 @@ body {
     .game-select-grid { grid-template-columns: 1fr; }
 }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1452,8 +1453,11 @@ body {
             <span class="topbar-chapter">Ch.12 有趣的乘法</span>
         </div>
         <div class="topbar-right">
-            <div id="coinDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFE082);padding:4px 12px;border-radius:20px;font-weight:700;color:#F57F17;font-size:0.9rem;box-shadow:0 2px 8px rgba(255,193,7,0.3);">
+            <div id="coinDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFE082);padding:4px 12px;border-radius:20px;font-weight:700;color:#F57F17;font-size:0.9rem;box-shadow:0 2px 8px rgba(255,193,7,0.3);" title="金幣（可換 EDX）">
                 <img src="assets/ch12/images/coin_new.png" style="width:20px;height:20px;"><span id="coinCount">0</span>
+            </div>
+            <div id="edxDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#E3F2FD,#90CAF9);padding:4px 12px;border-radius:20px;font-weight:700;color:#0D47A1;font-size:0.9rem;box-shadow:0 2px 8px rgba(33,150,243,0.3);cursor:pointer;" title="已換取的 EDX 分" onclick="switchTab('scores')">
+                🏅<span id="edxCount">0</span>
             </div>
             <div class="user-info">
                 <div class="user-avatar" id="userAvatar"></div>
@@ -1733,6 +1737,18 @@ body {
                         <div class="game-desc">60秒內答對最多題目！速度越快分數越高，挑戰連擊紀錄！</div>
                         <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 金幣</span></div>
                     </div>
+                    <div class="game-select-card" onclick="loadGame(3)">
+                        <div class="game-icon">✨</div>
+                        <div class="game-name">小數點金丹魔法</div>
+                        <div class="game-desc">拖動小數點，將數字變成目標值！悟空金箍棒出擊，擊敗小數妖怪！</div>
+                        <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 金幣</span></div>
+                    </div>
+                    <div class="game-select-card" onclick="loadGame(4)">
+                        <div class="game-icon">🛡️</div>
+                        <div class="game-name">取經路塔防戰</div>
+                        <div class="game-desc">妖怪向唐僧進攻！答啱單位轉換題，悟空即時射出金箍棒殲滅敵人！</div>
+                        <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 金幣</span></div>
+                    </div>
                 </div>
             </div>
             <!-- Game iframe (hidden initially) -->
@@ -1824,6 +1840,7 @@ body {
                         <th>遊戲</th>
                         <th>進度</th>
                         <th>金幣</th>
+                        <th>EDX</th>
                         <th>詳情</th>
                     </tr>
                 </thead>
@@ -1847,6 +1864,169 @@ body {
      JAVASCRIPT
      ============================================================ -->
 <script>
+// ============================================================
+// CLOUD STORE (Supabase realtime sync) — replaces localStorage
+// ============================================================
+const SUPABASE_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHN2d3VnaHFzdHVid3hoem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMTM3NzUsImV4cCI6MjA5MTg4OTc3NX0.DBsx2945F0Vdfhptx-Tr9mVqaa2i9jE4tMQIvjffvII';
+const CHAPTER = 12;
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+const cloudStore = {
+  async saveScore(cls, num, activityKey, data) {
+    // Write-through: local first (instant), cloud async
+    const lsKey = `scores_${cls}_${num}`;
+    const local = JSON.parse(localStorage.getItem(lsKey) || '{}');
+    local[activityKey] = data;
+    localStorage.setItem(lsKey, JSON.stringify(local));
+    if (!sb) return;
+    try {
+      await sb.from('student_scores').upsert({
+        class: cls, student_number: num, chapter: CHAPTER,
+        activity_key: activityKey, data
+      }, { onConflict: 'class,student_number,chapter,activity_key' });
+    } catch (e) { console.warn('cloud save failed:', e); }
+  },
+  async loadScores(cls, num) {
+    // Cloud first; merge with existing local (auto-migrate local → cloud if cloud empty)
+    const lsKey = `scores_${cls}_${num}`;
+    const local = JSON.parse(localStorage.getItem(lsKey) || '{}');
+    if (!sb) return local;
+    try {
+      const { data, error } = await sb.from('student_scores')
+        .select('activity_key,data')
+        .eq('class', cls).eq('student_number', num).eq('chapter', CHAPTER);
+      if (error) throw error;
+      const cloudObj = {};
+      (data || []).forEach(r => cloudObj[r.activity_key] = r.data);
+      // Migration: if cloud empty but local has data → upload local
+      if (Object.keys(cloudObj).length === 0 && Object.keys(local).length > 0) {
+        console.log('migrating', Object.keys(local).length, 'local scores to cloud');
+        for (const [k, v] of Object.entries(local)) {
+          await sb.from('student_scores').upsert({
+            class: cls, student_number: num, chapter: CHAPTER,
+            activity_key: k, data: v
+          }, { onConflict: 'class,student_number,chapter,activity_key' });
+        }
+        return local;
+      }
+      localStorage.setItem(lsKey, JSON.stringify(cloudObj));
+      return cloudObj;
+    } catch (e) {
+      console.warn('cloud load failed, using local:', e);
+      return local;
+    }
+  },
+  async loadAllClassScores(cls) {
+    if (!sb) {
+      // Teacher fallback: scan localStorage
+      const result = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('scores_')) {
+          const parts = k.split('_');
+          const sk = parts[1] + '_' + parts[2];
+          result[sk] = JSON.parse(localStorage.getItem(k) || '{}');
+        }
+      }
+      return result;
+    }
+    try {
+      let q = sb.from('student_scores').select('class,student_number,activity_key,data').eq('chapter', CHAPTER);
+      if (cls && cls !== 'all') q = q.eq('class', cls);
+      const { data } = await q;
+      const by = {};
+      (data || []).forEach(r => {
+        const k = `${r.class}_${r.student_number}`;
+        if (!by[k]) by[k] = {};
+        by[k][r.activity_key] = r.data;
+        localStorage.setItem(`scores_${r.class}_${r.student_number}`, JSON.stringify(by[k]));
+      });
+      return by;
+    } catch (e) { console.warn('class load failed:', e); return {}; }
+  },
+  async saveProgress(cls, num, stepId) {
+    const pk = `progress_ch${CHAPTER}_${cls}_${num}`;
+    const p = JSON.parse(localStorage.getItem(pk) || '{}');
+    p[stepId] = { done: true, date: new Date().toISOString() };
+    localStorage.setItem(pk, JSON.stringify(p));
+    if (!sb) return;
+    try {
+      await sb.from('student_progress').upsert({
+        class: cls, student_number: num, chapter: CHAPTER, step_id: stepId
+      }, { onConflict: 'class,student_number,chapter,step_id' });
+    } catch (e) { console.warn('progress save failed:', e); }
+  },
+  async loadProgress(cls, num) {
+    const pk = `progress_ch${CHAPTER}_${cls}_${num}`;
+    const local = JSON.parse(localStorage.getItem(pk) || '{}');
+    if (!sb) return local;
+    try {
+      const { data } = await sb.from('student_progress')
+        .select('step_id,done_at')
+        .eq('class', cls).eq('student_number', num).eq('chapter', CHAPTER);
+      const p = {};
+      (data || []).forEach(r => p[r.step_id] = { done: true, date: r.done_at });
+      if (Object.keys(p).length === 0 && Object.keys(local).length > 0) {
+        // Migrate local → cloud
+        for (const stepId of Object.keys(local)) {
+          await sb.from('student_progress').upsert({
+            class: cls, student_number: num, chapter: CHAPTER, step_id: stepId
+          }, { onConflict: 'class,student_number,chapter,step_id' });
+        }
+        return local;
+      }
+      localStorage.setItem(pk, JSON.stringify(p));
+      return p;
+    } catch (e) { return local; }
+  },
+  subscribeClassChanges(cls, callback) {
+    if (!sb) return null;
+    const filter = cls === 'all' ? `chapter=eq.${CHAPTER}` : `class=eq.${cls}`;
+    return sb.channel('scores_' + cls)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'student_scores', filter }, callback)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'student_edx', filter }, callback)
+      .subscribe();
+  },
+  // EDX exchange
+  async loadEdxHistory(cls, num) {
+    if (!sb) return [];
+    try {
+      const { data } = await sb.from('student_edx')
+        .select('coins_spent,edx_earned,exchanged_at')
+        .eq('class', cls).eq('student_number', num);
+      return data || [];
+    } catch (e) { return []; }
+  },
+  async loadAllClassEdx(cls) {
+    if (!sb) return {};
+    try {
+      let q = sb.from('student_edx').select('class,student_number,coins_spent,edx_earned');
+      if (cls && cls !== 'all') q = q.eq('class', cls);
+      const { data } = await q;
+      const by = {};
+      (data || []).forEach(r => {
+        const k = `${r.class}_${r.student_number}`;
+        if (!by[k]) by[k] = { coins_spent: 0, edx_earned: 0 };
+        by[k].coins_spent += r.coins_spent;
+        by[k].edx_earned += r.edx_earned;
+      });
+      return by;
+    } catch (e) { return {}; }
+  },
+  async exchangeEdx(cls, num, coins, edx) {
+    if (!sb) return { success: false, error: 'offline' };
+    try {
+      const { error } = await sb.from('student_edx').insert({
+        class: cls, student_number: num, chapter: CHAPTER,
+        coins_spent: coins, edx_earned: edx
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (e) { return { success: false, error: e.message }; }
+  }
+};
+
 // ============================================================
 // STUDENT DATA
 // ============================================================
@@ -2052,7 +2232,7 @@ function logout() {
 // ============================================================
 // DASHBOARD FUNCTIONS
 // ============================================================
-function showStudentDashboard() {
+async function showStudentDashboard() {
     document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
     document.getElementById('studentPage').classList.add('active');
     document.getElementById('studentPage').style.display = 'block';
@@ -2061,45 +2241,102 @@ function showStudentDashboard() {
     document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
     document.getElementById('userDisplayName').textContent = `${currentUser.class} ${currentUser.number} ${currentUser.name}`;
 
+    // Load from cloud (auto-migrates local → cloud if needed)
+    await cloudStore.loadScores(currentUser.class, currentUser.number);
+    await cloudStore.loadProgress(currentUser.class, currentUser.number);
+    window.currentEdxHistory = await cloudStore.loadEdxHistory(currentUser.class, currentUser.number);
+
     // Reset tabs
     switchTab('study');
     renderProgression();
     updateCoinDisplay();
+
+    // Subscribe to realtime — any change to my record updates UI
+    if (cloudStore.subscribeClassChanges && !window._studentSub) {
+        window._studentSub = cloudStore.subscribeClassChanges(currentUser.class, async (payload) => {
+            const row = payload.new || payload.old;
+            if (row && row.student_number === currentUser.number) {
+                await cloudStore.loadScores(currentUser.class, currentUser.number);
+                window.currentEdxHistory = await cloudStore.loadEdxHistory(currentUser.class, currentUser.number);
+                updateCoinDisplay();
+                renderProgression();
+            }
+        });
+    }
+
     window.scrollTo(0, 0);
 }
 
-// COIN ALLOCATION (total 33):
-// 簡報1/2/3 MC questions: 2 each = 6
-// 資訊圖像問答1/2/3:      1 each = 3
-// MC測驗1/2:               2 each = 4
-// 評估1/2/3:               3 each = 9
-// 遊戲1/2:                 3 each = 6
-// 國安教育:                 3       = 3
-// 補充教材:                 2       = 2
-// TOTAL = 6+3+4+9+6+3+2 = 33
+// COIN ALLOCATION (total 39):
+// 簡報1/2/3 MC: 2 each = 6
+// 資訊圖像問答1/2/3: 1 each = 3 (includes voice Feynman Q)
+// MC測驗1/2: 2 each = 4
+// 評估1/2/3: 3 each = 9
+// 遊戲1/2/3/4: 3 each = 12
+// 國安教育: 3
+// 補充教材: 2
+// TOTAL = 39
+
+const EDX_RATES = [
+    { coins: 10,  edx: 5  },
+    { coins: 50,  edx: 28 },
+    { coins: 100, edx: 60 }
+];
+
+function computeEarnedCoins(scores) {
+    let coins = 0;
+    ['slides1','slides2','slides3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    ['iq_quiz1','iq_quiz2','iq_quiz3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    ['quiz1','quiz4'].forEach(k => { if (scores[k]) coins += Math.min(2, Math.round((scores[k].score / scores[k].total) * 2)); });
+    ['assess1','assess2','assess3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    ['game1','game2','game3','game4'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
+    if (scores.national) coins += scores.national.coins || 0;
+    if (scores.supplementary) coins += scores.supplementary.coins || 0;
+    return coins;
+}
 
 function updateCoinDisplay() {
     if (!currentUser) return;
     const key = `scores_${currentUser.class}_${currentUser.number}`;
     const scores = JSON.parse(localStorage.getItem(key) || '{}');
-    let coins = 0;
-    // Slide deck MC coins (2 each, max 6)
-    ['slides1','slides2','slides3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
-    // Infographic quiz coins (1 each, max 3)
-    ['iq_quiz1','iq_quiz2','iq_quiz3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
-    // MC quiz coins (2 each, max 4)
-    ['quiz1','quiz4'].forEach(k => { if (scores[k]) coins += Math.min(2, Math.round((scores[k].score / scores[k].total) * 2)); });
-    // Assessment coins (3 each, max 9)
-    ['assess1','assess2','assess3'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
-    // Game coins (3 each, max 6)
-    ['game1','game2'].forEach(k => { if (scores[k]) coins += scores[k].coins || 0; });
-    if (scores.game) coins += Math.min(3, Math.round((scores.game.correct || 0) / (scores.game.total || 10) * 3));
-    // 國安教育 coins (max 3)
-    if (scores.national) coins += scores.national.coins || 0;
-    // 補充教材 coins (max 2)
-    if (scores.supplementary) coins += scores.supplementary.coins || 0;
-    document.getElementById('coinCount').textContent = coins;
+    const earnedCoins = computeEarnedCoins(scores);
+    const edxHistory = window.currentEdxHistory || [];
+    const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
+    const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
+    const spendable = Math.max(0, earnedCoins - totalSpent);
+
+    const coinEl = document.getElementById('coinCount');
+    if (coinEl) coinEl.textContent = spendable;
+    const edxEl = document.getElementById('edxCount');
+    if (edxEl) edxEl.textContent = totalEdx;
     updateAssessCardStatus(scores);
+}
+
+async function exchangeEdx(rateIdx) {
+    if (!currentUser) return;
+    const rate = EDX_RATES[rateIdx];
+    const scoreKey = `scores_${currentUser.class}_${currentUser.number}`;
+    const scores = JSON.parse(localStorage.getItem(scoreKey) || '{}');
+    const earned = computeEarnedCoins(scores);
+    const edxHistory = window.currentEdxHistory || [];
+    const spent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
+    const spendable = earned - spent;
+
+    if (spendable < rate.coins) {
+        alert(`金幣不足！你有 ${spendable} 金幣，需要 ${rate.coins} 金幣。`);
+        return;
+    }
+    if (!confirm(`確認用 ${rate.coins} 金幣換取 ${rate.edx} EDX 分？\n（換取後不可撤銷）`)) return;
+
+    const res = await cloudStore.exchangeEdx(currentUser.class, currentUser.number, rate.coins, rate.edx);
+    if (res.success) {
+        window.currentEdxHistory = await cloudStore.loadEdxHistory(currentUser.class, currentUser.number);
+        updateCoinDisplay();
+        renderScores();
+        alert(`🎉 成功換取 ${rate.edx} EDX 分！`);
+    } else {
+        alert(`換取失敗：${res.error}。請重試。`);
+    }
 }
 
 function updateAssessCardStatus(scores) {
@@ -2444,11 +2681,8 @@ function renderQuizResult(container) {
     }
 }
 
-function saveQuizScore() {
+async function saveQuizScore() {
     if (!currentUser || currentUser.role !== 'student') return;
-
-    const key = `scores_${currentUser.class}_${currentUser.number}`;
-    let scores = JSON.parse(localStorage.getItem(key) || '{}');
 
     const quizKey = `quiz${currentQuiz}`;
     const result = {
@@ -2458,16 +2692,8 @@ function saveQuizScore() {
         points: quizState.score * 10
     };
 
-    scores[quizKey] = result;
-
-    // Calculate total points
-    let totalPoints = 0;
-    ['quiz1', 'quiz2', 'quiz3'].forEach(qk => {
-        if (scores[qk]) totalPoints += scores[qk].points;
-    });
-    scores.totalPoints = totalPoints;
-
-    localStorage.setItem(key, JSON.stringify(scores));
+    await cloudStore.saveScore(currentUser.class, currentUser.number, quizKey, result);
+    updateCoinDisplay();
 }
 
 // ============================================================
@@ -2478,55 +2704,100 @@ function renderScores() {
 
     const key = `scores_${currentUser.class}_${currentUser.number}`;
     const scores = JSON.parse(localStorage.getItem(key) || '{}');
-    const totalPoints = scores.totalPoints || 0;
+    const earnedCoins = computeEarnedCoins(scores);
+    const edxHistory = window.currentEdxHistory || [];
+    const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
+    const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
+    const spendable = Math.max(0, earnedCoins - totalSpent);
+    const coinImg = 'assets/ch12/images/coin_new.png';
 
     const container = document.getElementById('scoresContent');
+
+    const row = (label, done, info) => `
+        <div class="score-row">
+            <div><div class="score-row-label">${label}</div></div>
+            <span class="score-row-value" style="color:${done?'var(--success)':'var(--text-light)'};">${done ? info : '未完成'}</span>
+        </div>`;
 
     container.innerHTML = `
         <div class="scores-summary">
             <div class="score-stat">
-                <div class="score-stat-value">${totalPoints}</div>
-                <div class="score-stat-label">累計總分</div>
+                <div class="score-stat-value"><img src="${coinImg}" style="width:28px;height:28px;vertical-align:middle;"> ${earnedCoins}</div>
+                <div class="score-stat-label">累計金幣</div>
             </div>
             <div class="score-stat">
-                <div class="score-stat-value">${scores.quiz1 ? scores.quiz1.score + '/' + scores.quiz1.total : '--'}</div>
-                <div class="score-stat-label">測驗一</div>
+                <div class="score-stat-value"><img src="${coinImg}" style="width:28px;height:28px;vertical-align:middle;"> ${spendable}</div>
+                <div class="score-stat-label">可換 EDX</div>
             </div>
             <div class="score-stat">
-                <div class="score-stat-value">${scores.quiz2 ? scores.quiz2.score + '/' + scores.quiz2.total : '--'}</div>
-                <div class="score-stat-label">測驗二</div>
+                <div class="score-stat-value">🏅 ${totalEdx}</div>
+                <div class="score-stat-label">已換取 EDX</div>
             </div>
             <div class="score-stat">
-                <div class="score-stat-value">${scores.quiz3 ? scores.quiz3.score + '/' + scores.quiz3.total : '--'}</div>
-                <div class="score-stat-label">測驗三</div>
+                <div class="score-stat-value">${earnedCoins}/39</div>
+                <div class="score-stat-label">本課進度</div>
             </div>
         </div>
 
         <div class="score-history">
-            <h3>📋 成績記錄</h3>
+            <h3>📗 簡報 MC 題</h3>
+            ${[1,2,3].map(n => {
+                const s = scores['slides'+n];
+                return row(`簡報${n}`, !!s, s ? `${s.correct}/${s.total} · <img src="${coinImg}" style="width:16px;vertical-align:middle;"> ${s.coins}` : '');
+            }).join('')}
+        </div>
+
+        <div class="score-history">
+            <h3>❓ 預習問答 (資訊圖像)</h3>
+            ${[1,2,3].map(n => {
+                const s = scores['iq_quiz'+n];
+                const voiceSummary = s && s.answers ? s.answers.filter(a => a.type==='voice').map(a => ` · 🎤 ${a.score}分`).join('') : '';
+                return row(`問答${n}`, !!s, s ? `完成 · <img src="${coinImg}" style="width:16px;vertical-align:middle;"> ${s.coins||1}${voiceSummary}` : '');
+            }).join('')}
+        </div>
+
+        <div class="score-history">
+            <h3>📝 MC 測驗 (練習用)</h3>
             ${renderScoreRow('測驗一：基礎練習', scores.quiz1)}
-            ${renderScoreRow('測驗二：評估挑戰（乘大數）', scores.quiz2)}
-            ${renderScoreRow('測驗三：評估挑戰（乘小數及單位轉換）', scores.quiz3)}
+            ${renderScoreRow('測驗二：進階練習', scores.quiz4)}
+        </div>
+
+        <div class="score-history">
+            <h3>📋 評估</h3>
+            ${[1,2,3].map(n => {
+                const s = scores['assess'+n];
+                return row(`評估${n}`, !!s, s ? `${s.correct}/${s.total} · <img src="${coinImg}" style="width:16px;vertical-align:middle;"> ${s.coins}` : '');
+            }).join('')}
+        </div>
+
+        <div class="score-history">
+            <h3>🎮 遊戲</h3>
+            ${[1,2,3,4].map(n => {
+                const s = scores['game'+n];
+                return row(`遊戲${n}`, !!s, s ? `${s.score || 0} 分 · <img src="${coinImg}" style="width:16px;vertical-align:middle;"> ${s.coins||0}` : '');
+            }).join('')}
         </div>
 
         <div class="rewards-section">
-            <h3>🎁 獎勵兌換</h3>
-            <p style="color: var(--text-light); margin-bottom: 16px; font-size: 0.9rem;">你的累計分數：<strong>${totalPoints} 分</strong></p>
-            <div class="reward-item ${totalPoints >= 50 ? '' : 'style="opacity:0.5"'}">
-                <span class="reward-item-points">50 分</span>
-                <span class="reward-item-name">🎈 小獎勵 - 貼紙一張</span>
-                ${totalPoints >= 50 ? '<span style="color:var(--success);font-weight:600;">可兌換</span>' : '<span style="color:var(--text-light);">未達標</span>'}
-            </div>
-            <div class="reward-item" ${totalPoints >= 100 ? '' : 'style="opacity:0.5"'}>
-                <span class="reward-item-points">100 分</span>
-                <span class="reward-item-name">🎯 中獎勵 - 小禮物一份</span>
-                ${totalPoints >= 100 ? '<span style="color:var(--success);font-weight:600;">可兌換</span>' : '<span style="color:var(--text-light);">未達標</span>'}
-            </div>
-            <div class="reward-item" ${totalPoints >= 200 ? '' : 'style="opacity:0.5"'}>
-                <span class="reward-item-points">200 分</span>
-                <span class="reward-item-name">🏆 大獎勵 - 特別獎品</span>
-                ${totalPoints >= 200 ? '<span style="color:var(--success);font-weight:600;">可兌換</span>' : '<span style="color:var(--text-light);">未達標</span>'}
-            </div>
+            <h3>🏅 換取 EDX 分</h3>
+            <p style="color: var(--text-light); margin-bottom: 16px; font-size: 0.9rem;">
+                你有 <strong><img src="${coinImg}" style="width:18px;vertical-align:middle;"> ${spendable}</strong> 可換取，已換取 <strong>${totalEdx}</strong> EDX 分。
+                <br><span style="font-size:0.8rem;">EDX 分用嚟喺學校換取獎品</span>
+            </p>
+            ${EDX_RATES.map((r, i) => {
+                const enabled = spendable >= r.coins;
+                return `<div class="reward-item" style="${enabled ? '' : 'opacity:0.5;'}">
+                    <span class="reward-item-points"><img src="${coinImg}" style="width:18px;vertical-align:middle;"> ${r.coins} → 🏅 ${r.edx} EDX</span>
+                    <button class="btn btn-sm ${enabled ? 'btn-primary' : 'btn-outline'}" ${enabled ? `onclick="exchangeEdx(${i})"` : 'disabled'}>
+                        ${enabled ? '換取' : '金幣不足'}
+                    </button>
+                </div>`;
+            }).join('')}
+            ${edxHistory.length > 0 ? `<details style="margin-top:16px;"><summary style="cursor:pointer;">📜 換取記錄 (${edxHistory.length})</summary>
+                <div style="margin-top:8px;font-size:0.9rem;">
+                    ${edxHistory.slice().reverse().map(r => `<div style="padding:6px 0;border-bottom:1px solid #eee;">${new Date(r.exchanged_at).toLocaleDateString('zh-TW')} · <img src="${coinImg}" style="width:14px;vertical-align:middle;"> ${r.coins_spent} → 🏅 ${r.edx_earned} EDX</div>`).join('')}
+                </div>
+            </details>` : ''}
         </div>
     `;
 }
@@ -2564,7 +2835,7 @@ function getStudentAllData(s) {
     return { scores, progress, stepsCompleted, totalCoins };
 }
 
-function renderTeacherData() {
+async function renderTeacherData() {
     const filter = document.getElementById('teacherClassFilter').value;
     const students = STUDENTS.filter(s => {
         if (s.class === '7A') return false;
@@ -2572,8 +2843,23 @@ function renderTeacherData() {
         return s.class === filter;
     });
 
+    // Load all data from cloud in two bulk queries (scores + edx) — also refreshes localStorage cache
+    await cloudStore.loadAllClassScores(filter);
+    window.teacherEdxData = await cloudStore.loadAllClassEdx(filter);
+
+    // Realtime: subscribe once so teacher view refreshes when students save
+    if (cloudStore.subscribeClassChanges && window._teacherSub) {
+        try { sb.removeChannel(window._teacherSub); } catch(e){}
+    }
+    if (cloudStore.subscribeClassChanges) {
+        window._teacherSub = cloudStore.subscribeClassChanges(filter, () => {
+            clearTimeout(window._teacherRefreshTimer);
+            window._teacherRefreshTimer = setTimeout(() => renderTeacherData(), 800);
+        });
+    }
+
     let totalStudents = students.length;
-    let cMC1=0, cMC2=0, cA1=0, cA2=0, cA3=0, totalCoins=0;
+    let cMC1=0, cMC2=0, cA1=0, cA2=0, cA3=0, totalCoins=0, totalEdx=0;
 
     const tbody = document.getElementById('teacherTableBody');
     tbody.innerHTML = '';
@@ -2587,8 +2873,10 @@ function renderTeacherData() {
         const a1 = sc.assess1 ? `${sc.assess1.correct}/7 🪙${sc.assess1.coins}` : '-';
         const a2 = sc.assess2 ? `${sc.assess2.correct}/7 🪙${sc.assess2.coins}` : '-';
         const a3 = sc.assess3 ? `${sc.assess3.correct}/7 🪙${sc.assess3.coins}` : '-';
-        const game = sc.game ? `${sc.game.correct||sc.game.score}` : (sc.game1 ? '✓' : '-');
+        const games = [sc.game1, sc.game2, sc.game3, sc.game4].filter(Boolean).length;
         const prog = `${d.stepsCompleted}/6`;
+        const edxRow = (window.teacherEdxData || {})[`${s.class}_${s.number}`] || { edx_earned: 0 };
+        const studentEdx = edxRow.edx_earned;
 
         if (sc.quiz1) cMC1++;
         if (sc.quiz4) cMC2++;
@@ -2596,6 +2884,7 @@ function renderTeacherData() {
         if (sc.assess2) cA2++;
         if (sc.assess3) cA3++;
         totalCoins += d.totalCoins;
+        totalEdx += studentEdx;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -2607,9 +2896,10 @@ function renderTeacherData() {
             <td>${a1}</td>
             <td>${a2}</td>
             <td>${a3}</td>
-            <td>${game}</td>
+            <td>${games}/4</td>
             <td>${prog}</td>
             <td>🪙${d.totalCoins}</td>
+            <td>🏅${studentEdx}</td>
             <td><button class="btn btn-sm btn-outline" onclick="showStudentDetail('${s.class}','${s.number}','${s.name}')">查看</button></td>
         `;
         tbody.appendChild(tr);
@@ -2621,6 +2911,7 @@ function renderTeacherData() {
         <div class="stat-card"><div class="stat-card-value">${cMC2}</div><div class="stat-card-label">完成MC測驗2</div></div>
         <div class="stat-card"><div class="stat-card-value">${cA1}/${cA2}/${cA3}</div><div class="stat-card-label">完成評估 1/2/3</div></div>
         <div class="stat-card"><div class="stat-card-value">🪙${totalCoins}</div><div class="stat-card-label">總金幣</div></div>
+        <div class="stat-card"><div class="stat-card-value">🏅${totalEdx}</div><div class="stat-card-label">總 EDX</div></div>
     `;
 
     // Re-render IQ teacher view with current class filter
@@ -2747,29 +3038,55 @@ function renderIQTeacherView(quizNum) {
     container.innerHTML = html;
 }
 
-function showStudentDetail(cls, num, name) {
-    const key = `scores_${cls}_${num}`;
-    const scores = JSON.parse(localStorage.getItem(key) || '{}');
-    const progKey = `progress_ch12_${cls}_${num}`;
-    const progress = JSON.parse(localStorage.getItem(progKey) || '{}');
+async function showStudentDetail(cls, num, name) {
+    // Ensure we have latest data from cloud
+    const scores = await cloudStore.loadScores(cls, num);
+    const progress = await cloudStore.loadProgress(cls, num);
+    const edxHistory = await cloudStore.loadEdxHistory(cls, num);
+    const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
+    const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
+    const earnedCoins = computeEarnedCoins(scores);
+    const spendable = Math.max(0, earnedCoins - totalSpent);
 
     document.getElementById('teacherDetailTitle').textContent = `${cls} ${num} ${name} 的詳細成績`;
     const modal = document.getElementById('teacherDetailModal');
     modal.style.display = '';
 
-    let html = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;">';
+    const coinImg = 'assets/ch12/images/coin_new.png';
+    let html = `<div style="padding:12px;background:linear-gradient(135deg,#FFF8E1,#FFE082);border-radius:10px;margin-bottom:16px;font-size:1.05rem;">
+        <img src="${coinImg}" style="width:22px;vertical-align:middle;"> <b>金幣：${earnedCoins}/39</b>  ·  可換 ${spendable}  ·  🏅 已換取 ${totalEdx} EDX
+    </div>`;
 
-    // MC Quizzes
+    html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;">';
+
+    // 簡報 MC (NEW display)
+    html += '<div style="background:#E0F2F1;padding:16px;border-radius:12px;"><h4>📗 簡報 MC 題</h4>';
+    [1,2,3].forEach(n => {
+        const s = scores['slides'+n];
+        html += s ? `<p>簡報${n}：${s.correct}/${s.total} · <img src="${coinImg}" style="width:14px;vertical-align:middle;">${s.coins}（${s.date}）</p>` : `<p>簡報${n}：未完成</p>`;
+    });
+    html += '</div>';
+
+    // MC Quizzes (practice)
     html += '<div style="background:#E3F2FD;padding:16px;border-radius:12px;"><h4>📝 MC 測驗</h4>';
     html += scores.quiz1 ? `<p>測驗一：${scores.quiz1.score}/${scores.quiz1.total}（${scores.quiz1.date}）</p>` : '<p>測驗一：未完成</p>';
     html += scores.quiz4 ? `<p>測驗二：${scores.quiz4.score}/${scores.quiz4.total}（${scores.quiz4.date}）</p>` : '<p>測驗二：未完成</p>';
     html += '</div>';
 
     // Assessments
-    html += '<div style="background:#FFF8E1;padding:16px;border-radius:12px;"><h4>📋 簡報評估</h4>';
+    html += '<div style="background:#FFF8E1;padding:16px;border-radius:12px;"><h4>📋 評估</h4>';
     [1,2,3].forEach(n => {
         const a = scores[`assess${n}`];
-        html += a ? `<p>評估${n}：${a.correct}/${a.total} 🪙${a.coins}（${a.date}）</p>` : `<p>評估${n}：未完成</p>`;
+        html += a ? `<p>評估${n}：${a.correct}/${a.total} · <img src="${coinImg}" style="width:14px;vertical-align:middle;">${a.coins}（${a.date}）</p>` : `<p>評估${n}：未完成</p>`;
+    });
+    html += '</div>';
+
+    // Games (all 4)
+    html += '<div style="background:#FBE9E7;padding:16px;border-radius:12px;"><h4>🎮 遊戲</h4>';
+    const gameLabels = {game1:'遊戲1 RPG', game2:'遊戲2 限時', game3:'遊戲3 小數點滑動', game4:'遊戲4 塔防'};
+    ['game1','game2','game3','game4'].forEach(gk => {
+        const g = scores[gk];
+        html += g ? `<p>${gameLabels[gk]}：${g.score||0}分 · <img src="${coinImg}" style="width:14px;vertical-align:middle;">${g.coins||0}（${g.date||''}）</p>` : `<p>${gameLabels[gk]}：未完成</p>`;
     });
     html += '</div>';
 
@@ -2782,29 +3099,40 @@ function showStudentDetail(cls, num, name) {
     });
     html += '</div>';
 
-    // Infographic Quiz Answers
+    // EDX exchange history
+    html += '<div style="background:#E1F5FE;padding:16px;border-radius:12px;"><h4>🏅 EDX 換取記錄</h4>';
+    if (edxHistory.length === 0) html += '<p>尚未換取</p>';
+    else edxHistory.slice().reverse().forEach(r => {
+        html += `<p>${new Date(r.exchanged_at).toLocaleDateString('zh-TW')}: <img src="${coinImg}" style="width:14px;vertical-align:middle;">${r.coins_spent} → 🏅 ${r.edx_earned} EDX</p>`;
+    });
+    html += '</div>';
+
+    // Infographic Quiz Answers (MC + text + voice)
     html += '<div style="background:#F3E5F5;padding:16px;border-radius:12px;grid-column:1/-1;"><h4>❓ 預習問答回答</h4>';
     let hasIQ = false;
     ['quiz1','quiz2','quiz3'].forEach(qk => {
         const iq = scores[`iq_${qk}`];
-        if (iq) {
+        if (iq && iq.answers) {
             hasIQ = true;
             const qLabels = {quiz1:'問答1（放大法術）',quiz2:'問答2（縮小心法）',quiz3:'問答3（單位轉換）'};
-            html += `<div style="margin-bottom:12px;"><strong>${qLabels[qk]}</strong>（${iq.date}）<ul style="margin:4px 0 0 20px;">`;
+            html += `<div style="margin-bottom:16px;padding:10px;background:white;border-radius:8px;"><strong>${qLabels[qk]}</strong>（${iq.date}）`;
             iq.answers.forEach(a => {
-                html += `<li><em>${a.q}</em><br>→ <strong>${a.answer}</strong></li>`;
+                if (a.type === 'voice') {
+                    const color = (a.score||0) >= 80 ? '#2E7D32' : (a.score||0) >= 60 ? '#F57F17' : '#C62828';
+                    html += `<div style="margin-top:8px;padding:10px;border-left:4px solid ${color};background:#FFF;border-radius:4px;">
+                        <div><em>🎤 ${a.q}</em></div>
+                        <div style="margin-top:4px;"><b style="color:${color};">AI 評分：${a.score||0}/100</b></div>
+                        <div style="margin-top:4px;font-style:italic;color:#555;">轉寫：「${a.transcript||''}」</div>
+                        ${a.feedback ? `<div style="margin-top:4px;color:${color};">AI 評語：${a.feedback}</div>` : ''}
+                    </div>`;
+                } else {
+                    html += `<div style="margin-top:6px;"><em>${a.q}</em><br>→ <strong>${a.answer}</strong></div>`;
+                }
             });
-            html += '</ul></div>';
+            html += '</div>';
         }
     });
     if (!hasIQ) html += '<p style="color:#999;">尚未完成任何預習問答</p>';
-    html += '</div>';
-
-    // Games
-    html += '<div style="background:#FBE9E7;padding:16px;border-radius:12px;"><h4>🎮 遊戲</h4>';
-    if (scores.game) html += `<p>遊戲：分數${scores.game.score}（${scores.game.date}）</p>`;
-    else if (scores.game1) html += `<p>RPG遊戲：已完成</p>`;
-    else html += '<p>未完成</p>';
     html += '</div>';
 
     html += '</div>';
@@ -2884,25 +3212,37 @@ document.addEventListener('keydown', function(e) {
 // ============================================================
 const PROGRESSION_STEPS = [
     { id:'slides1', type:'slides', title:'簡報1：悟空的放大法術', desc:'×10 / ×100 / ×1000', folder:'slides1', total:14, icon:'📗' },
-    { id:'quiz1', type:'infoquiz', title:'問答1：放大法術小測', desc:'回答2題解鎖簡報2', icon:'❓',
+    { id:'quiz1', type:'infoquiz', title:'問答1：放大法術小測', desc:'回答3題解鎖簡報2', icon:'❓',
       image:'assets/ch12/infographics/quiz1.png',
       questions:[
         { q:'0.45 × 10 = ?', type:'mc', options:['0.045','4.5','45','450'], correct:1 },
-        { q:'為什麼 4 × 100 = 400？用小數點移動來解釋。', type:'text' }
+        { q:'為什麼 4 × 100 = 400？用小數點移動來解釋。', type:'text' },
+        { q:'🎤 用你自己嘅說話，教一個同學點樣計 2.3 × 100。用 20-30 秒解釋。',
+          type:'voice',
+          concept:'乘以100 小數點向右移2位',
+          rubric:'講得清楚：小數點向右移 2 位。答案係 230' }
       ]},
     { id:'slides2', type:'slides', title:'簡報2：唐僧的縮小心法', desc:'×0.1 / ×0.01 / ×0.001', folder:'slides2', total:14, icon:'📘' },
-    { id:'quiz2', type:'infoquiz', title:'問答2：縮小心法小測', desc:'回答2題解鎖簡報3', icon:'❓',
+    { id:'quiz2', type:'infoquiz', title:'問答2：縮小心法小測', desc:'回答3題解鎖簡報3', icon:'❓',
       image:'assets/ch12/infographics/quiz2.png',
       questions:[
         { q:'2.6 × 0.001 = ?', type:'mc', options:['260','0.26','0.026','0.0026'], correct:3 },
-        { q:'乘以 0.1 等於除以幾？為什麼？', type:'text' }
+        { q:'乘以 0.1 等於除以幾？為什麼？', type:'text' },
+        { q:'🎤 用 Feynman 方法：假設你係老師，教同學點解 45 × 0.01 = 0.45。講 20-30 秒。',
+          type:'voice',
+          concept:'乘以0.01 小數點向左移2位',
+          rubric:'講出：乘細數數字變細、小數點向左移 2 位、答案 0.45' }
       ]},
     { id:'slides3', type:'slides', title:'簡報3：單位轉換大冒險', desc:'公里↔米 / 公斤↔克 / 升↔毫升', folder:'slides3', total:14, icon:'📙' },
-    { id:'quiz3', type:'infoquiz', title:'問答3：單位轉換小測', desc:'回答2題解鎖評估區', icon:'❓',
+    { id:'quiz3', type:'infoquiz', title:'問答3：單位轉換小測', desc:'回答3題解鎖評估區', icon:'❓',
       image:'assets/ch12/infographics/quiz3.png',
       questions:[
         { q:'0.72 公里 = ? 米', type:'mc', options:['7.2','72','720','7200'], correct:2 },
-        { q:'大單位轉小單位，用乘法還是除法？舉一個例子說明。', type:'text' }
+        { q:'大單位轉小單位，用乘法還是除法？舉一個例子說明。', type:'text' },
+        { q:'🎤 教一教細佬：點解 1.5 公里 = 1500 米？用 20-30 秒解釋。',
+          type:'voice',
+          concept:'1公里=1000米，單位轉換用乘以1000',
+          rubric:'講出：1 公里 = 1000 米、大變細用乘法、1.5 × 1000 = 1500 米' }
       ]}
 ];
 
@@ -3161,6 +3501,7 @@ function setStepComplete(stepId) {
     const p = getProgress();
     p[stepId] = { done: true, date: new Date().toISOString() };
     localStorage.setItem(getProgressKey(), JSON.stringify(p));
+    if (currentUser) cloudStore.saveProgress(currentUser.class, currentUser.number, stepId);
 }
 function isStepDone(stepId) { return getProgress()[stepId]?.done === true; }
 function isStepUnlocked(idx) {
@@ -3431,12 +3772,11 @@ function checkSlideQuizCompletion(folder) {
         if (!answered[key]) allDone = false;
     });
     if (allDone && currentUser) {
-        const key = `scores_${currentUser.class}_${currentUser.number}`;
-        const scores = JSON.parse(localStorage.getItem(key) || '{}');
+        const scoreKey = `scores_${currentUser.class}_${currentUser.number}`;
+        const scores = JSON.parse(localStorage.getItem(scoreKey) || '{}');
         if (!scores[folder] || !scores[folder].coins) {
-            scores[folder] = { coins: 2, total: qs.length, correct: qs.length, date: new Date().toLocaleDateString('zh-TW') };
-            localStorage.setItem(key, JSON.stringify(scores));
-            updateCoinDisplay();
+            const data = { coins: 2, total: qs.length, correct: qs.length, date: new Date().toLocaleDateString('zh-TW') };
+            cloudStore.saveScore(currentUser.class, currentUser.number, folder, data).then(() => updateCoinDisplay());
         }
     }
 }
@@ -3472,10 +3812,15 @@ function exitSlideViewer() {
 }
 
 // --- Infographic Quiz ---
+// Voice recording state
+let voiceData = {}; // { qi: { transcript, score, feedback } }
+let activeRecognizer = null;
+
 function openInfographicQuiz(stepIdx) {
     const step = PROGRESSION_STEPS[stepIdx];
     if (step.type !== 'infoquiz') return;
     currentQuizStep = stepIdx;
+    voiceData = {}; // reset voice answers
     document.getElementById('iqTitle').textContent = step.title;
     document.getElementById('iqImage').src = step.image;
     document.getElementById('studyProgressionView').style.display = 'none';
@@ -3483,7 +3828,10 @@ function openInfographicQuiz(stepIdx) {
     // Render questions
     let html = '';
     step.questions.forEach((q, qi) => {
-        html += `<div class="iq-question"><div class="iq-question-text">第${qi+1}題：${q.q}</div>`;
+        const typeBadge = q.type === 'voice' ? '<span style="background:#E91E63;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">🎤 錄音</span>'
+            : q.type === 'mc' ? '<span style="background:#1565C0;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">選擇題</span>'
+            : '<span style="background:#7B1FA2;color:white;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-left:6px;">文字題</span>';
+        html += `<div class="iq-question"><div class="iq-question-text">第${qi+1}題${typeBadge}：${q.q}</div>`;
         if (q.type === 'mc') {
             const letters = ['A','B','C','D'];
             html += `<div class="iq-mc-options" id="iqMC${qi}">`;
@@ -3491,6 +3839,19 @@ function openInfographicQuiz(stepIdx) {
                 html += `<div class="iq-mc-option" onclick="selectIQOption(${qi},${oi})"><span class="opt-letter">${letters[oi]}</span><span>${opt}</span></div>`;
             });
             html += `</div>`;
+        } else if (q.type === 'voice') {
+            html += `<div class="iq-voice" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);padding:14px;border-radius:12px;border:2px solid #E91E63;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+                    <button class="btn btn-sm" id="recBtn${qi}" onclick="startVoiceRecording(${qi})" style="background:#E91E63;color:white;border:none;">🎤 開始錄音</button>
+                    <button class="btn btn-sm btn-outline" id="stopBtn${qi}" onclick="stopVoiceRecording(${qi})" disabled>⏹ 停止</button>
+                    <span id="recStatus${qi}" style="color:#666;font-size:0.9rem;"></span>
+                </div>
+                <div id="transcript${qi}" contenteditable="true" style="min-height:80px;padding:12px;background:white;border:2px dashed #E91E63;border-radius:8px;font-size:1rem;line-height:1.5;" data-placeholder="你嘅錄音會自動轉做文字顯示喺度（可以手動修改）..."></div>
+                <div style="margin-top:10px;">
+                    <button class="btn btn-sm btn-primary" id="gradeBtn${qi}" onclick="gradeVoiceAnswer(${qi})" disabled>📊 提交俾 AI 評分</button>
+                </div>
+                <div id="gradeResult${qi}" style="margin-top:10px;"></div>
+            </div>`;
         } else {
             html += `<textarea class="iq-textarea" id="iqText${qi}" placeholder="請輸入你的答案..."></textarea>`;
         }
@@ -3498,39 +3859,157 @@ function openInfographicQuiz(stepIdx) {
     });
     document.getElementById('iqQuestions').innerHTML = html;
 }
+
 function selectIQOption(qi, oi) {
     const opts = document.querySelectorAll(`#iqMC${qi} .iq-mc-option`);
     opts.forEach((o, i) => o.classList.toggle('selected', i === oi));
 }
-function submitInfographicQuiz() {
+
+function startVoiceRecording(qi) {
+    if (activeRecognizer) { try { activeRecognizer.stop(); } catch(e){} }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('你嘅瀏覽器唔支援語音辨識，請用 Chrome 或 Edge。'); return; }
+    const recognizer = new SR();
+    recognizer.lang = 'yue-Hant-HK';
+    recognizer.continuous = true;
+    recognizer.interimResults = true;
+    let finalText = (document.getElementById('transcript'+qi).textContent || '').trim();
+    if (finalText && !finalText.endsWith(' ')) finalText += ' ';
+    recognizer.onresult = (e) => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            const t = e.results[i][0].transcript;
+            if (e.results[i].isFinal) finalText += t + ' ';
+            else interim += t;
+        }
+        document.getElementById('transcript'+qi).textContent = (finalText + interim).trim();
+    };
+    recognizer.onend = () => {
+        document.getElementById('recBtn'+qi).disabled = false;
+        document.getElementById('stopBtn'+qi).disabled = true;
+        document.getElementById('recStatus'+qi).textContent = '';
+        const transcript = document.getElementById('transcript'+qi).textContent.trim();
+        document.getElementById('gradeBtn'+qi).disabled = transcript.length < 3;
+        activeRecognizer = null;
+    };
+    recognizer.onerror = (e) => {
+        document.getElementById('recStatus'+qi).textContent = '❌ ' + e.error;
+        document.getElementById('recBtn'+qi).disabled = false;
+        document.getElementById('stopBtn'+qi).disabled = true;
+        activeRecognizer = null;
+    };
+    try {
+        recognizer.start();
+        activeRecognizer = recognizer;
+        document.getElementById('recBtn'+qi).disabled = true;
+        document.getElementById('stopBtn'+qi).disabled = false;
+        document.getElementById('recStatus'+qi).innerHTML = '🔴 <span style="animation:pulse 1s infinite;">錄音中...</span>';
+    } catch(err) {
+        alert('啟動錄音失敗：' + err.message);
+    }
+}
+
+function stopVoiceRecording(qi) {
+    if (activeRecognizer) {
+        try { activeRecognizer.stop(); } catch(e){}
+        activeRecognizer = null;
+    }
+    document.getElementById('recBtn'+qi).disabled = false;
+    document.getElementById('stopBtn'+qi).disabled = true;
+    document.getElementById('recStatus'+qi).textContent = '';
+    const transcript = document.getElementById('transcript'+qi).textContent.trim();
+    document.getElementById('gradeBtn'+qi).disabled = transcript.length < 3;
+}
+
+async function gradeVoiceAnswer(qi) {
+    const transcript = document.getElementById('transcript'+qi).textContent.trim();
+    if (!transcript) { alert('請先錄音！'); return; }
+    const step = PROGRESSION_STEPS[currentQuizStep];
+    const q = step.questions[qi];
+    const resEl = document.getElementById('gradeResult'+qi);
+    const gradeBtn = document.getElementById('gradeBtn'+qi);
+    gradeBtn.disabled = true;
+    resEl.innerHTML = '<div style="color:#666;">⏳ AI 評分中，請稍候（約 3-5 秒）...</div>';
+
+    const prompt = `你係小學五年級數學老師，用粵語評分。
+學生要解釋：「${q.q}」
+要求學生講到：${q.concept || q.rubric || ''}
+評分重點：${q.rubric || '概念準確性 + 清晰度 + 完整性'}
+
+學生錄音轉文字：「${transcript}」
+
+請嚴格返回純 JSON（唔好解釋，唔好有其他文字）：
+{"score": 0到100之間的整數, "feedback": "一句粵語評語同改進建議（唔超過 50 字）"}`;
+
+    try {
+        const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const { reply } = await res.json();
+        const match = reply.match(/\{[\s\S]*?\}/);
+        if (!match) throw new Error('解析失敗');
+        const result = JSON.parse(match[0]);
+        const score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
+        const feedback = result.feedback || '';
+        voiceData[qi] = { transcript, score, feedback };
+
+        const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
+        const bg = score >= 80 ? '#E8F5E9' : score >= 60 ? '#FFF8E1' : '#FFEBEE';
+        resEl.innerHTML = `<div style="padding:12px;border-radius:10px;background:${bg};border:2px solid ${color};">
+            <div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div>
+            <div style="margin-top:6px;color:#333;">${feedback}</div>
+            ${score < 80 ? `<button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button>` : '<div style="margin-top:6px;color:#2E7D32;font-weight:700;">✅ 做得好！</div>'}
+        </div>`;
+        gradeBtn.disabled = false;
+    } catch (e) {
+        resEl.innerHTML = `<div style="color:#C62828;">⚠️ 評分失敗：${e.message}，請重試</div>`;
+        gradeBtn.disabled = false;
+    }
+}
+
+function resetVoiceQ(qi) {
+    document.getElementById('transcript'+qi).textContent = '';
+    document.getElementById('gradeResult'+qi).innerHTML = '';
+    document.getElementById('gradeBtn'+qi).disabled = true;
+    delete voiceData[qi];
+}
+
+async function submitInfographicQuiz() {
     const step = PROGRESSION_STEPS[currentQuizStep];
     // Validate: each question must have an answer
     let allAnswered = true;
+    let missingMsg = '';
     step.questions.forEach((q, qi) => {
         if (q.type === 'mc') {
             const selected = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
-            if (!selected) allAnswered = false;
+            if (!selected) { allAnswered = false; missingMsg = `第${qi+1}題未揀答案`; }
+        } else if (q.type === 'voice') {
+            if (!voiceData[qi]) { allAnswered = false; missingMsg = `第${qi+1}題請錄音並提交評分`; }
         } else {
             const val = document.getElementById(`iqText${qi}`).value.trim();
-            if (!val) allAnswered = false;
+            if (!val) { allAnswered = false; missingMsg = `第${qi+1}題未填答案`; }
         }
     });
-    if (!allAnswered) { alert('請回答所有問題後再提交！'); return; }
-    // Save answers to localStorage for teacher review
+    if (!allAnswered) { alert('請回答所有問題後再提交！\n' + missingMsg); return; }
+
     if (currentUser) {
         const answers = [];
         step.questions.forEach((q, qi) => {
             if (q.type === 'mc') {
                 const sel = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
                 answers.push({ q: q.q, type: 'mc', answer: sel ? sel.textContent.trim() : '' });
+            } else if (q.type === 'voice') {
+                const v = voiceData[qi];
+                answers.push({ q: q.q, type: 'voice', transcript: v.transcript, score: v.score, feedback: v.feedback });
             } else {
                 answers.push({ q: q.q, type: 'text', answer: document.getElementById(`iqText${qi}`).value.trim() });
             }
         });
-        const key = `scores_${currentUser.class}_${currentUser.number}`;
-        const scores = JSON.parse(localStorage.getItem(key) || '{}');
-        scores[`iq_${step.id}`] = { answers, coins: 1, date: new Date().toLocaleDateString('zh-TW') };
-        localStorage.setItem(key, JSON.stringify(scores));
+        const data = { answers, coins: 1, date: new Date().toLocaleDateString('zh-TW') };
+        await cloudStore.saveScore(currentUser.class, currentUser.number, `iq_${step.id}`, data);
         updateCoinDisplay();
     }
     setStepComplete(step.id);
@@ -3651,13 +4130,12 @@ function updateAssessView() {
             overlay.innerHTML = `<div class="assess-coin-banner"><div class="coin-count">${coinImgs} ${coins} 金幣</div><div>答對 ${correctCount}/${total} 題</div>${correctCount < total ? '<button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="retryAssess()">重試拿滿金幣</button>' : '<div style="color:var(--success);font-weight:700;margin-top:4px;">🎉 全部答對！</div>'}</div>`;
             // Save coins
             if (currentUser) {
-                const key = `scores_${currentUser.class}_${currentUser.number}`;
-                const scores = JSON.parse(localStorage.getItem(key) || '{}');
+                const lsKey = `scores_${currentUser.class}_${currentUser.number}`;
+                const scores = JSON.parse(localStorage.getItem(lsKey) || '{}');
                 const aKey = `assess${currentAssessNum}`;
                 if (!scores[aKey] || scores[aKey].coins < coins) {
-                    scores[aKey] = { correct: correctCount, total, coins, date: new Date().toLocaleDateString('zh-TW') };
-                    localStorage.setItem(key, JSON.stringify(scores));
-                    updateCoinDisplay();
+                    const data = { correct: correctCount, total, coins, date: new Date().toLocaleDateString('zh-TW') };
+                    cloudStore.saveScore(currentUser.class, currentUser.number, aKey, data).then(() => updateCoinDisplay());
                 }
             }
         } else {
@@ -3809,15 +4287,19 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('數學AI學習區已載入');
 
     // Listen for game score messages from iframe
-    window.addEventListener('message', function(e) {
+    window.addEventListener('message', async function(e) {
         if (e.data && e.data.type === 'gameScore' && currentUser) {
-            const key = `scores_${currentUser.class}_${currentUser.number}`;
-            const scores = JSON.parse(localStorage.getItem(key) || '{}');
-            const gameKey = e.data.gameId || 'game';
-            scores[gameKey] = { score: e.data.score, correct: e.data.correct, total: e.data.total, date: new Date().toLocaleDateString('zh-TW') };
-            scores.totalPoints = (scores.totalPoints || 0) + e.data.score;
-            localStorage.setItem(key, JSON.stringify(scores));
-            console.log('遊戲分數已記錄:', gameKey, e.data.score);
+            const gameKey = e.data.game || e.data.gameId || 'game';
+            const data = {
+                score: e.data.score,
+                correct: e.data.correct,
+                total: e.data.total,
+                coins: e.data.coins || 0,
+                date: new Date().toLocaleDateString('zh-TW')
+            };
+            await cloudStore.saveScore(currentUser.class, currentUser.number, gameKey, data);
+            updateCoinDisplay();
+            console.log('遊戲分數已記錄:', gameKey, e.data);
         }
     });
 });
