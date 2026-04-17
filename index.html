@@ -1733,8 +1733,8 @@ body {
                     </div>
                     <div class="game-select-card" onclick="loadGame(2)">
                         <div class="game-icon">⏱️</div>
-                        <div class="game-name">計時搶答挑戰</div>
-                        <div class="game-desc">60秒內答對最多題目！速度越快分數越高，挑戰連擊紀錄！</div>
+                        <div class="game-name">縮小心法限時挑戰</div>
+                        <div class="game-desc">60秒內答對最多 ×0.1 / ×0.01 / ×0.001 題！速度越快分數越高！</div>
                         <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 金幣</span></div>
                     </div>
                     <div class="game-select-card" onclick="loadGame(3)">
@@ -3824,9 +3824,13 @@ function exitSlideViewer() {
 }
 
 // --- Infographic Quiz ---
-// Voice recording state
+// Voice recording state (MediaRecorder-based)
 let voiceData = {}; // { qi: { transcript, score, feedback } }
-let activeRecognizer = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedBlobs = {}; // { qi: Blob }
+let recordTimer = null;
+let recordStartTime = 0;
 let fillAnswered = {}; // { qi: true } — tracks correct fill-in answers
 
 function openInfographicQuiz(stepIdx) {
@@ -3862,14 +3866,19 @@ function openInfographicQuiz(stepIdx) {
             <div id="iqFillResult${qi}" style="margin-top:6px;"></div>`;
         } else if (q.type === 'voice') {
             html += `<div class="iq-voice" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);padding:14px;border-radius:12px;border:2px solid #E91E63;">
+                <div style="font-size:0.85rem;color:#880E4F;margin-bottom:8px;background:rgba(255,255,255,0.6);padding:8px 10px;border-radius:6px;">
+                    💡 <b>點樣做：</b> ① 按「開始錄音」用粵語解釋 20-30 秒 → ② 按「停止」 → ③ 按「提交」俾 AI 分析錄音內容並評分（AI 會幫你整理句子同評分）
+                </div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
                     <button class="btn btn-sm" id="recBtn${qi}" onclick="startVoiceRecording(${qi})" style="background:#E91E63;color:white;border:none;">🎤 開始錄音</button>
                     <button class="btn btn-sm btn-outline" id="stopBtn${qi}" onclick="stopVoiceRecording(${qi})" disabled>⏹ 停止</button>
                     <span id="recStatus${qi}" style="color:#666;font-size:0.9rem;"></span>
                 </div>
-                <div id="transcript${qi}" contenteditable="true" style="min-height:80px;padding:12px;background:white;border:2px dashed #E91E63;border-radius:8px;font-size:1rem;line-height:1.5;" data-placeholder="你嘅錄音會自動轉做文字顯示喺度（可以手動修改）..."></div>
+                <div id="transcript${qi}" style="min-height:70px;padding:12px;background:white;border:2px dashed #E91E63;border-radius:8px;font-size:1rem;line-height:1.5;">
+                    <span style="color:#999;">按「開始錄音」試下</span>
+                </div>
                 <div style="margin-top:10px;">
-                    <button class="btn btn-sm btn-primary" id="gradeBtn${qi}" onclick="gradeVoiceAnswer(${qi})" disabled>📊 提交俾 AI 評分</button>
+                    <button class="btn btn-sm btn-primary" id="gradeBtn${qi}" onclick="gradeVoiceAnswer(${qi})" disabled>📊 提交俾 AI 分析 + 評分</button>
                 </div>
                 <div id="gradeResult${qi}" style="margin-top:10px;"></div>
             </div>`;
@@ -3910,145 +3919,202 @@ function checkIQFill(qi) {
     }
 }
 
-function startVoiceRecording(qi) {
-    if (activeRecognizer) { try { activeRecognizer.stop(); } catch(e){} }
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-        document.getElementById('recStatus'+qi).innerHTML = '⚠️ 請用 Chrome/Edge 瀏覽器先可以錄音';
-        alert('你嘅瀏覽器唔支援語音辨識，請用 Chrome 或 Edge 再試。');
-        return;
+async function startVoiceRecording(qi) {
+    // Stop any existing recording
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        try { mediaRecorder.stop(); } catch(e){}
     }
-    const recognizer = new SR();
-    // Try Cantonese first; browser will fall back automatically if unsupported
-    recognizer.lang = 'zh-HK';
-    recognizer.continuous = true;
-    recognizer.interimResults = true;
-    let finalText = (document.getElementById('transcript'+qi).textContent || '').trim();
-    if (finalText && !finalText.endsWith(' ')) finalText += ' ';
-    recognizer.onresult = (e) => {
-        let interim = '';
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-            const t = e.results[i][0].transcript;
-            if (e.results[i].isFinal) finalText += t + ' ';
-            else interim += t;
-        }
-        document.getElementById('transcript'+qi).textContent = (finalText + interim).trim();
-    };
-    recognizer.onend = () => {
-        document.getElementById('recBtn'+qi).disabled = false;
-        document.getElementById('stopBtn'+qi).disabled = true;
-        document.getElementById('recStatus'+qi).textContent = '';
-        const transcript = document.getElementById('transcript'+qi).textContent.trim();
-        document.getElementById('gradeBtn'+qi).disabled = transcript.length < 3;
-        activeRecognizer = null;
-    };
-    recognizer.onerror = (e) => {
-        const errMsg = {
-            'not-allowed':'⚠️ 請允許麥克風權限 (Mic permission denied)',
-            'no-speech':'⚠️ 聽唔到聲，請再試',
-            'audio-capture':'⚠️ 搵唔到麥克風',
-            'network':'⚠️ 網絡問題',
-            'language-not-supported':'⚠️ 呢個瀏覽器唔支援粵語辨識'
-        }[e.error] || ('❌ 錯誤：' + e.error);
-        document.getElementById('recStatus'+qi).innerHTML = errMsg;
-        document.getElementById('recBtn'+qi).disabled = false;
-        document.getElementById('stopBtn'+qi).disabled = true;
-        activeRecognizer = null;
-    };
+
     try {
-        recognizer.start();
-        activeRecognizer = recognizer;
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        // Prefer opus codec for small file size
+        let options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 64000 };
+        if (!window.MediaRecorder || !MediaRecorder.isTypeSupported(options.mimeType)) {
+            options = { audioBitsPerSecond: 64000 };
+        }
+        mediaRecorder = new MediaRecorder(stream, options);
+
+        mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) audioChunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => {
+            // Stop all tracks
+            stream.getTracks().forEach(t => t.stop());
+            const mimeType = audioChunks[0]?.type || 'audio/webm';
+            const blob = new Blob(audioChunks, { type: mimeType });
+            recordedBlobs[qi] = blob;
+            clearInterval(recordTimer);
+            document.getElementById('recBtn'+qi).disabled = false;
+            document.getElementById('stopBtn'+qi).disabled = true;
+            document.getElementById('recStatus'+qi).innerHTML =
+                `<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB）</span>`;
+            document.getElementById('transcript'+qi).innerHTML =
+                '<span style="color:#999;">⬇️ 按「提交」讓 AI 分析錄音並顯示你講嘅內容</span>';
+            document.getElementById('gradeBtn'+qi).disabled = false;
+        };
+
+        mediaRecorder.start();
+        recordStartTime = Date.now();
         document.getElementById('recBtn'+qi).disabled = true;
         document.getElementById('stopBtn'+qi).disabled = false;
-        document.getElementById('recStatus'+qi).innerHTML = '🔴 <span style="animation:pulse 1s infinite;">錄音中...</span>';
-    } catch(err) {
-        alert('啟動錄音失敗：' + err.message);
+        document.getElementById('gradeBtn'+qi).disabled = true;
+        document.getElementById('transcript'+qi).innerHTML = '<span style="color:#666;">🎤 正在錄音中，請清楚講出你嘅解釋...</span>';
+
+        // Update timer display
+        if (recordTimer) clearInterval(recordTimer);
+        recordTimer = setInterval(() => {
+            const sec = Math.floor((Date.now() - recordStartTime) / 1000);
+            const color = sec > 45 ? '#F44336' : sec > 30 ? '#F57F17' : '#C62828';
+            document.getElementById('recStatus'+qi).innerHTML =
+                `<span style="color:${color};font-weight:700;">🔴 錄音中 ${sec} 秒</span>` +
+                (sec >= 30 ? ' <span style="font-size:0.85rem;color:#666;">（建議 20-30 秒）</span>' : '');
+            if (sec >= 60) { // auto-stop at 60 seconds
+                stopVoiceRecording(qi);
+            }
+        }, 250);
+    } catch (err) {
+        const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError'
+            ? '⚠️ 請喺瀏覽器允許麥克風權限，然後再試'
+            : (err.name === 'NotFoundError' ? '⚠️ 搵唔到麥克風，請檢查你部設備' : '❌ ' + err.message);
+        document.getElementById('recStatus'+qi).innerHTML = msg;
+        document.getElementById('recBtn'+qi).disabled = false;
     }
 }
 
 function stopVoiceRecording(qi) {
-    if (activeRecognizer) {
-        try { activeRecognizer.stop(); } catch(e){}
-        activeRecognizer = null;
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        try { mediaRecorder.stop(); } catch(e){}
     }
-    document.getElementById('recBtn'+qi).disabled = false;
-    document.getElementById('stopBtn'+qi).disabled = true;
-    document.getElementById('recStatus'+qi).textContent = '';
-    const transcript = document.getElementById('transcript'+qi).textContent.trim();
-    document.getElementById('gradeBtn'+qi).disabled = transcript.length < 3;
+}
+
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+// Robust JSON extraction: handles ```json fences, leading/trailing text, partial JSON
+function extractJSON(text) {
+    if (!text) return null;
+    // Strip markdown code fences (```json ... ``` or ``` ... ```)
+    const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    let candidate = fenceMatch ? fenceMatch[1] : text;
+    // Find the outermost { ... }
+    const start = candidate.indexOf('{');
+    const end = candidate.lastIndexOf('}');
+    if (start === -1 || end === -1 || end <= start) return null;
+    const jsonStr = candidate.slice(start, end + 1);
+    try {
+        return JSON.parse(jsonStr);
+    } catch (e) {
+        // Try to fix common issues: trailing commas, unescaped newlines in strings
+        try {
+            const cleaned = jsonStr.replace(/,\s*(\}|\])/g, '$1').replace(/\n/g, ' ');
+            return JSON.parse(cleaned);
+        } catch (e2) {
+            return null;
+        }
+    }
 }
 
 async function gradeVoiceAnswer(qi) {
-    const transcript = document.getElementById('transcript'+qi).textContent.trim();
-    if (!transcript) { alert('請先錄音！'); return; }
+    const blob = recordedBlobs[qi];
+    if (!blob) { alert('請先錄音！'); return; }
+
     const step = PROGRESSION_STEPS[currentQuizStep];
     const q = step.questions[qi];
     const resEl = document.getElementById('gradeResult'+qi);
     const gradeBtn = document.getElementById('gradeBtn'+qi);
     gradeBtn.disabled = true;
-    resEl.innerHTML = '<div style="color:#666;">⏳ AI 評分中，請稍候（約 3-5 秒）...</div>';
+    resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在分析你嘅錄音（轉字幕 + 評分），約需 5-15 秒...</div>';
+    document.getElementById('transcript'+qi).innerHTML = '<span style="color:#666;">🔄 分析中...</span>';
 
-    const prompt = `你係小學五年級數學老師，用粵語評分。
-學生要解釋：「${q.q}」
-要求學生講到：${q.concept || q.rubric || ''}
-評分重點：${q.rubric || '概念準確性 + 清晰度 + 完整性'}
+    const prompt = `你係小學五年級粵語數學老師。
+題目：「${q.q}」
+要求學生講到嘅內容：${q.concept || q.rubric || ''}
 
-學生錄音轉文字：「${transcript}」
+請做兩件事：
+1. 聽呢段學生用粵語講嘅錄音，轉寫成完整通順嘅粵語句子。**必須整理啲重複、口誤、語氣詞（例如「呢個」「嗰個」「即係」），將意思還原成 95% 學生想表達嘅內容**。例如學生講「2點3... 2點3乘100... 即係小數點...」應該還原為「2.3 乘以 100 嘅答案」。
+2. 根據呢句還原後嘅句子評分（0-100）：
+   - 概念準確性（40分）：有冇講對核心概念（例如小數點移動方向同位數）
+   - 解釋清晰度（30分）：講得易唔易明
+   - 完整性（30分）：有冇講晒關鍵步驟
 
-請嚴格返回純 JSON（唔好解釋，唔好有其他文字）：
-{"score": 0到100之間的整數, "feedback": "一句粵語評語同改進建議（唔超過 50 字）"}`;
+請嚴格返回純 JSON（唔好加 \`\`\` 或其他標記，唔好解釋）：
+{"transcript": "還原後嘅完整粵語句子（唔好有重複）", "score": 整數0-100, "feedback": "一句粵語評語同改進建議（唔超過50字）"}`;
 
     try {
+        const base64 = await blobToBase64(blob);
         const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
+            body: JSON.stringify({
+                messages: [{ role: 'user', content: prompt }],
+                audio: { mimeType: blob.type || 'audio/webm', data: base64 }
+            })
         });
         if (!res.ok) {
             const errText = await res.text().catch(()=>'');
             throw new Error('HTTP ' + res.status + ' ' + errText.substring(0,100));
         }
         const data = await res.json();
-        const reply = data.reply || data.text || JSON.stringify(data);
+        const reply = data.reply || data.text || '';
         if (!reply) throw new Error('AI 未回應');
-        const match = reply.match(/\{[\s\S]*?\}/);
-        if (!match) {
-            // Fallback: treat whole response as feedback, assign a default score
-            console.warn('AI response not JSON, using fallback:', reply);
-            voiceData[qi] = { transcript, score: 60, feedback: reply.substring(0, 80) };
-            const color = '#F57F17';
-            resEl.innerHTML = `<div style="padding:12px;border-radius:10px;background:#FFF8E1;border:2px solid ${color};">
-                <div style="font-size:1.4rem;font-weight:900;color:${color};">✅ 已提交（AI 回應非標準格式）</div>
-                <div style="margin-top:6px;color:#333;font-size:0.9rem;">${reply.substring(0,80)}</div>
+
+        const result = extractJSON(reply);
+        if (!result) {
+            console.warn('JSON parse failed, raw reply:', reply);
+            // Show raw reply so student/teacher can see what happened
+            document.getElementById('transcript'+qi).innerHTML =
+                `<span style="color:#C62828;">⚠️ AI 回應格式唔標準，原文：</span><br><span style="color:#666;font-size:0.85rem;">${reply.substring(0,200).replace(/</g,'&lt;')}</span>`;
+            resEl.innerHTML = `<div style="padding:12px;background:#FFEBEE;border-radius:8px;color:#C62828;">
+                ⚠️ 無法解析 AI 回應，請再錄音或聯絡老師。
                 <button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button>
             </div>`;
             gradeBtn.disabled = false;
             return;
         }
-        const result = JSON.parse(match[0]);
+
         const score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
-        const feedback = result.feedback || '';
+        const feedback = (result.feedback || '').replace(/[<>]/g, '');
+        const transcript = (result.transcript || '').replace(/[<>]/g, '');
         voiceData[qi] = { transcript, score, feedback };
+
+        // Show the AI-cleaned transcript
+        document.getElementById('transcript'+qi).innerHTML =
+            `<div style="color:#1565C0;font-weight:700;margin-bottom:4px;">🤖 AI 聽到你講（已整理）：</div>
+            <div style="color:#333;line-height:1.5;">${transcript || '<i>AI 聽唔清楚，請再錄音</i>'}</div>`;
 
         const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
         const bg = score >= 80 ? '#E8F5E9' : score >= 60 ? '#FFF8E1' : '#FFEBEE';
-        resEl.innerHTML = `<div style="padding:12px;border-radius:10px;background:${bg};border:2px solid ${color};">
+        resEl.innerHTML = `<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};">
             <div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div>
             <div style="margin-top:6px;color:#333;">${feedback}</div>
-            ${score < 80 ? `<button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button>` : '<div style="margin-top:6px;color:#2E7D32;font-weight:700;">✅ 做得好！</div>'}
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+                ${score < 80 ? `<button class="btn btn-sm btn-outline" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button>` : '<div style="color:#2E7D32;font-weight:700;">✅ 做得好！</div>'}
+            </div>
         </div>`;
         gradeBtn.disabled = false;
     } catch (e) {
-        resEl.innerHTML = `<div style="color:#C62828;">⚠️ 評分失敗：${e.message}，請重試</div>`;
+        resEl.innerHTML = `<div style="color:#C62828;padding:10px;background:#FFEBEE;border-radius:8px;">
+            ⚠️ 評分失敗：${e.message}
+            <div style="margin-top:8px;"><button class="btn btn-sm" onclick="gradeVoiceAnswer(${qi})">重試</button> <button class="btn btn-sm btn-outline" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button></div>
+        </div>`;
         gradeBtn.disabled = false;
     }
 }
 
 function resetVoiceQ(qi) {
-    document.getElementById('transcript'+qi).textContent = '';
+    delete recordedBlobs[qi];
+    delete voiceData[qi];
+    document.getElementById('transcript'+qi).innerHTML = '<span style="color:#999;">按「開始錄音」試下</span>';
     document.getElementById('gradeResult'+qi).innerHTML = '';
     document.getElementById('gradeBtn'+qi).disabled = true;
-    delete voiceData[qi];
+    document.getElementById('recStatus'+qi).textContent = '';
 }
 
 async function submitInfographicQuiz() {

@@ -291,11 +291,11 @@ body{
   <!-- ===== START SCREEN ===== -->
   <div id="startScreen">
     <div class="title-banner">
-      <h1>西遊記 計時搶答</h1>
-      <h2>第12課 有趣的乘法</h2>
+      <h1>唐僧縮小心法 · 限時挑戰</h1>
+      <h2>第12課 · 專攻 ×0.1 / ×0.01 / ×0.001</h2>
     </div>
     <div class="title-chars"><img src="images/monkey_happy.png" style="width:80px;height:auto;filter:drop-shadow(0 4px 12px rgba(255,215,0,0.5));animation:float 3s ease-in-out infinite"> ⚡ <img src="images/demon_ox.png" style="width:80px;height:auto;filter:drop-shadow(0 4px 12px rgba(255,69,0,0.5));animation:float 3s ease-in-out infinite 0.5s"></div>
-    <div class="subtitle">悟空大鬧天宮！限時60秒內擊敗妖怪！</div>
+    <div class="subtitle">限時 60 秒！用唐僧縮小心法對付小數乘法妖怪！</div>
     <div class="rules-box">
       📜 <span>規則說明</span><br>
       ⏱️ 總共 <span>60 秒</span>，每題限時 <span>4 秒</span><br>
@@ -366,82 +366,29 @@ body{
 
 <script>
 // ===== QUESTION DATA =====
+// 限時挑戰 — 唐僧嘅縮小心法專區 (focus on ×0.1 / ×0.01 / ×0.001)
+// 15 題：8 題純乘小數題、5 題單位轉換（細→大，需要除/乘小數）、2 題逆向思考
 const QUESTIONS = [
-  {
-    id:1, text:"3.8 × 100 = ?", answer:"380",
-    choices:["38","380","3800","3.80"],
-    correctIndex:1
-  },
-  {
-    id:2, text:"0.05 × 1000 = ?", answer:"50",
-    choices:["5","500","50","0.5"],
-    correctIndex:2
-  },
-  {
-    id:3, text:"123.4 × 0.1 = ?", answer:"12.34",
-    choices:["1234","1.234","12.34","123.4"],
-    correctIndex:2
-  },
-  {
-    id:4, text:"2.6 × 0.001 = ?", answer:"0.0026",
-    choices:["0.026","0.26","0.0026","2.6"],
-    correctIndex:2
-  },
-  {
-    id:5, text:"6.2 公斤 = ? 克", answer:"6200",
-    choices:["62","620","6200","62000"],
-    correctIndex:2
-  },
-  {
-    id:6, text:"0.36 公里 = ? 米", answer:"360",
-    choices:["36","360","3600","3.6"],
-    correctIndex:1
-  },
-  {
-    id:7, text:"___ × 100 = 50", answer:"0.5",
-    choices:["5","0.5","50","0.05"],
-    correctIndex:1
-  },
-  {
-    id:8, text:"8.64 升 = ? 毫升", answer:"8640",
-    choices:["864","8640","86.4","86400"],
-    correctIndex:1
-  },
-  {
-    id:9, text:"0.123 × 10 = ?", answer:"1.23",
-    choices:["12.3","0.0123","1.23","1230"],
-    correctIndex:2
-  },
-  {
-    id:10, text:"50 × 0.001 = ?", answer:"0.05",
-    choices:["0.5","0.005","5","0.05"],
-    correctIndex:3
-  },
-  {
-    id:11, text:"3000 × 0.01 = ?", answer:"30",
-    choices:["3","30","300","0.3"],
-    correctIndex:1
-  },
-  {
-    id:12, text:"0.024 公里 = ? 米", answer:"24",
-    choices:["2.4","240","24","0.24"],
-    correctIndex:2
-  },
-  {
-    id:13, text:"5.11 × 10 = ?", answer:"51.1",
-    choices:["511","5.11","51.1","0.511"],
-    correctIndex:2
-  },
-  {
-    id:14, text:"0.003 × 1000 = ?", answer:"3",
-    choices:["0.3","30","3","0.03"],
-    correctIndex:2
-  },
-  {
-    id:15, text:"2.8 米 = ? 厘米", answer:"280",
-    choices:["28","2800","0.28","280"],
-    correctIndex:3
-  }
+  // ===== ×0.1 (小數點向左移 1 位) =====
+  { id:1,  text:"4.8 × 0.1 = ?",    choices:["48","0.48","0.048","4.8"], correctIndex:1, answer:"0.48" },
+  { id:2,  text:"56 × 0.1 = ?",     choices:["560","5.6","0.56","56"],   correctIndex:1, answer:"5.6" },
+  { id:3,  text:"0.3 × 0.1 = ?",    choices:["3","0.3","0.03","0.003"],  correctIndex:2, answer:"0.03" },
+  { id:4,  text:"240 × 0.1 = ?",    choices:["2.4","24","2400","24000"], correctIndex:1, answer:"24" },
+  // ===== ×0.01 (小數點向左移 2 位) =====
+  { id:5,  text:"3000 × 0.01 = ?",  choices:["300","30","3","0.3"],      correctIndex:1, answer:"30" },
+  { id:6,  text:"45 × 0.01 = ?",    choices:["4.5","0.45","0.045","450"], correctIndex:1, answer:"0.45" },
+  { id:7,  text:"123.4 × 0.01 = ?", choices:["12.34","1.234","0.1234","1234"], correctIndex:1, answer:"1.234" },
+  // ===== ×0.001 (小數點向左移 3 位) =====
+  { id:8,  text:"2.6 × 0.001 = ?",  choices:["260","0.26","0.026","0.0026"], correctIndex:3, answer:"0.0026" },
+  { id:9,  text:"50 × 0.001 = ?",   choices:["5","0.5","0.05","0.005"],  correctIndex:2, answer:"0.05" },
+  { id:10, text:"7000 × 0.001 = ?", choices:["0.7","7","70","7000"],     correctIndex:1, answer:"7" },
+  // ===== 單位轉換 (細→大，用乘小數) =====
+  { id:11, text:"850 克 = ? 公斤",   choices:["8.5","0.85","85","0.085"], correctIndex:1, answer:"0.85" },
+  { id:12, text:"500 毫升 = ? 升",   choices:["5","0.5","50","0.05"],     correctIndex:1, answer:"0.5" },
+  { id:13, text:"80 厘米 = ? 米",    choices:["0.08","0.8","8","80"],     correctIndex:1, answer:"0.8" },
+  // ===== 逆向 =====
+  { id:14, text:"___ × 0.1 = 3.6",  choices:["0.36","3.6","36","360"],   correctIndex:2, answer:"36" },
+  { id:15, text:"八戒陷阱：0.35 × 0.1 = ?", choices:["3.5","0.35","0.035","35"], correctIndex:2, answer:"0.035" },
 ];
 
 const LABELS = ['A','B','C','D'];
