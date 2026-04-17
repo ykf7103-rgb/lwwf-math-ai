@@ -4040,6 +4040,66 @@ function blobToBase64(blob) {
     });
 }
 
+// Decode any browser-recorded audio (webm/opus, mp4/aac on iOS) and re-encode as 16kHz mono WAV.
+// Required because Gemini inlineData only accepts audio/wav, mp3, aac, flac, ogg — NOT mp4 (iOS default) or webm (Chrome default).
+async function encodeToWav(blob) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) throw new Error('你嘅瀏覽器唔支援錄音分析');
+    const arrayBuffer = await blob.arrayBuffer();
+    const decodeCtx = new AudioCtx();
+    // iOS Safari uses callback-style decodeAudioData if Promise version fails
+    const audioBuffer = await new Promise((resolve, reject) => {
+        const p = decodeCtx.decodeAudioData(arrayBuffer, resolve, reject);
+        if (p && typeof p.then === 'function') p.then(resolve, reject);
+    });
+    try { decodeCtx.close(); } catch(_){}
+    // Resample to 16kHz mono for smaller upload size
+    const targetSR = 16000;
+    const length = Math.floor(audioBuffer.duration * targetSR);
+    const offline = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, length, targetSR);
+    const src = offline.createBufferSource();
+    src.buffer = audioBuffer;
+    src.connect(offline.destination);
+    src.start(0);
+    const rendered = await offline.startRendering();
+    return audioBufferToWavBlob(rendered);
+}
+
+function audioBufferToWavBlob(buffer) {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const samples = buffer.length;
+    const dataSize = samples * numChannels * 2;
+    const buf = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buf);
+    let off = 0;
+    const writeStr = (s) => { for (let i = 0; i < s.length; i++) view.setUint8(off++, s.charCodeAt(i)); };
+    writeStr('RIFF');
+    view.setUint32(off, 36 + dataSize, true); off += 4;
+    writeStr('WAVE');
+    writeStr('fmt ');
+    view.setUint32(off, 16, true); off += 4;
+    view.setUint16(off, 1, true); off += 2;                                // PCM
+    view.setUint16(off, numChannels, true); off += 2;
+    view.setUint32(off, sampleRate, true); off += 4;
+    view.setUint32(off, sampleRate * numChannels * 2, true); off += 4;
+    view.setUint16(off, numChannels * 2, true); off += 2;
+    view.setUint16(off, 16, true); off += 2;                               // 16-bit
+    writeStr('data');
+    view.setUint32(off, dataSize, true); off += 4;
+    // Interleave PCM samples
+    const chans = [];
+    for (let c = 0; c < numChannels; c++) chans.push(buffer.getChannelData(c));
+    for (let i = 0; i < samples; i++) {
+        for (let c = 0; c < numChannels; c++) {
+            let s = Math.max(-1, Math.min(1, chans[c][i]));
+            view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+            off += 2;
+        }
+    }
+    return new Blob([buf], { type: 'audio/wav' });
+}
+
 // Extract JSON (handles ```json fences, truncation, trailing text)
 // Also provides field-by-field regex fallback if full JSON parse fails.
 function extractJSON(text) {
@@ -4114,13 +4174,22 @@ async function gradeVoiceAnswer(qi) {
 {"transcript": "還原後嘅完整粵語句子（唔好有重複）", "score": 整數0-100, "feedback": "一句粵語評語同改進建議（唔超過50字）"}`;
 
     try {
-        const base64 = await blobToBase64(blob);
+        // Re-encode to WAV: Gemini inlineData rejects iOS mp4/aac and Chrome webm/opus.
+        // WAV 16kHz mono works on all platforms (iOS Safari, Chrome Android, desktop).
+        let uploadBlob;
+        try {
+            uploadBlob = await encodeToWav(blob);
+        } catch (encErr) {
+            console.warn('WAV encode failed, sending original:', encErr);
+            uploadBlob = blob; // fallback
+        }
+        const base64 = await blobToBase64(uploadBlob);
         const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 messages: [{ role: 'user', content: prompt }],
-                audio: { mimeType: blob.type || 'audio/webm', data: base64 }
+                audio: { mimeType: uploadBlob.type || 'audio/wav', data: base64 }
             })
         });
         if (!res.ok) {
