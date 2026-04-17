@@ -3997,28 +3997,51 @@ function blobToBase64(blob) {
     });
 }
 
-// Robust JSON extraction: handles ```json fences, leading/trailing text, partial JSON
+// Extract JSON (handles ```json fences, truncation, trailing text)
+// Also provides field-by-field regex fallback if full JSON parse fails.
 function extractJSON(text) {
     if (!text) return null;
-    // Strip markdown code fences (```json ... ``` or ``` ... ```)
+    // Strip markdown code fences
     const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
     let candidate = fenceMatch ? fenceMatch[1] : text;
-    // Find the outermost { ... }
     const start = candidate.indexOf('{');
     const end = candidate.lastIndexOf('}');
-    if (start === -1 || end === -1 || end <= start) return null;
-    const jsonStr = candidate.slice(start, end + 1);
-    try {
-        return JSON.parse(jsonStr);
-    } catch (e) {
-        // Try to fix common issues: trailing commas, unescaped newlines in strings
-        try {
-            const cleaned = jsonStr.replace(/,\s*(\}|\])/g, '$1').replace(/\n/g, ' ');
-            return JSON.parse(cleaned);
-        } catch (e2) {
-            return null;
-        }
+    if (start !== -1 && end > start) {
+        const jsonStr = candidate.slice(start, end + 1);
+        try { return JSON.parse(jsonStr); } catch (e) {}
+        try { return JSON.parse(jsonStr.replace(/,\s*(\}|\])/g, '$1').replace(/\n/g, ' ')); } catch (e) {}
     }
+    // Fallback: regex-extract individual fields from truncated/malformed JSON
+    const t = text;
+    const tM = t.match(/"transcript"\s*:\s*"([^"]*(?:\\.[^"]*)*)"/);
+    const sM = t.match(/"score"\s*:\s*(\d+)/);
+    const fM = t.match(/"feedback"\s*:\s*"([^"]*(?:\\.[^"]*)*)"/);
+    if (tM || sM || fM) {
+        return {
+            transcript: tM ? tM[1].replace(/\\"/g,'"').replace(/\\n/g,' ') : '',
+            score: sM ? parseInt(sM[1]) : 0,
+            feedback: fM ? fM[1].replace(/\\"/g,'"').replace(/\\n/g,' ') : ''
+        };
+    }
+    return null;
+}
+
+// Strip any JSON/code artifacts — leave only plain Chinese text for student display
+function cleanChineseOnly(s) {
+    if (!s) return '';
+    let out = String(s)
+        .replace(/```[a-z]*|```/gi, '')         // strip code fences
+        .replace(/"[a-zA-Z_]+"\s*:\s*/g, '')    // strip any "key":
+        .replace(/[{}\[\]]/g, '')                // strip braces
+        .replace(/\\n/g, ' ').replace(/\\"/g, '"')
+        .trim();
+    // Strip wrapping quotes (possibly with padding spaces)
+    while (/^\s*["']/.test(out) && /["']\s*$/.test(out)) {
+        out = out.replace(/^\s*["']\s*/, '').replace(/\s*["']\s*$/, '');
+    }
+    // Strip leading/trailing commas/semicolons left from partial JSON
+    out = out.replace(/^\s*[,;]+\s*|\s*[,;]+\s*$/g, '').replace(/\s{2,}/g, ' ').trim();
+    return out;
 }
 
 async function gradeVoiceAnswer(qi) {
@@ -4068,32 +4091,37 @@ async function gradeVoiceAnswer(qi) {
         const result = extractJSON(reply);
         if (!result) {
             console.warn('JSON parse failed, raw reply:', reply);
-            // Show raw reply so student/teacher can see what happened
+            // NEVER show raw JSON/English to student — show clean Chinese error only
             document.getElementById('transcript'+qi).innerHTML =
-                `<span style="color:#C62828;">⚠️ AI 回應格式唔標準，原文：</span><br><span style="color:#666;font-size:0.85rem;">${reply.substring(0,200).replace(/</g,'&lt;')}</span>`;
+                '<span style="color:#C62828;">⚠️ AI 分析失敗，請再試一次</span>';
             resEl.innerHTML = `<div style="padding:12px;background:#FFEBEE;border-radius:8px;color:#C62828;">
-                ⚠️ 無法解析 AI 回應，請再錄音或聯絡老師。
-                <button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button>
+                ⚠️ 評分失敗，請再錄音。
+                <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-sm" onclick="gradeVoiceAnswer(${qi})">🔄 重試評分</button>
+                    <button class="btn btn-sm btn-outline" onclick="resetVoiceQ(${qi})">🎤 重新錄音</button>
+                </div>
             </div>`;
             gradeBtn.disabled = false;
             return;
         }
 
         const score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
-        const feedback = (result.feedback || '').replace(/[<>]/g, '');
-        const transcript = (result.transcript || '').replace(/[<>]/g, '');
+        const feedback = cleanChineseOnly(result.feedback);
+        const transcript = cleanChineseOnly(result.transcript);
         voiceData[qi] = { transcript, score, feedback };
 
-        // Show the AI-cleaned transcript
+        // Show the AI-cleaned transcript (pure Chinese, no JSON artifacts)
+        const escapedTranscript = transcript.replace(/</g, '&lt;').replace(/>/g, '&gt;') || '<i style="color:#999;">AI 聽唔清楚，請大聲啲再錄音</i>';
         document.getElementById('transcript'+qi).innerHTML =
-            `<div style="color:#1565C0;font-weight:700;margin-bottom:4px;">🤖 AI 聽到你講（已整理）：</div>
-            <div style="color:#333;line-height:1.5;">${transcript || '<i>AI 聽唔清楚，請再錄音</i>'}</div>`;
+            `<div style="color:#1565C0;font-weight:700;margin-bottom:6px;font-size:0.9rem;">🤖 AI 聽到你講（已整理）：</div>
+            <div style="color:#333;line-height:1.6;">${escapedTranscript}</div>`;
 
         const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
         const bg = score >= 80 ? '#E8F5E9' : score >= 60 ? '#FFF8E1' : '#FFEBEE';
+        const escapedFb = feedback.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         resEl.innerHTML = `<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};">
             <div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div>
-            <div style="margin-top:6px;color:#333;">${feedback}</div>
+            <div style="margin-top:6px;color:#333;line-height:1.5;">${escapedFb}</div>
             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
                 ${score < 80 ? `<button class="btn btn-sm btn-outline" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button>` : '<div style="color:#2E7D32;font-weight:700;">✅ 做得好！</div>'}
             </div>
@@ -4101,8 +4129,11 @@ async function gradeVoiceAnswer(qi) {
         gradeBtn.disabled = false;
     } catch (e) {
         resEl.innerHTML = `<div style="color:#C62828;padding:10px;background:#FFEBEE;border-radius:8px;">
-            ⚠️ 評分失敗：${e.message}
-            <div style="margin-top:8px;"><button class="btn btn-sm" onclick="gradeVoiceAnswer(${qi})">重試</button> <button class="btn btn-sm btn-outline" onclick="resetVoiceQ(${qi})">🔄 重新錄音</button></div>
+            ⚠️ 評分失敗，請檢查網絡再試
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-sm" onclick="gradeVoiceAnswer(${qi})">🔄 重試</button>
+                <button class="btn btn-sm btn-outline" onclick="resetVoiceQ(${qi})">🎤 重新錄音</button>
+            </div>
         </div>`;
         gradeBtn.disabled = false;
     }
