@@ -4040,23 +4040,30 @@ function blobToBase64(blob) {
     });
 }
 
-// Decode any browser-recorded audio (webm/opus, mp4/aac on iOS) and re-encode as 16kHz mono WAV.
+// Decode any browser-recorded audio (webm/opus, mp4/aac on iOS) and re-encode as mono WAV.
 // Required because Gemini inlineData only accepts audio/wav, mp3, aac, flac, ogg — NOT mp4 (iOS default) or webm (Chrome default).
+// iOS Safari OfflineAudioContext requires sampleRate >= 22050 — use that for compatibility.
 async function encodeToWav(blob) {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) throw new Error('你嘅瀏覽器唔支援錄音分析');
+    const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!AudioCtx) throw new Error('browser lacks AudioContext');
+    if (!OfflineCtx) throw new Error('browser lacks OfflineAudioContext');
     const arrayBuffer = await blob.arrayBuffer();
     const decodeCtx = new AudioCtx();
-    // iOS Safari uses callback-style decodeAudioData if Promise version fails
+    // iOS Safari: MUST resume context after user gesture (already done via click)
+    if (decodeCtx.state === 'suspended') { try { await decodeCtx.resume(); } catch(_){} }
+    // iOS Safari uses callback-style decodeAudioData; modern browsers also return Promise
     const audioBuffer = await new Promise((resolve, reject) => {
-        const p = decodeCtx.decodeAudioData(arrayBuffer, resolve, reject);
-        if (p && typeof p.then === 'function') p.then(resolve, reject);
+        try {
+            const p = decodeCtx.decodeAudioData(arrayBuffer.slice(0), resolve, reject);
+            if (p && typeof p.then === 'function') p.then(resolve, reject);
+        } catch(e) { reject(e); }
     });
     try { decodeCtx.close(); } catch(_){}
-    // Resample to 16kHz mono for smaller upload size
-    const targetSR = 16000;
-    const length = Math.floor(audioBuffer.duration * targetSR);
-    const offline = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, length, targetSR);
+    // iOS-safe sample rate (22050 Hz is minimum supported on iOS OfflineAudioContext)
+    const targetSR = 22050;
+    const length = Math.max(1, Math.floor(audioBuffer.duration * targetSR));
+    const offline = new OfflineCtx(1, length, targetSR);
     const src = offline.createBufferSource();
     src.buffer = audioBuffer;
     src.connect(offline.destination);
@@ -4173,17 +4180,25 @@ async function gradeVoiceAnswer(qi) {
 請嚴格返回純 JSON（唔好加 \`\`\` 或其他標記，唔好解釋）：
 {"transcript": "還原後嘅完整粵語句子（唔好有重複）", "score": 整數0-100, "feedback": "一句粵語評語同改進建議（唔超過50字）"}`;
 
+    // Diagnostic state — shown in UI if something fails (so iOS users can report)
+    let diag = { step: 'start', origType: blob.type, origSize: blob.size };
     try {
         // Re-encode to WAV: Gemini inlineData rejects iOS mp4/aac and Chrome webm/opus.
-        // WAV 16kHz mono works on all platforms (iOS Safari, Chrome Android, desktop).
+        diag.step = 'encode-wav';
         let uploadBlob;
         try {
             uploadBlob = await encodeToWav(blob);
+            diag.wavSize = uploadBlob.size;
+            diag.wavOk = true;
         } catch (encErr) {
+            diag.wavOk = false;
+            diag.wavErr = (encErr && (encErr.message || encErr.name)) || String(encErr);
             console.warn('WAV encode failed, sending original:', encErr);
             uploadBlob = blob; // fallback
         }
+        diag.step = 'base64';
         const base64 = await blobToBase64(uploadBlob);
+        diag.step = 'fetch';
         const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -4192,6 +4207,7 @@ async function gradeVoiceAnswer(qi) {
                 audio: { mimeType: uploadBlob.type || 'audio/wav', data: base64 }
             })
         });
+        diag.httpStatus = res.status;
         if (!res.ok) {
             const errText = await res.text().catch(()=>'');
             throw new Error('HTTP ' + res.status + ' ' + errText.substring(0,100));
@@ -4240,8 +4256,15 @@ async function gradeVoiceAnswer(qi) {
         </div>`;
         gradeBtn.disabled = false;
     } catch (e) {
+        diag.err = (e && (e.message || e.name)) || String(e);
+        const diagStr = `步驟: ${diag.step}　·　原格式: ${diag.origType || '未知'} (${Math.round((diag.origSize||0)/1024)} KB)`
+            + (diag.wavOk === true ? `　·　WAV 轉碼: OK (${Math.round((diag.wavSize||0)/1024)} KB)` : '')
+            + (diag.wavOk === false ? `　·　WAV 轉碼失敗: ${diag.wavErr}` : '')
+            + (diag.httpStatus ? `　·　HTTP ${diag.httpStatus}` : '')
+            + `　·　錯誤: ${diag.err}`;
         resEl.innerHTML = `<div style="color:#C62828;padding:10px;background:#FFEBEE;border-radius:8px;">
-            ⚠️ 評分失敗，請檢查網絡再試
+            ⚠️ 評分失敗，請再試
+            <div style="margin-top:8px;font-size:0.75rem;color:#666;background:#fff;padding:6px;border-radius:4px;word-break:break-all;">${diagStr.replace(/</g, '&lt;')}</div>
             <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
                 <button class="btn btn-sm" onclick="gradeVoiceAnswer(${qi})">🔄 重試</button>
                 <button class="btn btn-sm btn-outline" onclick="resetVoiceQ(${qi})">🎤 重新錄音</button>
