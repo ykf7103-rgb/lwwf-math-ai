@@ -1869,7 +1869,12 @@ body {
 // ============================================================
 const SUPABASE_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHN2d3VnaHFzdHVid3hoem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMTM3NzUsImV4cCI6MjA5MTg4OTc3NX0.DBsx2945F0Vdfhptx-Tr9mVqaa2i9jE4tMQIvjffvII';
-const CHAPTER = 12;
+
+// Chapter system: ?ch=13 switches chapter via URL. Default is 12.
+const CHAPTER = parseInt(new URLSearchParams(location.search).get('ch') || '12');
+const CHAPTER_ID = 'ch' + CHAPTER;
+const ASSET_BASE = 'assets/' + CHAPTER_ID;
+const COMMON_BASE = 'assets/common';
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 const cloudStore = {
@@ -2347,13 +2352,13 @@ function updateAssessCardStatus(scores) {
         const a = scores['assess' + n];
         if (a && a.correct === a.total) {
             // All correct — completed, locked
-            el.innerHTML = '<span class="progression-step-badge" style="background:#E8F5E9;color:#2E7D32;">✅ 已完成 ' + a.coins + ' <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span>';
+            el.innerHTML = `<span class="progression-step-badge" style="background:#E8F5E9;color:#2E7D32;">✅ 已完成 ${a.coins} <img src="${ASSET_BASE}/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span>`;
             if (card) card.style.opacity = '0.7';
         } else if (a && a.coins > 0) {
             // Partially done — can retry
-            el.innerHTML = '<span class="progression-step-badge active">' + a.coins + '/3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"> 可重試</span>';
+            el.innerHTML = `<span class="progression-step-badge active">${a.coins}/3 <img src="${ASSET_BASE}/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"> 可重試</span>`;
         } else {
-            el.innerHTML = '<span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span>';
+            el.innerHTML = `<span class="progression-step-badge active">最多 3 <img src="${ASSET_BASE}/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span>`;
         }
     });
 }
@@ -2567,7 +2572,7 @@ function renderQuiz23Question(container) {
     const totalQ = data.length * 2;
     const progress = (totalAnswered / totalQ) * 100;
     const letters = ['A', 'B', 'C', 'D'];
-    const imgPath = 'assets/ch12/quiz-images/';
+    const imgPath = `${ASSET_BASE}/quiz-images/`;
 
     container.innerHTML = `
         <div class="quiz-header">
@@ -2629,7 +2634,7 @@ function answerQuiz23(selected) {
 
     // Show answer image if both sub-questions answered
     if (quizState.subQuestionIndex === 1) {
-        const imgPath = 'assets/ch12/quiz-images/';
+        const imgPath = `${ASSET_BASE}/quiz-images/`;
         document.getElementById('answerImgArea').innerHTML = `
             <img class="quiz-answer-img" src="${imgPath}${group.answerImg}" alt="答案圖片" onerror="this.style.display='none'">
         `;
@@ -2709,7 +2714,7 @@ function renderScores() {
     const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
     const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
     const spendable = Math.max(0, earnedCoins - totalSpent);
-    const coinImg = 'assets/ch12/images/coin_new.png';
+    const coinImg = `${ASSET_BASE}/images/coin_new.png`;
 
     const container = document.getElementById('scoresContent');
 
@@ -2837,7 +2842,7 @@ function renderScoreRow(label, data) {
 function getStudentAllData(s) {
     const key = `scores_${s.class}_${s.number}`;
     const scores = JSON.parse(localStorage.getItem(key) || '{}');
-    const progKey = `progress_ch12_${s.class}_${s.number}`;
+    const progKey = `progress_ch${CHAPTER}_${s.class}_${s.number}`;
     const progress = JSON.parse(localStorage.getItem(progKey) || '{}');
     const stepsCompleted = ['slides1','quiz1','slides2','quiz2','slides3','quiz3'].filter(k => progress[k]?.done).length;
     const totalCoins = (scores.assess1?.coins||0) + (scores.assess2?.coins||0) + (scores.assess3?.coins||0);
@@ -2984,9 +2989,12 @@ function renderIQTeacherView(quizNum) {
 
     // For each question, show all students' answers
     step.questions.forEach((q, qi) => {
+        const qTypeLabel = q.type === 'mc' ? '選擇題'
+                         : q.type === 'voice' ? '🎤 錄音題'
+                         : q.type === 'fill' ? '填充題' : '文字題';
         html += `<div style="margin-bottom:20px;padding:14px;border:2px solid #E0E0E0;border-radius:10px;">
             <div style="font-weight:700;color:#1565C0;margin-bottom:10px;">
-                第 ${qi+1} 題 (${q.type === 'mc' ? '選擇題' : '文字題'})：${q.q}
+                第 ${qi+1} 題 (${qTypeLabel})：${q.q}
             </div>`;
 
         if (q.type === 'mc') {
@@ -3027,15 +3035,52 @@ function renderIQTeacherView(quizNum) {
                 </div>`;
             });
             html += `</div></details>`;
+        } else if (q.type === 'voice') {
+            // Voice: show transcript + AI score + feedback per student, with class average
+            const submitted = studentAnswers.filter(sa => sa.answered && sa.answers[qi] && sa.answers[qi].type === 'voice');
+            const avgScore = submitted.length > 0
+                ? Math.round(submitted.reduce((sum, sa) => sum + (sa.answers[qi].score || 0), 0) / submitted.length)
+                : 0;
+            html += `<div style="margin-bottom:10px;padding:8px 12px;background:#FCE4EC;border-radius:8px;font-size:0.9rem;color:#880E4F;">
+                已錄音：${submitted.length} / ${students.length} 人　·　平均 AI 評分：<b>${avgScore}/100</b>
+            </div>`;
+            html += `<div style="max-height:500px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;">`;
+            studentAnswers.forEach(sa => {
+                const a = sa.answered && sa.answers[qi] && sa.answers[qi].type === 'voice' ? sa.answers[qi] : null;
+                if (!a) {
+                    html += `<div style="padding:10px;background:#F5F5F5;border-radius:8px;font-size:0.9rem;opacity:0.6;">
+                        <div style="font-weight:600;color:#999;">⏸ ${sa.student.class} ${sa.student.number} ${sa.student.name}</div>
+                        <div style="margin-top:4px;color:#999;font-style:italic;">未錄音</div>
+                    </div>`;
+                    return;
+                }
+                const score = a.score || 0;
+                const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
+                const borderColor = score >= 80 ? '#4CAF50' : score >= 60 ? '#FFC107' : '#E53935';
+                const bg = score >= 80 ? '#E8F5E9' : score >= 60 ? '#FFF8E1' : '#FFEBEE';
+                const transcript = (a.transcript || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const feedback = (a.feedback || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                html += `<div style="padding:12px;background:${bg};border-left:4px solid ${borderColor};border-radius:8px;font-size:0.9rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                        <div style="font-weight:700;color:#1565C0;">🎤 ${sa.student.class} ${sa.student.number} ${sa.student.name}</div>
+                        <div style="background:${borderColor};color:white;padding:2px 10px;border-radius:12px;font-weight:700;font-size:0.85rem;white-space:nowrap;">${score}/100</div>
+                    </div>
+                    <div style="margin-top:8px;padding:8px;background:white;border-radius:6px;font-style:italic;color:#333;line-height:1.5;">
+                        「${transcript || '<span style=\"color:#999;\">（AI 聽唔清楚）</span>'}」
+                    </div>
+                    ${feedback ? `<div style="margin-top:6px;color:${color};font-size:0.85rem;">💬 AI 評語：${feedback}</div>` : ''}
+                </div>`;
+            });
+            html += `</div>`;
         } else {
-            // Text question: show all answers in a list
+            // Text / fill question: show all answers in a list
             html += `<div style="max-height:300px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;">`;
             studentAnswers.forEach(sa => {
-                const ans = sa.answered && sa.answers[qi] ? sa.answers[qi].answer : '';
+                const ans = sa.answered && sa.answers[qi] ? (sa.answers[qi].answer || '') : '';
                 const bg = sa.answered ? '#E3F2FD' : '#F5F5F5';
                 html += `<div style="padding:10px;background:${bg};border-radius:8px;font-size:0.9rem;">
                     <div style="font-weight:600;color:#1565C0;">${sa.student.class} ${sa.student.number} ${sa.student.name}</div>
-                    <div style="margin-top:4px;color:#333;">${sa.answered ? ans : '<i style="color:#999;">未作答</i>'}</div>
+                    <div style="margin-top:4px;color:#333;">${sa.answered ? (ans || '<i style="color:#999;">（空白）</i>') : '<i style="color:#999;">未作答</i>'}</div>
                 </div>`;
             });
             html += `</div>`;
@@ -3061,7 +3106,7 @@ async function showStudentDetail(cls, num, name) {
     const modal = document.getElementById('teacherDetailModal');
     modal.style.display = '';
 
-    const coinImg = 'assets/ch12/images/coin_new.png';
+    const coinImg = `${ASSET_BASE}/images/coin_new.png`;
     let html = `<div style="padding:12px;background:linear-gradient(135deg,#FFF8E1,#FFE082);border-radius:10px;margin-bottom:16px;font-size:1.05rem;">
         <img src="${coinImg}" style="width:22px;vertical-align:middle;"> <b>金幣：${earnedCoins}/39</b>  ·  可換 ${spendable}  ·  🏅 已換取 ${totalEdx} EDX
     </div>`;
@@ -3225,7 +3270,7 @@ document.addEventListener('keydown', function(e) {
 const PROGRESSION_STEPS = [
     { id:'slides1', type:'slides', title:'簡報1：悟空的放大法術', desc:'×10 / ×100 / ×1000', folder:'slides1', total:14, icon:'📗' },
     { id:'quiz1', type:'infoquiz', title:'問答1：放大法術小測', desc:'回答3題解鎖簡報2', icon:'❓',
-      image:'assets/ch12/infographics/quiz1.png',
+      image:`${ASSET_BASE}/infographics/quiz1.webp`,
       questions:[
         { q:'0.45 × 10 = ?', type:'mc', options:['0.045','4.5','45','450'], correct:1 },
         { q:'填充：4 × 100 = ___', type:'fill', accept:['400','400.0','400.00'], hint:'×100 小數點向右移 2 位' },
@@ -3236,7 +3281,7 @@ const PROGRESSION_STEPS = [
       ]},
     { id:'slides2', type:'slides', title:'簡報2：唐僧的縮小心法', desc:'×0.1 / ×0.01 / ×0.001', folder:'slides2', total:14, icon:'📘' },
     { id:'quiz2', type:'infoquiz', title:'問答2：縮小心法小測', desc:'回答3題解鎖簡報3', icon:'❓',
-      image:'assets/ch12/infographics/quiz2.png',
+      image:`${ASSET_BASE}/infographics/quiz2.webp`,
       questions:[
         { q:'2.6 × 0.001 = ?', type:'mc', options:['260','0.26','0.026','0.0026'], correct:3 },
         { q:'填充：乘以 0.1 等於除以 ___', type:'fill', accept:['10','十'], hint:'×0.1 = ÷10，因為 0.1 = 1/10' },
@@ -3247,7 +3292,7 @@ const PROGRESSION_STEPS = [
       ]},
     { id:'slides3', type:'slides', title:'簡報3：單位轉換大冒險', desc:'公里↔米 / 公斤↔克 / 升↔毫升', folder:'slides3', total:14, icon:'📙' },
     { id:'quiz3', type:'infoquiz', title:'問答3：單位轉換小測', desc:'回答3題解鎖評估區', icon:'❓',
-      image:'assets/ch12/infographics/quiz3.png',
+      image:`${ASSET_BASE}/infographics/quiz3.webp`,
       questions:[
         { q:'0.72 公里 = ? 米', type:'mc', options:['7.2','72','720','7200'], correct:2 },
         { q:'填充：1 公里 = ___ 米', type:'fill', accept:['1000','1000米','一千'], hint:'1 公里 = 1000 米（大變細用乘法）' },
@@ -3505,8 +3550,8 @@ if (window.speechSynthesis) {
 }
 
 function getProgressKey() {
-    if (!currentUser) return 'progress_ch12_guest';
-    return `progress_ch12_${currentUser.class}_${currentUser.number}`;
+    if (!currentUser) return `progress_ch${CHAPTER}_guest`;
+    return `progress_ch${CHAPTER}_${currentUser.class}_${currentUser.number}`;
 }
 function getProgress() { return JSON.parse(localStorage.getItem(getProgressKey()) || '{}'); }
 function setStepComplete(stepId) {
@@ -3535,7 +3580,7 @@ function renderProgression() {
         let coinInfo = '';
         if (step.type === 'slides' && SLIDE_QUESTIONS[step.folder]) {
             const sc = userScores[step.folder];
-            coinInfo = sc && sc.coins ? ` <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"> ${sc.coins}/2` : ' · 最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">';
+            coinInfo = sc && sc.coins ? ` <img src="${ASSET_BASE}/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"> ${sc.coins}/2` : ` · 最多 2 <img src="${ASSET_BASE}/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">`;
         }
         const badge = done ? `<span class="progression-step-badge done">✓ 已完成${coinInfo}</span>`
             : unlocked ? `<span class="progression-step-badge active">進行中${coinInfo}</span>`
@@ -3585,7 +3630,7 @@ function updateSlideView() {
     const step = PROGRESSION_STEPS[currentSlideStep];
     const idx = currentSlideIndex;
     const pad = String(idx + 1).padStart(2, '0');
-    document.getElementById('slideImage').src = `assets/ch12/${step.folder}/p${pad}.jpg`;
+    document.getElementById('slideImage').src = `${ASSET_BASE}/${step.folder}/p${pad}.jpg`;
     document.getElementById('slideCounter').textContent = `${idx + 1} / ${step.total}`;
     // Dots
     document.querySelectorAll('#slideDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
@@ -4266,7 +4311,7 @@ function openAssessViewer(num) {
 function updateAssessView() {
     const pad = String(currentAssessIndex + 1).padStart(2, '0');
     const img = document.getElementById('assessImage');
-    img.src = `assets/ch12/assess${currentAssessNum}/p${pad}.jpg`;
+    img.src = `${ASSET_BASE}/assess${currentAssessNum}/p${pad}.jpg`;
     document.querySelectorAll('#assessDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === currentAssessIndex));
 
     // Update side arrows
@@ -4302,7 +4347,7 @@ function updateAssessView() {
         const correctCount = Object.keys(assessScore[currentAssessNum].answered).length;
         if (currentAssessIndex === ASSESS_TOTAL - 1 || correctCount === total) {
             const coins = getAssessCoins(correctCount, total);
-            const coinImgs = Array(coins).fill('<img src="assets/ch12/images/coin_new.png" style="width:28px;height:28px;vertical-align:middle;">').join('');
+            const coinImgs = Array(coins).fill(`<img src="${ASSET_BASE}/images/coin_new.png" style="width:28px;height:28px;vertical-align:middle;">`).join('');
             overlay.innerHTML = `<div class="assess-coin-banner"><div class="coin-count">${coinImgs} ${coins} 金幣</div><div>答對 ${correctCount}/${total} 題</div>${correctCount < total ? '<button class="btn btn-sm btn-outline" style="margin-top:8px;" onclick="retryAssess()">重試拿滿金幣</button>' : '<div style="color:var(--success);font-weight:700;margin-top:4px;">🎉 全部答對！</div>'}</div>`;
             // Save coins
             if (currentUser) {
@@ -4438,13 +4483,25 @@ function flipSlide(img, direction) {
 function loadGame(num) {
     document.getElementById('gameSelectScreen').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'block';
-    document.getElementById('gameFrame').src = 'assets/ch12/game' + num + '.html?v=' + Date.now();
+    document.getElementById('gameFrame').src = `${ASSET_BASE}/game` + num + '.html?v=' + Date.now();
 }
 function exitGame() {
     document.getElementById('gameFrame').src = '';
     document.getElementById('gameContainer').style.display = 'none';
     document.getElementById('gameSelectScreen').style.display = 'block';
 }
+
+// --- Chapter asset path rewriter: if URL has ?ch=N (N !== 12), rewrite hardcoded ch12 paths in HTML
+(function chapterAssetSweep(){
+    if (CHAPTER === 12) return;
+    const run = () => {
+        document.querySelectorAll('img[src*="assets/ch12/"], audio[src*="assets/ch12/"], source[src*="assets/ch12/"], iframe[src*="assets/ch12/"]').forEach(el => {
+            el.setAttribute('src', el.getAttribute('src').replace(/assets\/ch12\//g, 'assets/' + CHAPTER_ID + '/'));
+        });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+    else run();
+})();
 
 // --- Video player ---
 document.addEventListener('DOMContentLoaded', function() {
