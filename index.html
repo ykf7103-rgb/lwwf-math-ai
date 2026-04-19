@@ -46,16 +46,18 @@ body {
     position: relative;
 }
 
-/* School photo as semi-transparent fixed background */
+/* School photo as semi-transparent scrolling background (moves with page content) */
 body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-image: url('assets/common/images/school_bg.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center top;
     background-repeat: no-repeat;
-    background-attachment: fixed;
     opacity: 0.35;
     z-index: -1;
     pointer-events: none;
