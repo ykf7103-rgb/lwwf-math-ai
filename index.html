@@ -2247,7 +2247,7 @@ function logout() {
     clearAuthPersist();
     document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
     document.getElementById('loginPage').classList.add('active');
-    document.getElementById('loginPage').style.display = 'block';
+    document.getElementById('loginPage').style.display = 'flex';  // flex, not block — keeps login container centered
     window.scrollTo(0, 0);
     // Reset forms
     document.getElementById('classSelect').value = '';
