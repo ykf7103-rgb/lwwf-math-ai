@@ -1843,9 +1843,14 @@ body::before {
                         <option value="slides2">簡報 2（唐僧的縮小心法）</option>
                         <option value="slides3">簡報 3（單位轉換大冒險）</option>
                     </optgroup>
+                    <optgroup label="📖 課前預習（含答案）">
+                        <option value="iq_quiz1">課前預習 1（放大法術）</option>
+                        <option value="iq_quiz2">課前預習 2（縮小心法）</option>
+                        <option value="iq_quiz3">課前預習 3（單位轉換）</option>
+                    </optgroup>
                     <optgroup label="📝 MC 測驗">
-                        <option value="quiz1">MC 測驗 1</option>
-                        <option value="quiz4">MC 測驗 2</option>
+                        <option value="mc_quiz1">MC 測驗 1</option>
+                        <option value="mc_quiz4">MC 測驗 2</option>
                     </optgroup>
                     <optgroup label="✏️ 評估（含分數）">
                         <option value="assess1">評估 1</option>
@@ -2013,6 +2018,40 @@ const cloudStore = {
       });
       return by;
     } catch (e) { console.warn('class load failed:', e); return {}; }
+  },
+  async loadAllClassProgress(cls) {
+    if (!sb) {
+      // Fallback: scan localStorage
+      const result = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(`progress_ch${CHAPTER}_`)) {
+          const parts = k.split('_');
+          const sk = parts[2] + '_' + parts[3];
+          result[sk] = JSON.parse(localStorage.getItem(k) || '{}');
+        }
+      }
+      return result;
+    }
+    try {
+      let q = sb.from('student_progress')
+        .select('class,student_number,step_id,done_at')
+        .eq('chapter', CHAPTER);
+      if (cls && cls !== 'all') q = q.eq('class', cls);
+      const { data } = await q;
+      const by = {};
+      (data || []).forEach(r => {
+        const k = `${r.class}_${r.student_number}`;
+        if (!by[k]) by[k] = {};
+        by[k][r.step_id] = { done: true, date: r.done_at };
+      });
+      // Persist each student's progress to localStorage so getStudentAllData() can read it
+      Object.entries(by).forEach(([sk, p]) => {
+        const [c, n] = sk.split('_');
+        localStorage.setItem(`progress_ch${CHAPTER}_${c}_${n}`, JSON.stringify(p));
+      });
+      return by;
+    } catch (e) { console.warn('class progress load failed:', e); return {}; }
   },
   async saveProgress(cls, num, stepId) {
     const pk = `progress_ch${CHAPTER}_${cls}_${num}`;
@@ -3004,8 +3043,9 @@ async function renderTeacherData() {
         return s.class === filter;
     });
 
-    // Load all data from cloud in two bulk queries (scores + edx) — also refreshes localStorage cache
+    // Load all data from cloud (scores + progress + edx) — also refreshes localStorage cache
     await cloudStore.loadAllClassScores(filter);
+    await cloudStore.loadAllClassProgress(filter);   // fixes: teacher saw all students as "not done"
     window.teacherEdxData = await cloudStore.loadAllClassEdx(filter);
 
     // Realtime: subscribe once so teacher view refreshes when students save
@@ -3112,8 +3152,19 @@ function renderCompletionView() {
 
         if (item.startsWith('slides')) {
             completed = !!pr[item]?.done;
-        } else if (item === 'quiz1' || item === 'quiz4') {
-            const q = sc[item];
+        } else if (item.startsWith('iq_')) {
+            // 課前預習：progress[quizN].done (PROGRESSION_STEPS id) + scores iq_quizN
+            const stepKey = item.replace('iq_', '');   // quiz1/quiz2/quiz3
+            completed = !!pr[stepKey]?.done;
+            const iqSc = sc[item];  // iq_quiz1 答案對象
+            if (iqSc?.answers) {
+                const mcCount = iqSc.answers.filter(a => a.type === 'mc').length;
+                const voiceScore = iqSc.answers.find(a => a.type === 'voice')?.score;
+                detail = voiceScore != null ? `🎤 錄音 ${voiceScore} 分` : `${iqSc.answers.length} 題已答`;
+            }
+        } else if (item.startsWith('mc_')) {
+            const key = item.replace('mc_', '');  // quiz1 / quiz4
+            const q = sc[key];
             if (q) { completed = true; detail = `${q.score}/${q.total} 分`; }
         } else if (item.startsWith('assess')) {
             const a = sc[item];
@@ -3136,7 +3187,10 @@ function renderCompletionView() {
         slides1: '📚 簡報 1（悟空的放大法術）',
         slides2: '📚 簡報 2（唐僧的縮小心法）',
         slides3: '📚 簡報 3（單位轉換大冒險）',
-        quiz1: '📝 MC 測驗 1', quiz4: '📝 MC 測驗 2',
+        iq_quiz1: '📖 課前預習 1（放大法術）',
+        iq_quiz2: '📖 課前預習 2（縮小心法）',
+        iq_quiz3: '📖 課前預習 3（單位轉換）',
+        mc_quiz1: '📝 MC 測驗 1', mc_quiz4: '📝 MC 測驗 2',
         assess1: '✏️ 評估 1', assess2: '✏️ 評估 2', assess3: '✏️ 評估 3',
         game1: '🎮 遊戲 1', game2: '🎮 遊戲 2', game3: '🎮 遊戲 3', game4: '🎮 遊戲 4',
     };
