@@ -3670,12 +3670,32 @@ function renderIQTeacherView(quizNum) {
             </div>`;
 
         if (q.type === 'mc') {
+            // Helper: figure out which option index a saved answer matches
+            // (handles new index-based saves AND legacy saves like "A4.5" from old sessions)
+            const matchOptionIdx = (a) => {
+                if (!a) return -1;
+                if (typeof a.selectedIdx === 'number' && a.selectedIdx >= 0) return a.selectedIdx;
+                if (!a.answer) return -1;
+                // Exact match
+                let idx = q.options.indexOf(a.answer);
+                if (idx >= 0) return idx;
+                // Strip letter prefix "A", "A.", "A ", etc.
+                const stripped = String(a.answer).replace(/^[A-Da-d][.\s]*/, '').trim();
+                idx = q.options.indexOf(stripped);
+                if (idx >= 0) return idx;
+                // Fallback: answer ends with an option
+                idx = q.options.findIndex(opt => String(a.answer).endsWith(opt));
+                return idx;
+            };
             // MC: count each option
             const counts = {};
             studentAnswers.forEach(sa => {
                 if (sa.answered && sa.answers[qi]) {
-                    const ans = sa.answers[qi].answer;
-                    counts[ans] = (counts[ans] || 0) + 1;
+                    const idx = matchOptionIdx(sa.answers[qi]);
+                    if (idx >= 0) {
+                        const opt = q.options[idx];
+                        counts[opt] = (counts[opt] || 0) + 1;
+                    }
                 }
             });
             // Show counts with % bars
@@ -3697,8 +3717,9 @@ function renderIQTeacherView(quizNum) {
             html += `<details style="margin-top:10px;"><summary style="cursor:pointer;color:#666;font-size:0.9rem;">▸ 顯示每個學生的答案</summary>
                 <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;">`;
             studentAnswers.forEach(sa => {
-                const ans = sa.answered && sa.answers[qi] ? sa.answers[qi].answer : '';
-                const isCorrect = ans === q.options[q.correct];
+                const idx = sa.answered && sa.answers[qi] ? matchOptionIdx(sa.answers[qi]) : -1;
+                const ans = idx >= 0 ? q.options[idx] : (sa.answered && sa.answers[qi] ? sa.answers[qi].answer : '');
+                const isCorrect = idx === q.correct;
                 const bg = !sa.answered ? '#F5F5F5' : (isCorrect ? '#E8F5E9' : '#FFF3E0');
                 const icon = !sa.answered ? '⏸' : (isCorrect ? '✅' : '⚠️');
                 html += `<div style="padding:8px;background:${bg};border-radius:6px;font-size:0.85rem;">
@@ -5047,8 +5068,16 @@ async function submitInfographicQuiz() {
         const answers = [];
         step.questions.forEach((q, qi) => {
             if (q.type === 'mc') {
+                // Use index-based storage so aggregation doesn't break on concatenated text
+                // (previously textContent gave "A4.5" but options[] stored "4.5" → never matched)
+                const opts = document.querySelectorAll(`#iqMC${qi} .iq-mc-option`);
                 const sel = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
-                answers.push({ q: q.q, type: 'mc', answer: sel ? sel.textContent.trim() : '' });
+                const idx = sel ? Array.from(opts).indexOf(sel) : -1;
+                answers.push({
+                    q: q.q, type: 'mc',
+                    answer: idx >= 0 && q.options ? q.options[idx] : '',
+                    selectedIdx: idx,
+                });
             } else if (q.type === 'fill') {
                 const val = (document.getElementById('iqFill'+qi) || {}).value || '';
                 answers.push({ q: q.q, type: 'fill', answer: val.trim(), correct: !!fillAnswered[qi] });
