@@ -4270,13 +4270,32 @@ async function gradeVoiceAnswer(qi) {
         const score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
         const feedback = cleanChineseOnly(result.feedback);
         const transcript = cleanChineseOnly(result.transcript);
+        const rawTranscript = (data.rawTranscript || '').trim();
+        const chineseChars = data.chineseChars || 0;
+        const overridden = !!data.overridden;
         voiceData[qi] = { transcript, score, feedback };
 
-        // Show the AI-cleaned transcript (pure Chinese, no JSON artifacts)
-        const escapedTranscript = transcript.replace(/</g, '&lt;').replace(/>/g, '&gt;') || '<i style="color:#999;">AI 聽唔清楚，請大聲啲再錄音</i>';
-        document.getElementById('transcript'+qi).innerHTML =
-            `<div style="color:#1565C0;font-weight:700;margin-bottom:6px;font-size:0.9rem;">🤖 AI 聽到你講（已整理）：</div>
-            <div style="color:#333;line-height:1.6;">${escapedTranscript}</div>`;
+        // Transparent transcript display — show what Whisper actually heard + AI polish
+        const esc = s => String(s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const escapedRaw = esc(rawTranscript) || '<i style="color:#C62828;">（系統冇聽到聲音）</i>';
+        const escapedTranscript = esc(transcript) || '<i style="color:#999;">（AI 未整理）</i>';
+        const showCleanedDiff = transcript && transcript !== rawTranscript;
+        const charStatusColor = chineseChars >= 25 ? '#2E7D32' : chineseChars >= 10 ? '#F57F17' : '#C62828';
+        const charStatusLabel = chineseChars >= 25 ? '充足' : chineseChars >= 10 ? '偏少' : '嚴重不足';
+        document.getElementById('transcript'+qi).innerHTML = `
+            <div style="background:#F5F5F5;border-left:4px solid #1565C0;padding:10px;border-radius:6px;margin-bottom:8px;">
+                <div style="color:#1565C0;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🎤 AI 聽到你講（Whisper 原始逐字稿）：</div>
+                <div style="color:#333;line-height:1.6;font-size:1rem;">${escapedRaw}</div>
+                <div style="margin-top:6px;font-size:0.8rem;color:${charStatusColor};">
+                    📊 共 <b>${chineseChars}</b> 個中文字（${charStatusLabel}）${overridden ? ' · <b style="color:#C62828;">⚠️ 分數已被系統修正（原 AI 給分過高，已根據字數下調）</b>' : ''}
+                </div>
+            </div>
+            ${showCleanedDiff ? `
+            <div style="background:#E8F5E9;border-left:4px solid #2E7D32;padding:10px;border-radius:6px;">
+                <div style="color:#2E7D32;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🤖 AI 修正錯字後：</div>
+                <div style="color:#333;line-height:1.6;">${escapedTranscript}</div>
+            </div>` : ''}
+        `;
 
         const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
         const bg = score >= 80 ? '#E8F5E9' : score >= 60 ? '#FFF8E1' : '#FFEBEE';
