@@ -4007,12 +4007,12 @@ async function startVoiceRecording(qi) {
             document.getElementById('recBtn'+qi).disabled = false;
             document.getElementById('stopBtn'+qi).disabled = true;
 
-            // Client-side guard: reject very short or near-empty recordings BEFORE upload.
-            // Prevents wasting round-trip and catches most silent recordings on iOS.
-            const tooShort = durationSec < 4;
-            const tooSmall = blob.size < 4000;  // < 4 KB ≈ pure silence for 20+ sec
+            // Client-side guard: only block obvious silence/accidental stops.
+            // Primary students may answer in 3-5 seconds — don't reject short real answers.
+            const tooShort = durationSec < 1.5;
+            const tooSmall = blob.size < 1500;  // < 1.5 KB ≈ pure silence / accidental early stop
             if (tooShort || tooSmall) {
-                const reason = tooShort ? `錄音時間只有 ${durationSec.toFixed(1)} 秒（至少要 5 秒以上）` : `錄音檔案太細（${Math.round(blob.size/1024)} KB），可能係靜音`;
+                const reason = tooShort ? `錄音時間只有 ${durationSec.toFixed(1)} 秒（最少要講 2 秒以上）` : `錄音檔案太細（${Math.round(blob.size/1024)} KB），可能係靜音或手抖停咗`;
                 document.getElementById('recStatus'+qi).innerHTML =
                     `<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。請確認：1) 麥克風權限已開 2) 大聲清楚講 20-30 秒 3) 背景唔好太嘈。按「開始錄音」重錄。</span>`;
                 document.getElementById('transcript'+qi).innerHTML =
