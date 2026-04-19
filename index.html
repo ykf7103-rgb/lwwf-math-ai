@@ -979,6 +979,41 @@ body::before {
     font-family: inherit;
 }
 
+/* Teacher sub-sections — only one section visible at a time */
+.teacher-subtabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.teacher-subtab {
+    padding: 12px 20px;
+    border: 2px solid var(--primary);
+    background: white;
+    color: var(--primary);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.teacher-subtab:hover {
+    background: #E3F2FD;
+    transform: translateY(-1px);
+}
+.teacher-subtab.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: 0 4px 12px rgba(21,101,192,0.3);
+    transform: translateY(-1px);
+}
+.teacher-section { display: none; }
+.teacher-section.active { display: block; animation: fadeIn 0.3s ease; }
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1830,8 +1865,16 @@ body::before {
 
         <!-- All teacher content wrapped — hidden until a class is selected -->
         <div id="teacherContent" style="display:none;">
-        <div class="stats-grid" id="teacherStats"></div>
 
+        <!-- Sub-tab buttons: only one section visible at a time -->
+        <div class="teacher-subtabs">
+            <button class="teacher-subtab active" id="tSubCompletion" onclick="switchTeacherSection('completion')">📋 完成名單</button>
+            <button class="teacher-subtab" id="tSubIQ" onclick="switchTeacherSection('iq')">📖 課前預習答案</button>
+            <button class="teacher-subtab" id="tSubStats" onclick="switchTeacherSection('stats')">📊 總數據</button>
+        </div>
+
+        <!-- Section 1: Completion (default active) -->
+        <div id="secCompletion" class="teacher-section active">
         <!-- 📊 Unified Completion / Score Lookup (新) -->
         <div style="background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
@@ -1869,8 +1912,10 @@ body::before {
                 <p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 揀上面嘅下拉選單查看邊個完成咗 / 邊個未完成 + 分數</p>
             </div>
         </div>
+        </div><!-- /#secCompletion -->
 
-        <!-- Infographic Quiz Class-wide Answers View -->
+        <!-- Section 2: Infographic Quiz Class-wide Answers -->
+        <div id="secIQ" class="teacher-section">
         <div style="background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
                 <h3 style="margin:0;">📖 課前預習 - 全班答案一覽</h3>
@@ -1882,6 +1927,11 @@ body::before {
             </div>
             <div id="iqTeacherContent" style="max-height:500px;overflow-y:auto;"></div>
         </div>
+        </div><!-- /#secIQ -->
+
+        <!-- Section 3: Stats + Data table -->
+        <div id="secStats" class="teacher-section">
+        <div class="stats-grid" id="teacherStats"></div>
 
         <!-- Student detail modal (hidden) -->
         <div id="teacherDetailModal" style="display:none; background:white; border-radius:var(--radius); padding:24px; box-shadow:var(--shadow-hover); margin-bottom:20px; animation:fadeIn 0.3s;">
@@ -1892,9 +1942,7 @@ body::before {
             <div id="teacherDetailContent"></div>
         </div>
 
-        </div><!-- /#teacherContent wrapper -->
-
-        <div class="data-table-wrapper" id="teacherTableWrapper" style="display:none;">
+        <div class="data-table-wrapper" id="teacherTableWrapper">
             <table class="data-table" id="teacherTable">
                 <thead>
                     <tr>
@@ -1916,6 +1964,9 @@ body::before {
                 <tbody id="teacherTableBody"></tbody>
             </table>
         </div>
+        </div><!-- /#secStats -->
+
+        </div><!-- /#teacherContent -->
     </div>
 </div>
 
@@ -3026,16 +3077,13 @@ async function renderTeacherData() {
     // Empty state: no class selected yet
     const emptyEl = document.getElementById('teacherEmptyState');
     const contentEl = document.getElementById('teacherContent');
-    const tableEl = document.getElementById('teacherTableWrapper');
     if (!filter) {
         if (emptyEl) emptyEl.style.display = 'block';
         if (contentEl) contentEl.style.display = 'none';
-        if (tableEl) tableEl.style.display = 'none';
         return;
     }
     if (emptyEl) emptyEl.style.display = 'none';
     if (contentEl) contentEl.style.display = 'block';
-    if (tableEl) tableEl.style.display = 'block';
 
     const students = STUDENTS.filter(s => {
         if (s.class === '7A') return false;
@@ -3120,6 +3168,18 @@ async function renderTeacherData() {
 
     // Re-render completion view if an item is selected
     renderCompletionView();
+}
+
+// Switch teacher sub-section (completion / iq / stats) — only one visible at a time
+function switchTeacherSection(name) {
+    const map = { completion: 'secCompletion', iq: 'secIQ', stats: 'secStats' };
+    const btnMap = { completion: 'tSubCompletion', iq: 'tSubIQ', stats: 'tSubStats' };
+    document.querySelectorAll('.teacher-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.teacher-subtab').forEach(b => b.classList.remove('active'));
+    const sec = document.getElementById(map[name]);
+    const btn = document.getElementById(btnMap[name]);
+    if (sec) sec.classList.add('active');
+    if (btn) btn.classList.add('active');
 }
 
 // Unified completion / score lookup (簡報 / 評估 / MC / 遊戲)
