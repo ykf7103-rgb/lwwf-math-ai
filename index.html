@@ -4002,12 +4002,29 @@ async function startVoiceRecording(qi) {
             stream.getTracks().forEach(t => t.stop());
             const mimeType = audioChunks[0]?.type || 'audio/webm';
             const blob = new Blob(audioChunks, { type: mimeType });
-            recordedBlobs[qi] = blob;
+            const durationSec = (Date.now() - recordStartTime) / 1000;
             clearInterval(recordTimer);
             document.getElementById('recBtn'+qi).disabled = false;
             document.getElementById('stopBtn'+qi).disabled = true;
+
+            // Client-side guard: reject very short or near-empty recordings BEFORE upload.
+            // Prevents wasting round-trip and catches most silent recordings on iOS.
+            const tooShort = durationSec < 4;
+            const tooSmall = blob.size < 4000;  // < 4 KB ≈ pure silence for 20+ sec
+            if (tooShort || tooSmall) {
+                const reason = tooShort ? `錄音時間只有 ${durationSec.toFixed(1)} 秒（至少要 5 秒以上）` : `錄音檔案太細（${Math.round(blob.size/1024)} KB），可能係靜音`;
+                document.getElementById('recStatus'+qi).innerHTML =
+                    `<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。請確認：1) 麥克風權限已開 2) 大聲清楚講 20-30 秒 3) 背景唔好太嘈。按「開始錄音」重錄。</span>`;
+                document.getElementById('transcript'+qi).innerHTML =
+                    '<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';
+                document.getElementById('gradeBtn'+qi).disabled = true;  // BLOCK submit
+                delete recordedBlobs[qi];
+                return;
+            }
+
+            recordedBlobs[qi] = blob;
             document.getElementById('recStatus'+qi).innerHTML =
-                `<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB）</span>`;
+                `<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;
             document.getElementById('transcript'+qi).innerHTML =
                 '<span style="color:#999;">⬇️ 按「提交」讓 AI 分析錄音並顯示你講嘅內容</span>';
             document.getElementById('gradeBtn'+qi).disabled = false;
