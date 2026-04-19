@@ -435,12 +435,148 @@ body::before {
     color: var(--primary);
 }
 
-.topbar-chapter {
+.topbar-chapter, .topbar-chapter-btn {
     font-size: 0.85rem;
     color: var(--text-light);
     background: #F0F4F8;
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.topbar-chapter-btn:hover {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(21,101,192,0.3);
+}
+
+/* Chapter Selector Modal */
+.chapter-selector-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.25s;
+}
+.chapter-selector-overlay.active { display: flex; }
+.chapter-selector-box {
+    background: white;
+    border-radius: 18px;
+    padding: 28px 24px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 86vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+.chapter-selector-box h2 {
+    margin: 0 0 6px;
+    color: var(--primary);
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chapter-selector-box .csub {
+    color: #666;
+    font-size: 0.92rem;
+    margin-bottom: 18px;
+}
+.chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+}
+.chapter-card {
+    padding: 16px 14px;
+    border-radius: 14px;
+    border: 2px solid #E0E7EE;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.chapter-card.active {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+}
+.chapter-card.active::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chapter-card.coming {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: #F5F5F5;
+}
+.chapter-card.coming::after {
+    content: '即將推出';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #FF9800;
+    color: white;
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+.chapter-card:not(.coming):not(.active):hover {
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+.chapter-num {
+    font-size: 0.78rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+.chapter-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #333;
+    margin: 2px 0 4px;
+}
+.chapter-desc {
+    font-size: 0.82rem;
+    color: #666;
+    line-height: 1.35;
+}
+.chapter-close-btn {
+    display: block;
+    margin: 18px auto 0;
+    padding: 10px 28px;
+    background: #9E9E9E;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
 }
 
 .topbar-right {
@@ -1523,7 +1659,7 @@ body::before {
         <div class="login-header">
             <h1>樂善堂梁黃蕙芳紀念學校</h1>
             <h2>數學AI學習區</h2>
-            <p class="subtitle">第十二章：有趣的乘法</p>
+            <p class="subtitle">多課題互動學習平台</p>
         </div>
 
         <div class="login-tabs">
@@ -1615,7 +1751,10 @@ body::before {
     <div class="topbar">
         <div class="topbar-left">
             <span class="topbar-logo">數學AI學習區</span>
-            <span class="topbar-chapter">Ch.12 有趣的乘法</span>
+            <button class="topbar-chapter-btn" onclick="showChapterSelector()" title="切換課題">
+                <span id="currentChapterLabel">📚 Ch.12 有趣的乘法</span>
+                <span style="margin-left:6px;opacity:0.7;">▾</span>
+            </button>
         </div>
         <div class="topbar-right">
             <div id="coinDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFE082);padding:4px 12px;border-radius:20px;font-weight:700;color:#F57F17;font-size:0.9rem;box-shadow:0 2px 8px rgba(255,193,7,0.3);" title="金幣（可換 EDX）">
@@ -2079,6 +2218,18 @@ body::before {
         </div><!-- /#secStats -->
 
         </div><!-- /#teacherContent -->
+    </div>
+</div>
+
+<!-- ============================================================
+     CHAPTER SELECTOR MODAL (課題切換器)
+     ============================================================ -->
+<div class="chapter-selector-overlay" id="chapterSelectorOverlay" onclick="if(event.target===this)closeChapterSelector()">
+    <div class="chapter-selector-box">
+        <h2>📚 揀一個課題</h2>
+        <p class="csub">揀你想學嘅課題，系統會切換去對應嘅學習區。更多課題會陸續上線。</p>
+        <div class="chapter-grid" id="chapterGrid"></div>
+        <button class="chapter-close-btn" onclick="closeChapterSelector()">關閉</button>
     </div>
 </div>
 
@@ -3280,6 +3431,53 @@ async function renderTeacherData() {
 
     // Re-render completion view if an item is selected
     renderCompletionView();
+}
+
+// ============================================================
+// CHAPTER SELECTOR — multi-chapter hub (placeholder for future)
+// ============================================================
+const AVAILABLE_CHAPTERS = [
+    { num: 12, title: '有趣的乘法', desc: '×10 / ×100 / ×0.1 / 單位轉換', status: 'active' },
+    { num: 13, title: '除法運算', desc: '除法基礎 · 餘數 · 單位轉換', status: 'coming' },
+    { num: 14, title: '分數加減', desc: '通分 · 約分 · 異分母加減', status: 'coming' },
+    { num: 15, title: '小數四則', desc: '小數加減乘除綜合', status: 'coming' },
+    { num: 16, title: '圖形與面積', desc: '多邊形 · 面積公式 · 應用', status: 'coming' },
+    { num: 17, title: '百分數', desc: '百分率 · 折扣 · 利息', status: 'coming' },
+    { num: 18, title: '統計與圖表', desc: '條形圖 · 折線圖 · 平均數', status: 'coming' },
+    { num: 19, title: '方程式', desc: '一元一次方程 · 應用題', status: 'coming' },
+    { num: 20, title: '立體幾何', desc: '體積 · 表面積 · 展開圖', status: 'coming' },
+    { num: 21, title: '速率與比', desc: '速率 · 比例 · 應用', status: 'coming' },
+];
+
+function showChapterSelector() {
+    const grid = document.getElementById('chapterGrid');
+    grid.innerHTML = AVAILABLE_CHAPTERS.map(ch => `
+        <div class="chapter-card ${ch.num === CHAPTER ? 'active' : ''} ${ch.status === 'coming' ? 'coming' : ''}"
+             onclick="selectChapter(${ch.num}, '${ch.status}')">
+            <div class="chapter-num">第 ${ch.num} 章</div>
+            <div class="chapter-title">${ch.title}</div>
+            <div class="chapter-desc">${ch.desc}</div>
+        </div>
+    `).join('');
+    document.getElementById('chapterSelectorOverlay').classList.add('active');
+}
+
+function closeChapterSelector() {
+    document.getElementById('chapterSelectorOverlay').classList.remove('active');
+}
+
+function selectChapter(num, status) {
+    if (status === 'coming') {
+        alert(`📚 第 ${num} 課 即將推出！\n\n楊老師正準備教材中，請留意下次更新 💪`);
+        return;
+    }
+    if (num === CHAPTER) {
+        closeChapterSelector();
+        return;
+    }
+    // Future: set CHAPTER = num + reload dashboard for that chapter
+    alert(`✅ 切換到第 ${num} 課（功能準備中）`);
+    closeChapterSelector();
 }
 
 // Switch teacher sub-section (completion / iq / stats) — only one visible at a time
