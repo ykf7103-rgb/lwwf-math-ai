@@ -4281,6 +4281,7 @@ ${q.hint ? `合格要求（show 俾學生睇過）：${q.hint}` : ''}
         const rawTranscript = (data.rawTranscript || '').trim();
         const chineseChars = data.chineseChars || 0;
         const overridden = !!data.overridden;
+        const fabricated = !!data.fabricated;
         voiceData[qi] = { transcript, score, feedback };
 
         // Transparent transcript display — show what Whisper actually heard + AI polish
@@ -4295,12 +4296,17 @@ ${q.hint ? `合格要求（show 俾學生睇過）：${q.hint}` : ''}
                 <div style="color:#1565C0;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🎤 AI 聽到你講（Whisper 原始逐字稿）：</div>
                 <div style="color:#333;line-height:1.6;font-size:1rem;">${escapedRaw}</div>
                 <div style="margin-top:6px;font-size:0.8rem;color:${charStatusColor};">
-                    📊 共 <b>${chineseChars}</b> 個中文字（${charStatusLabel}）${overridden ? ' · <b style="color:#C62828;">⚠️ 分數已被系統修正（原 AI 給分過高，已根據字數下調）</b>' : ''}
+                    📊 共 <b>${chineseChars}</b> 個中文字（${charStatusLabel}）${overridden ? ' · <b style="color:#C62828;">⚠️ 分數已被系統修正</b>' : ''}
                 </div>
             </div>
-            ${showCleanedDiff ? `
+            ${fabricated ? `
+            <div style="background:#FFEBEE;border-left:4px solid #C62828;padding:10px;border-radius:6px;margin-bottom:8px;">
+                <div style="color:#C62828;font-weight:700;font-size:0.9rem;margin-bottom:6px;">⚠️ 系統偵測到 AI 嘗試替你擴寫答案</div>
+                <div style="color:#333;line-height:1.5;font-size:0.85rem;">你實際只講咗上面嗰段字，AI 錯誤地加多咗內容再評分。已經還原你真正講嘅嘢，並重新評分。要提升分數 → 下次錄音時自己加埋原理（例：「小數點向左移 2 位」）。</div>
+            </div>` : ''}
+            ${(!fabricated && showCleanedDiff) ? `
             <div style="background:#E8F5E9;border-left:4px solid #2E7D32;padding:10px;border-radius:6px;">
-                <div style="color:#2E7D32;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🤖 AI 修正錯字後：</div>
+                <div style="color:#2E7D32;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🤖 AI 修正錯字後（僅限錯字修正，禁止擴寫）：</div>
                 <div style="color:#333;line-height:1.6;">${escapedTranscript}</div>
             </div>` : ''}
         `;
