@@ -3436,17 +3436,21 @@ async function renderTeacherData() {
 // ============================================================
 // CHAPTER SELECTOR — multi-chapter hub (placeholder for future)
 // ============================================================
+// 5 下 B 課題（從 NotebookLM「5下B資料」notebook 取得正確課題名稱）
 const AVAILABLE_CHAPTERS = [
-    { num: 12, title: '有趣的乘法', desc: '×10 / ×100 / ×0.1 / 單位轉換', status: 'active' },
-    { num: 13, title: '除法運算', desc: '除法基礎 · 餘數 · 單位轉換', status: 'coming' },
-    { num: 14, title: '分數加減', desc: '通分 · 約分 · 異分母加減', status: 'coming' },
-    { num: 15, title: '小數四則', desc: '小數加減乘除綜合', status: 'coming' },
-    { num: 16, title: '圖形與面積', desc: '多邊形 · 面積公式 · 應用', status: 'coming' },
-    { num: 17, title: '百分數', desc: '百分率 · 折扣 · 利息', status: 'coming' },
-    { num: 18, title: '統計與圖表', desc: '條形圖 · 折線圖 · 平均數', status: 'coming' },
-    { num: 19, title: '方程式', desc: '一元一次方程 · 應用題', status: 'coming' },
-    { num: 20, title: '立體幾何', desc: '體積 · 表面積 · 展開圖', status: 'coming' },
-    { num: 21, title: '速率與比', desc: '速率 · 比例 · 應用', status: 'coming' },
+    // 單元四：小數乘法
+    { num: 12, title: '有趣的乘法',          desc: '×10 / ×100 / ×0.1 / 單位轉換',   status: 'active' },
+    { num: 13, title: '小數乘法（一）',       desc: '小數乘整數 · 小數乘小數',         status: 'coming' },
+    { num: 14, title: '小數乘法（二）',       desc: '進階小數乘法 · 應用題',           status: 'coming' },
+    // 單元五：體積
+    { num: 15, title: '體積的認識',          desc: '體積概念 · 立方體數一數',         status: 'coming' },
+    { num: 16, title: '體積的量度',          desc: '立方公分 · 立方米 · 單位轉換',     status: 'coming' },
+    { num: 17, title: '長方體和正方體的體積', desc: 'V = 長 × 闊 × 高 · 公式應用',      status: 'coming' },
+    { num: 18, title: '立體圖形的體積',      desc: '綜合應用 · 複合立體圖形',         status: 'coming' },
+    // 單元六：簡易方程
+    { num: 19, title: '簡易方程（一）',       desc: '方程概念 · 等式性質',             status: 'coming' },
+    { num: 20, title: '簡易方程（二）',       desc: '解方程 · 移項技巧',               status: 'coming' },
+    { num: 21, title: '簡易方程（三）',       desc: '方程應用題 · 綜合練習',           status: 'coming' },
 ];
 
 function showChapterSelector() {
