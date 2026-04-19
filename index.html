@@ -4131,6 +4131,13 @@ function markSlideQuizCorrect(folder, ansKey, qIdx, pageNum) {
                 setTimeout(() => {
                     updateSlideView();
                     checkSlideQuizCompletion(folder);
+                    // 🔧 FIX: after advancing to new page, if new page has quiz → fire it immediately
+                    // (previously students could skip a page's quiz by using page-dots or exiting)
+                    const newPageNum = currentSlideIndex + 1;
+                    const newUq = getUnansweredQ(folder, newPageNum);
+                    if (newUq) {
+                        setTimeout(() => showSlideQuiz(newUq.q, folder, newUq.key, newPageNum), 400);
+                    }
                 }, 250);
             }, 600);
         }
@@ -4204,15 +4211,25 @@ function completeCurrentSlides() {
     if (qs) {
         const answered = slideQuizAnswered[step.folder] || {};
         const pageGroups = {};
-        let allDone = true;
+        const unansweredPages = new Set();
         qs.forEach(q => {
             if (!pageGroups[q.afterPage]) pageGroups[q.afterPage] = 0;
             const key = q.afterPage + '_' + pageGroups[q.afterPage];
             pageGroups[q.afterPage]++;
-            if (!answered[key]) allDone = false;
+            if (!answered[key]) unansweredPages.add(q.afterPage);
         });
-        if (!allDone) {
-            alert('請先回答所有簡報內的問題才能完成！');
+        if (unansweredPages.size > 0) {
+            const sortedPages = [...unansweredPages].sort((a, b) => a - b);
+            const firstPage = sortedPages[0];
+            const pagesStr = sortedPages.map(p => `第 ${p} 頁`).join('、');
+            alert(`仲有題目未答：${pagesStr}\n\n系統會幫你跳返去第 ${firstPage} 頁答題！`);
+            // Auto-jump back to the first unanswered page + fire the quiz
+            currentSlideIndex = firstPage - 1;
+            updateSlideView();
+            const uq = getUnansweredQ(step.folder, firstPage);
+            if (uq) {
+                setTimeout(() => showSlideQuiz(uq.q, step.folder, uq.key, firstPage), 300);
+            }
             return;
         }
     }
