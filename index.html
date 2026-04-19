@@ -1810,6 +1810,7 @@ body::before {
     <div class="dashboard">
         <div class="teacher-controls">
             <select id="teacherClassFilter" onchange="renderTeacherData()">
+                <option value="" disabled selected>👉 請先選擇班別</option>
                 <option value="all">全部班別</option>
                 <option value="5A">5A</option>
                 <option value="5B">5B</option>
@@ -1820,7 +1821,49 @@ body::before {
             <button class="btn btn-sm btn-outline" onclick="renderTeacherData()">🔄 刷新數據</button>
         </div>
 
+        <!-- Empty state: shown before a class is selected -->
+        <div id="teacherEmptyState" style="background:white;border-radius:var(--radius);padding:48px 24px;text-align:center;box-shadow:var(--shadow);margin-bottom:20px;">
+            <div style="font-size:3rem;margin-bottom:12px;">📊</div>
+            <h2 style="margin:0 0 8px;color:var(--primary);">請喺上方選擇班別開始</h2>
+            <p style="margin:0;color:#666;font-size:0.95rem;">選擇「全部班別」查看全校概況，或揀特定班別深入分析。</p>
+        </div>
+
+        <!-- All teacher content wrapped — hidden until a class is selected -->
+        <div id="teacherContent" style="display:none;">
         <div class="stats-grid" id="teacherStats"></div>
+
+        <!-- 📊 Unified Completion / Score Lookup (新) -->
+        <div style="background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+                <h3 style="margin:0;">📋 完成名單 / 分數查詢</h3>
+                <select id="completionSelect" onchange="renderCompletionView()" style="padding:8px 12px;border:2px solid var(--primary);border-radius:8px;font-size:0.95rem;background:white;">
+                    <option value="" disabled selected>— 揀一個項目查看名單 —</option>
+                    <optgroup label="📚 教學簡報">
+                        <option value="slides1">簡報 1（悟空的放大法術）</option>
+                        <option value="slides2">簡報 2（唐僧的縮小心法）</option>
+                        <option value="slides3">簡報 3（單位轉換大冒險）</option>
+                    </optgroup>
+                    <optgroup label="📝 MC 測驗">
+                        <option value="quiz1">MC 測驗 1</option>
+                        <option value="quiz4">MC 測驗 2</option>
+                    </optgroup>
+                    <optgroup label="✏️ 評估（含分數）">
+                        <option value="assess1">評估 1</option>
+                        <option value="assess2">評估 2</option>
+                        <option value="assess3">評估 3</option>
+                    </optgroup>
+                    <optgroup label="🎮 遊戲（含分數）">
+                        <option value="game1">遊戲 1</option>
+                        <option value="game2">遊戲 2</option>
+                        <option value="game3">遊戲 3</option>
+                        <option value="game4">遊戲 4</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div id="completionContent" style="min-height:60px;">
+                <p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 揀上面嘅下拉選單查看邊個完成咗 / 邊個未完成 + 分數</p>
+            </div>
+        </div>
 
         <!-- Infographic Quiz Class-wide Answers View -->
         <div style="background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;">
@@ -1844,7 +1887,9 @@ body::before {
             <div id="teacherDetailContent"></div>
         </div>
 
-        <div class="data-table-wrapper">
+        </div><!-- /#teacherContent wrapper -->
+
+        <div class="data-table-wrapper" id="teacherTableWrapper" style="display:none;">
             <table class="data-table" id="teacherTable">
                 <thead>
                     <tr>
@@ -2938,6 +2983,21 @@ function getStudentAllData(s) {
 
 async function renderTeacherData() {
     const filter = document.getElementById('teacherClassFilter').value;
+
+    // Empty state: no class selected yet
+    const emptyEl = document.getElementById('teacherEmptyState');
+    const contentEl = document.getElementById('teacherContent');
+    const tableEl = document.getElementById('teacherTableWrapper');
+    if (!filter) {
+        if (emptyEl) emptyEl.style.display = 'block';
+        if (contentEl) contentEl.style.display = 'none';
+        if (tableEl) tableEl.style.display = 'none';
+        return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
+    if (tableEl) tableEl.style.display = 'block';
+
     const students = STUDENTS.filter(s => {
         if (s.class === '7A') return false;
         if (filter === 'all') return true;
@@ -3017,6 +3077,103 @@ async function renderTeacherData() {
 
     // Re-render IQ teacher view with current class filter
     renderIQTeacherView(currentIQTeacherTab || 1);
+
+    // Re-render completion view if an item is selected
+    renderCompletionView();
+}
+
+// Unified completion / score lookup (簡報 / 評估 / MC / 遊戲)
+function renderCompletionView() {
+    const item = document.getElementById('completionSelect')?.value;
+    const content = document.getElementById('completionContent');
+    if (!content) return;
+    if (!item) {
+        content.innerHTML = '<p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 揀上面嘅下拉選單查看邊個完成咗 / 邊個未完成 + 分數</p>';
+        return;
+    }
+    const filter = document.getElementById('teacherClassFilter').value;
+    const students = STUDENTS.filter(s => {
+        if (s.class === '7A') return false;
+        if (!filter || filter === 'all') return filter === 'all';
+        return s.class === filter;
+    });
+    if (!students.length) {
+        content.innerHTML = '<p style="color:#999;text-align:center;padding:16px;">冇學生數據</p>';
+        return;
+    }
+
+    // Classify + optional score per student
+    const rows = students.map(s => {
+        const d = getStudentAllData(s);
+        const sc = d.scores || {};
+        const pr = d.progress || {};
+        let completed = false;
+        let detail = '';
+
+        if (item.startsWith('slides')) {
+            completed = !!pr[item]?.done;
+        } else if (item === 'quiz1' || item === 'quiz4') {
+            const q = sc[item];
+            if (q) { completed = true; detail = `${q.score}/${q.total} 分`; }
+        } else if (item.startsWith('assess')) {
+            const a = sc[item];
+            if (a) { completed = true; detail = `${a.correct}/7 答對 · 🪙${a.coins}`; }
+        } else if (item.startsWith('game')) {
+            const g = sc[item];
+            if (g) {
+                completed = true;
+                const score = g.score ?? g.correct ?? g.total ?? '✓';
+                const total = g.total ?? g.max ?? null;
+                detail = total ? `${score}/${total}` : `分數 ${score}`;
+            }
+        }
+        return { s, completed, detail };
+    });
+
+    const done = rows.filter(r => r.completed);
+    const notDone = rows.filter(r => !r.completed);
+    const labelMap = {
+        slides1: '📚 簡報 1（悟空的放大法術）',
+        slides2: '📚 簡報 2（唐僧的縮小心法）',
+        slides3: '📚 簡報 3（單位轉換大冒險）',
+        quiz1: '📝 MC 測驗 1', quiz4: '📝 MC 測驗 2',
+        assess1: '✏️ 評估 1', assess2: '✏️ 評估 2', assess3: '✏️ 評估 3',
+        game1: '🎮 遊戲 1', game2: '🎮 遊戲 2', game3: '🎮 遊戲 3', game4: '🎮 遊戲 4',
+    };
+    const label = labelMap[item] || item;
+    const showScore = !item.startsWith('slides');
+
+    const renderStudentCard = (r, kind) => {
+        const color = kind === 'done' ? '#2E7D32' : '#999';
+        const bg = kind === 'done' ? '#E8F5E9' : '#F5F5F5';
+        return `
+            <div style="background:${bg};padding:8px 10px;border-radius:8px;border-left:4px solid ${color};font-size:0.88rem;">
+                <div style="font-weight:700;color:${color};">${r.s.class} ${r.s.number} ${r.s.name}</div>
+                ${r.detail ? `<div style="color:#555;font-size:0.82rem;margin-top:2px;">${r.detail}</div>` : ''}
+            </div>`;
+    };
+
+    content.innerHTML = `
+        <div style="font-size:1rem;font-weight:700;margin-bottom:10px;color:#333;">${label} · 全班 ${students.length} 人</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+                <div style="font-weight:700;color:#2E7D32;margin-bottom:8px;padding:6px 10px;background:#E8F5E9;border-radius:6px;font-size:0.95rem;">
+                    ✅ 已完成 ${done.length}/${students.length} 人 ${showScore ? '（含分數）' : ''}
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;">
+                    ${done.length ? done.map(r => renderStudentCard(r, 'done')).join('') : '<p style="color:#999;font-size:0.88rem;padding:8px;">仲冇人完成</p>'}
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:700;color:#C62828;margin-bottom:8px;padding:6px 10px;background:#FFEBEE;border-radius:6px;font-size:0.95rem;">
+                    ⏸ 未完成 ${notDone.length} 人
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;">
+                    ${notDone.length ? notDone.map(r => renderStudentCard(r, 'notDone')).join('') : '<p style="color:#999;font-size:0.88rem;padding:8px;">全部完成 🎉</p>'}
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Class-wide Infographic Quiz view for teacher
