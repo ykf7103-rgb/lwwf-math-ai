@@ -56,7 +56,7 @@ body::before {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    opacity: 0.18;
+    opacity: 0.35;
     z-index: -1;
     pointer-events: none;
 }
@@ -131,7 +131,7 @@ body::before {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, rgba(13,71,161,0.55) 0%, rgba(33,150,243,0.45) 50%, rgba(100,181,246,0.55) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -2220,6 +2220,7 @@ async function studentLogin() {
         }
         errorEl.style.display = 'none';
         currentUser = { ...student, role: 'student' };
+        persistAuth();
         showStudentDashboard();
     }
 }
@@ -2231,6 +2232,7 @@ function teacherLogin() {
     if (pwd === 'lstlwwf') {
         errorEl.style.display = 'none';
         currentUser = { role: 'teacher', name: '教師' };
+        persistAuth();
         showTeacherDashboard();
     } else {
         errorEl.style.display = 'block';
@@ -2240,6 +2242,7 @@ function teacherLogin() {
 function logout() {
     currentUser = null;
     currentQuiz = null;
+    clearAuthPersist();
     document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
     document.getElementById('loginPage').classList.add('active');
     document.getElementById('loginPage').style.display = 'block';
@@ -2250,6 +2253,71 @@ function logout() {
     document.getElementById('studentSelect').disabled = true;
     document.getElementById('teacherPassword').value = '';
 }
+
+// ============================================================
+// AUTH PERSISTENCE + 10-MIN IDLE AUTO-LOGOUT
+// ============================================================
+const AUTH_KEY = 'lwwf_auth_user';
+const AUTH_ACTIVE_KEY = 'lwwf_auth_lastActive';
+const IDLE_LIMIT_MS = 10 * 60 * 1000;  // 10 minutes
+
+function persistAuth() {
+    if (!currentUser) return;
+    try {
+        localStorage.setItem(AUTH_KEY, JSON.stringify(currentUser));
+        localStorage.setItem(AUTH_ACTIVE_KEY, String(Date.now()));
+    } catch (e) {}
+}
+
+function clearAuthPersist() {
+    try {
+        localStorage.removeItem(AUTH_KEY);
+        localStorage.removeItem(AUTH_ACTIVE_KEY);
+    } catch (e) {}
+}
+
+function touchActivity() {
+    if (currentUser) {
+        try { localStorage.setItem(AUTH_ACTIVE_KEY, String(Date.now())); } catch (e) {}
+    }
+}
+
+// Listen for any user activity to refresh idle timer
+['click', 'keydown', 'touchstart', 'scroll', 'mousemove'].forEach(ev => {
+    document.addEventListener(ev, touchActivity, { passive: true });
+});
+
+// Check idle every 30 sec
+setInterval(() => {
+    if (!currentUser) return;
+    try {
+        const last = parseInt(localStorage.getItem(AUTH_ACTIVE_KEY) || '0', 10);
+        if (Date.now() - last > IDLE_LIMIT_MS) {
+            alert('⏰ 你已經 10 分鐘冇活動，為安全起見系統已自動登出。請重新登入。');
+            logout();
+        }
+    } catch (e) {}
+}, 30 * 1000);
+
+// On page load: restore auth if within idle window
+window.addEventListener('DOMContentLoaded', () => {
+    try {
+        const stored = localStorage.getItem(AUTH_KEY);
+        const lastActive = parseInt(localStorage.getItem(AUTH_ACTIVE_KEY) || '0', 10);
+        if (!stored) return;
+        if (Date.now() - lastActive > IDLE_LIMIT_MS) {
+            clearAuthPersist();
+            return;
+        }
+        const user = JSON.parse(stored);
+        currentUser = user;
+        touchActivity();
+        if (user.role === 'teacher') showTeacherDashboard();
+        else showStudentDashboard();
+    } catch (e) {
+        clearAuthPersist();
+    }
+});
 
 // ============================================================
 // DASHBOARD FUNCTIONS

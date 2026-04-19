@@ -12,6 +12,21 @@
     background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 50%, #FFCCBC 100%);
     min-height: 100vh; color: #333;
     overflow-x: hidden;
+    position: relative;
+  }
+  /* School photo as semi-transparent fixed background (matches index.html) */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('../assets/common/images/school_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.18;
+    z-index: -1;
+    pointer-events: none;
   }
   .wrap { max-width: 880px; margin: 0 auto; }
   h1 {
