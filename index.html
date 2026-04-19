@@ -132,10 +132,70 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 24px;
     min-height: 100vh;
     background: linear-gradient(135deg, rgba(13,71,161,0.55) 0%, rgba(33,150,243,0.45) 50%, rgba(100,181,246,0.55) 100%);
     position: relative;
     overflow: hidden;
+}
+
+/* 右側更新記錄 panel */
+.update-log {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 24px 22px;
+    width: 90%;
+    max-width: 340px;
+    max-height: 560px;
+    overflow-y: auto;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 1;
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.55;
+}
+.update-log h3 {
+    margin: 0 0 14px;
+    font-size: 1.1rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 2px solid #E3F2FD;
+    padding-bottom: 8px;
+}
+.update-entry {
+    margin-bottom: 14px;
+}
+.update-entry:last-child { margin-bottom: 0; }
+.update-date {
+    display: inline-block;
+    background: linear-gradient(135deg, #FFB74D, #FF8F00);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+}
+.update-entry ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    color: #555;
+}
+.update-entry ul li {
+    margin-bottom: 3px;
+    font-size: 0.86rem;
+}
+.update-entry ul li b {
+    color: var(--primary);
+}
+@media (max-width: 768px) {
+    .update-log { max-width: 480px; max-height: 320px; }
 }
 
 #loginPage::before {
@@ -1494,6 +1554,45 @@ body::before {
             <button class="btn btn-primary" onclick="teacherLogin()">登入</button>
         </div>
     </div>
+
+    <!-- 📢 更新記錄（給學生同家長睇） -->
+    <div class="update-log">
+        <h3>📢 最新更新</h3>
+
+        <div class="update-entry">
+            <span class="update-date">2026-04-19</span>
+            <ul>
+                <li>新增 <b>🔢 小數點移動工具</b>（悟空陪你學）</li>
+                <li>登入後刷新網頁仲係登入狀態，10 分鐘冇活動會自動登出</li>
+                <li>修正簡報題目唔彈出 / 完成唔到嘅問題</li>
+                <li>教師版新增「完成名單 / 分數查詢」功能</li>
+                <li>整個網站換咗學校圖做背景</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
+            <span class="update-date">2026-04-18</span>
+            <ul>
+                <li>錄音題評分更貼心，小學五年級友善標準</li>
+                <li>AI 唔會再自動擴寫答案，保留你實際講嘅字</li>
+                <li>修正 iPhone 靜音錄音仍然高分嘅 bug</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
+            <span class="update-date">2026-04-12</span>
+            <ul>
+                <li>第 12 課教材正式上線（簡報、遊戲、測驗）</li>
+                <li>2 首粵語溫習歌：〈小數點跳跳跳〉〈補零跳跳舞〉</li>
+                <li>AI 助教上線，隨時問功課</li>
+            </ul>
+        </div>
+
+        <div style="text-align:center;margin-top:12px;padding-top:10px;border-top:1px dashed #ddd;font-size:0.78rem;color:#999;">
+            💡 學生同家長：有問題可以搵楊老師
+        </div>
+    </div>
+
 </div>
 
 <!-- ============================================================
