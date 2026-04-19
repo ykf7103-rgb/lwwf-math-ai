@@ -3293,7 +3293,8 @@ const PROGRESSION_STEPS = [
         { q:'🎤 用你自己嘅說話，教一個同學點樣計 2.3 × 100。用 20-30 秒解釋。',
           type:'voice',
           concept:'乘以100 小數點向右移2位',
-          rubric:'講得清楚：小數點向右移 2 位。答案係 230' }
+          rubric:'講得清楚：小數點向右移 2 位。答案係 230',
+          hint:'要講到 3 樣嘢先合格：① 答案係 230 ② 小數點向右移 2 位 ③ 點解會咁（乘以 100 小數點就要移 2 位）。淨係講答案唔合格。' }
       ]},
     { id:'slides2', type:'slides', title:'簡報2：唐僧的縮小心法', desc:'×0.1 / ×0.01 / ×0.001', folder:'slides2', total:14, icon:'📘' },
     { id:'quiz2', type:'infoquiz', title:'課前預習2：縮小心法', desc:'3題（含錄音費曼題）', icon:'📖',
@@ -3304,7 +3305,8 @@ const PROGRESSION_STEPS = [
         { q:'🎤 用 Feynman 方法：假設你係老師，教同學點解 45 × 0.01 = 0.45。講 20-30 秒。',
           type:'voice',
           concept:'乘以0.01 小數點向左移2位',
-          rubric:'講出：乘細數數字變細、小數點向左移 2 位、答案 0.45' }
+          rubric:'講出：乘細數數字變細、小數點向左移 2 位、答案 0.45',
+          hint:'要講到 3 樣嘢先合格：① 答案係幾多（0.45）② 小數點向左移幾多位（2 位）③ 點解會咁（乘以 0.01 即係除以 100）。淨係講答案唔合格。' }
       ]},
     { id:'slides3', type:'slides', title:'簡報3：單位轉換大冒險', desc:'公里↔米 / 公斤↔克 / 升↔毫升', folder:'slides3', total:14, icon:'📙' },
     { id:'quiz3', type:'infoquiz', title:'課前預習3：單位轉換', desc:'3題（含錄音費曼題）', icon:'📖',
@@ -3315,7 +3317,8 @@ const PROGRESSION_STEPS = [
         { q:'🎤 教一教細佬：點解 1.5 公里 = 1500 米？用 20-30 秒解釋。',
           type:'voice',
           concept:'1公里=1000米，單位轉換用乘以1000',
-          rubric:'講出：1 公里 = 1000 米、大變細用乘法、1.5 × 1000 = 1500 米' }
+          rubric:'講出：1 公里 = 1000 米、大變細用乘法、1.5 × 1000 = 1500 米',
+          hint:'要講到 3 樣嘢先合格：① 1 公里 = 1000 米（單位關係）② 大單位變細單位要乘 ③ 計法 1.5 × 1000 = 1500。淨係講答案唔合格。' }
       ]}
 ];
 
@@ -3928,6 +3931,9 @@ function openInfographicQuiz(stepIdx) {
                 <div style="font-size:0.85rem;color:#880E4F;margin-bottom:8px;background:rgba(255,255,255,0.6);padding:8px 10px;border-radius:6px;">
                     💡 <b>點樣做：</b> ① 按「開始錄音」用粵語解釋 20-30 秒 → ② 按「停止」 → ③ 按「提交」俾 AI 分析錄音內容並評分（AI 會幫你整理句子同評分）
                 </div>
+                ${q.hint ? `<div style="font-size:0.9rem;color:#4A148C;margin-bottom:10px;background:#FFF9C4;padding:10px;border-radius:8px;border-left:4px solid #FBC02D;">
+                    ⭐ <b>合格要求：</b> ${q.hint}
+                </div>` : ''}
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
                     <button class="btn btn-sm" id="recBtn${qi}" onclick="startVoiceRecording(${qi})" style="background:#E91E63;color:white;border:none;">🎤 開始錄音</button>
                     <button class="btn btn-sm btn-outline" id="stopBtn${qi}" onclick="stopVoiceRecording(${qi})" disabled>⏹ 停止</button>
@@ -4201,17 +4207,19 @@ async function gradeVoiceAnswer(qi) {
 
     const prompt = `你係小學五年級粵語數學老師。
 題目：「${q.q}」
-要求學生講到嘅內容：${q.concept || q.rubric || ''}
+核心概念：${q.concept || '（未標明）'}
+評分要點（學生必須講到嘅關鍵要點）：${q.rubric || '（未標明）'}
+${q.hint ? `合格要求（show 俾學生睇過）：${q.hint}` : ''}
+
+⚠️ 重要：題目問「點解 / 教一教」，**學生必須解釋原理**，唔可以淨係講答案。
+⚠️ 請逐個對比 rubric 要點，睇學生講咗幾多個要點。
 
 請做兩件事：
-1. 聽呢段學生用粵語講嘅錄音，轉寫成完整通順嘅粵語句子。**必須整理啲重複、口誤、語氣詞（例如「呢個」「嗰個」「即係」），將意思還原成 95% 學生想表達嘅內容**。例如學生講「2點3... 2點3乘100... 即係小數點...」應該還原為「2.3 乘以 100 嘅答案」。
-2. 根據呢句還原後嘅句子評分（0-100）：
-   - 概念準確性（40分）：有冇講對核心概念（例如小數點移動方向同位數）
-   - 解釋清晰度（30分）：講得易唔易明
-   - 完整性（30分）：有冇講晒關鍵步驟
+1. 聽呢段學生用粵語講嘅錄音，轉寫成完整通順嘅粵語句子。必須整理啲重複、口誤、語氣詞（例如「呢個」「嗰個」「即係」），將意思還原成 95% 學生想表達嘅內容。
+2. 根據 rubric 要點同數學正確性評分（具體規則喺下面 5 STEP）。
 
-請嚴格返回純 JSON（唔好加 \`\`\` 或其他標記，唔好解釋）：
-{"transcript": "還原後嘅完整粵語句子（唔好有重複）", "score": 整數0-100, "feedback": "一句粵語評語同改進建議（唔超過50字）"}`;
+請嚴格返回純 JSON（唔好加 \`\`\` 或其他標記）：
+{"transcript": "還原後嘅完整粵語句子", "score": 整數0-100, "feedback": "具體評語 + 改進建議（唔超過60字）"}`;
 
     // Diagnostic state — shown in UI if something fails (so iOS users can report)
     let diag = { step: 'start', origType: blob.type, origSize: blob.size };
