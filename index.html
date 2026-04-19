@@ -43,6 +43,22 @@ body {
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
+}
+
+/* School photo as semi-transparent fixed background */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('assets/common/images/school_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.18;
+    z-index: -1;
+    pointer-events: none;
 }
 
 /* ============================================================
@@ -4210,7 +4226,8 @@ async function gradeVoiceAnswer(qi) {
         diag.httpStatus = res.status;
         if (!res.ok) {
             const errText = await res.text().catch(()=>'');
-            throw new Error('HTTP ' + res.status + ' ' + errText.substring(0,100));
+            // Widened from 100 to 1500 to surface full Gemini 400 message on mobile
+            throw new Error('HTTP ' + res.status + ' ' + errText.substring(0,1500));
         }
         const data = await res.json();
         const reply = data.reply || data.text || '';
