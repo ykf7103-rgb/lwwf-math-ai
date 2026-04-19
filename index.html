@@ -132,8 +132,6 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 24px;
-    flex-wrap: wrap;
     padding: 24px;
     min-height: 100vh;
     background: linear-gradient(135deg, rgba(13,71,161,0.55) 0%, rgba(33,150,243,0.45) 50%, rgba(100,181,246,0.55) 100%);
@@ -141,19 +139,21 @@ body::before {
     overflow: hidden;
 }
 
-/* 右側更新記錄 panel */
+/* 右側更新記錄 panel — absolute positioned so login stays perfectly centered */
 .update-log {
+    position: absolute;
+    top: 50%;
+    right: 40px;
+    transform: translateY(-50%);
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 24px 22px;
-    width: 90%;
-    max-width: 340px;
+    width: 320px;
     max-height: 560px;
     overflow-y: auto;
-    box-shadow: 0 12px 36px rgba(0,0,0,0.2);
-    position: relative;
-    z-index: 1;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+    z-index: 2;
     font-size: 0.9rem;
     color: #333;
     line-height: 1.55;
@@ -194,8 +194,21 @@ body::before {
 .update-entry ul li b {
     color: var(--primary);
 }
-@media (max-width: 768px) {
-    .update-log { max-width: 480px; max-height: 320px; }
+/* Mobile / narrow: drop absolute, stack below login */
+@media (max-width: 900px) {
+    #loginPage {
+        flex-direction: column;
+        gap: 20px;
+        justify-content: flex-start;
+        padding-top: 40px;
+    }
+    .update-log {
+        position: static;
+        transform: none;
+        width: 90%;
+        max-width: 480px;
+        max-height: 320px;
+    }
 }
 
 #loginPage::before {
