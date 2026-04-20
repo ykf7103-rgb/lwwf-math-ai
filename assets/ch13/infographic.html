@@ -1,26 +1,221 @@
 <!DOCTYPE html>
-<html lang="zh-Hant"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第13課 資訊圖預習</title>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第13課 · 資訊圖預習</title>
 <style>
-*{box-sizing:border-box}
-body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:24px;background:linear-gradient(135deg,#FFF9C4,#FFECB3,#FFCCBC);min-height:100vh;color:#333;display:flex;align-items:center;justify-content:center;position:relative}
-body::before{content:'';position:absolute;inset:0;background:url('../common/images/school_bg.jpg') center/cover no-repeat;opacity:0.22;z-index:-1}
-.box{background:white;padding:36px 30px;border-radius:16px;max-width:520px;width:90%;text-align:center;box-shadow:0 12px 36px rgba(0,0,0,0.15)}
-.emoji{font-size:4rem;margin-bottom:10px}
-h1{color:#E65100;font-size:1.5rem;margin:4px 0 10px}
-.tag{display:inline-block;background:linear-gradient(135deg,#FF9800,#F57C00);color:white;padding:4px 14px;border-radius:12px;font-size:0.8rem;font-weight:700;margin:8px 0}
-p{color:#666;line-height:1.7;font-size:0.95rem;margin:10px 0}
-.btn{display:inline-block;margin-top:16px;padding:10px 22px;background:#1565C0;color:white;text-decoration:none;border-radius:10px;font-weight:700}
-.btn:hover{background:#0D47A1}
-.sub{color:#999;font-size:0.82rem;margin-top:18px;border-top:1px dashed #ddd;padding-top:12px}
-</style></head><body>
-<div class="box">
-<div class="emoji">📊</div>
-<h1>第 13 課 · 資訊圖預習</h1>
-<div class="tag">🚧 建造中</div>
-<p>楊老師同 AI 助手正在準備呢一節嘅內容。等 NLM 生教學素材再加入互動題同遊戲。</p>
-<p>如果你見到呢個骨架頁，代表網站結構已經 ready，內容陸續填入。</p>
-<a href="index.html" class="btn">← 返回第 13 課入口</a>
-<div class="sub">預計完成：NLM QA verify 後上線</div>
-</div></body></html>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    margin: 0; padding: 0;
+    background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 50%, #FFCCBC 100%);
+    min-height: 100vh; color: #222; position: relative;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: url('../common/images/school_bg.jpg') center/cover no-repeat;
+    opacity: 0.15; z-index: -1; pointer-events: none;
+  }
+  header {
+    background: linear-gradient(135deg, #7B1FA2, #4A148C);
+    color: white; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+  header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+  header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 16px; }
+  .intro {
+    background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+    border-left: 5px solid #7B1FA2;
+    padding: 14px 18px; border-radius: 12px; margin-bottom: 18px;
+  }
+  .intro h2 { margin: 0 0 6px; color: #4A148C; font-size: 1.1rem; }
+  .intro p { margin: 4px 0; font-size: 0.9rem; line-height: 1.6; color: #555; }
+
+  .info-card {
+    background: white; border-radius: 16px;
+    padding: 14px; margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .info-card h3 {
+    margin: 4px 0 10px; color: #7B1FA2; font-size: 1.1rem;
+    border-bottom: 2px dashed #E1BEE7; padding-bottom: 8px;
+  }
+  .info-card img {
+    width: 100%; height: auto; display: block;
+    border-radius: 10px; background: #fafafa;
+    cursor: zoom-in;
+  }
+
+  .quiz {
+    background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+    border: 2px solid #FFC107;
+    border-radius: 12px; padding: 14px 16px;
+    margin-top: 14px;
+  }
+  .quiz .q-label { font-size: 0.78rem; font-weight: 700; color: #E65100; margin-bottom: 6px; }
+  .quiz .q-text { font-size: 1rem; font-weight: 700; color: #333; margin-bottom: 10px; line-height: 1.5; }
+  .quiz .opts { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .quiz .opt {
+    background: white; border: 2px solid #E0E0E0;
+    padding: 10px 14px; border-radius: 10px; cursor: pointer;
+    font-size: 0.95rem; text-align: left; color: #333; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .quiz .opt:hover { border-color: #FFC107; background: #FFFDE7; }
+  .quiz .opt.correct { background: #C8E6C9; border-color: #4CAF50; }
+  .quiz .opt.wrong { background: #FFCDD2; border-color: #F44336; }
+  .quiz .hint { margin-top: 10px; font-size: 0.88rem; color: #555; padding: 8px; background: white; border-radius: 8px; display: none; }
+  .quiz.answered .hint { display: block; }
+
+  .zoom-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    display: none; align-items: center; justify-content: center;
+    z-index: 200; cursor: zoom-out; padding: 20px;
+  }
+  .zoom-overlay.show { display: flex; }
+  .zoom-overlay img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+  .zoom-overlay .close {
+    position: absolute; top: 16px; right: 20px;
+    background: rgba(255,255,255,0.9); color: #333;
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 800; cursor: pointer;
+  }
+
+  .done-banner {
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    color: white; padding: 16px 20px; border-radius: 12px;
+    text-align: center; font-weight: 800; margin: 20px 0 10px;
+    display: none;
+  }
+  .done-banner.show { display: block; animation: pop 0.4s; }
+  @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 0.9rem; }
+    .info-card h3 { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 第13課 · 資訊圖預習</h1>
+  <a href="index.html" class="back">← 返回第13課</a>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <h2>🎯 資訊圖預習</h2>
+    <p>用 3 張資訊圖幫你快速掌握第 13 課嘅重點：一位小數乘整數、兩位小數乘整數、小數乘小數 + 估算。</p>
+    <p>每張圖底下有 1 條預習題，做完先好開簡報！</p>
+  </div>
+
+  <div class="info-card">
+    <h3>📘 資訊圖 1：一位小數 × 整數</h3>
+    <img src="images/infographic1.jpg" alt="資訊圖 1" onclick="zoom(this.src)" />
+    <div class="quiz" id="q1">
+      <div class="q-label">🎯 預習題 1</div>
+      <div class="q-text">計算 0.3 × 4 時，我哋可以點樣諗？</div>
+      <div class="opts">
+        <button class="opt" onclick="answer(1,0,false)">A. 0.3 + 4 = 4.3</button>
+        <button class="opt" onclick="answer(1,1,true)">B. 諗成 3 個 0.1 × 4 = 12 個 0.1 = 1.2</button>
+        <button class="opt" onclick="answer(1,2,false)">C. 3 × 4 = 12，所以答案係 12</button>
+      </div>
+      <div class="hint">✅ 正解 B：一位小數 × 整數，可以先變成「幾多個 0.1」相加，再計出有幾多個 0.1，最後換返做小數。</div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <h3>📙 資訊圖 2：兩位小數 × 整數</h3>
+    <img src="images/infographic2.jpg" alt="資訊圖 2" onclick="zoom(this.src)" />
+    <div class="quiz" id="q2">
+      <div class="q-label">🎯 預習題 2</div>
+      <div class="q-text">2.35 × 4 嘅答案點樣同 235 × 4 = 940 連繫？</div>
+      <div class="opts">
+        <button class="opt" onclick="answer(2,0,false)">A. 答案係 940</button>
+        <button class="opt" onclick="answer(2,1,false)">B. 答案係 94</button>
+        <button class="opt" onclick="answer(2,2,true)">C. 因為 2.35 有 2 位小數，所以答案係 9.4（940 → 9.40 → 9.4）</button>
+      </div>
+      <div class="hint">✅ 正解 C：兩位小數 × 整數，可以先當整數計，再按小數位數將小數點向左移相應位數。</div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <h3>📕 資訊圖 3：小數 × 小數 + 估算</h3>
+    <img src="images/infographic3.jpg" alt="資訊圖 3" onclick="zoom(this.src)" />
+    <div class="quiz" id="q3">
+      <div class="q-label">🎯 預習題 3</div>
+      <div class="q-text">估算 6.8 × 3.2 大約係幾多？</div>
+      <div class="opts">
+        <button class="opt" onclick="answer(3,0,false)">A. 大約 9（6 + 3）</button>
+        <button class="opt" onclick="answer(3,1,true)">B. 大約 21（7 × 3）</button>
+        <button class="opt" onclick="answer(3,2,false)">C. 大約 200（68 × 32 ÷ 10）</button>
+      </div>
+      <div class="hint">✅ 正解 B：估算時將 6.8 看成 7，將 3.2 看成 3，7 × 3 = 21。實際答案 21.76 同估算值好接近。</div>
+    </div>
+  </div>
+
+  <div class="done-banner" id="done">
+    🎉 恭喜你完成資訊圖預習！快啲開始睇簡報 1 開始學習！
+    <div style="margin-top:10px">
+      <a href="slides1.html" style="color:white;background:#1565C0;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:900;display:inline-block;margin:4px">📗 睇簡報 1</a>
+    </div>
+  </div>
+</div>
+
+<div class="zoom-overlay" id="zoomOv" onclick="unzoom()">
+  <div class="close">×</div>
+  <img id="zoomImg" alt="放大圖" />
+</div>
+
+<script>
+  const CHAPTER = 13;
+  const answered = {};
+
+  function answer(qNum, optIdx, isCorrect) {
+    const q = document.getElementById('q' + qNum);
+    if (q.classList.contains('answered')) return;
+    q.classList.add('answered');
+    const opts = q.querySelectorAll('.opt');
+    opts[optIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) {
+      // also highlight correct
+      opts.forEach((o, i) => {
+        const onclickStr = o.getAttribute('onclick') || '';
+        if (onclickStr.includes('true')) o.classList.add('correct');
+      });
+    }
+    answered[qNum] = isCorrect;
+    // disable all
+    opts.forEach(o => o.style.pointerEvents = 'none');
+
+    if (Object.keys(answered).length === 3) {
+      document.getElementById('done').classList.add('show');
+      markDone();
+    }
+  }
+
+  function zoom(src) {
+    document.getElementById('zoomImg').src = src;
+    document.getElementById('zoomOv').classList.add('show');
+  }
+  function unzoom() {
+    document.getElementById('zoomOv').classList.remove('show');
+  }
+
+  function markDone() {
+    try {
+      const key = `progress_ch${CHAPTER}`;
+      const p = JSON.parse(localStorage.getItem(key) || '{}');
+      p.infographic = { done: true, ts: Date.now(), correct: Object.values(answered).filter(v=>v).length };
+      localStorage.setItem(key, JSON.stringify(p));
+    } catch(e) {}
+  }
+</script>
+</body>
+</html>

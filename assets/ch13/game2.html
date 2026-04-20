@@ -1,26 +1,103 @@
 <!DOCTYPE html>
-<html lang="zh-Hant"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第13課 遊戲 2</title>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第13課 · 遊戲 2 — 兩位小數 × 整數挑戰</title>
 <style>
-*{box-sizing:border-box}
-body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:24px;background:linear-gradient(135deg,#FFF9C4,#FFECB3,#FFCCBC);min-height:100vh;color:#333;display:flex;align-items:center;justify-content:center;position:relative}
-body::before{content:'';position:absolute;inset:0;background:url('../common/images/school_bg.jpg') center/cover no-repeat;opacity:0.22;z-index:-1}
-.box{background:white;padding:36px 30px;border-radius:16px;max-width:520px;width:90%;text-align:center;box-shadow:0 12px 36px rgba(0,0,0,0.15)}
-.emoji{font-size:4rem;margin-bottom:10px}
-h1{color:#E65100;font-size:1.5rem;margin:4px 0 10px}
-.tag{display:inline-block;background:linear-gradient(135deg,#FF9800,#F57C00);color:white;padding:4px 14px;border-radius:12px;font-size:0.8rem;font-weight:700;margin:8px 0}
-p{color:#666;line-height:1.7;font-size:0.95rem;margin:10px 0}
-.btn{display:inline-block;margin-top:16px;padding:10px 22px;background:#1565C0;color:white;text-decoration:none;border-radius:10px;font-weight:700}
-.btn:hover{background:#0D47A1}
-.sub{color:#999;font-size:0.82rem;margin-top:18px;border-top:1px dashed #ddd;padding-top:12px}
-</style></head><body>
-<div class="box">
-<div class="emoji">🎮</div>
-<h1>第 13 課 · 遊戲 2</h1>
-<div class="tag">🚧 建造中</div>
-<p>楊老師同 AI 助手正在準備呢一節嘅內容。等 NLM 生教學素材再加入互動題同遊戲。</p>
-<p>如果你見到呢個骨架頁，代表網站結構已經 ready，內容陸續填入。</p>
-<a href="index.html" class="btn">← 返回第 13 課入口</a>
-<div class="sub">預計完成：NLM QA verify 後上線</div>
-</div></body></html>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 50%, #FFCCBC 100%); min-height: 100vh; color: #222; position: relative; }
+  body::before { content: ''; position: fixed; inset: 0; background: url('../common/images/school_bg.jpg') center/cover no-repeat; opacity: 0.12; z-index: -1; }
+  header { background: linear-gradient(135deg, #5E35B1, #311B92); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+  header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+  header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 14px; }
+  .stats { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+  .stat { flex: 1; background: white; padding: 10px 8px; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .stat .label { font-size: 0.72rem; color: #666; }
+  .stat .val { font-size: 1.3rem; font-weight: 900; color: #311B92; }
+  .progress { height: 8px; background: #E0E0E0; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #7E57C2, #B39DDB); transition: width 0.3s; width: 0; }
+  .qbox { background: white; border-radius: 16px; padding: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 12px; }
+  .q-num { font-size: 0.8rem; color: #311B92; font-weight: 700; margin-bottom: 6px; }
+  .q-text { font-size: 1.35rem; font-weight: 900; color: #222; margin-bottom: 16px; line-height: 1.4; }
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .opt { padding: 14px 10px; background: #F5F5F5; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; color: #333; transition: all 0.2s; }
+  .opt:hover:not(.disabled) { background: #EDE7F6; border-color: #7E57C2; transform: translateY(-2px); }
+  .opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; animation: bounce 0.5s; }
+  .opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; animation: shake 0.4s; }
+  .opt.disabled { cursor: not-allowed; opacity: 0.7; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .explain { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-left: 4px solid #FFC107; padding: 12px 14px; border-radius: 8px; margin-top: 12px; display: none; font-size: 0.92rem; line-height: 1.6; color: #555; }
+  .explain.show { display: block; animation: fadeIn 0.4s; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .next-btn { margin-top: 12px; width: 100%; padding: 14px; background: linear-gradient(135deg, #5E35B1, #311B92); color: white; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; cursor: pointer; display: none; }
+  .next-btn.show { display: block; }
+  .final { background: linear-gradient(135deg, #7E57C2, #4527A0); color: white; padding: 26px 20px; border-radius: 20px; text-align: center; display: none; }
+  .final.show { display: block; animation: pop 0.5s; }
+  .final .emoji { font-size: 4rem; }
+  .final h2 { margin: 10px 0; font-size: 1.5rem; }
+  .final .score { font-size: 2.5rem; font-weight: 900; }
+  .final .btn { display: inline-block; margin: 10px 6px; padding: 10px 18px; background: white; color: #4527A0; border-radius: 10px; text-decoration: none; font-weight: 800; }
+  @keyframes pop { 0%{transform:scale(0.7);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+  @media (max-width: 500px) { .q-text { font-size: 1.15rem; } .opt { font-size: 1rem; padding: 12px 8px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎮 遊戲 2 · 兩位小數 × 整數挑戰</h1>
+  <a href="index.html" class="back">← 返回第13課</a>
+</header>
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="label">題目</div><div class="val" id="qnum">1/10</div></div>
+    <div class="stat"><div class="label">答對</div><div class="val" id="correct" style="color:#2E7D32">0</div></div>
+    <div class="stat"><div class="label">連中</div><div class="val" id="streak" style="color:#E65100">0</div></div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
+  <div id="qwrap">
+    <div class="qbox" id="qbox">
+      <div class="q-num" id="qlabel">第 1 題</div>
+      <div class="q-text" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+      <div class="explain" id="explain"></div>
+    </div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">下一題 ▶</button>
+  </div>
+  <div class="final" id="final">
+    <div class="emoji">🏆</div>
+    <h2>挑戰完成！</h2>
+    <div class="score"><span id="finalScore">0</span>/10</div>
+    <p id="finalMsg" style="margin:10px 0"></p>
+    <div>
+      <a href="game2.html" class="btn" onclick="location.reload()">🔁 再玩一次</a>
+      <a href="assess2.html" class="btn">📝 做評估 2</a>
+      <a href="index.html" class="btn">🏠 回入口</a>
+    </div>
+  </div>
+</div>
+<script>
+const CHAPTER = 13, GAME_KEY = 'game2';
+const Q = [
+  { q: '2.35 × 4 = ?', opts: ['9.4','0.94','94','9.40'], a: 0, hint: '235 × 4 = 940，兩位小數，將小數點左移 2 位 → 9.40 = 9.4。' },
+  { q: '1.25 × 8 = ?', opts: ['10','1','100','10.00'], a: 0, hint: '125 × 8 = 1000，兩位小數 → 10.00 = 10。' },
+  { q: '3.14 × 2 = ?', opts: ['6.28','0.628','62.8','6.142'], a: 0, hint: '314 × 2 = 628，兩位小數 → 6.28。' },
+  { q: '0.25 × 6 = ?', opts: ['1.5','0.15','15','0.3'], a: 0, hint: '25 × 6 = 150，兩位小數 → 1.50 = 1.5。' },
+  { q: '4.05 × 3 = ?', opts: ['12.15','1.215','121.5','12.015'], a: 0, hint: '405 × 3 = 1215，兩位小數 → 12.15。' },
+  { q: '0.75 × 4 = ?', opts: ['3','0.3','30','3.00'], a: 0, hint: '75 × 4 = 300，兩位小數 → 3.00 = 3。' },
+  { q: '2.08 × 5 = ?', opts: ['10.4','1.04','104','10.40'], a: 0, hint: '208 × 5 = 1040，兩位小數 → 10.40 = 10.4。' },
+  { q: '1.56 × 3 = ?', opts: ['4.68','0.468','46.8','4.168'], a: 0, hint: '156 × 3 = 468，兩位小數 → 4.68。' },
+  { q: '0.48 × 5 = ?', opts: ['2.4','0.24','24','2.40'], a: 0, hint: '48 × 5 = 240，兩位小數 → 2.40 = 2.4。' },
+  { q: '3.75 × 4 = ?', opts: ['15','1.5','150','15.00'], a: 0, hint: '375 × 4 = 1500，兩位小數 → 15.00 = 15。' }
+];
+let i = 0, correct = 0, streak = 0;
+const qnum=document.getElementById('qnum'),correctEl=document.getElementById('correct'),streakEl=document.getElementById('streak'),pfill=document.getElementById('pfill'),qlabel=document.getElementById('qlabel'),qtext=document.getElementById('qtext'),opts=document.getElementById('opts'),explain=document.getElementById('explain'),nextBtn=document.getElementById('nextBtn'),finalEl=document.getElementById('final'),qwrap=document.getElementById('qwrap');
+function render(){const item=Q[i];qnum.textContent=`${i+1}/${Q.length}`;qlabel.textContent=`第 ${i+1} 題`;qtext.textContent=item.q;pfill.style.width=Math.round((i/Q.length)*100)+'%';opts.innerHTML='';explain.classList.remove('show');nextBtn.classList.remove('show');const idxs=[0,1,2,3].sort(()=>Math.random()-0.5);idxs.forEach(idx=>{const b=document.createElement('button');b.className='opt';b.textContent=item.opts[idx];b.onclick=()=>answer(idx,b);opts.appendChild(b);});}
+function answer(chosen,btn){const item=Q[i];[...opts.children].forEach(b=>b.classList.add('disabled'));if(chosen===item.a){btn.classList.add('correct');correct++;streak++;explain.innerHTML=`✅ 正確！<br>${item.hint}`;}else{btn.classList.add('wrong');streak=0;[...opts.children].forEach(b=>{if(b.textContent===item.opts[item.a])b.classList.add('correct');});explain.innerHTML=`❌ 錯咗！正解係 <b>${item.opts[item.a]}</b><br>${item.hint}`;}correctEl.textContent=correct;streakEl.textContent=streak;explain.classList.add('show');nextBtn.classList.add('show');nextBtn.textContent=i===Q.length-1?'睇結果 🎉':'下一題 ▶';}
+function nextQ(){if(i<Q.length-1){i++;render();}else{showFinal();}}
+function showFinal(){qwrap.style.display='none';pfill.style.width='100%';finalEl.classList.add('show');document.getElementById('finalScore').textContent=correct;let msg;if(correct===10)msg='🌟 滿分大神！兩位小數乘法你掌握晒！';else if(correct>=8)msg='💪 好勁！再溫下錯嘅就完美！';else if(correct>=6)msg='👍 不錯！記得返去簡報 2 再溫一次。';else msg='📖 再去睇多次簡報 2，跟住再挑戰呢個遊戲！';document.getElementById('finalMsg').textContent=msg;try{const key=`progress_ch${CHAPTER}`;const p=JSON.parse(localStorage.getItem(key)||'{}');p[GAME_KEY]={done:true,score:correct,total:Q.length,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(e){}}
+render();
+</script>
+</body>
+</html>

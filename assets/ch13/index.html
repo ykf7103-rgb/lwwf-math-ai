@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第13課 小數乘法（一）— 測試入口</title>
+<title>第13課 小數乘法（一）— 學習入口</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
@@ -18,19 +18,29 @@
     background-image: url('../common/images/school_bg.jpg');
     background-size: cover; background-position: center top;
     background-repeat: no-repeat;
-    opacity: 0.28; z-index: -1; pointer-events: none;
+    opacity: 0.22; z-index: -1; pointer-events: none;
   }
   .wrap { max-width: 880px; margin: 0 auto; padding: 20px; }
-  h1 { color: #E65100; font-size: 1.6rem; text-align: center; margin: 8px 0; }
+  h1 { color: #E65100; font-size: 1.7rem; text-align: center; margin: 8px 0; }
   .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 0.95rem; }
-  .notice {
-    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
-    border-left: 5px solid #FF9800;
-    padding: 16px 18px; border-radius: 12px;
+
+  .lo-box {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border-left: 5px solid #1565C0;
+    padding: 14px 18px; border-radius: 12px;
     margin-bottom: 20px;
   }
-  .notice h3 { margin: 0 0 8px; color: #E65100; font-size: 1.1rem; }
-  .notice p { margin: 4px 0; line-height: 1.6; font-size: 0.92rem; }
+  .lo-box h3 { margin: 0 0 8px; color: #0D47A1; font-size: 1.1rem; }
+  .lo-box ul { margin: 4px 0; padding-left: 20px; line-height: 1.7; font-size: 0.9rem; }
+
+  .path-hint {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    border-left: 5px solid #FF9800;
+    padding: 12px 16px; border-radius: 10px;
+    margin-bottom: 20px; font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .path-hint strong { color: #E65100; }
 
   .grid {
     display: grid;
@@ -44,25 +54,36 @@
     transition: all 0.2s;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     display: flex; flex-direction: column; gap: 6px;
-    min-height: 110px;
+    min-height: 110px; position: relative;
   }
-  .card:hover:not(.disabled) {
+  .card:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.12);
     border-color: #1565C0;
   }
   .card-emoji { font-size: 2rem; }
   .card-title { font-size: 1rem; font-weight: 900; color: #1565C0; }
-  .card-desc { font-size: 0.82rem; color: #666; }
-  .card.disabled {
-    opacity: 0.55; cursor: not-allowed;
-    background: #F5F5F5;
+  .card-desc { font-size: 0.82rem; color: #666; line-height: 1.4; }
+  .card .done-badge {
+    position: absolute; top: 8px; right: 10px;
+    background: #4CAF50; color: white;
+    font-size: 0.68rem; padding: 2px 8px; border-radius: 10px;
+    font-weight: 800; display: none;
   }
-  .card.disabled .tag {
-    background: #FF9800; color: white;
-    font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
-    align-self: flex-start; font-weight: 700;
-  }
+  .card.done .done-badge { display: inline-block; }
+  .card.done { border-color: #A5D6A7; }
+
+  .card.slides-c { border-color: #BBDEFB; }
+  .card.slides-c .card-title { color: #1565C0; }
+  .card.assess-c { border-color: #FFE0B2; }
+  .card.assess-c .card-title { color: #E65100; }
+  .card.game-c { border-color: #C8E6C9; }
+  .card.game-c .card-title { color: #00897B; }
+  .card.info-c { border-color: #E1BEE7; }
+  .card.info-c .card-title { color: #7B1FA2; }
+  .card.ai-c { border-color: #FFCCBC; background: linear-gradient(135deg, #FFF, #FFF8E1); }
+  .card.ai-c .card-title { color: #E65100; }
+
   .back {
     display: inline-block;
     margin-bottom: 16px;
@@ -73,77 +94,159 @@
     border: 2px solid #1565C0;
   }
   .back:hover { background: #1565C0; color: white; }
+
+  .section-h {
+    font-size: 1.1rem; font-weight: 800; color: #E65100;
+    margin: 24px 0 10px; padding-left: 8px;
+    border-left: 4px solid #FF9800;
+  }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0;
+    background: transparent; color: #999;
+    border: 1px dashed #BBB; padding: 6px 14px;
+    border-radius: 8px; cursor: pointer; font-size: 0.82rem;
+  }
+  .reset-btn:hover { color: #E65100; border-color: #E65100; }
+
+  @media (max-width: 500px) {
+    h1 { font-size: 1.35rem; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { padding: 12px 10px; min-height: 92px; }
+    .card-emoji { font-size: 1.6rem; }
+    .card-title { font-size: 0.92rem; }
+    .card-desc { font-size: 0.74rem; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <a href="../../index.html" class="back">← 返回主頁</a>
   <h1>📘 第 13 課 小數乘法（一）</h1>
-  <p class="subtitle">測試入口頁（建造中，請用以下連結預覽骨架）</p>
+  <p class="subtitle">一位/兩位小數 × 整數、小數 × 小數、估算</p>
 
-  <div class="notice">
-    <h3>🚧 建造中</h3>
-    <p>呢一課嘅互動內容正在逐步加入：NLM 生教學簡報 / 評估 / 影片等，然後網站實作互動層。</p>
-    <p>以下連結係暫時嘅骨架頁，方便你預覽結構、提供意見。</p>
+  <div class="lo-box">
+    <h3>🎯 本課學習目標</h3>
+    <ul>
+      <li>掌握 <b>一位小數 × 整數</b>（例：0.3 × 4 = 1.2）</li>
+      <li>掌握 <b>兩位小數 × 整數</b>（例：2.35 × 4 = 9.4）</li>
+      <li>掌握 <b>小數 × 小數</b>（例：0.3 × 0.4 = 0.12）</li>
+      <li>學會用 <b>估算</b> 快速判斷答案合理範圍</li>
+    </ul>
   </div>
 
+  <div class="path-hint">
+    💡 <strong>建議學習順序：</strong>
+    資訊圖預習 → 簡報 1 → 評估 1 → 遊戲 1 →
+    簡報 2 → 評估 2 → 遊戲 2 →
+    簡報 3 → 評估 3 → 遊戲 3 →
+    AI 助教解疑問
+  </div>
+
+  <div class="section-h">📘 資訊圖預習</div>
   <div class="grid">
-    <a href="slides1.html" class="card">
-      <div class="card-emoji">📗</div>
-      <div class="card-title">簡報 1</div>
-      <div class="card-desc">小數乘整數 — 基本法</div>
-    </a>
-    <a href="slides2.html" class="card">
-      <div class="card-emoji">📘</div>
-      <div class="card-title">簡報 2</div>
-      <div class="card-desc">小數 × 小數 — 進階</div>
-    </a>
-    <a href="slides3.html" class="card">
-      <div class="card-emoji">📙</div>
-      <div class="card-title">簡報 3</div>
-      <div class="card-desc">應用題</div>
-    </a>
-    <a href="assess1.html" class="card">
-      <div class="card-emoji">✏️</div>
-      <div class="card-title">評估 1</div>
-      <div class="card-desc">MC 題 6 條</div>
-    </a>
-    <a href="assess2.html" class="card">
-      <div class="card-emoji">✏️</div>
-      <div class="card-title">評估 2</div>
-      <div class="card-desc">MC 題 6 條</div>
-    </a>
-    <a href="assess3.html" class="card">
-      <div class="card-emoji">✏️</div>
-      <div class="card-title">評估 3</div>
-      <div class="card-desc">MC 題 6 條</div>
-    </a>
-    <a href="game1.html" class="card">
-      <div class="card-emoji">🎮</div>
-      <div class="card-title">遊戲 1</div>
-      <div class="card-desc">對應簡報 1 學習目標</div>
-    </a>
-    <a href="game2.html" class="card">
-      <div class="card-emoji">🎮</div>
-      <div class="card-title">遊戲 2</div>
-      <div class="card-desc">對應簡報 2</div>
-    </a>
-    <a href="game3.html" class="card">
-      <div class="card-emoji">🎮</div>
-      <div class="card-title">遊戲 3</div>
-      <div class="card-desc">對應簡報 3</div>
-    </a>
-    <a href="infographic.html" class="card">
+    <a href="infographic.html" class="card info-c" data-key="infographic">
       <div class="card-emoji">📊</div>
       <div class="card-title">資訊圖預習</div>
-      <div class="card-desc">3 圖 + 3 預習題</div>
-    </a>
-    <a href="ai-help.html" class="card">
-      <div class="card-emoji">🤖</div>
-      <div class="card-title">AI 助教</div>
-      <div class="card-desc">問功課</div>
+      <div class="card-desc">3 圖 + 3 預習題，快速掌握本課重點</div>
+      <span class="done-badge">✓ 完成</span>
     </a>
   </div>
+
+  <div class="section-h">📗 第一節 · 一位小數 × 整數</div>
+  <div class="grid">
+    <a href="slides1.html" class="card slides-c" data-key="slides1">
+      <div class="card-emoji">📗</div>
+      <div class="card-title">簡報 1</div>
+      <div class="card-desc">一位小數 × 整數 — 基本運算</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+    <a href="assess1.html" class="card assess-c" data-key="assess1">
+      <div class="card-emoji">✏️</div>
+      <div class="card-title">評估 1</div>
+      <div class="card-desc">12 題評估鞏固運算</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+    <a href="game1.html" class="card game-c" data-key="game1">
+      <div class="card-emoji">🎮</div>
+      <div class="card-title">遊戲 1</div>
+      <div class="card-desc">10 題快速反應挑戰</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+  </div>
+
+  <div class="section-h">📘 第二節 · 兩位小數 × 整數</div>
+  <div class="grid">
+    <a href="slides2.html" class="card slides-c" data-key="slides2">
+      <div class="card-emoji">📘</div>
+      <div class="card-title">簡報 2</div>
+      <div class="card-desc">兩位小數 × 整數 — 進階運算</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+    <a href="assess2.html" class="card assess-c" data-key="assess2">
+      <div class="card-emoji">✏️</div>
+      <div class="card-title">評估 2</div>
+      <div class="card-desc">12 題評估小數點位置</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+    <a href="game2.html" class="card game-c" data-key="game2">
+      <div class="card-emoji">🎮</div>
+      <div class="card-title">遊戲 2</div>
+      <div class="card-desc">10 題兩位小數挑戰</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+  </div>
+
+  <div class="section-h">📙 第三節 · 小數 × 小數 + 估算</div>
+  <div class="grid">
+    <a href="slides3.html" class="card slides-c" data-key="slides3">
+      <div class="card-emoji">📙</div>
+      <div class="card-title">簡報 3</div>
+      <div class="card-desc">小數 × 小數 + 估算技巧</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+    <a href="assess3.html" class="card assess-c" data-key="assess3">
+      <div class="card-emoji">✏️</div>
+      <div class="card-title">評估 3</div>
+      <div class="card-desc">12 題綜合評估</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+    <a href="game3.html" class="card game-c" data-key="game3">
+      <div class="card-emoji">🎮</div>
+      <div class="card-title">遊戲 3</div>
+      <div class="card-desc">10 題估算達人挑戰</div>
+      <span class="done-badge">✓ 完成</span>
+    </a>
+  </div>
+
+  <div class="section-h">🤖 AI 助教</div>
+  <div class="grid">
+    <a href="ai-help.html" class="card ai-c">
+      <div class="card-emoji">🤖</div>
+      <div class="card-title">AI 問功課</div>
+      <div class="card-desc">唔識做功課？AI 會引導你逐步解題</div>
+    </a>
+  </div>
+
+  <button class="reset-btn" onclick="resetProgress()">🗑 重設本課進度</button>
 </div>
+
+<script>
+  (function showProgress(){
+    try {
+      const key = 'progress_ch13';
+      const p = JSON.parse(localStorage.getItem(key) || '{}');
+      document.querySelectorAll('.card[data-key]').forEach(card => {
+        const k = card.dataset.key;
+        if (p[k]?.done) card.classList.add('done');
+      });
+    } catch(e) {}
+  })();
+  function resetProgress(){
+    if (!confirm('確定要清除第 13 課嘅學習進度？')) return;
+    localStorage.removeItem('progress_ch13');
+    location.reload();
+  }
+</script>
 </body>
 </html>

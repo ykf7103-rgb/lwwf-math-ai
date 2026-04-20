@@ -1,26 +1,99 @@
 <!DOCTYPE html>
-<html lang="zh-Hant"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第13課 評估 2</title>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第13課 · 評估 2 — 兩位小數 × 整數</title>
 <style>
-*{box-sizing:border-box}
-body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:24px;background:linear-gradient(135deg,#FFF9C4,#FFECB3,#FFCCBC);min-height:100vh;color:#333;display:flex;align-items:center;justify-content:center;position:relative}
-body::before{content:'';position:absolute;inset:0;background:url('../common/images/school_bg.jpg') center/cover no-repeat;opacity:0.22;z-index:-1}
-.box{background:white;padding:36px 30px;border-radius:16px;max-width:520px;width:90%;text-align:center;box-shadow:0 12px 36px rgba(0,0,0,0.15)}
-.emoji{font-size:4rem;margin-bottom:10px}
-h1{color:#E65100;font-size:1.5rem;margin:4px 0 10px}
-.tag{display:inline-block;background:linear-gradient(135deg,#FF9800,#F57C00);color:white;padding:4px 14px;border-radius:12px;font-size:0.8rem;font-weight:700;margin:8px 0}
-p{color:#666;line-height:1.7;font-size:0.95rem;margin:10px 0}
-.btn{display:inline-block;margin-top:16px;padding:10px 22px;background:#1565C0;color:white;text-decoration:none;border-radius:10px;font-weight:700}
-.btn:hover{background:#0D47A1}
-.sub{color:#999;font-size:0.82rem;margin-top:18px;border-top:1px dashed #ddd;padding-top:12px}
-</style></head><body>
-<div class="box">
-<div class="emoji">✏️</div>
-<h1>第 13 課 · 評估 2</h1>
-<div class="tag">🚧 建造中</div>
-<p>楊老師同 AI 助手正在準備呢一節嘅內容。等 NLM 生教學素材再加入互動題同遊戲。</p>
-<p>如果你見到呢個骨架頁，代表網站結構已經 ready，內容陸續填入。</p>
-<a href="index.html" class="btn">← 返回第 13 課入口</a>
-<div class="sub">預計完成：NLM QA verify 後上線</div>
-</div></body></html>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 50%, #FFCCBC 100%); min-height: 100vh; color: #222; position: relative; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: url('../common/images/school_bg.jpg') center/cover no-repeat; opacity: 0.15; z-index: -1; pointer-events: none; }
+  header { background: linear-gradient(135deg, #E65100, #F57C00); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+  header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+  header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 12px; }
+  .viewer { background: white; border-radius: 14px; padding: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 10px; touch-action: pan-y; }
+  .slide-img { width: 100%; height: auto; display: block; border-radius: 8px; max-height: 78vh; object-fit: contain; background: #fafafa; }
+  .controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .btn { background: linear-gradient(135deg, #1565C0, #1976D2); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.95rem; min-width: 80px; box-shadow: 0 2px 6px rgba(21,101,192,0.3); }
+  .btn:disabled { background: #BDBDBD; cursor: not-allowed; box-shadow: none; }
+  .btn.primary { background: linear-gradient(135deg, #E65100, #F57C00); }
+  .indicator { background: white; padding: 8px 14px; border-radius: 20px; font-weight: 800; color: #E65100; font-size: 0.95rem; min-width: 90px; text-align: center; border: 2px solid #FFF3E0; }
+  .progress { height: 6px; background: #E0E0E0; border-radius: 3px; overflow: hidden; margin: 8px 0; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #FF9800, #FFB74D); transition: width 0.3s; width: 0; }
+  .thumbs { display: flex; gap: 6px; overflow-x: auto; padding: 8px 0; scrollbar-width: thin; }
+  .thumb { flex-shrink: 0; width: 60px; height: 42px; border-radius: 6px; cursor: pointer; background-size: cover; background-position: center; border: 2px solid transparent; position: relative; }
+  .thumb.active { border-color: #E65100; transform: scale(1.08); }
+  .thumb-num { position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.7); color: white; font-size: 0.65rem; padding: 1px 4px; border-radius: 4px 0 4px 0; }
+  .done-banner { background: linear-gradient(135deg, #4CAF50, #388E3C); color: white; padding: 14px 18px; border-radius: 12px; text-align: center; font-weight: 800; margin: 12px 0; display: none; }
+  .done-banner.show { display: block; animation: pop 0.4s; }
+  @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+  @media (max-width: 600px) {
+    header h1 { font-size: 0.9rem; }
+    .btn { padding: 8px 12px; font-size: 0.85rem; min-width: 66px; }
+    .thumb { width: 50px; height: 35px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>✏️ 第13課 · 評估 2 — 兩位小數 × 整數</h1>
+  <a href="index.html" class="back">← 返回第13課</a>
+</header>
+<div class="wrap">
+  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
+  <div class="viewer"><img id="slide" class="slide-img" src="pages/assess2_p01.jpg" alt="第 1 頁" /></div>
+  <div class="controls">
+    <button class="btn" id="prev" onclick="prev()">◀ 上一題</button>
+    <div class="indicator" id="ind">1 / 12</div>
+    <button class="btn primary" id="next" onclick="next()">下一題 ▶</button>
+  </div>
+  <div class="thumbs" id="thumbs"></div>
+  <div class="done-banner" id="done">
+    🎉 評估 2 完成！去玩遊戲 2 輕鬆一下！
+    <div style="margin-top:10px"><a href="game2.html" style="color:white;background:#1565C0;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">🎮 玩遊戲 2</a></div>
+  </div>
+</div>
+<script>
+  const PREFIX = 'assess2', TOTAL = 12, CHAPTER = 13, DECK_KEY = 'assess2';
+  let idx = 0;
+  const img = document.getElementById('slide'), ind = document.getElementById('ind'), prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next'), pfill = document.getElementById('pfill'), doneBanner = document.getElementById('done'), thumbsEl = document.getElementById('thumbs');
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function buildThumbs(){
+    thumbsEl.innerHTML = '';
+    for(let i=0;i<TOTAL;i++){
+      const t = document.createElement('div'); t.className = 'thumb';
+      t.style.backgroundImage = `url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;
+      t.onclick = ()=> goto(i);
+      const num = document.createElement('div'); num.className='thumb-num'; num.textContent=i+1; t.appendChild(num);
+      thumbsEl.appendChild(t);
+    }
+  }
+  function render(){
+    img.src = `pages/${PREFIX}_p${pad(idx+1)}.jpg`; img.alt = `第 ${idx+1} 頁`;
+    ind.textContent = `${idx+1} / ${TOTAL}`; prevBtn.disabled = idx === 0;
+    nextBtn.textContent = idx === TOTAL-1 ? '完成 ✓' : '下一題 ▶';
+    pfill.style.width = Math.round((idx+1)/TOTAL*100) + '%';
+    [...thumbsEl.children].forEach((el,i)=> el.classList.toggle('active', i===idx));
+    const active = thumbsEl.querySelector('.thumb.active');
+    if (active) active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    if (idx === TOTAL-1) { doneBanner.classList.add('show'); markDone(); }
+  }
+  function next(){ if (idx < TOTAL-1) { idx++; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
+  function prev(){ if (idx > 0) { idx--; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
+  function goto(i){ idx = Math.max(0, Math.min(TOTAL-1, i)); render(); }
+  function markDone(){ try { const key=`progress_ch${CHAPTER}`; const p = JSON.parse(localStorage.getItem(key)||'{}'); p[DECK_KEY]={done:true,ts:Date.now()}; localStorage.setItem(key,JSON.stringify(p)); } catch(e){} }
+  document.addEventListener('keydown', e=>{
+    if (e.key==='ArrowRight'||e.key===' ') { e.preventDefault(); next(); }
+    else if (e.key==='ArrowLeft') { e.preventDefault(); prev(); }
+  });
+  let touchX=0,touchY=0;
+  document.querySelector('.viewer').addEventListener('touchstart', e=>{ touchX=e.changedTouches[0].screenX; touchY=e.changedTouches[0].screenY; }, {passive:true});
+  document.querySelector('.viewer').addEventListener('touchend', e=>{
+    const dx=e.changedTouches[0].screenX-touchX, dy=e.changedTouches[0].screenY-touchY;
+    if (Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)) { if (dx<0) next(); else prev(); }
+  }, {passive:true});
+  buildThumbs(); render();
+</script>
+</body>
+</html>
