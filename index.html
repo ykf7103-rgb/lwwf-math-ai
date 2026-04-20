@@ -1720,6 +1720,7 @@ body::before {
                 <li>🏫 校園圖做背景</li>
                 <li>⚔️ 塔防戰：答錯扣唐僧 10 血</li>
                 <li>🐛 修正小數工具答案前多餘 0（例：0.234×1000 現正確顯示 234）</li>
+                <li>📘 第 13 課小數乘法（一）測試入口上線（骨架）</li>
             </ul>
         </div>
 
@@ -3444,7 +3445,7 @@ async function renderTeacherData() {
 const AVAILABLE_CHAPTERS = [
     // 單元四：小數乘法
     { num: 12, title: '有趣的乘法',          desc: '×10 / ×100 / ×0.1 / 單位轉換',   status: 'active' },
-    { num: 13, title: '小數乘法（一）',       desc: '小數乘整數 · 小數乘小數',         status: 'coming' },
+    { num: 13, title: '小數乘法（一）',       desc: '小數乘整數 · 小數乘小數',         status: 'active' },
     { num: 14, title: '小數乘法（二）',       desc: '進階小數乘法 · 應用題',           status: 'coming' },
     // 單元五：體積
     { num: 15, title: '體積的認識',          desc: '體積概念 · 立方體數一數',         status: 'coming' },
@@ -3483,9 +3484,10 @@ function selectChapter(num, status) {
         closeChapterSelector();
         return;
     }
-    // Future: set CHAPTER = num + reload dashboard for that chapter
-    alert(`✅ 切換到第 ${num} 課（功能準備中）`);
+    // Each active chapter other than default (12) has its own entry page at assets/ch{N}/index.html
+    // (Transition: individual chapter pages during dev; full dashboard switching comes later)
     closeChapterSelector();
+    window.location.href = `assets/ch${num}/index.html`;
 }
 
 // Switch teacher sub-section (completion / iq / stats) — only one visible at a time

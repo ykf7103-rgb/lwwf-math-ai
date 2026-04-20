@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第13課 小數乘法（一）— 測試入口</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    margin: 0; padding: 16px;
+    background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 50%, #FFCCBC 100%);
+    min-height: 100vh; color: #333;
+    position: relative;
+  }
+  body::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: url('../common/images/school_bg.jpg');
+    background-size: cover; background-position: center top;
+    background-repeat: no-repeat;
+    opacity: 0.28; z-index: -1; pointer-events: none;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 20px; }
+  h1 { color: #E65100; font-size: 1.6rem; text-align: center; margin: 8px 0; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 0.95rem; }
+  .notice {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    border-left: 5px solid #FF9800;
+    padding: 16px 18px; border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  .notice h3 { margin: 0 0 8px; color: #E65100; font-size: 1.1rem; }
+  .notice p { margin: 4px 0; line-height: 1.6; font-size: 0.92rem; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: white; border: 2px solid #E0E7EE;
+    border-radius: 14px; padding: 16px 14px;
+    text-decoration: none; color: #333;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column; gap: 6px;
+    min-height: 110px;
+  }
+  .card:hover:not(.disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border-color: #1565C0;
+  }
+  .card-emoji { font-size: 2rem; }
+  .card-title { font-size: 1rem; font-weight: 900; color: #1565C0; }
+  .card-desc { font-size: 0.82rem; color: #666; }
+  .card.disabled {
+    opacity: 0.55; cursor: not-allowed;
+    background: #F5F5F5;
+  }
+  .card.disabled .tag {
+    background: #FF9800; color: white;
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
+    align-self: flex-start; font-weight: 700;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.9);
+    color: #1565C0; border-radius: 10px;
+    text-decoration: none; font-weight: 700;
+    border: 2px solid #1565C0;
+  }
+  .back:hover { background: #1565C0; color: white; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="../../index.html" class="back">← 返回主頁</a>
+  <h1>📘 第 13 課 小數乘法（一）</h1>
+  <p class="subtitle">測試入口頁（建造中，請用以下連結預覽骨架）</p>
+
+  <div class="notice">
+    <h3>🚧 建造中</h3>
+    <p>呢一課嘅互動內容正在逐步加入：NLM 生教學簡報 / 評估 / 影片等，然後網站實作互動層。</p>
+    <p>以下連結係暫時嘅骨架頁，方便你預覽結構、提供意見。</p>
+  </div>
+
+  <div class="grid">
+    <a href="slides1.html" class="card">
+      <div class="card-emoji">📗</div>
+      <div class="card-title">簡報 1</div>
+      <div class="card-desc">小數乘整數 — 基本法</div>
+    </a>
+    <a href="slides2.html" class="card">
+      <div class="card-emoji">📘</div>
+      <div class="card-title">簡報 2</div>
+      <div class="card-desc">小數 × 小數 — 進階</div>
+    </a>
+    <a href="slides3.html" class="card">
+      <div class="card-emoji">📙</div>
+      <div class="card-title">簡報 3</div>
+      <div class="card-desc">應用題</div>
+    </a>
+    <a href="assess1.html" class="card">
+      <div class="card-emoji">✏️</div>
+      <div class="card-title">評估 1</div>
+      <div class="card-desc">MC 題 6 條</div>
+    </a>
+    <a href="assess2.html" class="card">
+      <div class="card-emoji">✏️</div>
+      <div class="card-title">評估 2</div>
+      <div class="card-desc">MC 題 6 條</div>
+    </a>
+    <a href="assess3.html" class="card">
+      <div class="card-emoji">✏️</div>
+      <div class="card-title">評估 3</div>
+      <div class="card-desc">MC 題 6 條</div>
+    </a>
+    <a href="game1.html" class="card">
+      <div class="card-emoji">🎮</div>
+      <div class="card-title">遊戲 1</div>
+      <div class="card-desc">對應簡報 1 學習目標</div>
+    </a>
+    <a href="game2.html" class="card">
+      <div class="card-emoji">🎮</div>
+      <div class="card-title">遊戲 2</div>
+      <div class="card-desc">對應簡報 2</div>
+    </a>
+    <a href="game3.html" class="card">
+      <div class="card-emoji">🎮</div>
+      <div class="card-title">遊戲 3</div>
+      <div class="card-desc">對應簡報 3</div>
+    </a>
+    <a href="infographic.html" class="card">
+      <div class="card-emoji">📊</div>
+      <div class="card-title">資訊圖預習</div>
+      <div class="card-desc">3 圖 + 3 預習題</div>
+    </a>
+    <a href="ai-help.html" class="card">
+      <div class="card-emoji">🤖</div>
+      <div class="card-title">AI 助教</div>
+      <div class="card-desc">問功課</div>
+    </a>
+  </div>
+</div>
+</body>
+</html>
