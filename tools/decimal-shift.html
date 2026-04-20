@@ -518,11 +518,16 @@
     const paddedDigits = '0'.repeat(padLeft) + state.digits + '0'.repeat(padRight);
     const finalDotIdx = newDotIdx + padLeft;
     let finalStr;
-    if (finalDotIdx >= paddedDigits.length) finalStr = paddedDigits;
-    else {
-      const intF = paddedDigits.substring(0, finalDotIdx);
+    if (finalDotIdx >= paddedDigits.length) {
+      // Pure integer — strip leading zeros (e.g. 0.234 × 1000 = "0234" → "234")
+      finalStr = paddedDigits.replace(/^0+/, '') || '0';
+    } else {
+      let intF = paddedDigits.substring(0, finalDotIdx);
       const fracF = paddedDigits.substring(finalDotIdx);
-      finalStr = (intF || '0') + '.' + fracF;
+      // Strip leading zeros from int part (keep one if all zeros, e.g. "0.045")
+      intF = intF.replace(/^0+/, '');
+      if (intF === '') intF = '0';
+      finalStr = intF + '.' + fracF;
     }
     // Clean trailing zeros after decimal
     if (finalStr.includes('.')) {
