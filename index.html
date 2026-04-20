@@ -4539,6 +4539,11 @@ function checkSlideQuizCompletion(folder) {
             const data = { coins: 2, total: qs.length, correct: qs.length, date: new Date().toLocaleDateString('zh-TW') };
             cloudStore.saveScore(currentUser.class, currentUser.number, folder, data).then(() => updateCoinDisplay());
         }
+        // 🔧 Auto-mark slides step complete even if student didn't click "完成簡報"
+        // Previously students had to click the button; many forgot → teacher saw "not done"
+        if (!isStepDone(folder)) {
+            setStepComplete(folder);
+        }
     }
 }
 
