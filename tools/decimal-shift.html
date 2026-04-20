@@ -89,6 +89,20 @@
   }
   .slot.digit { color: #0D47A1; }
   .slot.pad { color: #CCC; }
+  /* Leading zero that's no longer needed after shift — show crossed out */
+  .slot.digit.leading-zero-strike {
+    color: #FF5252;
+    text-decoration: line-through;
+    text-decoration-color: #FF5252;
+    text-decoration-thickness: 3px;
+    opacity: 0.55;
+    transition: all 0.4s ease;
+    animation: strikeIn 0.4s ease-out;
+  }
+  @keyframes strikeIn {
+    0% { opacity: 1; text-decoration-color: transparent; }
+    100% { opacity: 0.55; text-decoration-color: #FF5252; }
+  }
   .slot.pad.active {
     color: #FF6F00; background: linear-gradient(135deg, #FFECB3, #FFD54F);
     border-radius: 8px;
@@ -381,11 +395,28 @@
     const originalDotGap = state.leftPadMax + state.originalDotIdx;
     const currentDotGap = originalDotGap + state.shift;
 
+    // Compute how many leading "0" digits should be struck through
+    // (e.g. "0234" × 1000 = "234" — first "0" is now a redundant leading zero)
+    const newDotIdx = state.originalDotIdx + state.shift;
+    let hideCount = 0;
+    if (newDotIdx >= 1) {
+      // Int part exists: count leading zeros in digits[0..newDotIdx-1] (always keep at least one digit)
+      const intPartEnd = Math.min(newDotIdx, state.digits.length);
+      for (let j = 0; j < intPartEnd - 1; j++) {
+        if (state.digits[j] === '0') hideCount++;
+        else break;
+      }
+    }
+
     // For each slot, decide class
     slots.forEach((s, i) => {
       let cls = 'slot';
-      if (s.type === 'digit') cls += ' digit';
-      else {
+      if (s.type === 'digit') {
+        cls += ' digit';
+        // Mark this digit as "struck-out leading zero" if applicable
+        const digitIdx = i - state.leftPadMax;
+        if (digitIdx < hideCount) cls += ' leading-zero-strike';
+      } else {
         cls += ' pad';
         // A pad is active if it falls within the final answer's visible range
         const isLeftPad = s.type === 'pad-left';
