@@ -11,40 +11,79 @@
   header { background: linear-gradient(135deg, #E65100, #F57C00); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
   header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
   header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
-  .wrap { max-width: 820px; margin: 0 auto; padding: 16px; }
-  .stats { display: flex; gap: 8px; margin-bottom: 14px; }
-  .stat { flex: 1; background: white; padding: 10px; border-radius: 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-  .stat .label { font-size: 0.72rem; color: #666; }
-  .stat .val { font-size: 1.3rem; font-weight: 900; color: #E65100; }
-  .progress { height: 8px; background: #E0E0E0; border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #FF9800, #FFB74D); transition: width 0.3s; width: 0; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 14px; }
+  .mode-tabs { display: flex; gap: 8px; margin-bottom: 14px; background: white; padding: 6px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .mode-tab { flex: 1; padding: 12px 10px; border: none; border-radius: 10px; background: transparent; color: #666; font-weight: 800; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
+  .mode-tab:hover { background: #FFF3E0; color: #E65100; }
+  .mode-tab.active { background: linear-gradient(135deg, #E65100, #F57C00); color: white; }
+  .mode-tab .emoji { font-size: 1.2rem; }
+  @media (max-width: 500px) { .mode-tab { font-size: 0.85rem; padding: 10px 6px; } }
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; animation: fade 0.3s; }
+  @keyframes fade { from{opacity:0} to{opacity:1} }
+  .slide-wrap { background: white; border-radius: 16px; padding: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .slide-stats { display: flex; gap: 8px; margin-bottom: 10px; }
+  .stat { flex: 1; padding: 8px; border-radius: 8px; text-align: center; background: #FFF3E0; }
+  .stat .label { font-size: 0.7rem; color: #999; }
+  .stat .val { font-size: 1.2rem; font-weight: 900; color: #E65100; }
+  .slide-img-wrap { background: #fafafa; border-radius: 12px; padding: 8px; text-align: center; margin-bottom: 12px; }
+  .slide-img { max-width: 100%; max-height: 55vh; border-radius: 8px; display: block; margin: 0 auto; }
+  .slide-progress { height: 6px; background: #E0E0E0; border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+  .slide-progress-fill { height: 100%; background: linear-gradient(90deg, #FF9800, #FFB74D); transition: width 0.3s; width: 0; }
+  .slide-q { background: linear-gradient(135deg, #FFF8E1, #FFE0B2); border: 2px solid #FFB300; border-radius: 14px; padding: 14px; }
+  .slide-q-num { font-size: 0.78rem; color: #E65100; font-weight: 800; margin-bottom: 4px; }
+  .slide-q-text { font-size: 1.2rem; font-weight: 900; color: #222; margin-bottom: 12px; line-height: 1.5; }
+  .slide-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .slide-opt { padding: 12px; background: white; border: 2px solid #FFB74D; border-radius: 10px; cursor: pointer; font-weight: 700; color: #333; font-size: 1rem; display: flex; align-items: center; gap: 8px; font-family: inherit; }
+  .slide-opt .letter { background: #FFF3E0; color: #E65100; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; font-weight: 900; }
+  .slide-opt:hover:not(:disabled) { border-color: #FF8F00; background: #FFF3E0; }
+  .slide-opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; animation: pop 0.4s; }
+  .slide-opt.correct .letter { background: #4CAF50; color: white; }
+  .slide-opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; animation: shake 0.4s; }
+  .slide-opt.wrong .letter { background: #F44336; color: white; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  @keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  .slide-explain { margin-top: 14px; padding: 12px; background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-left: 4px solid #1976D2; border-radius: 8px; display: none; }
+  .slide-explain.show { display: block; animation: fadeIn 0.4s; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(-5px)} to{opacity:1; transform:translateY(0)} }
+  .slide-explain .title { color: #0D47A1; font-weight: 800; margin-bottom: 6px; }
+  .slide-explain .body { color: #333; line-height: 1.6; font-size: 0.95rem; }
+  .slide-nav { display: flex; gap: 10px; margin-top: 12px; justify-content: space-between; align-items: center; }
+  .slide-btn { padding: 10px 18px; border: none; border-radius: 10px; background: linear-gradient(135deg, #1565C0, #0D47A1); color: white; font-weight: 800; cursor: pointer; font-size: 0.95rem; font-family: inherit; }
+  .slide-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .slide-btn.next-btn { background: linear-gradient(135deg, #E65100, #BF360C); }
+  .wrongs-note { font-size: 0.8rem; color: #C62828; text-align: center; margin-top: 6px; min-height: 1.1em; }
+  .stats-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .stats-row .stat { flex: 1; padding: 10px; border-radius: 10px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
   .q-card { background: white; border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 5px solid #FFB300; }
   .q-card.correct-ans { border-left-color: #4CAF50; background: #F1F8E9; }
   .q-card.wrong-ans { border-left-color: #F44336; background: #FFEBEE; }
   .q-num { font-size: 0.78rem; color: #E65100; font-weight: 800; margin-bottom: 4px; }
   .q-text { font-size: 1.15rem; font-weight: 800; color: #222; margin-bottom: 12px; line-height: 1.5; }
   .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .opt { padding: 12px; background: #FAFAFA; border: 2px solid #E0E0E0; border-radius: 10px; cursor: pointer; font-weight: 700; color: #333; text-align: left; font-size: 1rem; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+  .opt { padding: 12px; background: #FAFAFA; border: 2px solid #E0E0E0; border-radius: 10px; cursor: pointer; font-weight: 700; color: #333; font-size: 1rem; display: flex; align-items: center; gap: 8px; font-family: inherit; }
   .opt .letter { background: #FFF3E0; color: #E65100; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
   .opt:hover:not(:disabled) { border-color: #FF9800; background: #FFF3E0; }
   .opt.selected { background: #FFE0B2; border-color: #F57C00; }
   .opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; }
   .opt.correct .letter { background: #4CAF50; color: white; }
-  .opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; animation: shake 0.4s; }
+  .opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; }
   .opt.wrong .letter { background: #F44336; color: white; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
   .explain { margin-top: 12px; padding: 10px 12px; background: linear-gradient(135deg,#FFF8E1,#FFECB3); border-left: 4px solid #FFC107; border-radius: 8px; font-size: 0.9rem; color: #555; line-height: 1.5; display: none; }
-  .explain.show { display: block; animation: fadeIn 0.3s; }
-  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-  .btn-submit-all { display: block; width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 14px; background: linear-gradient(135deg, #E65100, #BF360C); color: white; font-size: 1.1rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(230,81,0,0.3); }
+  .explain.show { display: block; }
+  .btn-submit-all { display: block; width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 14px; background: linear-gradient(135deg, #E65100, #BF360C); color: white; font-size: 1.1rem; font-weight: 900; cursor: pointer; font-family: inherit; }
   .btn-submit-all:disabled { opacity: 0.5; cursor: not-allowed; }
   .final-screen { background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; padding: 28px 20px; border-radius: 20px; text-align: center; margin-top: 20px; display: none; }
   .final-screen.show { display: block; animation: pop 0.5s; }
-  @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
   .final-screen .score-big { font-size: 3rem; font-weight: 900; margin: 10px 0; }
   .final-screen .trophy { font-size: 4rem; }
-  .final-screen .btn { display: inline-block; margin: 8px 6px; padding: 12px 22px; background: white; color: #2E7D32; border-radius: 12px; text-decoration: none; font-weight: 900; border: none; font-family: inherit; font-size: 1rem; cursor: pointer; }
-  @media (max-width: 600px) { .opts { grid-template-columns: 1fr; } .q-text { font-size: 1rem; } .opt { font-size: 0.92rem; padding: 10px; } }
+  .final-screen .btn { display: inline-block; margin: 6px; padding: 12px 22px; background: white; color: #2E7D32; border-radius: 12px; text-decoration: none; font-weight: 900; border: none; font-family: inherit; font-size: 1rem; cursor: pointer; }
+  .lock-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+  .lock-modal.show { display: flex; }
+  .lock-box { background: linear-gradient(135deg, #FF5252, #C62828); color: white; padding: 28px 22px; border-radius: 18px; max-width: 420px; text-align: center; }
+  .lock-box .big { font-size: 3.5rem; margin-bottom: 6px; }
+  .lock-box button { background: white; color: #C62828; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 8px; font-family: inherit; font-size: 1rem; }
+  @media (max-width: 600px) { .slide-opts, .opts { grid-template-columns: 1fr; } .slide-q-text, .q-text { font-size: 1rem; } .slide-opt, .opt { font-size: 0.92rem; padding: 10px; } }
 </style>
 </head>
 <body>
@@ -53,19 +92,52 @@
   <a href="index.html" class="back">← 返回第13課</a>
 </header>
 <div class="wrap">
-  <div class="stats">
-    <div class="stat"><div class="label">題目</div><div class="val" id="totalStat">12</div></div>
-    <div class="stat"><div class="label">已答</div><div class="val" id="answeredStat" style="color:#1565C0">0</div></div>
-    <div class="stat"><div class="label">答對</div><div class="val" id="correctStat" style="color:#2E7D32">0</div></div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="slides" onclick="switchMode('slides')"><span class="emoji">📊</span> 簡報評估</button>
+    <button class="mode-tab" data-mode="list" onclick="switchMode('list')"><span class="emoji">⚡</span> 快速 MC</button>
   </div>
-  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
-  <div id="qList"></div>
-  <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先做晒全部 12 題</button>
+
+  <div class="mode-panel active" id="slidesPanel">
+    <div class="slide-wrap">
+      <div class="slide-stats">
+        <div class="stat"><div class="label">題目</div><div class="val" id="slideQNum">1 / 12</div></div>
+        <div class="stat"><div class="label">答對</div><div class="val" id="slideCorrect" style="color:#2E7D32">0</div></div>
+        <div class="stat"><div class="label">連錯</div><div class="val" id="slideWrongs" style="color:#C62828">0</div></div>
+      </div>
+      <div class="slide-progress"><div class="slide-progress-fill" id="slidePfill"></div></div>
+      <div class="slide-img-wrap"><img class="slide-img" id="slideImg" src="pages/assess3_p01.jpg" alt="題目圖片" /></div>
+      <div class="slide-q">
+        <div class="slide-q-num" id="slideQLabel">第 1 題</div>
+        <div class="slide-q-text" id="slideQText"></div>
+        <div class="slide-opts" id="slideOpts"></div>
+        <div class="slide-explain" id="slideExplain">
+          <div class="title" id="slideExplainTitle"></div>
+          <div class="body" id="slideExplainBody"></div>
+        </div>
+      </div>
+      <div class="wrongs-note" id="wrongsNote"></div>
+      <div class="slide-nav">
+        <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>下一題 ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-panel" id="listPanel">
+    <div class="stats-row">
+      <div class="stat"><div class="label">題目</div><div class="val" id="totalStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#E65100">12</div></div>
+      <div class="stat"><div class="label">已答</div><div class="val" id="answeredStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#1565C0">0</div></div>
+      <div class="stat"><div class="label">答對</div><div class="val" id="correctStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#2E7D32">0</div></div>
+    </div>
+    <div id="qList"></div>
+    <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先做晒全部 12 題</button>
+  </div>
+
   <div class="final-screen" id="finalScreen">
     <div class="trophy" id="finalTrophy">🏆</div>
     <div>評估 3 完成！</div>
     <div class="score-big"><span id="finalScore">0</span> / 12</div>
-    <p id="finalMsg" style="margin:10px 0; font-size:1rem;"></p>
+    <p id="finalMsg" style="margin:10px 0;"></p>
     <div>
       <button class="btn" onclick="location.reload()">🔁 再做一次</button>
       <a href="game3.html" class="btn">🎮 玩遊戲 3</a>
@@ -73,8 +145,18 @@
     </div>
   </div>
 </div>
+
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box">
+    <div class="big">🔒</div>
+    <h2 style="margin:4px 0 10px;">錯得多，要重做！</h2>
+    <p>連錯 5 次，評估重新開始，睇清楚圖再答 💪</p>
+    <button onclick="resetSlides()">🔁 由第 1 題重新開始</button>
+  </div>
+</div>
+
 <script>
-const CHAPTER = 13, DECK_KEY = 'assess3';
+const CHAPTER = 13, DECK_KEY = 'assess3', IMG_PREFIX = 'assess3';
 const Q = [
   { q: '0.3 × 0.4 = ?', opts: ['0.12','1.2','0.012','12'], a: 0, hint: '3 × 4 = 12，合共 2 位小數 → 0.12' },
   { q: '0.5 × 0.6 = ?', opts: ['3','0.3','0.03','30'], a: 1, hint: '5 × 6 = 30，合共 2 位小數 → 0.30 = 0.3' },
@@ -89,13 +171,22 @@ const Q = [
   { q: '1 公斤豬肉 $28.50，買 2.5 kg 估算 ?', opts: ['約$70','$30','$50','$100'], a: 0, hint: '28.5 ≈ 30，2.5 × 30 = 75（實際 71.25，約 $70）' },
   { q: '每升汽油 $8.8，買 4.2 升估算 ?', opts: ['約$35','$40','$20','$80'], a: 0, hint: '8.8 ≈ 9，4.2 ≈ 4，9 × 4 = 36（實際 36.96，約 $35）' }
 ];
-const selected = new Array(Q.length).fill(-1);
-let submitted = false;
-function render() { const list = document.getElementById('qList'); list.innerHTML = ''; Q.forEach((q, i) => { const card = document.createElement('div'); card.className = 'q-card'; let html = `<div class="q-num">第 ${i+1} 題</div><div class="q-text">${q.q}</div><div class="opts" id="opts${i}">`; q.opts.forEach((opt, oi) => { html += `<button class="opt${selected[i]===oi?' selected':''}" onclick="pick(${i},${oi})"><span class="letter">${['A','B','C','D'][oi]}</span><span>${opt}</span></button>`; }); html += `</div>`; card.innerHTML = html; list.appendChild(card); }); updateStats(); }
-function pick(qIdx, optIdx) { if (submitted) return; selected[qIdx] = optIdx; document.querySelectorAll(`#opts${qIdx} .opt`).forEach((b, i) => b.classList.toggle('selected', i === optIdx)); updateStats(); }
-function updateStats() { const answered = selected.filter(s => s !== -1).length; document.getElementById('answeredStat').textContent = answered; document.getElementById('pfill').style.width = Math.round(answered/Q.length*100) + '%'; const btn = document.getElementById('submitBtn'); if (answered === Q.length) { btn.disabled = false; btn.textContent = '✓ 提交答案 (檢查成績)'; } else { btn.disabled = true; btn.textContent = `仲有 ${Q.length - answered} 題未做`; } }
-function submitAll() { submitted = true; let correct = 0; Q.forEach((q, i) => { const card = document.getElementById('qList').children[i]; const btns = card.querySelectorAll('.opt'); btns.forEach((b, oi) => { b.disabled = true; if (oi === q.a) b.classList.add('correct'); else if (selected[i] === oi) b.classList.add('wrong'); }); if (selected[i] === q.a) { correct++; card.classList.add('correct-ans'); } else { card.classList.add('wrong-ans'); const explain = document.createElement('div'); explain.className = 'explain show'; explain.innerHTML = `💡 ${q.hint}`; card.appendChild(explain); } }); document.getElementById('correctStat').textContent = correct; document.getElementById('submitBtn').style.display = 'none'; const final = document.getElementById('finalScreen'); final.classList.add('show'); document.getElementById('finalScore').textContent = correct; let msg, trophy; if (correct === 12) { msg = '🌟 滿分估算達人！'; trophy = '🏆'; } else if (correct >= 10) { msg = '💪 估算技巧好！'; trophy = '🥇'; } else if (correct >= 7) { msg = '👍 不錯，多練習估算'; trophy = '🥈'; } else { msg = '📖 多啲溫習簡報 3，尤其估算'; trophy = '📚'; } document.getElementById('finalMsg').textContent = msg; document.getElementById('finalTrophy').textContent = trophy; final.scrollIntoView({behavior:'smooth', block:'start'}); try { const key = `progress_ch${CHAPTER}`; const p = JSON.parse(localStorage.getItem(key) || '{}'); p[DECK_KEY] = { done: true, score: correct, total: Q.length, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e) {} try { window.parent.postMessage({ type:'assessScore', deck: DECK_KEY, correct, total: Q.length }, '*'); } catch(e) {} }
-render();
+function pad2(n){ return String(n).padStart(2,'0'); }
+function switchMode(mode){ document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode)); document.getElementById('slidesPanel').classList.toggle('active',mode==='slides'); document.getElementById('listPanel').classList.toggle('active',mode==='list'); if(mode==='list'&&!listRendered){renderList();listRendered=true;} }
+let slideIdx=0, slideCorrect=0, slideWrongs=0;
+const slideAnswered=new Array(Q.length).fill(null);
+function renderSlide(){const q=Q[slideIdx];const pn=pad2(slideIdx+1);document.getElementById('slideImg').src=`pages/${IMG_PREFIX}_p${pn}.jpg`;document.getElementById('slideQNum').textContent=`${slideIdx+1} / ${Q.length}`;document.getElementById('slideQLabel').textContent=`第 ${slideIdx+1} 題`;document.getElementById('slideQText').textContent=q.q;document.getElementById('slideCorrect').textContent=slideCorrect;document.getElementById('slideWrongs').textContent=slideWrongs;document.getElementById('slidePfill').style.width=Math.round((slideIdx+1)/Q.length*100)+'%';const od=document.getElementById('slideOpts');od.innerHTML='';const ch=slideAnswered[slideIdx];q.opts.forEach((opt,i)=>{const b=document.createElement('button');b.className='slide-opt';b.innerHTML=`<span class="letter">${['A','B','C','D'][i]}</span><span>${opt}</span>`;if(ch!==null){b.disabled=true;if(i===q.a)b.classList.add('correct');else if(i===ch)b.classList.add('wrong');}else{b.onclick=()=>slidePick(i);}od.appendChild(b);});const ex=document.getElementById('slideExplain');if(ch!==null){ex.classList.add('show');const c=ch===q.a;document.getElementById('slideExplainTitle').textContent=c?'✅ 答啱！':`❌ 正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;document.getElementById('slideExplainBody').innerHTML=`💡 ${q.hint}`;}else{ex.classList.remove('show');}document.getElementById('slidePrev').disabled=slideIdx===0;const nb=document.getElementById('slideNext');if(ch===null){nb.disabled=true;nb.textContent='答咗先過 ▶';}else if(slideIdx===Q.length-1){nb.disabled=false;nb.textContent='✓ 睇結果';}else{nb.disabled=false;nb.textContent='下一題 ▶';}document.getElementById('wrongsNote').textContent=slideWrongs>=3?`⚠️ 已連錯 ${slideWrongs} 次（錯 5 次要由頭做）`:'';}
+function slidePick(i){if(slideAnswered[slideIdx]!==null)return;const q=Q[slideIdx];slideAnswered[slideIdx]=i;if(i===q.a){slideCorrect++;slideWrongs=0;}else{slideWrongs++;}renderSlide();if(slideWrongs>=5)setTimeout(()=>document.getElementById('lockModal').classList.add('show'),800);}
+function slidePrev(){if(slideIdx>0){slideIdx--;renderSlide();window.scrollTo({top:0,behavior:'smooth'});}}
+function slideNext(){if(slideIdx<Q.length-1){slideIdx++;renderSlide();window.scrollTo({top:0,behavior:'smooth'});}else{showFinal(slideCorrect);}}
+function resetSlides(){slideIdx=0;slideCorrect=0;slideWrongs=0;slideAnswered.fill(null);document.getElementById('lockModal').classList.remove('show');renderSlide();window.scrollTo({top:0,behavior:'smooth'});}
+let listRendered=false;const selected=new Array(Q.length).fill(-1);let listSubmitted=false;
+function renderList(){const list=document.getElementById('qList');list.innerHTML='';Q.forEach((q,i)=>{const card=document.createElement('div');card.className='q-card';let html=`<div class="q-num">第 ${i+1} 題</div><div class="q-text">${q.q}</div><div class="opts" id="opts${i}">`;q.opts.forEach((opt,oi)=>{html+=`<button class="opt${selected[i]===oi?' selected':''}" onclick="pickList(${i},${oi})"><span class="letter">${['A','B','C','D'][oi]}</span><span>${opt}</span></button>`;});html+=`</div>`;card.innerHTML=html;list.appendChild(card);});updateListStats();}
+function pickList(qIdx,optIdx){if(listSubmitted)return;selected[qIdx]=optIdx;document.querySelectorAll(`#opts${qIdx} .opt`).forEach((b,i)=>b.classList.toggle('selected',i===optIdx));updateListStats();}
+function updateListStats(){const ans=selected.filter(s=>s!==-1).length;document.getElementById('answeredStat').textContent=ans;const btn=document.getElementById('submitBtn');if(ans===Q.length){btn.disabled=false;btn.textContent='✓ 提交答案 (檢查成績)';}else{btn.disabled=true;btn.textContent=`仲有 ${Q.length-ans} 題未做`;}}
+function submitAll(){listSubmitted=true;let correct=0;Q.forEach((q,i)=>{const card=document.getElementById('qList').children[i];const btns=card.querySelectorAll('.opt');btns.forEach((b,oi)=>{b.disabled=true;if(oi===q.a)b.classList.add('correct');else if(selected[i]===oi)b.classList.add('wrong');});if(selected[i]===q.a){correct++;card.classList.add('correct-ans');}else{card.classList.add('wrong-ans');const ex=document.createElement('div');ex.className='explain show';ex.innerHTML=`💡 ${q.hint}`;card.appendChild(ex);}});document.getElementById('correctStat').textContent=correct;document.getElementById('submitBtn').style.display='none';showFinal(correct);}
+function showFinal(correct){const f=document.getElementById('finalScreen');f.classList.add('show');document.getElementById('finalScore').textContent=correct;let m,t;if(correct===12){m='🌟 滿分估算達人！';t='🏆';}else if(correct>=10){m='💪 估算技巧好！';t='🥇';}else if(correct>=7){m='👍 不錯，多練習估算';t='🥈';}else{m='📖 多啲溫習簡報 3，尤其估算';t='📚';}document.getElementById('finalMsg').textContent=m;document.getElementById('finalTrophy').textContent=t;f.scrollIntoView({behavior:'smooth',block:'start'});try{const k=`progress_ch${CHAPTER}`;const p=JSON.parse(localStorage.getItem(k)||'{}');p[DECK_KEY]={done:true,score:correct,total:Q.length,ts:Date.now()};localStorage.setItem(k,JSON.stringify(p));}catch(e){}try{window.parent.postMessage({type:'assessScore',deck:DECK_KEY,correct,total:Q.length},'*');}catch(e){}}
+renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
 </body>

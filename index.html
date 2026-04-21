@@ -1533,6 +1533,49 @@ body::before {
 .progression-connector { width: 3px; height: 24px; background: #E0E7EE; margin: 0 0 0 34px; }
 .progression-connector.done { background: var(--success); }
 
+/* Ch13-unified 3-section × 4-step layout */
+.ch-section { background: white; border-radius: 18px; padding: 14px 12px; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); border: 2px solid #E0E7EE; }
+.ch-section-title { font-size: 1.1rem; font-weight: 900; padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; color: white; }
+.ch-sec-num { background: white; color: #333; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; flex-shrink: 0; }
+.ch-section.s1 { border-color: #BBDEFB; }
+.ch-section.s1 .ch-section-title { background: linear-gradient(135deg, #1565C0, #0D47A1); }
+.ch-section.s1 .ch-sec-num { color: #0D47A1; }
+.ch-section.s2 { border-color: #E1BEE7; }
+.ch-section.s2 .ch-section-title { background: linear-gradient(135deg, #7B1FA2, #4A148C); }
+.ch-section.s2 .ch-sec-num { color: #4A148C; }
+.ch-section.s3 { border-color: #FFCDD2; }
+.ch-section.s3 .ch-section-title { background: linear-gradient(135deg, #D32F2F, #B71C1C); }
+.ch-section.s3 .ch-sec-num { color: #B71C1C; }
+.ch-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.ch-card { background: white; border: 2px solid #E0E7EE; border-radius: 12px; padding: 12px 8px; transition: all 0.2s; cursor: pointer; display: flex; flex-direction: column; gap: 4px; text-align: center; min-height: 130px; position: relative; justify-content: center; }
+.ch-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+.ch-card .ch-step-label { position: absolute; top: 6px; left: 6px; background: #f0f0f0; color: #888; font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
+.ch-card .ch-arrow { position: absolute; top: 50%; right: -12px; transform: translateY(-50%); color: #BDBDBD; font-size: 1.3rem; z-index: 2; pointer-events: none; }
+.ch-card:last-child .ch-arrow { display: none; }
+.ch-card .ch-emoji { font-size: 1.9rem; margin: 4px 0 2px; }
+.ch-card .ch-title { font-size: 0.88rem; font-weight: 800; line-height: 1.3; }
+.ch-card .ch-desc { font-size: 0.7rem; color: #666; line-height: 1.3; }
+.ch-card-slides { border-color: #BBDEFB; }
+.ch-card-slides .ch-title { color: #1565C0; }
+.ch-card-prelearn { border-color: #E1BEE7; }
+.ch-card-prelearn .ch-title { color: #7B1FA2; }
+.ch-card-assess { border-color: #FFE0B2; }
+.ch-card-assess .ch-title { color: #E65100; }
+.ch-card-game { border-color: #C8E6C9; }
+.ch-card-game .ch-title { color: #00897B; }
+.ch-card .ch-done-badge { position: absolute; top: 6px; right: 6px; background: #4CAF50; color: white; font-size: 0.62rem; padding: 2px 6px; border-radius: 8px; font-weight: 800; }
+.ch-card.ch-done { background: linear-gradient(135deg, #F1F8E9, white); }
+.ch-bonus-section { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); border: 2px solid #9C27B0; border-radius: 16px; padding: 16px; margin-top: 14px; text-align: center; }
+.ch-card-bonus { border-color: #CE93D8 !important; background: white; }
+@media (max-width: 700px) {
+  .ch-flow { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .ch-card { padding: 10px 6px; min-height: 110px; }
+  .ch-card .ch-arrow { display: none !important; }
+  .ch-card .ch-emoji { font-size: 1.5rem; }
+  .ch-card .ch-title { font-size: 0.82rem; }
+  .ch-card .ch-desc { font-size: 0.66rem; }
+}
+
 /* Slide viewer */
 .slide-viewer-wrap { max-width: 860px; margin: 0 auto; position: relative; }
 .slide-viewer-wrap img { width: 100%; border-radius: 12px; box-shadow: var(--shadow); }
@@ -1810,7 +1853,8 @@ body::before {
 
             <!-- 學習流程 (Progression) -->
             <div id="studyProgressionView">
-                <h3 style="margin-bottom:16px; font-size:1.1rem;">📖 學習流程 <span style="font-size:0.8rem; color:var(--text-light); font-weight:400;">（自由揀邊個簡報或預習去做）</span></h3>
+                <h3 style="margin-bottom:6px; font-size:1.1rem;">📖 學習流程</h3>
+                <p style="font-size:0.82rem; color:var(--text-light); margin-bottom:16px;">3 區域直落 · 每區 4 步：簡報 → 預習 → 評估 → 遊戲</p>
                 <div id="progressionSteps"></div>
             </div>
 
@@ -4301,36 +4345,98 @@ function isStepUnlocked(idx) { return true; }
 function renderProgression() {
     const container = document.getElementById('progressionSteps');
     if (!container) return;
-    let html = '';
+
+    // Ch13-style 3-section × 4-step layout (unified with ch13/index.html)
+    // Per-section map: slides(PROG idx) → quiz(PROG idx) → assess(1-3) → game(1-4)
+    const SECTIONS = [
+        { num: 1, title: '第一節 · 悟空的放大法術', sub: '×10 / ×100 / ×1000', cls: 's1',
+          slidesIdx: 0, quizIdx: 1, assessNum: 1, gameNum: 1,
+          gameName: '遊戲 1 · 西遊戰鬥', gameDesc: 'RPG 血量戰 · 10 關 · 最多 3 金幣' },
+        { num: 2, title: '第二節 · 唐僧的縮小心法', sub: '×0.1 / ×0.01 / ×0.001', cls: 's2',
+          slidesIdx: 2, quizIdx: 3, assessNum: 2, gameNum: 2,
+          gameName: '遊戲 2 · 限時搶答', gameDesc: '60 秒 15 題 · 連擊火焰' },
+        { num: 3, title: '第三節 · 單位轉換大冒險', sub: '公里↔米 / 公斤↔克 / 升↔毫升', cls: 's3',
+          slidesIdx: 4, quizIdx: 5, assessNum: 3, gameNum: 4,
+          gameName: '遊戲 3 · 取經塔防', gameDesc: '10 波 · 保護唐僧 · 答題攻擊' },
+    ];
+
     const scoreKey = currentUser ? `scores_${currentUser.class}_${currentUser.number}` : null;
     const userScores = scoreKey ? JSON.parse(localStorage.getItem(scoreKey) || '{}') : {};
-    PROGRESSION_STEPS.forEach((step, i) => {
-        const done = isStepDone(step.id);
-        const unlocked = isStepUnlocked(i);
-        const cls = done ? 'completed' : (unlocked ? 'current' : 'locked');
-        // Coin info for slide steps
-        let coinInfo = '';
-        if (step.type === 'slides' && SLIDE_QUESTIONS[step.folder]) {
-            const sc = userScores[step.folder];
-            coinInfo = sc && sc.coins ? ` <img src="${ASSET_BASE}/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"> ${sc.coins}/2` : ` · 最多 2 <img src="${ASSET_BASE}/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">`;
-        }
-        const badge = done ? `<span class="progression-step-badge done">✓ 已完成${coinInfo}</span>`
-            : unlocked ? `<span class="progression-step-badge active">進行中${coinInfo}</span>`
-            : '<span class="progression-step-badge lock">🔒 未解鎖</span>';
-        const onclick = unlocked && !done ? (step.type === 'slides' ? `openSlideViewer(${i})` : `openInfographicQuiz(${i})`)
-            : done ? (step.type === 'slides' ? `openSlideViewer(${i})` : `openInfographicQuiz(${i})`) : '';
-        html += `<div class="progression-step ${cls}" ${onclick ? `onclick="${onclick}"` : ''}>`
-            + `<div class="progression-step-icon">${step.icon}</div>`
-            + `<div class="progression-step-info"><div class="progression-step-title">${step.title}</div><div class="progression-step-desc">${step.desc}</div></div>`
-            + badge + `</div>`;
-        if (i < PROGRESSION_STEPS.length - 1) {
-            html += `<div class="progression-connector${done ? ' done' : ''}"></div>`;
-        }
+    const coinImg = `${ASSET_BASE}/images/coin_new.png`;
+
+    let html = '';
+
+    SECTIONS.forEach(sec => {
+        const slidesStep = PROGRESSION_STEPS[sec.slidesIdx];
+        const quizStep = PROGRESSION_STEPS[sec.quizIdx];
+        const slidesDone = isStepDone(slidesStep.id);
+        const quizDone = isStepDone(quizStep.id);
+        const assessKey = `assess${sec.assessNum}`;
+        const gameKey = `game${sec.gameNum}`;
+        const assessDone = userScores[assessKey] && userScores[assessKey].correct !== undefined;
+        const gameDone = userScores[gameKey] && userScores[gameKey].coins !== undefined;
+
+        // Coin info helper
+        const coinBadge = (k) => {
+            const sc = userScores[k];
+            if (sc && sc.coins) return `<img src="${coinImg}" style="width:11px;height:11px;vertical-align:middle;"> ${sc.coins}`;
+            return '';
+        };
+
+        html += `<div class="ch-section ${sec.cls}">
+          <div class="ch-section-title">
+            <span class="ch-sec-num">${sec.num}</span>
+            <div>${sec.title}
+              <div style="font-size:0.82rem;font-weight:500;opacity:0.9;">${sec.sub}</div>
+            </div>
+          </div>
+          <div class="ch-flow">
+            <div class="ch-card ch-card-slides${slidesDone?' ch-done':''}" onclick="openSlideViewer(${sec.slidesIdx})">
+              <div class="ch-step-label">STEP 1</div>
+              ${slidesDone?'<span class="ch-done-badge">✓</span>':''}
+              <div class="ch-emoji">${slidesStep.icon}</div>
+              <div class="ch-title">簡報 ${sec.num}</div>
+              <div class="ch-desc">${slidesStep.desc}${coinBadge(slidesStep.folder) ? '<br>'+coinBadge(slidesStep.folder) : ''}</div>
+              <span class="ch-arrow">▶</span>
+            </div>
+            <div class="ch-card ch-card-prelearn${quizDone?' ch-done':''}" onclick="openInfographicQuiz(${sec.quizIdx})">
+              <div class="ch-step-label">STEP 2</div>
+              ${quizDone?'<span class="ch-done-badge">✓</span>':''}
+              <div class="ch-emoji">📝</div>
+              <div class="ch-title">預習 ${sec.num}</div>
+              <div class="ch-desc">MC + 填充 + 🎤錄音</div>
+              <span class="ch-arrow">▶</span>
+            </div>
+            <div class="ch-card ch-card-assess${assessDone?' ch-done':''}" onclick="switchTab('quiz');setTimeout(()=>openAssessViewer(${sec.assessNum}),50)">
+              <div class="ch-step-label">STEP 3</div>
+              ${assessDone?'<span class="ch-done-badge">✓</span>':''}
+              <div class="ch-emoji">✏️</div>
+              <div class="ch-title">評估 ${sec.num}</div>
+              <div class="ch-desc">7 題 · 題+答+解釋</div>
+              <span class="ch-arrow">▶</span>
+            </div>
+            <div class="ch-card ch-card-game${gameDone?' ch-done':''}" onclick="switchTab('games');setTimeout(()=>loadGame(${sec.gameNum}),50)">
+              <div class="ch-step-label">STEP 4</div>
+              ${gameDone?'<span class="ch-done-badge">✓</span>':''}
+              <div class="ch-emoji">🎮</div>
+              <div class="ch-title">${sec.gameName.split('·')[1] || sec.gameName}</div>
+              <div class="ch-desc">${sec.gameDesc}</div>
+            </div>
+          </div>
+        </div>`;
     });
-    // Final unlock indicator
+
+    // Bonus game 3 (decimal drag) + Overall progress
     const allDone = PROGRESSION_STEPS.every(s => isStepDone(s.id));
-    html += `<div class="progression-connector${allDone ? ' done' : ''}"></div>`;
-    html += `<div class="progression-step ${allDone ? 'completed' : 'current'}" onclick="document.querySelector('[data-tab=\\'tabAssess\\']')?.click()"><div class="progression-step-icon">📝</div><div class="progression-step-info"><div class="progression-step-title">評估區</div><div class="progression-step-desc">隨時去評估區做練習</div></div>${allDone ? '<span class="progression-step-badge done">✓ 全部完成</span>' : '<span class="progression-step-badge active">可進入</span>'}</div>`;
+    html += `<div class="ch-bonus-section">
+      <div style="font-weight:800;color:#7B1FA2;margin-bottom:10px;">🎁 Bonus 遊戲（唔屬任何一節，玩下鬆一鬆）</div>
+      <div class="ch-card ch-card-bonus" onclick="switchTab('games');setTimeout(()=>loadGame(3),50)" style="max-width:300px;margin:0 auto;">
+        <div class="ch-emoji">✨</div>
+        <div class="ch-title" style="color:#7B1FA2;">小數點金丹魔法</div>
+        <div class="ch-desc">拖動小數點變數字 · 10 關</div>
+      </div>
+    </div>`;
+
     container.innerHTML = html;
 
     // Show/hide views
