@@ -1709,15 +1709,13 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
-            <span class="update-date">2026-04-20</span>
+            <span class="update-date">2026-04-20 (更新)</span>
             <ul>
-                <li>🎉 <b>第 13 課小數乘法（一）正式上線！</b></li>
-                <li>📗 3 個教學簡報（共 45 頁 JPG 圖）</li>
-                <li>✏️ 3 個評估（共 36 題 MC）</li>
-                <li>🎮 3 個遊戲（每個 10 題，總共 30 題）</li>
-                <li>📊 資訊圖預習（3 圖 + 3 預習題）</li>
-                <li>🤖 AI 助教（本課專用提示詞）</li>
-                <li>🎯 本課重點：一位小數 × 整數、兩位小數 × 整數、小數 × 小數 + 估算</li>
+                <li>📘 <b>第 13 課簡報</b>內嵌 MC + 填充題（答啱先過頁）</li>
+                <li>🎤 <b>第 13 課預習</b>加回錄音題（Feynman AI 評分）</li>
+                <li>🔒 <b>錯兩次鎖</b>：簡報內同一頁答錯 2 次 → 自動返第 1 頁重讀（Ch12 + Ch13 都生效）</li>
+                <li>📋 第 13 課入口重構：3 區域直落，每區 4 步（簡報→預習→評估→遊戲）</li>
+                <li>🎉 <b>第 13 課正式上線！</b>—— 3 教學簡報、3 評估、3 遊戲、3 預習（含錄音）、AI 助教</li>
             </ul>
         </div>
 
@@ -1838,11 +1836,23 @@ body::before {
                         <div id="slideQuizQuestion" style="font-size:1.1rem;font-weight:700;color:#333;margin-bottom:14px;"></div>
                         <div id="slideQuizOptions"></div>
                         <div id="slideQuizHint" style="margin-top:10px;"></div>
+                        <div id="slideQuizWrongNote" style="margin-top:8px;font-size:0.85rem;color:#C62828;text-align:center;"></div>
                     </div>
                     <div style="text-align:center; margin-top:16px;">
                         <button class="btn btn-primary" id="slideCompleteBtn" style="display:none;" onclick="completeCurrentSlides()">✓ 完成簡報，進入問答</button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Wrong-twice lock modal (applies to all decks) -->
+            <div id="slideQuizLockModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;align-items:center;justify-content:center;padding:20px;">
+              <div style="background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.4);">
+                <div style="font-size:3.5rem;margin-bottom:6px;">🔒</div>
+                <h2 style="margin:4px 0 10px;font-size:1.4rem;color:white;">要返去由頭睇！</h2>
+                <p style="margin:10px 0;line-height:1.6;font-size:0.95rem;">你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
+                <p style="font-size:0.85rem;opacity:0.9;">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+                <button onclick="slideQuizLockReset()" style="background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px;">🔁 返第 1 頁重新開始</button>
+              </div>
             </div>
 
             <!-- Infographic Quiz (hidden by default) -->
@@ -4021,6 +4031,7 @@ let currentSlideStep = null;
 let currentSlideIndex = 0;
 let currentQuizStep = null;
 let slideQuizAnswered = {}; // tracks answered questions per deck: { slides1: {4:true, 8:true}, ... }
+let slideQuizWrong = {};    // tracks wrong count per page per deck: { slides1: { 7: 2, 8: 1 }, ... }
 
 // Slide questions — mix of MC (type:'mc' default) and fill-in (type:'fill')
 // For fill-in: use `accept` array with acceptable answer strings
@@ -4441,6 +4452,10 @@ function showSlideQuiz(q, folder, ansKey, pageNum) {
     document.getElementById('slideQuizQuestion').textContent = '';
     document.getElementById('slideQuizOptions').innerHTML = html;
     document.getElementById('slideQuizHint').innerHTML = '';
+    // Show current wrong count for this page (if any)
+    const wrongs = (slideQuizWrong[folder] || {})[pageNum] || 0;
+    const noteEl = document.getElementById('slideQuizWrongNote');
+    if (noteEl) noteEl.textContent = wrongs > 0 ? `⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
     overlay.style.display = '';
     overlay.scrollIntoView({behavior:'smooth',block:'nearest'});
 
@@ -4510,6 +4525,7 @@ function checkSlideQuizMulti(selected, q, folder, ansKey, qIdx, pageNum, btnEl, 
         btnEl.style.color = '#C62828';
         btnEl.disabled = true;
         document.getElementById('sqHint'+qIdx).innerHTML = `<div style="color:#C62828;">❌ 再試！<span style="color:#666;font-size:0.85rem;"> 💡 ${q.hint}</span></div>`;
+        registerSlideQuizWrong(folder, pageNum);
     }
 }
 
@@ -4531,7 +4547,40 @@ function checkSlideQuizFill(val, q, folder, ansKey, qIdx, pageNum, inputEl, btnE
         inputEl.style.animation = 'shake 0.4s';
         setTimeout(() => inputEl.style.animation = '', 400);
         document.getElementById('sqHint'+qIdx).innerHTML = `<div style="color:#C62828;">❌ 再試！<span style="color:#666;font-size:0.85rem;"> 💡 ${q.hint}</span></div>`;
+        registerSlideQuizWrong(folder, pageNum);
     }
+}
+
+// Wrong-twice lock: if student answers wrong 2+ times on same page, force re-read from page 1
+function registerSlideQuizWrong(folder, pageNum) {
+    if (!slideQuizWrong[folder]) slideQuizWrong[folder] = {};
+    slideQuizWrong[folder][pageNum] = (slideQuizWrong[folder][pageNum] || 0) + 1;
+    const note = document.getElementById('slideQuizWrongNote');
+    if (note) note.textContent = `⚠️ 呢一頁已錯 ${slideQuizWrong[folder][pageNum]} 次（錯 2 次要由頭睇）`;
+    if (slideQuizWrong[folder][pageNum] >= 2) {
+        setTimeout(() => {
+            const modal = document.getElementById('slideQuizLockModal');
+            if (modal) modal.style.display = 'flex';
+        }, 600);
+    }
+}
+
+function slideQuizLockReset() {
+    const modal = document.getElementById('slideQuizLockModal');
+    if (modal) modal.style.display = 'none';
+    const step = PROGRESSION_STEPS[currentSlideStep];
+    if (!step) return;
+    const folder = step.folder;
+    // Clear all answered + wrong on this deck
+    if (slideQuizAnswered[folder]) slideQuizAnswered[folder] = {};
+    if (slideQuizWrong[folder]) slideQuizWrong[folder] = {};
+    // Reset to page 1
+    currentSlideIndex = 0;
+    document.getElementById('slideQuizOverlay').style.display = 'none';
+    const note = document.getElementById('slideQuizWrongNote');
+    if (note) note.textContent = '';
+    updateSlideView();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function checkSlideQuizCompletion(folder) {

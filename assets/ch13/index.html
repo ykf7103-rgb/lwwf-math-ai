@@ -20,9 +20,9 @@
     background-repeat: no-repeat;
     opacity: 0.22; z-index: -1; pointer-events: none;
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 20px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 20px; }
   h1 { color: #E65100; font-size: 1.7rem; text-align: center; margin: 8px 0; }
-  .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 0.95rem; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 16px; font-size: 0.95rem; }
 
   .lo-box {
     background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
@@ -33,56 +33,109 @@
   .lo-box h3 { margin: 0 0 8px; color: #0D47A1; font-size: 1.1rem; }
   .lo-box ul { margin: 4px 0; padding-left: 20px; line-height: 1.7; font-size: 0.9rem; }
 
-  .path-hint {
-    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
-    border-left: 5px solid #FF9800;
-    padding: 12px 16px; border-radius: 10px;
-    margin-bottom: 20px; font-size: 0.9rem;
-    line-height: 1.6;
+  .section {
+    background: white;
+    border-radius: 18px;
+    padding: 16px 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 2px solid #E0E7EE;
   }
-  .path-hint strong { color: #E65100; }
+  .section-title {
+    font-size: 1.1rem; font-weight: 900;
+    padding: 8px 14px; border-radius: 10px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title .num {
+    background: white; color: #333;
+    width: 30px; height: 30px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 900;
+  }
+  .section.s1 { border-color: #BBDEFB; }
+  .section.s1 .section-title { background: linear-gradient(135deg, #1565C0, #0D47A1); color: white; }
+  .section.s1 .section-title .num { color: #0D47A1; }
+  .section.s2 { border-color: #E1BEE7; }
+  .section.s2 .section-title { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: white; }
+  .section.s2 .section-title .num { color: #4A148C; }
+  .section.s3 { border-color: #FFCDD2; }
+  .section.s3 .section-title { background: linear-gradient(135deg, #D32F2F, #B71C1C); color: white; }
+  .section.s3 .section-title .num { color: #B71C1C; }
 
-  .grid {
+  .flow {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
   }
   .card {
-    background: white; border: 2px solid #E0E7EE;
-    border-radius: 14px; padding: 16px 14px;
+    background: white;
+    border: 2px solid #E0E7EE;
+    border-radius: 12px;
+    padding: 14px 8px;
     text-decoration: none; color: #333;
     transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    display: flex; flex-direction: column; gap: 6px;
-    min-height: 110px; position: relative;
+    display: flex; flex-direction: column; gap: 4px;
+    text-align: center;
+    min-height: 120px;
+    position: relative;
+    justify-content: center;
   }
   .card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    border-color: #1565C0;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
   }
-  .card-emoji { font-size: 2rem; }
-  .card-title { font-size: 1rem; font-weight: 900; color: #1565C0; }
-  .card-desc { font-size: 0.82rem; color: #666; line-height: 1.4; }
+  .card .step {
+    position: absolute; top: 6px; left: 6px;
+    background: #f0f0f0; color: #888;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 2px 6px; border-radius: 6px;
+  }
+  .card .arrow {
+    position: absolute; top: 50%; right: -12px;
+    transform: translateY(-50%);
+    color: #BDBDBD; font-size: 1.3rem;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .card:last-child .arrow { display: none; }
+  .card-emoji { font-size: 1.8rem; }
+  .card-title { font-size: 0.88rem; font-weight: 800; line-height: 1.3; }
+  .card-desc { font-size: 0.72rem; color: #666; line-height: 1.3; }
+
+  .card.slides { border-color: #BBDEFB; }
+  .card.slides .card-title { color: #1565C0; }
+  .card.prelearn { border-color: #E1BEE7; }
+  .card.prelearn .card-title { color: #7B1FA2; }
+  .card.assess { border-color: #FFE0B2; }
+  .card.assess .card-title { color: #E65100; }
+  .card.game { border-color: #C8E6C9; }
+  .card.game .card-title { color: #00897B; }
+
   .card .done-badge {
-    position: absolute; top: 8px; right: 10px;
+    position: absolute; top: 6px; right: 6px;
     background: #4CAF50; color: white;
-    font-size: 0.68rem; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.62rem; padding: 2px 6px; border-radius: 8px;
     font-weight: 800; display: none;
   }
   .card.done .done-badge { display: inline-block; }
-  .card.done { border-color: #A5D6A7; }
+  .card.done { background: linear-gradient(135deg, #F1F8E9, white); }
 
-  .card.slides-c { border-color: #BBDEFB; }
-  .card.slides-c .card-title { color: #1565C0; }
-  .card.assess-c { border-color: #FFE0B2; }
-  .card.assess-c .card-title { color: #E65100; }
-  .card.game-c { border-color: #C8E6C9; }
-  .card.game-c .card-title { color: #00897B; }
-  .card.info-c { border-color: #E1BEE7; }
-  .card.info-c .card-title { color: #7B1FA2; }
-  .card.ai-c { border-color: #FFCCBC; background: linear-gradient(135deg, #FFF, #FFF8E1); }
-  .card.ai-c .card-title { color: #E65100; }
+  .ai-section {
+    background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+    border: 2px solid #FFB300;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .ai-section h3 { margin: 0 0 8px; color: #E65100; font-size: 1.1rem; }
+  .ai-section a {
+    display: inline-block; background: linear-gradient(135deg, #E65100, #F57C00);
+    color: white; padding: 12px 28px; border-radius: 12px;
+    text-decoration: none; font-weight: 900; font-size: 1rem;
+    box-shadow: 0 4px 12px rgba(230,81,0,0.3);
+  }
 
   .back {
     display: inline-block;
@@ -95,12 +148,6 @@
   }
   .back:hover { background: #1565C0; color: white; }
 
-  .section-h {
-    font-size: 1.1rem; font-weight: 800; color: #E65100;
-    margin: 24px 0 10px; padding-left: 8px;
-    border-left: 4px solid #FF9800;
-  }
-
   .reset-btn {
     display: block; margin: 24px auto 0;
     background: transparent; color: #999;
@@ -109,13 +156,14 @@
   }
   .reset-btn:hover { color: #E65100; border-color: #E65100; }
 
-  @media (max-width: 500px) {
+  @media (max-width: 700px) {
     h1 { font-size: 1.35rem; }
-    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .card { padding: 12px 10px; min-height: 92px; }
-    .card-emoji { font-size: 1.6rem; }
-    .card-title { font-size: 0.92rem; }
-    .card-desc { font-size: 0.74rem; }
+    .flow { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .card { padding: 10px 6px; min-height: 100px; }
+    .card .arrow { display: none !important; }
+    .card-emoji { font-size: 1.5rem; }
+    .card-title { font-size: 0.82rem; }
+    .card-desc { font-size: 0.68rem; }
   }
 </style>
 </head>
@@ -135,97 +183,123 @@
     </ul>
   </div>
 
-  <div class="path-hint">
-    💡 <strong>建議學習順序：</strong>
-    資訊圖預習 → 簡報 1 → 評估 1 → 遊戲 1 →
-    簡報 2 → 評估 2 → 遊戲 2 →
-    簡報 3 → 評估 3 → 遊戲 3 →
-    AI 助教解疑問
+  <!-- Section 1: 一位小數 × 整數 -->
+  <div class="section s1">
+    <div class="section-title"><span class="num">1</span>第一節 · 一位小數 × 整數</div>
+    <div class="flow">
+      <a href="slides1.html" class="card slides" data-key="slides1">
+        <div class="step">STEP 1</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📗</div>
+        <div class="card-title">簡報 1</div>
+        <div class="card-desc">內嵌 5 題（MC+填充）</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="prelearn1.html" class="card prelearn" data-key="prelearn1">
+        <div class="step">STEP 2</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📝</div>
+        <div class="card-title">預習 1</div>
+        <div class="card-desc">MC + 填充 + 🎤錄音</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="assess1.html" class="card assess" data-key="assess1">
+        <div class="step">STEP 3</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">✏️</div>
+        <div class="card-title">評估 1</div>
+        <div class="card-desc">12 題 MC</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="game1.html" class="card game" data-key="game1">
+        <div class="step">STEP 4</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎮</div>
+        <div class="card-title">遊戲 1</div>
+        <div class="card-desc">10 題快速反應</div>
+      </a>
+    </div>
   </div>
 
-  <div class="section-h">📘 資訊圖預習</div>
-  <div class="grid">
-    <a href="infographic.html" class="card info-c" data-key="infographic">
-      <div class="card-emoji">📊</div>
-      <div class="card-title">資訊圖預習</div>
-      <div class="card-desc">3 圖 + 3 預習題，快速掌握本課重點</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
+  <!-- Section 2: 兩位小數 × 整數 -->
+  <div class="section s2">
+    <div class="section-title"><span class="num">2</span>第二節 · 兩位小數 × 整數</div>
+    <div class="flow">
+      <a href="slides2.html" class="card slides" data-key="slides2">
+        <div class="step">STEP 1</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📘</div>
+        <div class="card-title">簡報 2</div>
+        <div class="card-desc">內嵌 5 題（MC+填充）</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="prelearn2.html" class="card prelearn" data-key="prelearn2">
+        <div class="step">STEP 2</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📝</div>
+        <div class="card-title">預習 2</div>
+        <div class="card-desc">MC + 填充 + 🎤錄音</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="assess2.html" class="card assess" data-key="assess2">
+        <div class="step">STEP 3</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">✏️</div>
+        <div class="card-title">評估 2</div>
+        <div class="card-desc">12 題 MC</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="game2.html" class="card game" data-key="game2">
+        <div class="step">STEP 4</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎮</div>
+        <div class="card-title">遊戲 2</div>
+        <div class="card-desc">10 題挑戰</div>
+      </a>
+    </div>
   </div>
 
-  <div class="section-h">📗 第一節 · 一位小數 × 整數</div>
-  <div class="grid">
-    <a href="slides1.html" class="card slides-c" data-key="slides1">
-      <div class="card-emoji">📗</div>
-      <div class="card-title">簡報 1</div>
-      <div class="card-desc">一位小數 × 整數 — 基本運算</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-    <a href="assess1.html" class="card assess-c" data-key="assess1">
-      <div class="card-emoji">✏️</div>
-      <div class="card-title">評估 1</div>
-      <div class="card-desc">12 題評估鞏固運算</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-    <a href="game1.html" class="card game-c" data-key="game1">
-      <div class="card-emoji">🎮</div>
-      <div class="card-title">遊戲 1</div>
-      <div class="card-desc">10 題快速反應挑戰</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
+  <!-- Section 3: 小數 × 小數 + 估算 -->
+  <div class="section s3">
+    <div class="section-title"><span class="num">3</span>第三節 · 小數 × 小數 + 估算</div>
+    <div class="flow">
+      <a href="slides3.html" class="card slides" data-key="slides3">
+        <div class="step">STEP 1</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📙</div>
+        <div class="card-title">簡報 3</div>
+        <div class="card-desc">內嵌 5 題（MC+填充）</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="prelearn3.html" class="card prelearn" data-key="prelearn3">
+        <div class="step">STEP 2</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📝</div>
+        <div class="card-title">預習 3</div>
+        <div class="card-desc">MC + 填充 + 🎤錄音</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="assess3.html" class="card assess" data-key="assess3">
+        <div class="step">STEP 3</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">✏️</div>
+        <div class="card-title">評估 3</div>
+        <div class="card-desc">12 題 MC</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="game3.html" class="card game" data-key="game3">
+        <div class="step">STEP 4</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎮</div>
+        <div class="card-title">遊戲 3</div>
+        <div class="card-desc">10 題估算達人</div>
+      </a>
+    </div>
   </div>
 
-  <div class="section-h">📘 第二節 · 兩位小數 × 整數</div>
-  <div class="grid">
-    <a href="slides2.html" class="card slides-c" data-key="slides2">
-      <div class="card-emoji">📘</div>
-      <div class="card-title">簡報 2</div>
-      <div class="card-desc">兩位小數 × 整數 — 進階運算</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-    <a href="assess2.html" class="card assess-c" data-key="assess2">
-      <div class="card-emoji">✏️</div>
-      <div class="card-title">評估 2</div>
-      <div class="card-desc">12 題評估小數點位置</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-    <a href="game2.html" class="card game-c" data-key="game2">
-      <div class="card-emoji">🎮</div>
-      <div class="card-title">遊戲 2</div>
-      <div class="card-desc">10 題兩位小數挑戰</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-  </div>
-
-  <div class="section-h">📙 第三節 · 小數 × 小數 + 估算</div>
-  <div class="grid">
-    <a href="slides3.html" class="card slides-c" data-key="slides3">
-      <div class="card-emoji">📙</div>
-      <div class="card-title">簡報 3</div>
-      <div class="card-desc">小數 × 小數 + 估算技巧</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-    <a href="assess3.html" class="card assess-c" data-key="assess3">
-      <div class="card-emoji">✏️</div>
-      <div class="card-title">評估 3</div>
-      <div class="card-desc">12 題綜合評估</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-    <a href="game3.html" class="card game-c" data-key="game3">
-      <div class="card-emoji">🎮</div>
-      <div class="card-title">遊戲 3</div>
-      <div class="card-desc">10 題估算達人挑戰</div>
-      <span class="done-badge">✓ 完成</span>
-    </a>
-  </div>
-
-  <div class="section-h">🤖 AI 助教</div>
-  <div class="grid">
-    <a href="ai-help.html" class="card ai-c">
-      <div class="card-emoji">🤖</div>
-      <div class="card-title">AI 問功課</div>
-      <div class="card-desc">唔識做功課？AI 會引導你逐步解題</div>
-    </a>
+  <div class="ai-section">
+    <h3>🤖 唔識做功課？AI 助教幫到你！</h3>
+    <a href="ai-help.html">💬 開 AI 助教</a>
   </div>
 
   <button class="reset-btn" onclick="resetProgress()">🗑 重設本課進度</button>
