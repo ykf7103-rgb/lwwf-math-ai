@@ -159,7 +159,6 @@ let voiceData = null;
 // ============ MC ============
 function selectMC(i) {
   if (answered.mc) return;
-  const q = SLIDE_MC; // not used — inline logic below
   const btns = document.querySelectorAll('#mcOpts .mc-opt');
   const hint = document.getElementById('mcHint');
   if (i === MC_CORRECT) {
