@@ -137,5 +137,6 @@ document.querySelector('.viewer').addEventListener('touchstart',e=>{touchX=e.cha
 document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-touchX,dy=e.changedTouches[0].screenY-touchY;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){if(dx<0)next();else prev();}},{passive:true});
 buildThumbs();render();
 </script>
+<script src="../common/feedback.js"></script>
 </body>
 </html>

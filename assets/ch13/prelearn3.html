@@ -105,17 +105,22 @@
       <div class="rec-status" id="recStatus">按「開始錄音」試下（iPhone 要用 Safari；Android / 電腦用 Chrome）</div>
       <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析。</span></div>
       <div class="grade-result" id="gradeResult"></div>
+
+      <div style="text-align:center;margin:18px 0 10px;position:relative;">
+        <div style="height:1px;background:#ddd;"></div>
+        <div style="background:white;display:inline-block;padding:0 14px;position:relative;top:-11px;color:#999;font-weight:700;">或者打字代替錄音</div>
+      </div>
+      <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
+        <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案（同錄音一樣由 AI 評分）</div>
+        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">冇得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
+        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「估算時將 4.9 當成 5，2.1 當成 2，5 × 2 = 10。實際答案 10.29，估算 10 好接近。」"></textarea>
+        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+      </div>
+
       <details style="margin-top:10px;font-size:0.82rem;color:#666;">
-        <summary style="cursor:pointer;color:#7B1FA2;font-weight:700;">🆘 錄音出錯？點 click 睇解決方法</summary>
+        <summary style="cursor:pointer;color:#7B1FA2;font-weight:700;">🆘 錄音出錯？點睇解決方法</summary>
         <div style="padding:8px 12px;background:#FFF8E1;border-radius:6px;margin-top:6px;line-height:1.6;">
-          <b>❌ 按咗開始錄音冇反應：</b><br>
-          1. iPhone：去「設定 → Safari → 麥克風」改為「容許」<br>
-          2. Android：去 Chrome 網址旁邊 🔒 圖示 → 網站設定 → 麥克風 → 容許<br>
-          3. 電腦：按網址旁邊 🔒 圖示 → 麥克風 → 容許，然後重新整理頁面<br>
-          <br>
-          <b>📝 打字代替（如果真係錄唔到）：</b><br>
-          <textarea id="textFallback" style="width:100%;min-height:60px;border:2px solid #FFB74D;border-radius:8px;padding:8px;font-family:inherit;font-size:0.95rem;margin-top:4px;" placeholder="打字寫低你會點解釋估算..."></textarea>
-          <button class="btn purple" style="margin-top:6px;font-size:0.85rem;" onclick="submitText()">📝 提交文字答案</button>
+          iPhone：設定 → Safari → 麥克風 → 容許 / Android：網址旁 🔒 → 麥克風 → 容許
         </div>
       </details>
     </div>
@@ -182,16 +187,50 @@ async function testMic(){
   }
 }
 
-function submitText(){
+async function submitText(){
   const textVal = document.getElementById('textFallback').value.trim();
-  if (textVal.length < 10) { alert('請至少打字寫 10 個字以上的解釋。'); return; }
-  const has_answer = /10|十/.test(textVal);
-  const has_reason = textVal.length >= 20 && /(5|2|四捨五入|約|估|≈|大概|接近)/.test(textVal);
-  if (!has_answer) { alert('請寫出估算答案「大約 10」喺文字入面。'); return; }
-  const score = has_reason ? 75 : 55;
-  voiceData = { transcript: textVal, score, feedback: has_reason ? '✅ 文字答案合格（用文字代錄音）' : '⚠️ 只有答案，未解釋估算原理' };
-  document.getElementById('gradeResult').innerHTML = `<div style="padding:14px;border-radius:10px;background:#FFF8E1;border:2px solid #F57F17;"><div style="font-size:1.8rem;font-weight:900;color:#F57F17;">${score} / 100 分</div><div style="margin-top:6px;color:#333;">${voiceData.feedback}（用咗文字代錄音）</div></div>`;
-  if (score >= 60) { answered.voice = true; document.getElementById('qc2').classList.add('done'); checkAllDone(); }
+  if (textVal.length < 8) { alert('請至少打字寫 8 個字以上的解釋。'); return; }
+  const resEl = document.getElementById('gradeResult');
+  resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在評分你嘅文字答案，約需 3-8 秒...</div>';
+  const prompt = `你係小學五年級粵語數學老師。
+題目：「${VOICE_Q.q}」
+核心概念：${VOICE_Q.concept}
+評分要點：${VOICE_Q.rubric}
+合格要求：${VOICE_Q.hint}
+
+⚠️ 學生今次係用**打字**代替錄音。佢打字嘅答案：
+${textVal}
+
+評分：答案對 + 有原理 → 80-100；答案對 + 無原理 → 50-70；答案錯 → 20-40。
+
+嚴格返回純 JSON（無 \`\`\`）：
+{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"評語（60字內）"}`;
+  try {
+    const res = await fetch(WORKER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ messages:[{role:'user',content:prompt}] }) });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const reply = data.reply || data.text || '';
+    if (!reply) throw new Error('AI 未回應');
+    const result = extractJSON(reply);
+    let score, feedback;
+    if (!result) {
+      const has_answer = /10|十/.test(textVal);
+      const has_reason = textVal.length >= 20 && /(5|2|四捨五入|約|估|≈|大概|接近)/.test(textVal);
+      score = !has_answer ? 30 : (has_reason ? 75 : 55);
+      feedback = has_reason ? '✅ 文字答案合格' : '⚠️ 只有答案，未解釋估算原理';
+    } else {
+      score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
+      feedback = cleanChineseOnly(result.feedback);
+    }
+    voiceData = { transcript: textVal, score, feedback };
+    const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
+    const bg = score >= 80 ? '#E8F5E9' : score >= 60 ? '#FFF8E1' : '#FFEBEE';
+    const escFb = (feedback||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    resEl.innerHTML = `<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};"><div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div><div style="margin-top:6px;color:#333;">${escFb}</div><div style="margin-top:6px;font-size:0.8rem;color:#666;">📝 打字答案</div></div>`;
+    if (score >= 60) { answered.voice = true; document.getElementById('qc2').classList.add('done'); checkAllDone(); }
+  } catch(e) {
+    resEl.innerHTML = `<div style="color:#C62828;padding:10px;background:#FFEBEE;border-radius:8px;">⚠️ AI 評分失敗：${e.message}<div style="margin-top:8px;"><button class="btn" onclick="submitText()">🔄 重試</button></div></div>`;
+  }
 }
 function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
 function checkFill(){if(answered.fill)return;const input=document.getElementById('fillInput');const hint=document.getElementById('fillHint');const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=FILL_ACCEPT.some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;answered.fill=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+FILL_HINT;checkAllDone();}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${FILL_HINT}`;setTimeout(()=>input.classList.remove('wrong'),500);}}
@@ -223,5 +262,6 @@ function zoom(src){document.getElementById('zoomImg').src=src;document.getElemen
 function unzoom(){document.getElementById('zoomOv').classList.remove('show');}
 function checkAllDone(){if(answered.mc&&answered.fill&&answered.voice){document.getElementById('done').classList.add('show');try{const key=`progress_ch${CHAPTER}`;const p=JSON.parse(localStorage.getItem(key)||'{}');p[PRELEARN_KEY]={done:true,score:voiceData?.score||0,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(_){}}}
 </script>
+<script src="../common/feedback.js"></script>
 </body>
 </html>
