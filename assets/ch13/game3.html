@@ -2,102 +2,521 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第13課 · 遊戲 3 — 小數 × 小數 + 估算達人</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>第13課 取經路塔防戰 — 小數 × 小數 + 估算</title>
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 50%, #FFCCBC 100%); min-height: 100vh; color: #222; position: relative; }
-  body::before { content: ''; position: fixed; inset: 0; background: url('../common/images/school_bg.jpg') center/cover no-repeat; opacity: 0.12; z-index: -1; }
-  header { background: linear-gradient(135deg, #D32F2F, #B71C1C); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
-  header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
-  header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 14px; }
-  .stats { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-  .stat { flex: 1; background: white; padding: 10px 8px; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .stat .label { font-size: 0.72rem; color: #666; }
-  .stat .val { font-size: 1.3rem; font-weight: 900; color: #B71C1C; }
-  .progress { height: 8px; background: #E0E0E0; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #EF5350, #FFCDD2); transition: width 0.3s; width: 0; }
-  .qbox { background: white; border-radius: 16px; padding: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 12px; }
-  .q-num { font-size: 0.8rem; color: #B71C1C; font-weight: 700; margin-bottom: 6px; }
-  .q-text { font-size: 1.3rem; font-weight: 900; color: #222; margin-bottom: 16px; line-height: 1.5; }
-  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .opt { padding: 14px 10px; background: #F5F5F5; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; color: #333; transition: all 0.2s; }
-  .opt:hover:not(.disabled) { background: #FFEBEE; border-color: #EF5350; transform: translateY(-2px); }
-  .opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; animation: bounce 0.5s; }
-  .opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; animation: shake 0.4s; }
-  .opt.disabled { cursor: not-allowed; opacity: 0.7; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-  .explain { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-left: 4px solid #FFC107; padding: 12px 14px; border-radius: 8px; margin-top: 12px; display: none; font-size: 0.92rem; line-height: 1.6; color: #555; }
-  .explain.show { display: block; animation: fadeIn 0.4s; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-  .next-btn { margin-top: 12px; width: 100%; padding: 14px; background: linear-gradient(135deg, #D32F2F, #B71C1C); color: white; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; cursor: pointer; display: none; }
-  .next-btn.show { display: block; }
-  .final { background: linear-gradient(135deg, #EF5350, #B71C1C); color: white; padding: 26px 20px; border-radius: 20px; text-align: center; display: none; }
-  .final.show { display: block; animation: pop 0.5s; }
-  .final .emoji { font-size: 4rem; }
-  .final h2 { margin: 10px 0; font-size: 1.5rem; }
-  .final .score { font-size: 2.5rem; font-weight: 900; }
-  .final .btn { display: inline-block; margin: 10px 6px; padding: 10px 18px; background: white; color: #B71C1C; border-radius: 10px; text-decoration: none; font-weight: 800; }
-  @keyframes pop { 0%{transform:scale(0.7);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
-  @media (max-width: 500px) { .q-text { font-size: 1.1rem; } .opt { font-size: 1rem; padding: 12px 8px; } }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif}
+html,body{height:100%;overflow:hidden;background:#000}
+body{
+  background:
+    linear-gradient(to bottom,rgba(20,5,0,0.5),rgba(60,20,0,0.7)),
+    url('images/bg_mountain.png') center/cover no-repeat;
+  color:#fff5e6;min-height:100vh;display:flex;flex-direction:column;
+}
+.screen{display:none;flex:1;flex-direction:column;align-items:center;padding:12px;text-align:center;overflow-y:auto}
+.screen.active{display:flex}
+
+/* Start */
+#startScreen{justify-content:center;}
+#startScreen h1{font-family:'Noto Serif TC',serif;font-size:clamp(28px,6vw,48px);color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;}
+#startScreen h2{font-size:clamp(14px,3vw,20px);color:#f5c76a;margin-bottom:20px}
+#startScreen .hero{width:min(140px,30vw);margin:10px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6));animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+#startScreen p{max-width:480px;font-size:clamp(13px,2.5vw,16px);line-height:1.7;background:rgba(0,0,0,0.5);padding:14px 18px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin-bottom:16px;}
+.btn-start{font-size:clamp(16px,3.5vw,22px);padding:12px 32px;font-weight:700;background:linear-gradient(135deg,#FFD700,#FF8C00);color:#2a1400;border:none;border-radius:30px;cursor:pointer;box-shadow:0 6px 20px rgba(255,140,0,0.5);transition:all 0.2s;}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,140,0,0.7)}
+
+/* Play */
+#playScreen{justify-content:flex-start;padding:8px}
+.hud{width:100%;max-width:900px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.7);padding:10px 14px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin-bottom:8px;flex-wrap:wrap;gap:8px;}
+.hud-item{display:flex;align-items:center;gap:6px;font-size:clamp(13px,2.5vw,15px);color:#FFD700;font-weight:700;}
+.hud-item b{font-size:clamp(18px,3.5vw,24px);}
+.hp-track{width:100px;height:12px;background:rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.hp-fill{height:100%;background:linear-gradient(90deg,#ff4040,#ffaa00,#40ff40);transition:width 0.5s ease;border-radius:6px}
+
+/* Battlefield */
+.battlefield{width:100%;max-width:900px;height:min(260px,35vh);background:rgba(0,0,0,0.5);border:2px solid #8B6914;border-radius:16px;position:relative;overflow:hidden;margin-bottom:10px;}
+.battle-bg{position:absolute;inset:0;background:linear-gradient(to right, rgba(20,10,0,0.3) 0%, rgba(40,20,0,0.5) 50%, rgba(80,40,0,0.7) 100%);}
+.path-line{position:absolute;left:0;right:80px;top:50%;height:3px;background:repeating-linear-gradient(to right,#8B6914 0 10px,transparent 10px 20px);transform:translateY(-50%);opacity:0.6;}
+.base-station{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;z-index:5;}
+.base-station img{width:70px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));}
+.base-label{font-size:10px;color:#FFD700;font-weight:700;margin-top:2px;}
+.tower{position:absolute;right:100px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;z-index:5;}
+.tower img{width:60px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));}
+.tower .tower-char{width:50px;position:absolute;top:-15px;}
+
+/* Enemies */
+.enemy{position:absolute;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:all 0.3s;z-index:4;}
+.enemy:hover{filter:brightness(1.3);}
+.enemy img{width:52px;filter:drop-shadow(0 4px 10px rgba(255,0,0,0.5));}
+.enemy.dying{animation:enemyDie 0.4s forwards;}
+@keyframes enemyDie{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8) rotate(90deg);opacity:0;}}
+.enemy-label{background:rgba(255,255,255,0.95);color:#000;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:2px;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis;}
+
+/* Projectile */
+.projectile{position:absolute;width:40px;height:10px;background:linear-gradient(90deg,#FFD700,#FF8C00);border-radius:5px;box-shadow:0 0 12px #FFD700;z-index:6;pointer-events:none;}
+
+/* Question panel */
+.q-panel{width:100%;max-width:900px;background:rgba(20,10,0,0.92);border:2px solid #8B6914;border-radius:16px;padding:12px 16px;margin-bottom:8px;display:none;}
+.q-panel.show{display:block;animation:panelIn 0.3s ease;}
+@keyframes panelIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.q-text{font-size:clamp(18px,4vw,26px);color:#FFD700;font-weight:700;margin-bottom:10px;text-align:center;}
+.q-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;}
+.q-opt{padding:10px 14px;border:2px solid #8B6914;background:rgba(139,105,20,0.2);color:#fff5e6;border-radius:10px;cursor:pointer;font-size:clamp(13px,2.5vw,16px);font-weight:600;transition:all 0.2s;}
+.q-opt:hover:not(:disabled){border-color:#FFD700;background:rgba(139,105,20,0.4);transform:translateY(-2px);}
+.q-opt.correct{border-color:#40ff40;background:rgba(0,180,0,0.3);color:#80ff80;}
+.q-opt.wrong{border-color:#ff4040;background:rgba(180,0,0,0.3);color:#ff8080;}
+.base-station.hurt-flash{animation:hurtShake 0.5s ease;}
+@keyframes hurtShake{
+  0%,100%{transform:translateX(0);filter:none;}
+  20%{transform:translateX(-8px);filter:brightness(1.5) hue-rotate(-20deg);}
+  40%{transform:translateX(8px);filter:brightness(1.5) hue-rotate(20deg);}
+  60%{transform:translateX(-6px);filter:brightness(1.3);}
+  80%{transform:translateX(6px);filter:brightness(1.3);}
+}
+.damage-popup{
+  position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+  color:#ff4040;font-size:1.4rem;font-weight:900;
+  text-shadow:0 2px 4px rgba(0,0,0,0.8);
+  animation:dmgFloat 0.9s ease-out forwards;
+  pointer-events:none;z-index:10;
+}
+@keyframes dmgFloat{
+  0%{opacity:1;transform:translate(-50%, 0) scale(1);}
+  100%{opacity:0;transform:translate(-50%, -40px) scale(1.5);}
+}
+
+/* End */
+#endScreen{justify-content:flex-start;padding-top:20px;}
+.end-title{font-family:'Noto Serif TC',serif;font-size:clamp(30px,6vw,52px);color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;}
+.end-character{width:min(140px,30vw);margin:8px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
+.coins-row{display:flex;gap:12px;justify-content:center;margin:12px 0}
+.coin-img{width:clamp(44px,9vw,64px);height:clamp(44px,9vw,64px);opacity:0.3;transition:all 0.6s}
+.coin-img.earned{opacity:1;filter:drop-shadow(0 0 16px #FFD700);animation:coinPop 0.6s ease}
+@keyframes coinPop{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+.stats{background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin:10px 0;font-size:clamp(13px,2.5vw,15px);line-height:1.6;color:#fff5e6;}
+
+.mute-btn{position:fixed;top:10px;right:10px;z-index:9999;background:rgba(20,10,40,0.85);border:1px solid rgba(255,215,0,0.4);color:#FFD700;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+.wave-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);border:3px solid #FFD700;color:#FFD700;padding:16px 32px;border-radius:16px;font-size:clamp(20px,4vw,32px);font-weight:900;text-shadow:0 0 10px rgba(255,215,0,0.5);z-index:20;animation:waveBanner 1.5s ease-out forwards;pointer-events:none;}
+@keyframes waveBanner{0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}40%{transform:translate(-50%,-50%) scale(1);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2);}}
 </style>
 </head>
 <body>
-<header>
-  <h1>🎮 遊戲 3 · 小數 × 小數 + 估算達人</h1>
-  <a href="index.html" class="back">← 返回第13課</a>
-</header>
-<div class="wrap">
-  <div class="stats">
-    <div class="stat"><div class="label">題目</div><div class="val" id="qnum">1/10</div></div>
-    <div class="stat"><div class="label">答對</div><div class="val" id="correct" style="color:#2E7D32">0</div></div>
-    <div class="stat"><div class="label">連中</div><div class="val" id="streak" style="color:#E65100">0</div></div>
+
+<button class="mute-btn" id="muteBtn">🔊</button>
+
+<!-- ===== START SCREEN ===== -->
+<div id="startScreen" class="screen active">
+  <h1>🛡️ 取經路塔防戰 🛡️</h1>
+  <h2>第13課 小數 × 小數 + 估算 · 西遊記</h2>
+  <img src="images/monkey_tower.png" class="hero" alt="悟空">
+  <p>妖怪從西方進攻唐僧！每隻妖怪都帶住一條<b>小數乘法 / 估算題</b>。<br>
+  ⚠️ <b style="color:#ff6b6b;">答錯一次扣唐僧 10 血</b>，唔好亂猜！<br>
+  點擊妖怪，答啱嘅話悟空就會發射金箍棒擊殺佢！<br>
+  <b>10 波攻勢</b>，保護唐僧成功就贏！</p>
+  <button class="btn-start" onclick="startGame()">守護唐僧 ⚔️</button>
+</div>
+
+<!-- ===== PLAY SCREEN ===== -->
+<div id="playScreen" class="screen">
+  <div class="hud">
+    <div class="hud-item">🏅 <b id="scoreText">0</b> 分</div>
+    <div class="hud-item">⚔️ 波 <b id="waveText">1</b>/10</div>
+    <div class="hud-item">💀 擊殺 <b id="killText">0</b></div>
+    <div class="hud-item">唐僧 HP <div class="hp-track"><div class="hp-fill" id="hpFill" style="width:100%"></div></div> <span id="hpText">100</span></div>
   </div>
-  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
-  <div id="qwrap">
-    <div class="qbox" id="qbox">
-      <div class="q-num" id="qlabel">第 1 題</div>
-      <div class="q-text" id="qtext"></div>
-      <div class="opts" id="opts"></div>
-      <div class="explain" id="explain"></div>
-    </div>
-    <button class="next-btn" id="nextBtn" onclick="nextQ()">下一題 ▶</button>
+  <div class="battlefield" id="battlefield">
+    <div class="battle-bg"></div>
+    <div class="path-line"></div>
+    <div class="tower"><img src="images/monkey_tower.png"></div>
+    <div class="base-station"><img src="images/tang_monk_praying.png"><div class="base-label">唐僧</div></div>
   </div>
-  <div class="final" id="final">
-    <div class="emoji">🏆</div>
-    <h2>達人挑戰完成！</h2>
-    <div class="score"><span id="finalScore">0</span>/10</div>
-    <p id="finalMsg" style="margin:10px 0"></p>
-    <div>
-      <a href="game3.html" class="btn" onclick="location.reload()">🔁 再玩一次</a>
-      <a href="assess3.html" class="btn">📝 做評估 3</a>
-      <a href="index.html" class="btn">🏠 回入口</a>
-    </div>
+  <div class="q-panel" id="qPanel">
+    <div class="q-text" id="qText">—</div>
+    <div class="q-options" id="qOpts"></div>
   </div>
 </div>
+
+<!-- ===== END SCREEN ===== -->
+<div id="endScreen" class="screen">
+  <div class="end-title" id="endTitle">—</div>
+  <img id="endChar" src="images/monkey_win.png" class="end-character">
+  <div class="coins-row">
+    <img src="images/coin_new.png" class="coin-img" id="coin1">
+    <img src="images/coin_new.png" class="coin-img" id="coin2">
+    <img src="images/coin_new.png" class="coin-img" id="coin3">
+  </div>
+  <div class="stats" id="stats"></div>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn-start" onclick="restart()">再玩一次 🔄</button>
+    <a href="index.html" class="btn-start" style="text-decoration:none;display:inline-block;background:linear-gradient(135deg,#6a5acd,#483d8b);color:white;">🏠 返第13課</a>
+  </div>
+</div>
+
+<!-- BGM -->
+<audio id="bgmIntro" src="../common/audio/game/bgm_intro.mp3" loop preload="auto"></audio>
+<audio id="bgmBattle" src="../common/audio/game/bgm_battle.mp3" loop preload="auto"></audio>
+<audio id="bgmVictory" src="../common/audio/game/bgm_victory.mp3" preload="auto"></audio>
+<audio id="bgmDefeat" src="../common/audio/game/bgm_defeat.mp3" preload="auto"></audio>
+
 <script>
-const CHAPTER = 13, GAME_KEY = 'game3';
-const Q = [
-  { q: '0.3 × 0.4 = ?', opts: ['0.12','1.2','0.012','12'], a: 0, hint: '3 × 4 = 12，合共 2 位小數，將小數點左移 2 位 → 0.12。' },
-  { q: '0.5 × 0.6 = ?', opts: ['0.3','3','0.03','30'], a: 0, hint: '5 × 6 = 30，合共 2 位小數 → 0.30 = 0.3。' },
-  { q: '0.7 × 0.2 = ?', opts: ['0.14','1.4','0.014','14'], a: 0, hint: '7 × 2 = 14，合共 2 位小數 → 0.14。' },
-  { q: '估算 6.8 × 3.2 大約等於…', opts: ['21','10','2.1','210'], a: 0, hint: '6.8 ≈ 7，3.2 ≈ 3，7 × 3 = 21。實際答案 21.76，估算 21 好接近。' },
-  { q: '估算 4.9 × 2.1 大約等於…', opts: ['10','5','25','100'], a: 0, hint: '4.9 ≈ 5，2.1 ≈ 2，5 × 2 = 10。實際答案 10.29。' },
-  { q: '估算 9.7 × 5.3 大約等於…', opts: ['50','15','100','500'], a: 0, hint: '9.7 ≈ 10，5.3 ≈ 5，10 × 5 = 50。實際答案 51.41。' },
-  { q: '1.2 × 0.5 = ?', opts: ['0.6','6','0.06','60'], a: 0, hint: '12 × 5 = 60，合共 2 位小數 → 0.60 = 0.6。' },
-  { q: '估算 7.8 × 4.1 最接近…', opts: ['32','20','50','100'], a: 0, hint: '7.8 ≈ 8，4.1 ≈ 4，8 × 4 = 32。實際答案 31.98。' },
-  { q: '0.25 × 0.4 = ?', opts: ['0.1','1','0.01','10'], a: 0, hint: '25 × 4 = 100，合共 3 位小數 → 0.100 = 0.1。' },
-  { q: '小明買了 1.8 kg 蘋果，每 kg $12.5。估算應付大約…', opts: ['$24-$26','$30','$40','$12'], a: 0, hint: '1.8 ≈ 2，12.5 ≈ 12 或 13，2 × 12 = 24，2 × 13 = 26。實際答案 $22.5。' }
+// ============================================================
+// QUESTION POOL — 第13課 第三節：小數 × 小數 + 估算
+// ============================================================
+const QUESTIONS = [
+  // 小數 × 小數 基本
+  { q:'0.3 × 0.4 = ?',       options:['0.12','1.2','0.012','12'], correct:0 },
+  { q:'0.5 × 0.6 = ?',       options:['3','0.3','0.03','30'], correct:1 },
+  { q:'0.7 × 0.2 = ?',       options:['1.4','0.14','0.014','14'], correct:1 },
+  { q:'1.2 × 0.5 = ?',       options:['6','0.6','0.06','60'], correct:1 },
+  { q:'0.25 × 0.4 = ?',      options:['0.1','1','0.01','10'], correct:0 },
+  { q:'0.8 × 0.3 = ?',       options:['2.4','0.24','0.024','24'], correct:1 },
+  // 估算
+  { q:'估算 6.8 × 3.2 最接近…', options:['9','21','200','50'], correct:1 },
+  { q:'估算 4.9 × 2.1 最接近…', options:['10','5','25','100'], correct:0 },
+  { q:'估算 9.7 × 5.3 最接近…', options:['50','15','100','500'], correct:0 },
+  { q:'估算 7.8 × 4.1 最接近…', options:['32','20','50','100'], correct:0 },
+  { q:'估算 2.9 × 3.1 最接近…', options:['9','6','12','30'], correct:0 },
+  { q:'估算 5.1 × 6.8 最接近…', options:['35','20','50','100'], correct:0 },
+  // 應用 + 混合
+  { q:'1.5 × 0.2 = ?',       options:['3','0.3','0.03','30'], correct:1 },
+  { q:'0.6 × 0.5 = ?',       options:['3','0.3','0.03','30'], correct:1 },
+  { q:'2.5 × 0.4 = ?',       options:['1','10','0.1','100'], correct:0 },
+  { q:'估算 11.2 × 2.9 最接近…',options:['33','30','50','15'], correct:0 },
+  { q:'0.4 × 0.25 = ?',      options:['0.1','1','10','0.01'], correct:0 },
+  { q:'估算 8.5 × 3.5 最接近…', options:['32','24','40','60'], correct:0 },
+  { q:'每升汽油 $8.5，買 2.5 升估算…', options:['約$21-24','$50','$100','$3'], correct:0 },
+  { q:'0.9 × 0.3 = ?',       options:['2.7','0.27','0.027','27'], correct:1 },
 ];
-let i = 0, correct = 0, streak = 0;
-const qnum=document.getElementById('qnum'),correctEl=document.getElementById('correct'),streakEl=document.getElementById('streak'),pfill=document.getElementById('pfill'),qlabel=document.getElementById('qlabel'),qtext=document.getElementById('qtext'),opts=document.getElementById('opts'),explain=document.getElementById('explain'),nextBtn=document.getElementById('nextBtn'),finalEl=document.getElementById('final'),qwrap=document.getElementById('qwrap');
-function render(){const item=Q[i];qnum.textContent=`${i+1}/${Q.length}`;qlabel.textContent=`第 ${i+1} 題`;qtext.textContent=item.q;pfill.style.width=Math.round((i/Q.length)*100)+'%';opts.innerHTML='';explain.classList.remove('show');nextBtn.classList.remove('show');const idxs=[0,1,2,3].sort(()=>Math.random()-0.5);idxs.forEach(idx=>{const b=document.createElement('button');b.className='opt';b.textContent=item.opts[idx];b.onclick=()=>answer(idx,b);opts.appendChild(b);});}
-function answer(chosen,btn){const item=Q[i];[...opts.children].forEach(b=>b.classList.add('disabled'));if(chosen===item.a){btn.classList.add('correct');correct++;streak++;explain.innerHTML=`✅ 正確！<br>${item.hint}`;}else{btn.classList.add('wrong');streak=0;[...opts.children].forEach(b=>{if(b.textContent===item.opts[item.a])b.classList.add('correct');});explain.innerHTML=`❌ 錯咗！正解係 <b>${item.opts[item.a]}</b><br>${item.hint}`;}correctEl.textContent=correct;streakEl.textContent=streak;explain.classList.add('show');nextBtn.classList.add('show');nextBtn.textContent=i===Q.length-1?'睇結果 🎉':'下一題 ▶';}
-function nextQ(){if(i<Q.length-1){i++;render();}else{showFinal();}}
-function showFinal(){qwrap.style.display='none';pfill.style.width='100%';finalEl.classList.add('show');document.getElementById('finalScore').textContent=correct;let msg;if(correct===10)msg='🌟 估算達人！你已經完全掌握小數乘法！';else if(correct>=8)msg='💪 好勁！估算技巧好靠譜！';else if(correct>=6)msg='👍 不錯！記得多用四捨五入去估算。';else msg='📖 再去睇多次簡報 3，學好估算技巧！';document.getElementById('finalMsg').textContent=msg;try{const key=`progress_ch${CHAPTER}`;const p=JSON.parse(localStorage.getItem(key)||'{}');p[GAME_KEY]={done:true,score:correct,total:Q.length,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(e){}}
-render();
+
+// ============================================================
+// STATE
+// ============================================================
+let state = { score:0, wave:0, kills:0, hp:100, enemies:[], activeQ:null, startTime:0, waveActive:false, used:new Set() };
+const TOTAL_WAVES = 10;
+const ENEMIES_PER_WAVE = 2;  // 2 enemies per wave = 20 total
+const WALK_DURATION = 14000; // 14s to reach base
+const ENEMY_IMAGES = ['demon_walking.png', 'demon_ox.png', 'demon_bone.png'];
+
+// ============================================================
+// BGM
+// ============================================================
+const bgMusic = (() => {
+  const tracks = {}; let current = null, muted = false;
+  function init() {
+    tracks.intro = document.getElementById('bgmIntro');
+    tracks.battle = document.getElementById('bgmBattle');
+    tracks.victory = document.getElementById('bgmVictory');
+    tracks.defeat = document.getElementById('bgmDefeat');
+    Object.values(tracks).forEach(t => { if(t) t.volume = 0.4; });
+  }
+  return {
+    start() { init(); this.play('battle'); },
+    play(name) { if(current) { current.pause(); current.currentTime = 0; } current = tracks[name]; if(current && !muted) current.play().catch(()=>{}); },
+    stop() { if(current) { current.pause(); current.currentTime = 0; current = null; } },
+    toggle() { muted = !muted; if(current) { if(muted) current.pause(); else current.play().catch(()=>{}); } document.getElementById('muteBtn').textContent = muted ? '\uD83D\uDD07' : '\uD83D\uDD0A'; }
+  };
+})();
+document.getElementById('muteBtn').onclick = () => bgMusic.toggle();
+
+function playTone(freq, dur, type='triangle') {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + dur);
+    setTimeout(()=>ctx.close(), (dur+0.1)*1000);
+  } catch(e){}
+}
+
+// ============================================================
+// SCREEN
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  state = { score:0, wave:0, kills:0, hp:100, enemies:[], activeQ:null, startTime:Date.now(), waveActive:false, used:new Set() };
+  showScreen('playScreen');
+  bgMusic.start();
+  setTimeout(() => nextWave(), 500);
+}
+
+function restart() { showScreen('startScreen'); }
+
+// ============================================================
+// WAVE + ENEMY SPAWNING
+// ============================================================
+function updateHUD() {
+  document.getElementById('scoreText').textContent = state.score;
+  document.getElementById('waveText').textContent = Math.min(state.wave, TOTAL_WAVES);
+  document.getElementById('killText').textContent = state.kills;
+  document.getElementById('hpFill').style.width = state.hp + '%';
+  document.getElementById('hpText').textContent = state.hp;
+}
+
+function pickQuestion() {
+  let idx;
+  let tries = 0;
+  do {
+    idx = Math.floor(Math.random() * QUESTIONS.length);
+    tries++;
+  } while (state.used.has(idx) && tries < 20);
+  state.used.add(idx);
+  if (state.used.size >= QUESTIONS.length) state.used.clear();
+  return { ...QUESTIONS[idx], _idx: idx };
+}
+
+function showWaveBanner(text) {
+  const bf = document.getElementById('battlefield');
+  const banner = document.createElement('div');
+  banner.className = 'wave-banner';
+  banner.textContent = text;
+  bf.appendChild(banner);
+  setTimeout(() => banner.remove(), 1500);
+}
+
+function nextWave() {
+  state.wave++;
+  if (state.wave > TOTAL_WAVES) {
+    endGame();
+    return;
+  }
+  state.waveActive = true;
+  updateHUD();
+  showWaveBanner('第 ' + state.wave + ' 波 來了！');
+  playTone(880, 0.2); setTimeout(()=>playTone(660, 0.3), 200);
+
+  // Spawn enemies staggered
+  for (let i = 0; i < ENEMIES_PER_WAVE; i++) {
+    setTimeout(() => spawnEnemy(), 1500 + i * 3500);
+  }
+  // Check wave complete after all enemies should have finished or died
+  const checkWaveTimer = setInterval(() => {
+    if (state.enemies.length === 0 && state.wave <= TOTAL_WAVES) {
+      clearInterval(checkWaveTimer);
+      if (state.hp > 0 && state.waveActive) {
+        state.waveActive = false;
+        setTimeout(() => nextWave(), 1500);
+      }
+    }
+    if (state.hp <= 0) clearInterval(checkWaveTimer);
+  }, 500);
+}
+
+function spawnEnemy() {
+  if (state.hp <= 0) return;
+  const q = pickQuestion();
+  const id = 'e' + Date.now() + Math.random();
+  const bf = document.getElementById('battlefield');
+  const imgSrc = ENEMY_IMAGES[Math.floor(Math.random() * ENEMY_IMAGES.length)];
+
+  const div = document.createElement('div');
+  div.className = 'enemy';
+  div.id = id;
+  div.style.left = '0%';
+  div.innerHTML = `
+    <img src="images/${imgSrc}" alt="妖怪">
+    <div class="enemy-label">${q.q}</div>
+  `;
+  div.onclick = () => openQuestion(id, q);
+  bf.appendChild(div);
+
+  const enemyObj = { id, q, div, startTime: Date.now(), finished: false };
+  state.enemies.push(enemyObj);
+
+  // Animate walking
+  const bfRect = bf.getBoundingClientRect();
+  const endX = 88; // percent — stops right before tower
+  const step = () => {
+    if (enemyObj.finished) return;
+    const elapsed = Date.now() - enemyObj.startTime;
+    const progress = Math.min(1, elapsed / WALK_DURATION);
+    div.style.left = (progress * endX) + '%';
+    if (progress >= 1 && !enemyObj.finished) {
+      enemyHitsBase(enemyObj);
+    } else if (!enemyObj.finished) {
+      requestAnimationFrame(step);
+    }
+  };
+  requestAnimationFrame(step);
+}
+
+function enemyHitsBase(enemyObj) {
+  enemyObj.finished = true;
+  state.hp = Math.max(0, state.hp - 20);
+  enemyObj.div.remove();
+  state.enemies = state.enemies.filter(e => e.id !== enemyObj.id);
+  playTone(200, 0.4, 'sawtooth');
+  updateHUD();
+  if (state.hp <= 0) endGame();
+}
+
+// ============================================================
+// QUESTION HANDLING
+// ============================================================
+function openQuestion(enemyId, q) {
+  if (state.activeQ) return; // only one at a time
+  state.activeQ = { enemyId, q };
+
+  const panel = document.getElementById('qPanel');
+  document.getElementById('qText').textContent = q.q;
+  const opts = document.getElementById('qOpts');
+  opts.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'q-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answerQuestion(i, btn);
+    opts.appendChild(btn);
+  });
+  panel.classList.add('show');
+}
+
+function answerQuestion(selected, btnEl) {
+  if (!state.activeQ) return;
+  const { enemyId, q } = state.activeQ;
+  const enemyObj = state.enemies.find(e => e.id === enemyId);
+  const panel = document.getElementById('qPanel');
+  const btns = document.querySelectorAll('.q-opt');
+
+  if (selected === q.correct) {
+    btnEl.classList.add('correct');
+    btns.forEach(b => b.disabled = true);
+    playTone(660, 0.15); setTimeout(()=>playTone(880, 0.2), 120);
+    state.score += 10;
+    state.kills += 1;
+    updateHUD();
+    // Fire projectile + kill enemy
+    if (enemyObj && !enemyObj.finished) fireProjectile(enemyObj);
+    setTimeout(() => {
+      panel.classList.remove('show');
+      state.activeQ = null;
+    }, 500);
+  } else {
+    btnEl.classList.add('wrong');
+    btnEl.disabled = true;
+    playTone(220, 0.3, 'sawtooth');
+    // 🩸 答錯扣師傅（唐僧）10 血 — 阻止亂猜
+    state.hp = Math.max(0, state.hp - 10);
+    updateHUD();
+    // 唐僧受傷 flash 動畫
+    const baseStation = document.querySelector('.base-station');
+    if (baseStation) {
+      baseStation.classList.add('hurt-flash');
+      setTimeout(() => baseStation.classList.remove('hurt-flash'), 500);
+    }
+    // 浮動傷害數字
+    const dmgEl = document.createElement('div');
+    dmgEl.className = 'damage-popup';
+    dmgEl.textContent = '-10 HP';
+    (baseStation || document.body).appendChild(dmgEl);
+    setTimeout(() => dmgEl.remove(), 900);
+    // HP 0 → 遊戲結束
+    if (state.hp <= 0) {
+      setTimeout(() => {
+        const panel = document.getElementById('qPanel');
+        if (panel) panel.classList.remove('show');
+        state.activeQ = null;
+        endGame();
+      }, 400);
+    }
+  }
+}
+
+function fireProjectile(enemyObj) {
+  const bf = document.getElementById('battlefield');
+  const towerEl = document.querySelector('.tower');
+  const towerRect = towerEl.getBoundingClientRect();
+  const enemyRect = enemyObj.div.getBoundingClientRect();
+  const bfRect = bf.getBoundingClientRect();
+
+  const proj = document.createElement('div');
+  proj.className = 'projectile';
+  const startX = towerRect.left - bfRect.left + 10;
+  const startY = towerRect.top - bfRect.top + 25;
+  const endX = enemyRect.left - bfRect.left + 20;
+  const endY = enemyRect.top - bfRect.top + 20;
+  proj.style.left = startX + 'px';
+  proj.style.top = startY + 'px';
+  bf.appendChild(proj);
+  const dx = endX - startX, dy = endY - startY;
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  proj.style.transform = 'rotate(' + angle + 'deg)';
+  proj.style.transition = 'left 0.3s linear, top 0.3s linear';
+  requestAnimationFrame(() => {
+    proj.style.left = endX + 'px';
+    proj.style.top = endY + 'px';
+  });
+  setTimeout(() => {
+    proj.remove();
+    // Enemy dies
+    enemyObj.finished = true;
+    enemyObj.div.classList.add('dying');
+    setTimeout(() => {
+      enemyObj.div.remove();
+      state.enemies = state.enemies.filter(e => e.id !== enemyObj.id);
+    }, 400);
+  }, 320);
+}
+
+// ============================================================
+// END
+// ============================================================
+function endGame() {
+  bgMusic.stop();
+  const elapsed = Math.floor((Date.now() - state.startTime)/1000);
+  const won = state.hp > 0 && state.kills >= 12;
+  bgMusic.play(won ? 'victory' : 'defeat');
+
+  document.getElementById('endTitle').textContent = won ? '🎉 成功守護唐僧！' : '💔 唐僧被擒...';
+  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_think.png';
+
+  // Coins: based on kills
+  let coins = 0;
+  if (state.kills >= 18) coins = 3;
+  else if (state.kills >= 12) coins = 2;
+  else if (state.kills >= 6) coins = 1;
+  ['coin1','coin2','coin3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (i < coins) setTimeout(()=>el.classList.add('earned'), 300 + i*220);
+    else el.classList.remove('earned');
+  });
+
+  document.getElementById('stats').innerHTML =
+    '💀 擊殺妖怪：<b>' + state.kills + ' 隻</b><br>' +
+    '🛡️ 唐僧 HP 剩餘：<b>' + state.hp + '/100</b><br>' +
+    '💯 分數：<b>' + state.score + ' 分</b><br>' +
+    '⏱️ 時間：<b>' + Math.floor(elapsed/60) + ' 分 ' + (elapsed%60) + ' 秒</b><br>' +
+    '🪙 金幣：<b>' + coins + ' / 3 枚</b>';
+
+  try {
+    window.parent.postMessage({
+      type:'gameScore', game:'ch13_game3',
+      score: state.score, correct: state.kills, total: TOTAL_WAVES * ENEMIES_PER_WAVE, coins
+    }, '*');
+  } catch(e) {}
+  // Save Ch13 progress to localStorage
+  try {
+    const key = 'progress_ch13';
+    const p = JSON.parse(localStorage.getItem(key) || '{}');
+    p.game3 = { done: true, score: state.score, correct: state.kills, total: TOTAL_WAVES * ENEMIES_PER_WAVE, coins, ts: Date.now() };
+    localStorage.setItem(key, JSON.stringify(p));
+  } catch(e){}
+
+  // Clear remaining enemies from field
+  state.enemies.forEach(e => { e.finished = true; if (e.div) e.div.remove(); });
+  state.enemies = [];
+
+  showScreen('endScreen');
+}
 </script>
 </body>
 </html>

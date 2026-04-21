@@ -2,169 +2,501 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第13課 · 遊戲 1 — 一位小數 × 整數大冒險</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>第13課 西遊記數學大冒險 — 一位小數 × 整數</title>
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 50%, #FFCCBC 100%); min-height: 100vh; color: #222; position: relative; }
-  body::before { content: ''; position: fixed; inset: 0; background: url('../common/images/school_bg.jpg') center/cover no-repeat; opacity: 0.12; z-index: -1; }
-  header { background: linear-gradient(135deg, #00897B, #00695C); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
-  header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
-  header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 14px; }
-  .stats { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-  .stat { flex: 1; background: white; padding: 10px 8px; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .stat .label { font-size: 0.72rem; color: #666; }
-  .stat .val { font-size: 1.3rem; font-weight: 900; color: #00695C; }
-  .progress { height: 8px; background: #E0E0E0; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #26A69A, #80CBC4); transition: width 0.3s; width: 0; }
-  .qbox { background: white; border-radius: 16px; padding: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 12px; }
-  .q-num { font-size: 0.8rem; color: #00695C; font-weight: 700; margin-bottom: 6px; }
-  .q-text { font-size: 1.35rem; font-weight: 900; color: #222; margin-bottom: 16px; line-height: 1.4; }
-  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .opt { padding: 14px 10px; background: #F5F5F5; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; color: #333; transition: all 0.2s; }
-  .opt:hover:not(.disabled) { background: #E0F2F1; border-color: #26A69A; transform: translateY(-2px); }
-  .opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; animation: bounce 0.5s; }
-  .opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; animation: shake 0.4s; }
-  .opt.disabled { cursor: not-allowed; opacity: 0.7; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-  .explain { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-left: 4px solid #FFC107; padding: 12px 14px; border-radius: 8px; margin-top: 12px; display: none; font-size: 0.92rem; line-height: 1.6; color: #555; }
-  .explain.show { display: block; animation: fadeIn 0.4s; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-  .next-btn { margin-top: 12px; width: 100%; padding: 14px; background: linear-gradient(135deg, #00897B, #00695C); color: white; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; cursor: pointer; display: none; }
-  .next-btn.show { display: block; }
-  .final { background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; padding: 26px 20px; border-radius: 20px; text-align: center; display: none; }
-  .final.show { display: block; animation: pop 0.5s; }
-  .final .emoji { font-size: 4rem; }
-  .final h2 { margin: 10px 0; font-size: 1.5rem; }
-  .final .score { font-size: 2.5rem; font-weight: 900; }
-  .final .btn { display: inline-block; margin: 10px 6px; padding: 10px 18px; background: white; color: #2E7D32; border-radius: 10px; text-decoration: none; font-weight: 800; }
-  @keyframes pop { 0%{transform:scale(0.7);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
-  @media (max-width: 500px) {
-    .q-text { font-size: 1.15rem; }
-    .opt { font-size: 1rem; padding: 12px 8px; }
-  }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif}
+html,body{height:100%;overflow:hidden;background:#000}
+body{
+  background:
+    linear-gradient(to bottom,rgba(20,5,0,0.6),rgba(60,20,0,0.8)),
+    url('images/bg_mountain.png') center/cover no-repeat;
+  color:#fff5e6;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ====== Screens ====== */
+.screen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;overflow-y:auto}
+#endScreen{justify-content:flex-start;padding-top:20px;padding-bottom:24px}
+.screen.active{display:flex}
+
+/* ====== Start screen ====== */
+#startScreen h1{
+  font-family:'Noto Serif TC',serif;font-size:clamp(28px,6vw,56px);color:#FFD700;
+  text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:10px;font-weight:900;
+}
+#startScreen h2{font-size:clamp(16px,3vw,24px);color:#f5c76a;margin-bottom:24px}
+#startScreen .hero{
+  width:min(200px,40vw);height:auto;margin:20px 0;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+#startScreen p{
+  max-width:480px;font-size:clamp(13px,2.5vw,16px);line-height:1.7;
+  background:rgba(0,0,0,0.5);padding:16px 20px;border-radius:12px;
+  border:1px solid rgba(255,215,0,0.3);margin-bottom:20px;
+}
+.btn-start{
+  font-size:clamp(18px,3.5vw,24px);padding:14px 36px;font-weight:700;
+  background:linear-gradient(135deg,#FFD700,#FF8C00);color:#2a1400;
+  border:none;border-radius:30px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(255,140,0,0.5);
+  transition:all 0.2s;
+}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,140,0,0.7)}
+.btn-start:active{transform:translateY(0)}
+
+/* ====== Battle screen ====== */
+#battleScreen{justify-content:flex-start;padding:8px}
+
+.hud{
+  width:100%;max-width:900px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,0.65);padding:10px 16px;border-radius:12px;
+  border:1px solid rgba(255,215,0,0.3);margin-bottom:10px;flex-wrap:wrap;gap:8px;
+}
+.hp-bar{flex:1;min-width:180px;max-width:280px}
+.hp-label{font-size:12px;color:#FFD700;margin-bottom:4px;display:flex;justify-content:space-between}
+.hp-track{height:14px;background:rgba(255,255,255,0.1);border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.hp-fill{height:100%;background:linear-gradient(90deg,#ff4040,#ffaa00,#40ff40);transition:width 0.5s ease;border-radius:7px}
+.score-block{text-align:center}
+.score-big{font-size:clamp(24px,5vw,36px);font-weight:900;color:#FFD700}
+.progress-text{font-size:13px;color:#f5c76a}
+
+/* Fighters */
+.arena{
+  width:100%;max-width:900px;height:min(180px,25vh);
+  display:flex;justify-content:space-around;align-items:flex-end;
+  position:relative;padding:0 20px;margin-bottom:12px;
+}
+.fighter{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.fighter-img{
+  width:clamp(90px,16vw,140px);height:auto;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,0.7));
+  transition:transform 0.3s;
+}
+.fighter.attack .fighter-img{animation:heroAttack 0.5s}
+.fighter.hit .fighter-img{animation:shake 0.4s}
+.fighter.win .fighter-img{animation:winPose 1s}
+@keyframes heroAttack{0%,100%{transform:translateX(0)}30%{transform:translateX(60px) scale(1.1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes winPose{0%,100%{transform:scale(1)}50%{transform:scale(1.2) rotate(-5deg)}}
+.fighter-name{font-size:13px;color:#FFD700;font-weight:700;text-shadow:1px 1px 2px rgba(0,0,0,0.8)}
+
+/* VS indicator */
+.vs{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:clamp(32px,7vw,52px);font-weight:900;color:#FF4500;
+  text-shadow:0 0 20px rgba(255,69,0,0.8);font-family:'Noto Serif TC',serif;
+}
+
+/* Question panel */
+.qpanel{
+  width:100%;max-width:900px;
+  background:rgba(20,10,0,0.92);border:2px solid #8B6914;border-radius:16px;
+  padding:16px 20px;flex:1;display:flex;flex-direction:column;gap:12px;overflow-y:auto;
+  overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.q-category{
+  display:inline-block;font-size:12px;padding:3px 12px;
+  background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);
+  border-radius:12px;color:#FFD700;align-self:flex-start;
+}
+.q-text{
+  font-size:clamp(20px,4vw,30px);font-weight:700;color:#fff5e6;
+  line-height:1.5;text-align:center;padding:12px 0;min-height:60px;
+}
+.answers{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+}
+@media(max-width:520px){.answers{grid-template-columns:1fr}}
+.ans-btn{
+  padding:14px 18px;font-size:clamp(16px,3vw,20px);font-weight:600;
+  background:rgba(60,30,0,0.6);color:#fff5e6;
+  border:2px solid rgba(139,105,20,0.6);border-radius:12px;
+  cursor:pointer;transition:all 0.2s;text-align:center;
+  font-family:'Noto Sans TC',sans-serif;
+}
+.ans-btn:hover:not(:disabled){border-color:#FFD700;background:rgba(139,105,20,0.3);transform:translateY(-2px)}
+.ans-btn:disabled{cursor:default;opacity:0.75}
+.ans-btn.correct{border-color:#40ff40;background:rgba(0,180,0,0.3);color:#80ff80;animation:pulse 0.4s}
+.ans-btn.wrong{border-color:#ff4040;background:rgba(180,0,0,0.3);color:#ff8080;animation:shake 0.4s}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+.explanation{
+  background:rgba(255,215,0,0.1);border-left:4px solid #FFD700;
+  padding:12px 14px;border-radius:0 10px 10px 0;font-size:14px;line-height:1.6;
+  color:#fff5d0;display:none;
+}
+.explanation.show{display:block;animation:fadeIn 0.4s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.next-btn{
+  padding:12px 28px;font-size:clamp(15px,3vw,18px);font-weight:700;
+  background:linear-gradient(135deg,#FF8C00,#DC3545);color:#fff;
+  border:none;border-radius:24px;cursor:pointer;display:none;
+  align-self:center;box-shadow:0 4px 12px rgba(255,140,0,0.4);
+}
+.next-btn.show{display:block;animation:fadeIn 0.4s}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,140,0,0.6)}
+
+/* End screen */
+#endScreen .end-title{
+  font-family:'Noto Serif TC',serif;font-size:clamp(28px,5.5vw,48px);
+  color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;
+}
+#endScreen .end-character{width:min(140px,28vw);margin:8px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
+.coins-row{display:flex;gap:12px;justify-content:center;margin:10px 0}
+.coin-img{width:clamp(40px,8vw,60px);height:clamp(40px,8vw,60px);opacity:0.3;transition:all 0.6s}
+.coin-img.earned{opacity:1;filter:drop-shadow(0 0 16px #FFD700);animation:coinPop 0.6s ease}
+@keyframes coinPop{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+.stats{
+  background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;
+  border:1px solid rgba(255,215,0,0.3);margin:10px 0;
+  font-size:clamp(13px,2.5vw,15px);line-height:1.6;color:#fff5e6;
+}
+.end-buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+
+/* Mute button */
+.mute-btn{
+  position:fixed;top:12px;right:12px;z-index:100;
+  background:rgba(0,0,0,0.6);border:1px solid rgba(255,215,0,0.4);
+  color:#fff;font-size:22px;width:42px;height:42px;border-radius:50%;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🎮 遊戲 1 · 一位小數 × 整數大冒險</h1>
-  <a href="index.html" class="back">← 返回第13課</a>
-</header>
+<button class="mute-btn" id="muteBtn" title="音樂開關">🔊</button>
 
-<div class="wrap">
-  <div class="stats">
-    <div class="stat"><div class="label">題目</div><div class="val" id="qnum">1/10</div></div>
-    <div class="stat"><div class="label">答對</div><div class="val" id="correct" style="color:#2E7D32">0</div></div>
-    <div class="stat"><div class="label">連中</div><div class="val" id="streak" style="color:#E65100">0</div></div>
-  </div>
-  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
+<!-- ===== START SCREEN ===== -->
+<div id="startScreen" class="screen active">
+  <h1>西遊記大冒險</h1>
+  <h2>第13課 ── 一位小數 × 整數</h2>
+  <img src="images/monkey_happy.png" alt="悟空" class="hero">
+  <p>
+    悟空取經途中遇到妖怪攔路！<br>
+    答對 = <b style="color:#40ff80">⚔️ 攻擊妖怪</b>｜答錯 = <b style="color:#ff8080">💔 被攻擊</b><br>
+    10 題全力以赴，爭取 <b style="color:#FFD700">3 枚金幣</b>！
+  </p>
+  <button class="btn-start" onclick="startGame()">開始冒險 ⚔️</button>
+  <div style="margin-top:14px"><a href="index.html" style="color:#FFD700;text-decoration:underline;font-size:14px;">← 返回第 13 課入口</a></div>
+</div>
 
-  <div id="qwrap">
-    <div class="qbox" id="qbox">
-      <div class="q-num" id="qlabel">第 1 題</div>
-      <div class="q-text" id="qtext"></div>
-      <div class="opts" id="opts"></div>
-      <div class="explain" id="explain"></div>
+<!-- ===== BATTLE SCREEN ===== -->
+<div id="battleScreen" class="screen">
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hp-bar">
+      <div class="hp-label"><span>悟空 HP</span><span id="heroHpText">100/100</span></div>
+      <div class="hp-track"><div class="hp-fill" id="heroHp" style="width:100%"></div></div>
     </div>
-    <button class="next-btn" id="nextBtn" onclick="nextQ()">下一題 ▶</button>
+    <div class="score-block">
+      <div class="score-big" id="score">0 分</div>
+      <div class="progress-text" id="progress">第 1 / 10 題</div>
+    </div>
+    <div class="hp-bar">
+      <div class="hp-label"><span id="monsterName">妖怪 HP</span><span id="monsterHpText">100/100</span></div>
+      <div class="hp-track"><div class="hp-fill" id="monsterHp" style="width:100%;background:linear-gradient(90deg,#ff4040,#aa0000)"></div></div>
+    </div>
   </div>
 
-  <div class="final" id="final">
-    <div class="emoji">🏆</div>
-    <h2 id="finalTitle">大冒險完成！</h2>
-    <div class="score"><span id="finalScore">0</span>/10</div>
-    <p id="finalMsg" style="margin:10px 0"></p>
-    <div>
-      <a href="game1.html" class="btn" onclick="location.reload()">🔁 再玩一次</a>
-      <a href="assess1.html" class="btn">📝 做評估 1</a>
-      <a href="index.html" class="btn">🏠 回入口</a>
+  <!-- Arena -->
+  <div class="arena">
+    <div class="fighter" id="heroFighter">
+      <img src="images/monkey_happy.png" alt="悟空" class="fighter-img" id="heroImg">
+      <div class="fighter-name">齊天大聖</div>
     </div>
+    <div class="vs">VS</div>
+    <div class="fighter" id="monsterFighter">
+      <img src="images/demon_ox.png" alt="妖怪" class="fighter-img" id="monsterImg">
+      <div class="fighter-name" id="monsterNameLabel">小妖怪</div>
+    </div>
+  </div>
+
+  <!-- Question -->
+  <div class="qpanel">
+    <div class="q-category" id="qCategory">乘法</div>
+    <div class="q-text" id="qText">準備中...</div>
+    <div class="answers" id="answers"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">下一關 ➜</button>
   </div>
 </div>
 
+<!-- ===== END SCREEN ===== -->
+<div id="endScreen" class="screen">
+  <div class="end-title" id="endTitle">勝利！</div>
+  <img id="endChar" src="images/monkey_win.png" class="end-character" alt="結果">
+  <div class="coins-row">
+    <img src="images/coin_new.png" class="coin-img" id="coin1">
+    <img src="images/coin_new.png" class="coin-img" id="coin2">
+    <img src="images/coin_new.png" class="coin-img" id="coin3">
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="end-buttons">
+    <button class="btn-start" onclick="restartGame()">再玩一次 🔄</button>
+    <a href="index.html" class="btn-start" style="text-decoration:none;display:inline-block;background:linear-gradient(135deg,#6a5acd,#483d8b);color:white;">🏠 返回第13課</a>
+  </div>
+</div>
+
+<!-- BGM Audio -->
+<audio id="bgmIntro" src="../common/audio/game/bgm_intro.mp3" loop preload="auto"></audio>
+<audio id="bgmBattle" src="../common/audio/game/bgm_battle.mp3" loop preload="auto"></audio>
+<audio id="bgmVictory" src="../common/audio/game/bgm_victory.mp3" preload="auto"></audio>
+<audio id="bgmDefeat" src="../common/audio/game/bgm_defeat.mp3" preload="auto"></audio>
+
 <script>
-const CHAPTER = 13, GAME_KEY = 'game1';
-const Q = [
-  { q: '0.3 × 4 = ?', opts: ['1.2','0.12','12','4.3'], a: 0, hint: '3 個 0.1 乘 4 等於 12 個 0.1，即 1.2。' },
-  { q: '0.5 × 6 = ?', opts: ['3','0.3','30','0.36'], a: 0, hint: '5 × 6 = 30，一位小數，將 30 變成 3.0 = 3。' },
-  { q: '1.2 × 3 = ?', opts: ['3.6','0.36','36','3.06'], a: 0, hint: '12 × 3 = 36，一位小數，答案係 3.6。' },
-  { q: '0.7 × 8 = ?', opts: ['5.6','0.56','56','4.8'], a: 0, hint: '7 × 8 = 56，一位小數，將小數點左移一位 → 5.6。' },
-  { q: '2.5 × 4 = ?', opts: ['10','1','100','1.0'], a: 0, hint: '25 × 4 = 100，一位小數 → 10.0 = 10。' },
-  { q: '0.9 × 5 = ?', opts: ['4.5','0.45','45','4.05'], a: 0, hint: '9 × 5 = 45，一位小數 → 4.5。' },
-  { q: '3.4 × 2 = ?', opts: ['6.8','0.68','68','3.42'], a: 0, hint: '34 × 2 = 68，一位小數 → 6.8。' },
-  { q: '0.8 × 7 = ?', opts: ['5.6','0.56','56','1.5'], a: 0, hint: '8 × 7 = 56，一位小數 → 5.6。' },
-  { q: '4.2 × 5 = ?', opts: ['21','2.1','210','21.0'], a: 0, hint: '42 × 5 = 210，一位小數 → 21.0 = 21。' },
-  { q: '0.6 × 9 = ?', opts: ['5.4','0.54','54','6.9'], a: 0, hint: '6 × 9 = 54，一位小數 → 5.4。' }
+// ============================================================
+// QUESTION DATA  (10 questions for ch12 有趣的乘法)
+// ============================================================
+const QUESTIONS = [
+  {category:'一位小數 × 整數', text:'0.3 × 4 = ?', options:['0.12','1.2','12','4.3'],correct:1,
+   explain:'3 × 4 = 12，一位小數 → 1.2',
+   monster:'demon_ox',name:'牛魔王'},
+  {category:'一位小數 × 整數', text:'0.5 × 6 = ?', options:['30','3.0','3','0.3'],correct:2,
+   explain:'5 × 6 = 30，一位小數 → 3.0 = 3',
+   monster:'demon_bone',name:'白骨精'},
+  {category:'一位小數 × 整數', text:'1.2 × 3 = ?', options:['3.6','0.36','36','3.06'],correct:0,
+   explain:'12 × 3 = 36，一位小數 → 3.6',
+   monster:'demon_ox',name:'牛魔王'},
+  {category:'一位小數 × 整數', text:'0.7 × 8 = ?', options:['56','5.6','0.56','4.8'],correct:1,
+   explain:'7 × 8 = 56，一位小數 → 5.6',
+   monster:'demon_bone',name:'白骨精'},
+  {category:'一位小數 × 整數', text:'2.5 × 4 = ?', options:['10','1','100','2.54'],correct:0,
+   explain:'25 × 4 = 100，一位小數 → 10.0 = 10',
+   monster:'demon_ox',name:'牛魔王'},
+  {category:'一位小數 × 整數', text:'0.9 × 5 = ?', options:['45','4.5','0.45','5.9'],correct:1,
+   explain:'9 × 5 = 45，一位小數 → 4.5',
+   monster:'demon_bone',name:'白骨精'},
+  {category:'一位小數 × 整數', text:'3.4 × 2 = ?', options:['6.8','0.68','68','3.42'],correct:0,
+   explain:'34 × 2 = 68，一位小數 → 6.8',
+   monster:'demon_ox',name:'牛魔王'},
+  {category:'應用題', text:'每條士多啤梨 0.8 元，買 7 條要幾多錢？', options:['$5.6','$0.56','$56','$7.8'],correct:0,
+   explain:'0.8 × 7 = 5.6（元）',
+   monster:'demon_bone',name:'白骨精'},
+  {category:'應用題', text:'一條繩子長 4.2 米，買 5 條總長度？', options:['$21','21米','2.1米','210米'],correct:1,
+   explain:'4.2 × 5 = 21.0 = 21 米',
+   monster:'demon_ox',name:'牛魔王'},
+  {category:'終極挑戰', text:'0.6 × 9 = ?', options:['5.4','0.54','54','6.9'],correct:0,
+   explain:'6 × 9 = 54，一位小數 → 5.4',
+   monster:'demon_bone',name:'牛魔王（最終 BOSS）'},
 ];
 
-let i = 0, correct = 0, streak = 0;
-const qnum = document.getElementById('qnum'), correctEl = document.getElementById('correct'), streakEl = document.getElementById('streak'), pfill = document.getElementById('pfill'), qlabel = document.getElementById('qlabel'), qtext = document.getElementById('qtext'), opts = document.getElementById('opts'), explain = document.getElementById('explain'), nextBtn = document.getElementById('nextBtn'), finalEl = document.getElementById('final'), qwrap = document.getElementById('qwrap');
+// ============================================================
+// STATE
+// ============================================================
+let state = {currentQ:0, score:0, hp:100, correct:0, startTime:0, answered:false};
 
-function render() {
-  const item = Q[i];
-  qnum.textContent = `${i+1}/${Q.length}`;
-  qlabel.textContent = `第 ${i+1} 題`;
-  qtext.textContent = item.q;
-  pfill.style.width = Math.round((i/Q.length)*100) + '%';
-  opts.innerHTML = '';
-  explain.classList.remove('show');
-  nextBtn.classList.remove('show');
-  // Randomize option order but track correct
-  const idxs = [0,1,2,3].sort(()=> Math.random()-0.5);
-  idxs.forEach(idx => {
-    const b = document.createElement('button');
-    b.className = 'opt';
-    b.textContent = item.opts[idx];
-    b.onclick = ()=> answer(idx, b);
-    opts.appendChild(b);
+// ============================================================
+// SCREEN
+// ============================================================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============================================================
+// START + RESTART
+// ============================================================
+function startGame(){
+  state = {currentQ:0, score:0, hp:100, correct:0, startTime:Date.now(), answered:false};
+  showScreen('battleScreen');
+  bgMusic.start();
+  loadQuestion();
+}
+
+function restartGame(){
+  showScreen('startScreen');
+}
+
+// ============================================================
+// LOAD QUESTION
+// ============================================================
+function loadQuestion(){
+  const q = QUESTIONS[state.currentQ];
+  if(!q){ endGame(); return; }
+  state.answered = false;
+
+  // HUD
+  document.getElementById('score').textContent = state.score + ' 分';
+  document.getElementById('progress').textContent = '第 ' + (state.currentQ+1) + ' / ' + QUESTIONS.length + ' 題';
+  document.getElementById('heroHp').style.width = state.hp + '%';
+  document.getElementById('heroHpText').textContent = state.hp + '/100';
+  document.getElementById('monsterHp').style.width = '100%';
+  document.getElementById('monsterHpText').textContent = '100/100';
+  document.getElementById('monsterName').textContent = q.name + ' HP';
+  document.getElementById('monsterNameLabel').textContent = q.name;
+  document.getElementById('monsterImg').src = 'images/' + q.monster + '.png';
+
+  // Question
+  document.getElementById('qCategory').textContent = q.category;
+  document.getElementById('qText').textContent = q.text;
+
+  // Answers
+  const grid = document.getElementById('answers');
+  grid.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.innerHTML = '<b>'+labels[i]+'.</b> '+opt;
+    btn.onclick = () => answer(i);
+    grid.appendChild(btn);
   });
+
+  // Reset explanation + next
+  document.getElementById('explanation').classList.remove('show');
+  document.getElementById('nextBtn').classList.remove('show');
+
+  // Hero back to default pose
+  document.getElementById('heroImg').src = 'images/monkey_happy.png';
+  document.getElementById('heroFighter').className = 'fighter';
+  document.getElementById('monsterFighter').className = 'fighter';
 }
-function answer(chosen, btn) {
-  const item = Q[i];
-  [...opts.children].forEach(b => b.classList.add('disabled'));
-  if (chosen === item.a) {
-    btn.classList.add('correct');
-    correct++; streak++;
-    explain.innerHTML = `✅ 正確！<br>${item.hint}`;
+
+// ============================================================
+// ANSWER
+// ============================================================
+function answer(idx){
+  if(state.answered) return;
+  state.answered = true;
+  const q = QUESTIONS[state.currentQ];
+  const correct = idx === q.correct;
+  const btns = document.querySelectorAll('.ans-btn');
+  btns.forEach(b => b.disabled = true);
+
+  btns[idx].classList.add(correct ? 'correct' : 'wrong');
+  if(!correct) btns[q.correct].classList.add('correct');
+
+  if(correct){
+    state.score += 10;
+    state.correct += 1;
+    document.getElementById('heroImg').src = 'images/monkey_win.png';
+    document.getElementById('heroFighter').className = 'fighter attack';
+    document.getElementById('monsterFighter').className = 'fighter hit';
+    document.getElementById('monsterHp').style.width = '0%';
+    playTone(880, 0.3);
+    setTimeout(()=>playTone(1320, 0.4), 150);
   } else {
-    btn.classList.add('wrong');
-    streak = 0;
-    // highlight correct
-    [...opts.children].forEach(b => { if (b.textContent === item.opts[item.a]) b.classList.add('correct'); });
-    explain.innerHTML = `❌ 錯咗！正解係 <b>${item.opts[item.a]}</b><br>${item.hint}`;
+    state.hp = Math.max(0, state.hp - 20);
+    document.getElementById('heroImg').src = 'images/monkey_think.png';
+    document.getElementById('heroFighter').className = 'fighter hit';
+    document.getElementById('monsterFighter').className = 'fighter attack';
+    document.getElementById('heroHp').style.width = state.hp + '%';
+    document.getElementById('heroHpText').textContent = state.hp + '/100';
+    playTone(220, 0.4);
   }
-  correctEl.textContent = correct;
-  streakEl.textContent = streak;
-  explain.classList.add('show');
-  nextBtn.classList.add('show');
-  nextBtn.textContent = i === Q.length-1 ? '睇結果 🎉' : '下一題 ▶';
+
+  // Explanation
+  const exp = document.getElementById('explanation');
+  exp.textContent = (correct ? '✅ 答啱！' : '❌ 答錯咗 ') + q.explain;
+  exp.classList.add('show');
+
+  // Next
+  const nb = document.getElementById('nextBtn');
+  nb.classList.add('show');
+  setTimeout(() => nb.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
 }
-function nextQ() {
-  if (i < Q.length-1) { i++; render(); }
-  else { showFinal(); }
+
+function nextQuestion(){
+  state.currentQ += 1;
+  if(state.hp <= 0 || state.currentQ >= QUESTIONS.length){
+    endGame();
+    return;
+  }
+  loadQuestion();
 }
-function showFinal() {
-  qwrap.style.display = 'none';
-  pfill.style.width = '100%';
-  finalEl.classList.add('show');
-  document.getElementById('finalScore').textContent = correct;
-  let msg;
-  if (correct === 10) msg = '🌟 滿分大神！你完全掌握一位小數乘法！';
-  else if (correct >= 8) msg = '💪 好勁！再溫下錯嘅就完美！';
-  else if (correct >= 6) msg = '👍 不錯！記得返去簡報 1 再溫一次。';
-  else msg = '📖 再去睇多次簡報 1，跟住再挑戰呢個遊戲！';
-  document.getElementById('finalMsg').textContent = msg;
+
+// ============================================================
+// END
+// ============================================================
+function endGame(){
+  bgMusic.stop();
+  const elapsed = Math.floor((Date.now()-state.startTime)/1000);
+  const won = state.hp > 0 && state.correct >= 6;
+  bgMusic.play(won ? 'victory' : 'defeat');
+  document.getElementById('endTitle').textContent = won ? '🎉 取經成功！' : '💔 戰敗了...';
+  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_think.png';
+
+  // Coins: 1 coin per 3 correct answers, cap 3
+  const coins = Math.min(3, Math.floor(state.correct/3));
+  ['coin1','coin2','coin3'].forEach((id,i)=>{
+    const el = document.getElementById(id);
+    if(i < coins){ setTimeout(()=>el.classList.add('earned'), 300 + i*200); }
+    else el.classList.remove('earned');
+  });
+
+  document.getElementById('stats').innerHTML =
+    '✅ 答啱：<b>'+state.correct+' / '+QUESTIONS.length+'</b> 題<br>' +
+    '💯 分數：<b>'+state.score+' 分</b><br>' +
+    '⏱️ 時間：<b>'+Math.floor(elapsed/60)+' 分 '+(elapsed%60)+' 秒</b><br>' +
+    '🪙 金幣：<b>'+coins+' / 3 枚</b>';
+
+  // Report to parent (index.html)
   try {
-    const key = `progress_ch${CHAPTER}`;
-    const p = JSON.parse(localStorage.getItem(key)||'{}');
-    p[GAME_KEY] = { done: true, score: correct, total: Q.length, ts: Date.now() };
+    window.parent.postMessage({type:'gameScore',game:'game1',score:state.score,correct:state.correct,total:QUESTIONS.length,coins:coins}, '*');
+  } catch(e){}
+  // Save Ch13 progress to localStorage for ch13/index.html badge
+  try {
+    const key = 'progress_ch13';
+    const p = JSON.parse(localStorage.getItem(key) || '{}');
+    p.game1 = { done: true, score: state.score, correct: state.correct, total: QUESTIONS.length, coins, ts: Date.now() };
     localStorage.setItem(key, JSON.stringify(p));
-  } catch(e) {}
+  } catch(e){}
+
+  showScreen('endScreen');
 }
-render();
+
+// ============================================================
+// BG MUSIC (MP3 files)
+// ============================================================
+const bgMusic = (() => {
+  const tracks = {};
+  let current = null, muted = false;
+
+  function init(){
+    tracks.intro  = document.getElementById('bgmIntro');
+    tracks.battle = document.getElementById('bgmBattle');
+    tracks.victory= document.getElementById('bgmVictory');
+    tracks.defeat = document.getElementById('bgmDefeat');
+    Object.values(tracks).forEach(t => { if(t) t.volume = 0.4; });
+  }
+
+  return {
+    start(){ init(); this.play('battle'); },
+    play(name){
+      if(current){ current.pause(); current.currentTime=0; }
+      current = tracks[name];
+      if(current && !muted) current.play().catch(()=>{});
+    },
+    stop(){ if(current){ current.pause(); current.currentTime=0; current=null; } },
+    toggle(){
+      muted = !muted;
+      if(current){ if(muted) current.pause(); else current.play().catch(()=>{}); }
+      document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
+    }
+  };
+})();
+
+document.getElementById('muteBtn').onclick = () => bgMusic.toggle();
+
+function playTone(freq, dur){
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.frequency.value = freq; o.type='triangle';
+    g.gain.setValueAtTime(0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+dur);
+    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+dur);
+    setTimeout(()=>ctx.close(), (dur+0.1)*1000);
+  } catch(e){}
+}
 </script>
 </body>
 </html>

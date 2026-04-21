@@ -106,8 +106,12 @@ const SLIDE_QUESTIONS = [
   // p10: 進階
   { afterPage:10, type:'mc', q:'簡報練習：2.48 × 5 = ?', options:['12.4','1.24','124','12.40'], correct:0, hint:'248 × 5 = 1240，兩位小數 → 12.40 = 12.4' },
   { afterPage:10, type:'fill', q:'簡報練習：0.75 × 8 = ?', accept:['6','6.0','6.00'], hint:'75 × 8 = 600，兩位小數 → 6.00 = 6' },
-  // p13: 總結
-  { afterPage:13, type:'fill', q:'簡報練習：3.14 × 6 = ?', accept:['18.84'], hint:'314 × 6 = 1884，兩位小數 → 18.84' }
+  // p13: 綜合
+  { afterPage:13, type:'fill', q:'簡報練習：3.14 × 6 = ?', accept:['18.84'], hint:'314 × 6 = 1884，兩位小數 → 18.84' },
+  // p15: 📊 綜合評估題（3 題，全部答啱先完成）
+  { afterPage:15, type:'mc', q:'📊 綜合評估題：3.14 × 8 = ?', options:['25.12','2.512','251.2','25.112'], correct:0, hint:'314 × 8 = 2512，兩位小數 → 25.12' },
+  { afterPage:15, type:'fill', q:'📊 綜合評估題：0.95 × 4 = ?', accept:['3.8','3.80'], hint:'95 × 4 = 380，兩位小數 → 3.80 = 3.8' },
+  { afterPage:15, type:'mc', q:'📊 綜合評估題（應用）：一本簿 $4.25，買 12 本要幾多錢？', options:['$51','$5.1','$510','$25.5'], correct:0, hint:'4.25 × 12 = 51.00 = $51' }
 ];
 let idx = 0;
 const slideQuizAnswered = {}, slideQuizWrong = {};
