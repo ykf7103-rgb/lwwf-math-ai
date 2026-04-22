@@ -21,20 +21,25 @@
   .mode-panel { display: none; }
   .mode-panel.active { display: block; animation: fade 0.3s; }
   @keyframes fade { from{opacity:0} to{opacity:1} }
+
   .slide-wrap { background: white; border-radius: 16px; padding: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
   .slide-stats { display: flex; gap: 8px; margin-bottom: 10px; }
   .stat { flex: 1; padding: 8px; border-radius: 8px; text-align: center; background: #FFF3E0; }
   .stat .label { font-size: 0.7rem; color: #999; }
   .stat .val { font-size: 1.2rem; font-weight: 900; color: #E65100; }
+  .phase-badge { display: inline-block; padding: 4px 12px; border-radius: 14px; font-size: 0.78rem; font-weight: 800; color: white; margin-bottom: 6px; }
+  .phase-badge.question { background: linear-gradient(135deg, #1565C0, #0D47A1); }
+  .phase-badge.answer { background: linear-gradient(135deg, #2E7D32, #1B5E20); }
   .slide-img-wrap { background: #fafafa; border-radius: 12px; padding: 8px; text-align: center; margin-bottom: 12px; }
-  .slide-img { max-width: 100%; max-height: 55vh; border-radius: 8px; display: block; margin: 0 auto; }
+  .slide-img { max-width: 100%; max-height: 60vh; border-radius: 8px; display: block; margin: 0 auto; }
   .slide-progress { height: 6px; background: #E0E0E0; border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
   .slide-progress-fill { height: 100%; background: linear-gradient(90deg, #FF9800, #FFB74D); transition: width 0.3s; width: 0; }
   .slide-q { background: linear-gradient(135deg, #FFF8E1, #FFE0B2); border: 2px solid #FFB300; border-radius: 14px; padding: 14px; }
   .slide-q-num { font-size: 0.78rem; color: #E65100; font-weight: 800; margin-bottom: 4px; }
-  .slide-q-text { font-size: 1.2rem; font-weight: 900; color: #222; margin-bottom: 12px; line-height: 1.5; }
+  .slide-q-text { font-size: 1.1rem; font-weight: 800; color: #222; margin-bottom: 12px; line-height: 1.5; }
   .slide-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .slide-opt { padding: 12px; background: white; border: 2px solid #FFB74D; border-radius: 10px; cursor: pointer; font-weight: 700; color: #333; font-size: 1rem; display: flex; align-items: center; gap: 8px; font-family: inherit; }
+  .slide-opts.three-cols { grid-template-columns: 1fr 1fr 1fr; }
+  .slide-opt { padding: 12px; background: white; border: 2px solid #FFB74D; border-radius: 10px; cursor: pointer; font-weight: 700; color: #333; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; font-family: inherit; text-align: left; }
   .slide-opt .letter { background: #FFF3E0; color: #E65100; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; font-weight: 900; }
   .slide-opt:hover:not(:disabled) { border-color: #FF8F00; background: #FFF3E0; }
   .slide-opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; animation: pop 0.4s; }
@@ -43,25 +48,28 @@
   .slide-opt.wrong .letter { background: #F44336; color: white; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
   @keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
-  .slide-explain { margin-top: 14px; padding: 12px; background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-left: 4px solid #1976D2; border-radius: 8px; display: none; }
-  .slide-explain.show { display: block; animation: fadeIn 0.4s; }
-  @keyframes fadeIn { from{opacity:0; transform:translateY(-5px)} to{opacity:1; transform:translateY(0)} }
-  .slide-explain .title { color: #0D47A1; font-weight: 800; margin-bottom: 6px; }
+  .slide-explain { margin-top: 14px; padding: 12px; border-radius: 8px; }
+  .slide-explain.correct-box { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border-left: 4px solid #4CAF50; }
+  .slide-explain.wrong-box { background: linear-gradient(135deg, #FFEBEE, #FFCDD2); border-left: 4px solid #F44336; }
+  .slide-explain .title { font-weight: 800; margin-bottom: 6px; font-size: 1rem; }
   .slide-explain .body { color: #333; line-height: 1.6; font-size: 0.95rem; }
   .slide-nav { display: flex; gap: 10px; margin-top: 12px; justify-content: space-between; align-items: center; }
   .slide-btn { padding: 10px 18px; border: none; border-radius: 10px; background: linear-gradient(135deg, #1565C0, #0D47A1); color: white; font-weight: 800; cursor: pointer; font-size: 0.95rem; font-family: inherit; }
   .slide-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .slide-btn.next-btn { background: linear-gradient(135deg, #E65100, #BF360C); }
+  .slide-btn.done-btn { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
   .wrongs-note { font-size: 0.8rem; color: #C62828; text-align: center; margin-top: 6px; min-height: 1.1em; }
+
   .stats-row { display: flex; gap: 8px; margin-bottom: 14px; }
   .stats-row .stat { flex: 1; padding: 10px; border-radius: 10px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
   .q-card { background: white; border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 5px solid #FFB300; }
   .q-card.correct-ans { border-left-color: #4CAF50; background: #F1F8E9; }
   .q-card.wrong-ans { border-left-color: #F44336; background: #FFEBEE; }
   .q-num { font-size: 0.78rem; color: #E65100; font-weight: 800; margin-bottom: 4px; }
-  .q-text { font-size: 1.15rem; font-weight: 800; color: #222; margin-bottom: 12px; line-height: 1.5; }
+  .q-text { font-size: 1.05rem; font-weight: 800; color: #222; margin-bottom: 12px; line-height: 1.6; }
   .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .opt { padding: 12px; background: #FAFAFA; border: 2px solid #E0E0E0; border-radius: 10px; cursor: pointer; font-weight: 700; color: #333; font-size: 1rem; display: flex; align-items: center; gap: 8px; font-family: inherit; }
+  .opts.three-cols { grid-template-columns: 1fr 1fr 1fr; }
+  .opt { padding: 12px; background: #FAFAFA; border: 2px solid #E0E0E0; border-radius: 10px; cursor: pointer; font-weight: 700; color: #333; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; font-family: inherit; text-align: left; }
   .opt .letter { background: #FFF3E0; color: #E65100; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
   .opt:hover:not(:disabled) { border-color: #FF9800; background: #FFF3E0; }
   .opt.selected { background: #FFE0B2; border-color: #F57C00; }
@@ -83,7 +91,7 @@
   .lock-box { background: linear-gradient(135deg, #FF5252, #C62828); color: white; padding: 28px 22px; border-radius: 18px; max-width: 420px; text-align: center; }
   .lock-box .big { font-size: 3.5rem; margin-bottom: 6px; }
   .lock-box button { background: white; color: #C62828; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 8px; font-family: inherit; font-size: 1rem; }
-  @media (max-width: 600px) { .slide-opts, .opts { grid-template-columns: 1fr; } .slide-q-text, .q-text { font-size: 1rem; } .slide-opt, .opt { font-size: 0.92rem; padding: 10px; } }
+  @media (max-width: 600px) { .slide-opts, .opts { grid-template-columns: 1fr !important; } .slide-q-text, .q-text { font-size: 1rem; } .slide-opt, .opt { font-size: 0.9rem; padding: 10px; } }
 </style>
 </head>
 <body>
@@ -91,52 +99,63 @@
   <h1>✏️ 第13課 · 評估 3 — 小數 × 小數 + 估算</h1>
   <a href="index.html" class="back">← 返回第13課</a>
 </header>
+
 <div class="wrap">
   <div class="mode-tabs">
     <button class="mode-tab active" data-mode="slides" onclick="switchMode('slides')"><span class="emoji">📊</span> 簡報評估</button>
     <button class="mode-tab" data-mode="list" onclick="switchMode('list')"><span class="emoji">⚡</span> 快速 MC</button>
   </div>
 
+  <!-- ===== MODE A: Slide with Q→A flow ===== -->
   <div class="mode-panel active" id="slidesPanel">
     <div class="slide-wrap">
       <div class="slide-stats">
-        <div class="stat"><div class="label">題目</div><div class="val" id="slideQNum">1 / 12</div></div>
+        <div class="stat"><div class="label">題目</div><div class="val" id="slideQNum">1 / 6</div></div>
         <div class="stat"><div class="label">答對</div><div class="val" id="slideCorrect" style="color:#2E7D32">0</div></div>
         <div class="stat"><div class="label">連錯</div><div class="val" id="slideWrongs" style="color:#C62828">0</div></div>
       </div>
       <div class="slide-progress"><div class="slide-progress-fill" id="slidePfill"></div></div>
-      <div class="slide-img-wrap"><img class="slide-img" id="slideImg" src="pages/assess3_p01.jpg" alt="題目圖片" /></div>
-      <div class="slide-q">
+
+      <div style="text-align:center;margin-bottom:6px;">
+        <span class="phase-badge" id="phaseBadge">📖 題目頁</span>
+      </div>
+
+      <div class="slide-img-wrap"><img class="slide-img" id="slideImg" src="pages/assess1_p01.jpg" alt="題目圖片" /></div>
+
+      <div class="slide-q" id="slideQBox">
         <div class="slide-q-num" id="slideQLabel">第 1 題</div>
         <div class="slide-q-text" id="slideQText"></div>
         <div class="slide-opts" id="slideOpts"></div>
-        <div class="slide-explain" id="slideExplain">
+        <div class="slide-explain" id="slideExplain" style="display:none;">
           <div class="title" id="slideExplainTitle"></div>
           <div class="body" id="slideExplainBody"></div>
         </div>
       </div>
+
       <div class="wrongs-note" id="wrongsNote"></div>
+
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>下一題 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
       </div>
     </div>
   </div>
 
+  <!-- ===== MODE B: List ===== -->
   <div class="mode-panel" id="listPanel">
     <div class="stats-row">
-      <div class="stat"><div class="label">題目</div><div class="val" id="totalStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#E65100">12</div></div>
+      <div class="stat"><div class="label">題目</div><div class="val" id="totalStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#E65100">6</div></div>
       <div class="stat"><div class="label">已答</div><div class="val" id="answeredStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#1565C0">0</div></div>
       <div class="stat"><div class="label">答對</div><div class="val" id="correctStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#2E7D32">0</div></div>
     </div>
     <div id="qList"></div>
-    <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先做晒全部 12 題</button>
+    <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先做晒全部 6 題</button>
   </div>
 
   <div class="final-screen" id="finalScreen">
     <div class="trophy" id="finalTrophy">🏆</div>
     <div>評估 3 完成！</div>
-    <div class="score-big"><span id="finalScore">0</span> / 12</div>
+    <div class="score-big"><span id="finalScore">0</span> / 6</div>
     <p id="finalMsg" style="margin:10px 0;"></p>
     <div>
       <button class="btn" onclick="location.reload()">🔁 再做一次</button>
@@ -157,35 +176,264 @@
 
 <script>
 const CHAPTER = 13, DECK_KEY = 'assess3', IMG_PREFIX = 'assess3';
+
+// === 6 real questions from NLM-generated assessment JPGs (小數 × 小數 + 估算) ===
 const Q = [
-  { q: '0.3 × 0.4 = ?', opts: ['0.12','1.2','0.012','12'], a: 0, hint: '3 × 4 = 12，合共 2 位小數 → 0.12' },
-  { q: '0.5 × 0.6 = ?', opts: ['3','0.3','0.03','30'], a: 1, hint: '5 × 6 = 30，合共 2 位小數 → 0.30 = 0.3' },
-  { q: '0.8 × 0.2 = ?', opts: ['0.16','1.6','0.016','16'], a: 0, hint: '8 × 2 = 16，合共 2 位小數 → 0.16' },
-  { q: '1.2 × 0.5 = ?', opts: ['6','0.6','0.06','60'], a: 1, hint: '12 × 5 = 60，合共 2 位小數 → 0.60 = 0.6' },
-  { q: '估算 6.8 × 3.2 最接近 ?', opts: ['9','21','200','50'], a: 1, hint: '6.8 ≈ 7，3.2 ≈ 3，7 × 3 = 21（實際 21.76）' },
-  { q: '估算 4.9 × 2.1 最接近 ?', opts: ['10','5','25','100'], a: 0, hint: '4.9 ≈ 5，2.1 ≈ 2，5 × 2 = 10（實際 10.29）' },
-  { q: '估算 9.7 × 5.3 最接近 ?', opts: ['50','15','100','500'], a: 0, hint: '9.7 ≈ 10，5.3 ≈ 5，10 × 5 = 50（實際 51.41）' },
-  { q: '估算 7.8 × 4.1 最接近 ?', opts: ['32','20','50','100'], a: 0, hint: '7.8 ≈ 8，4.1 ≈ 4，8 × 4 = 32（實際 31.98）' },
-  { q: '0.25 × 0.4 = ?', opts: ['0.1','1','0.01','10'], a: 0, hint: '25 × 4 = 100，合共 3 位小數 → 0.100 = 0.1' },
-  { q: '估算 11.5 × 2.8 最接近 ?', opts: ['33','20','50','15'], a: 0, hint: '11.5 ≈ 12，2.8 ≈ 3，12 × 3 = 36 或 11 × 3 = 33（實際 32.2）' },
-  { q: '1 公斤豬肉 $28.50，買 2.5 kg 估算 ?', opts: ['約$70','$30','$50','$100'], a: 0, hint: '28.5 ≈ 30，2.5 × 30 = 75（實際 71.25，約 $70）' },
-  { q: '每升汽油 $8.8，買 4.2 升估算 ?', opts: ['約$35','$40','$20','$80'], a: 0, hint: '8.8 ≈ 9，4.2 ≈ 4，9 × 4 = 36（實際 36.96，約 $35）' }
+  {
+    q: '穿越火焰山前，悟空準備了 3 個大水葫蘆，每個葫蘆容量 1.25 升。總容量是多少？',
+    opts: ['37.5 升', '3.75 升', '0.375 升'],
+    a: 1,
+    hint: '1.25 × 3：125 × 3 = 375，兩位小數 → 3.75 升。',
+    pageQ: 1, pageA: 2
+  },
+  {
+    q: '八戒偷拿了 2 顆超輕量仙丹。每顆重 0.03 克。這兩顆仙丹總共多重？',
+    opts: ['0.6 克', '0.006 克', '0.06 克'],
+    a: 2,
+    hint: '0.03 × 2：3 × 2 = 6，兩位小數 → 0.06 克。',
+    pageQ: 3, pageA: 4
+  },
+  {
+    q: '白龍馬每小時可疾行 1.25 里。若連續奔跑 4 小時，牠前進了多遠？答案嘅最「標準」形態係？',
+    opts: ['5.00 里', '5 里', '50 里'],
+    a: 1,
+    hint: '1.25 × 4：125 × 4 = 500，兩位小數 → 5.00。末尾 0 去掉，標準形態係 5 里。',
+    pageQ: 5, pageA: 6
+  },
+  {
+    q: '金箍棒原本長 5 尺，悟空施法將其縮小為原來的 0.15 倍。現在金箍棒長多少尺？',
+    opts: ['7.5 尺', '0.75 尺', '75 尺'],
+    a: 1,
+    hint: '5 × 0.15：5 × 15 = 75，兩位小數 → 0.75 尺。乘以少於 1 嘅數，結果會變細。',
+    pageQ: 7, pageA: 8
+  },
+  {
+    q: '八戒點了 31 籠素包子，每籠 5.05 錢。掌櫃說總共 1565.5 錢。這筆帳合理嗎？',
+    opts: ['合理，掌櫃算得很準', '不合理，答案應該接近 150 錢', '不合理，答案應該接近 1500 錢'],
+    a: 1,
+    hint: '估算：31 ≈ 30，5.05 ≈ 5，30 × 5 = 150。實際 31 × 5.05 = 156.55，接近 150。掌櫃寫 1565.5 係小數點錯位，多咗 10 倍。',
+    pageQ: 9, pageA: 10
+  },
+  {
+    q: '妖怪假扮高僧，獻上一卷經文，上面寫著：「6 卷經書 × 每卷 7.32 兩黃金 = 439.2 兩」。請指出經文的破綻！',
+    opts: ['經文無誤', '錯在估算：6 × 7 = 42，答案應接近 42', '錯在小數點：被乘數有兩位小數，積也應有兩位小數', 'B 和 C 皆是破綻'],
+    a: 3,
+    hint: '估算：6 × 7.32 ≈ 6 × 7 = 42。實際：6 × 732 = 4392，兩位小數 → 43.92。妖怪寫 439.2 小數點位置錯。所以 B（估算錯）同 C（小數點錯）都係破綻，答案 D。',
+    pageQ: 11, pageA: 12
+  }
 ];
+
 function pad2(n){ return String(n).padStart(2,'0'); }
-function switchMode(mode){ document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode)); document.getElementById('slidesPanel').classList.toggle('active',mode==='slides'); document.getElementById('listPanel').classList.toggle('active',mode==='list'); if(mode==='list'&&!listRendered){renderList();listRendered=true;} }
-let slideIdx=0, slideCorrect=0, slideWrongs=0;
-const slideAnswered=new Array(Q.length).fill(null);
-function renderSlide(){const q=Q[slideIdx];const pn=pad2(slideIdx+1);document.getElementById('slideImg').src=`pages/${IMG_PREFIX}_p${pn}.jpg`;document.getElementById('slideQNum').textContent=`${slideIdx+1} / ${Q.length}`;document.getElementById('slideQLabel').textContent=`第 ${slideIdx+1} 題`;document.getElementById('slideQText').textContent=q.q;document.getElementById('slideCorrect').textContent=slideCorrect;document.getElementById('slideWrongs').textContent=slideWrongs;document.getElementById('slidePfill').style.width=Math.round((slideIdx+1)/Q.length*100)+'%';const od=document.getElementById('slideOpts');od.innerHTML='';const ch=slideAnswered[slideIdx];q.opts.forEach((opt,i)=>{const b=document.createElement('button');b.className='slide-opt';b.innerHTML=`<span class="letter">${['A','B','C','D'][i]}</span><span>${opt}</span>`;if(ch!==null){b.disabled=true;if(i===q.a)b.classList.add('correct');else if(i===ch)b.classList.add('wrong');}else{b.onclick=()=>slidePick(i);}od.appendChild(b);});const ex=document.getElementById('slideExplain');if(ch!==null){ex.classList.add('show');const c=ch===q.a;document.getElementById('slideExplainTitle').textContent=c?'✅ 答啱！':`❌ 正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;document.getElementById('slideExplainBody').innerHTML=`💡 ${q.hint}`;}else{ex.classList.remove('show');}document.getElementById('slidePrev').disabled=slideIdx===0;const nb=document.getElementById('slideNext');if(ch===null){nb.disabled=true;nb.textContent='答咗先過 ▶';}else if(slideIdx===Q.length-1){nb.disabled=false;nb.textContent='✓ 睇結果';}else{nb.disabled=false;nb.textContent='下一題 ▶';}document.getElementById('wrongsNote').textContent=slideWrongs>=3?`⚠️ 已連錯 ${slideWrongs} 次（錯 5 次要由頭做）`:'';}
-function slidePick(i){if(slideAnswered[slideIdx]!==null)return;const q=Q[slideIdx];slideAnswered[slideIdx]=i;if(i===q.a){slideCorrect++;slideWrongs=0;}else{slideWrongs++;}renderSlide();if(slideWrongs>=5)setTimeout(()=>document.getElementById('lockModal').classList.add('show'),800);}
-function slidePrev(){if(slideIdx>0){slideIdx--;renderSlide();window.scrollTo({top:0,behavior:'smooth'});}}
-function slideNext(){if(slideIdx<Q.length-1){slideIdx++;renderSlide();window.scrollTo({top:0,behavior:'smooth'});}else{showFinal(slideCorrect);}}
-function resetSlides(){slideIdx=0;slideCorrect=0;slideWrongs=0;slideAnswered.fill(null);document.getElementById('lockModal').classList.remove('show');renderSlide();window.scrollTo({top:0,behavior:'smooth'});}
-let listRendered=false;const selected=new Array(Q.length).fill(-1);let listSubmitted=false;
-function renderList(){const list=document.getElementById('qList');list.innerHTML='';Q.forEach((q,i)=>{const card=document.createElement('div');card.className='q-card';let html=`<div class="q-num">第 ${i+1} 題</div><div class="q-text">${q.q}</div><div class="opts" id="opts${i}">`;q.opts.forEach((opt,oi)=>{html+=`<button class="opt${selected[i]===oi?' selected':''}" onclick="pickList(${i},${oi})"><span class="letter">${['A','B','C','D'][oi]}</span><span>${opt}</span></button>`;});html+=`</div>`;card.innerHTML=html;list.appendChild(card);});updateListStats();}
-function pickList(qIdx,optIdx){if(listSubmitted)return;selected[qIdx]=optIdx;document.querySelectorAll(`#opts${qIdx} .opt`).forEach((b,i)=>b.classList.toggle('selected',i===optIdx));updateListStats();}
-function updateListStats(){const ans=selected.filter(s=>s!==-1).length;document.getElementById('answeredStat').textContent=ans;const btn=document.getElementById('submitBtn');if(ans===Q.length){btn.disabled=false;btn.textContent='✓ 提交答案 (檢查成績)';}else{btn.disabled=true;btn.textContent=`仲有 ${Q.length-ans} 題未做`;}}
-function submitAll(){listSubmitted=true;let correct=0;Q.forEach((q,i)=>{const card=document.getElementById('qList').children[i];const btns=card.querySelectorAll('.opt');btns.forEach((b,oi)=>{b.disabled=true;if(oi===q.a)b.classList.add('correct');else if(selected[i]===oi)b.classList.add('wrong');});if(selected[i]===q.a){correct++;card.classList.add('correct-ans');}else{card.classList.add('wrong-ans');const ex=document.createElement('div');ex.className='explain show';ex.innerHTML=`💡 ${q.hint}`;card.appendChild(ex);}});document.getElementById('correctStat').textContent=correct;document.getElementById('submitBtn').style.display='none';showFinal(correct);}
-function showFinal(correct){const f=document.getElementById('finalScreen');f.classList.add('show');document.getElementById('finalScore').textContent=correct;let m,t;if(correct===12){m='🌟 滿分估算達人！';t='🏆';}else if(correct>=10){m='💪 估算技巧好！';t='🥇';}else if(correct>=7){m='👍 不錯，多練習估算';t='🥈';}else{m='📖 多啲溫習簡報 3，尤其估算';t='📚';}document.getElementById('finalMsg').textContent=m;document.getElementById('finalTrophy').textContent=t;f.scrollIntoView({behavior:'smooth',block:'start'});try{const k=`progress_ch${CHAPTER}`;const p=JSON.parse(localStorage.getItem(k)||'{}');p[DECK_KEY]={done:true,score:correct,total:Q.length,ts:Date.now()};localStorage.setItem(k,JSON.stringify(p));}catch(e){}try{window.parent.postMessage({type:'assessScore',deck:DECK_KEY,correct,total:Q.length},'*');}catch(e){}}
+function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
+
+// ==== Mode A: Slide with Q→A phases ====
+let slideIdx = 0;                           // current question (0-5)
+let slidePhase = 'question';                // 'question' or 'answer'
+let slideCorrect = 0;
+let slideWrongs = 0;
+const slideAnswered = new Array(Q.length).fill(null);  // stores chosen idx
+
+function renderSlide() {
+  const q = Q[slideIdx];
+  const pageNum = slidePhase === 'question' ? q.pageQ : q.pageA;
+  document.getElementById('slideImg').src = `pages/${IMG_PREFIX}_p${pad2(pageNum)}.jpg`;
+  document.getElementById('slideQNum').textContent = `${slideIdx+1} / ${Q.length}`;
+  document.getElementById('slideQLabel').textContent = `第 ${slideIdx+1} 題`;
+  document.getElementById('slideCorrect').textContent = slideCorrect;
+  document.getElementById('slideWrongs').textContent = slideWrongs;
+  document.getElementById('slidePfill').style.width = Math.round((slideIdx + (slidePhase==='answer'?0.5:0) + 0.5) / Q.length * 100) + '%';
+
+  // Phase badge
+  const badge = document.getElementById('phaseBadge');
+  if (slidePhase === 'question') {
+    badge.className = 'phase-badge question'; badge.textContent = '📖 題目頁（讀完再作答）';
+  } else {
+    badge.className = 'phase-badge answer'; badge.textContent = '✅ 答案頁（核對 + 筆記）';
+  }
+
+  // Question text + options
+  document.getElementById('slideQText').textContent = q.q;
+  const optsDiv = document.getElementById('slideOpts');
+  optsDiv.innerHTML = '';
+  // Adapt grid columns: 3-option questions use 3-col layout
+  optsDiv.classList.toggle('three-cols', q.opts.length === 3);
+  const chosen = slideAnswered[slideIdx];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'slide-opt';
+    btn.innerHTML = `<span class="letter">${['A','B','C','D'][i]}</span><span>${opt}</span>`;
+    if (chosen !== null) {
+      btn.disabled = true;
+      if (i === q.a) btn.classList.add('correct');
+      else if (i === chosen) btn.classList.add('wrong');
+    } else {
+      btn.onclick = () => slidePick(i);
+    }
+    optsDiv.appendChild(btn);
+  });
+
+  // Explain box
+  const explain = document.getElementById('slideExplain');
+  if (chosen !== null && slidePhase === 'answer') {
+    explain.style.display = 'block';
+    const correct = chosen === q.a;
+    explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
+  } else {
+    explain.style.display = 'none';
+  }
+
+  // Nav buttons
+  document.getElementById('slidePrev').disabled = slideIdx === 0 && slidePhase === 'question';
+  const nb = document.getElementById('slideNext');
+  nb.className = 'slide-btn next-btn';
+  if (chosen === null) {
+    nb.disabled = true;
+    nb.textContent = '答咗先過 ▶';
+  } else if (slidePhase === 'question') {
+    nb.disabled = false;
+    nb.textContent = '睇答案 ✓';
+  } else if (slideIdx === Q.length - 1) {
+    nb.disabled = false;
+    nb.className = 'slide-btn done-btn';
+    nb.textContent = '🎉 睇結果';
+  } else {
+    nb.disabled = false;
+    nb.textContent = '下一題 ▶';
+  }
+
+  document.getElementById('wrongsNote').textContent = slideWrongs >= 3 ? `⚠️ 已連錯 ${slideWrongs} 次（錯 5 次要由頭做）` : '';
+}
+
+function slidePick(i) {
+  if (slideAnswered[slideIdx] !== null) return;
+  const q = Q[slideIdx];
+  slideAnswered[slideIdx] = i;
+  if (i === q.a) { slideCorrect++; slideWrongs = 0; }
+  else { slideWrongs++; }
+  renderSlide();
+  if (slideWrongs >= 5) setTimeout(() => document.getElementById('lockModal').classList.add('show'), 800);
+}
+
+function slidePrev() {
+  // Go back: from answer → question of same idx; from question → answer of prev idx
+  if (slidePhase === 'answer') { slidePhase = 'question'; renderSlide(); }
+  else if (slideIdx > 0) {
+    slideIdx--;
+    slidePhase = slideAnswered[slideIdx] !== null ? 'answer' : 'question';
+    renderSlide();
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function slideNext() {
+  if (slideAnswered[slideIdx] === null) return;
+  if (slidePhase === 'question') {
+    slidePhase = 'answer';
+    renderSlide();
+    window.scrollTo({top:0, behavior:'smooth'});
+  } else if (slideIdx < Q.length - 1) {
+    slideIdx++;
+    slidePhase = 'question';
+    renderSlide();
+    window.scrollTo({top:0, behavior:'smooth'});
+  } else {
+    showFinal(slideCorrect);
+  }
+}
+
+function resetSlides() {
+  slideIdx = 0; slidePhase = 'question'; slideCorrect = 0; slideWrongs = 0;
+  slideAnswered.fill(null);
+  document.getElementById('lockModal').classList.remove('show');
+  renderSlide();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ==== Mode B: List ====
+let listRendered = false;
+const selected = new Array(Q.length).fill(-1);
+let listSubmitted = false;
+
+function renderList() {
+  const list = document.getElementById('qList');
+  list.innerHTML = '';
+  Q.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    let html = `<div class="q-num">第 ${i+1} 題</div><div class="q-text">${q.q}</div><div class="opts${q.opts.length===3?' three-cols':''}" id="opts${i}">`;
+    q.opts.forEach((opt, oi) => {
+      html += `<button class="opt${selected[i]===oi?' selected':''}" onclick="pickList(${i},${oi})"><span class="letter">${['A','B','C','D'][oi]}</span><span>${opt}</span></button>`;
+    });
+    html += `</div>`;
+    card.innerHTML = html;
+    list.appendChild(card);
+  });
+  updateListStats();
+}
+
+function pickList(qIdx, optIdx) {
+  if (listSubmitted) return;
+  selected[qIdx] = optIdx;
+  document.querySelectorAll(`#opts${qIdx} .opt`).forEach((b, i) => b.classList.toggle('selected', i === optIdx));
+  updateListStats();
+}
+
+function updateListStats() {
+  const ans = selected.filter(s => s !== -1).length;
+  document.getElementById('answeredStat').textContent = ans;
+  const btn = document.getElementById('submitBtn');
+  if (ans === Q.length) { btn.disabled = false; btn.textContent = '✓ 提交答案 (檢查成績)'; }
+  else { btn.disabled = true; btn.textContent = `仲有 ${Q.length - ans} 題未做`; }
+}
+
+function submitAll() {
+  listSubmitted = true;
+  let correct = 0;
+  Q.forEach((q, i) => {
+    const card = document.getElementById('qList').children[i];
+    const btns = card.querySelectorAll('.opt');
+    btns.forEach((b, oi) => {
+      b.disabled = true;
+      if (oi === q.a) b.classList.add('correct');
+      else if (selected[i] === oi) b.classList.add('wrong');
+    });
+    if (selected[i] === q.a) { correct++; card.classList.add('correct-ans'); }
+    else {
+      card.classList.add('wrong-ans');
+      const ex = document.createElement('div');
+      ex.className = 'explain show';
+      ex.innerHTML = `💡 ${q.hint}`;
+      card.appendChild(ex);
+    }
+  });
+  document.getElementById('correctStat').textContent = correct;
+  document.getElementById('submitBtn').style.display = 'none';
+  showFinal(correct);
+}
+
+function showFinal(correct) {
+  const f = document.getElementById('finalScreen');
+  f.classList.add('show');
+  document.getElementById('finalScore').textContent = correct;
+  let m, t;
+  if (correct === Q.length) { m = '🌟 滿分估算達人！小數 × 小數你掌握晒！'; t = '🏆'; }
+  else if (correct >= 5) { m = '💪 估算技巧好！再溫下錯嘅就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，多練習估算同小數點位置'; t = '🥈'; }
+  else { m = '📖 多啲溫習簡報 3，尤其估算技巧'; t = '📚'; }
+  document.getElementById('finalMsg').textContent = m;
+  document.getElementById('finalTrophy').textContent = t;
+  f.scrollIntoView({behavior:'smooth', block:'start'});
+  try {
+    const k = `progress_ch${CHAPTER}`;
+    const p = JSON.parse(localStorage.getItem(k) || '{}');
+    p[DECK_KEY] = { done: true, score: correct, total: Q.length, ts: Date.now() };
+    localStorage.setItem(k, JSON.stringify(p));
+  } catch(e) {}
+  try { window.parent.postMessage({ type:'assessScore', deck: DECK_KEY, correct, total: Q.length }, '*'); } catch(e) {}
+}
+
 renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
