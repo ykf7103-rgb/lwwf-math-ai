@@ -1752,6 +1752,27 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-04-23</span>
+            <ul>
+                <li>🥟 <b>第 14 課小數乘法（二）正式上線！</b>（網站層先上，NLM 素材生成中）</li>
+                <li>🎮 3 款全新玩法（完全唔 copy Ch12/13）：
+                    <ul style="margin-top:4px">
+                        <li>🃏 配對卡 Memory Match · 翻卡配對算式答案</li>
+                        <li>🎈 氣球爆破 Balloon Pop · 60 秒限時篤爆</li>
+                        <li>👨‍🍳 廚神挑戰 Recipe Chef · 顧客落單應用題</li>
+                    </ul>
+                </li>
+                <li>📐 Ch13 遊戲角色放大（學生反映太小）</li>
+                <li>💰 Ch13 + Ch14 每個區域顯示可賺金幣數（最多 32 金幣/課）</li>
+                <li>🔢 Ch13 + Ch14 加「小數工具」tab（iframe embed）</li>
+                <li>📖 Ch13 + Ch14 加「補充教材」tab（影片 / 語音 / 學習卡 / 指南）</li>
+                <li>📊 Ch13 評估改為 Q-A 交替 flow：一題一頁 → 答題 → 答案頁 → 下一題（真正配合 JPG 結構）</li>
+                <li>🔄 Ch12 layout 跟 Ch13 統一（3 區域 × 4 步）</li>
+                <li>📨 回報/許願 feature（Supabase student_feedback table）</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-04-20 (大更新)</span>
             <ul>
                 <li>⚔️ <b>第 13 課遊戲全面升級</b>（同 Ch12 風格一致）：
@@ -3521,7 +3542,7 @@ const AVAILABLE_CHAPTERS = [
     // 單元四：小數乘法
     { num: 12, title: '有趣的乘法',          desc: '×10 / ×100 / ×0.1 / 單位轉換',   status: 'active' },
     { num: 13, title: '小數乘法（一）',       desc: '小數乘整數 · 小數乘小數',         status: 'active' },
-    { num: 14, title: '小數乘法（二）',       desc: '進階小數乘法 · 應用題',           status: 'coming' },
+    { num: 14, title: '小數乘法（二）',       desc: '進階小數乘法 · 應用題',           status: 'active' },
     // 單元五：體積
     { num: 15, title: '體積的認識',          desc: '體積概念 · 立方體數一數',         status: 'coming' },
     { num: 16, title: '體積的量度',          desc: '立方公分 · 立方米 · 單位轉換',     status: 'coming' },
