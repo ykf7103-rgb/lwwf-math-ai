@@ -191,14 +191,45 @@
 
   <!-- 補充教材 -->
   <div class="tab-panel" data-tab="extras">
-    <div class="placeholder-note">
-      🚧 NLM 正在生成教學影片、語音摘要、學習卡、學習指南...<br>
-      <span style="font-size:0.85rem;color:#666;font-weight:400;">生成完成後，老師會 commit 呢啲文件，再 refresh 呢度就會有晒。</span>
+    <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #4CAF50;">
+      <h3 style="margin:0 0 4px;color:#1B5E20;">📖 補充教材</h3>
+      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">睇影片 + 聽語音 + 用學習卡 + Suno 歌。播放即計完成，最多 🪙 5 金幣。</p>
     </div>
+
+    <div class="big-card" style="margin-bottom:16px;">
+      <div class="big-emoji">🎬</div>
+      <div class="big-title" style="color:#C62828;">教學影片 · 天庭點心閣</div>
+      <div class="big-sub">NLM 生成 · 西遊記 / 點心店主題</div>
+      <video controls preload="metadata" style="width:100%;border-radius:12px;background:#000;margin-top:8px;" onplay="markExtra('video')">
+        <source src="video/teaching.mp4" type="video/mp4">
+        您的瀏覽器唔支援影片播放。
+      </video>
+    </div>
+
+    <div class="big-card" style="margin-bottom:16px;">
+      <div class="big-emoji">🎙️</div>
+      <div class="big-title" style="color:#6A1B9A;">語音摘要 · Deep Dive</div>
+      <div class="big-sub">兩位主持傾全課重點 · 粵語</div>
+      <audio controls preload="metadata" style="width:100%;margin-top:8px;" onplay="markExtra('audio')">
+        <source src="audio/summary.mp4" type="audio/mp4">
+        您的瀏覽器唔支援音頻播放。
+      </audio>
+    </div>
+
+    <div class="big-card" style="margin-bottom:16px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
+      <div class="big-emoji">🎵</div>
+      <div class="big-title" style="color:#E65100;">Suno 廣東話溫習歌 × 2</div>
+      <div class="big-sub">由 Suno v5.5 生成 · 邊聽邊記口訣</div>
+      <div style="margin-top:8px;font-size:0.9rem;color:#888;text-align:center;padding:14px;background:rgba(255,255,255,0.6);border-radius:10px;">
+        🕐 兩首歌未生成<br>
+        <span style="font-size:0.82rem;">老師登入 Suno PRO (v5.5) 後可生成並 commit 上 audio/ 資料夾</span>
+      </div>
+    </div>
+
     <div class="big-grid">
-      <div class="big-card" style="opacity:0.55;cursor:not-allowed;"><div class="big-emoji">🎬</div><div class="big-title">教學影片</div><div class="big-sub">8-10 分鐘 · 生成中...</div><div class="big-desc">🕐 NLM 西遊記 / 點心店風格教學影片</div></div>
-      <div class="big-card" style="opacity:0.55;cursor:not-allowed;"><div class="big-emoji">🎙️</div><div class="big-title">語音摘要</div><div class="big-sub">Deep Dive · 生成中...</div><div class="big-desc">🕐 兩位主持傾全課重點</div></div>
-      <div class="big-card" style="opacity:0.55;cursor:not-allowed;"><div class="big-emoji">🎵</div><div class="big-title">Suno 歌</div><div class="big-sub">v5.5 · 登入後生成</div><div class="big-desc">🕐 廣東話溫習歌 ×2</div></div>
+      <a href="flashcards.html" target="_blank" class="big-card" style="border-color:#BBDEFB;"><div class="big-emoji">🃏</div><div class="big-title" style="color:#1565C0;">學習卡</div><div class="big-sub">點擊翻牌記重點</div><div class="big-desc">NLM 自動生成，包括概念、例題、口訣</div></a>
+      <a href="study-guide.md" target="_blank" class="big-card" style="border-color:#FFE0B2;"><div class="big-emoji">📋</div><div class="big-title" style="color:#E65100;">學習指南</div><div class="big-sub">濃縮版本課筆記</div><div class="big-desc">全課精華一頁看盡，考前溫習用</div></a>
+      <a href="bonus-quiz.html" target="_blank" class="big-card" style="border-color:#C8E6C9;"><div class="big-emoji">🎯</div><div class="big-title" style="color:#00897B;">額外測驗</div><div class="big-sub">NLM · 10 題</div><div class="big-desc">Bonus 挑戰題，難度 3 星</div></a>
     </div>
   </div>
 
@@ -260,6 +291,17 @@
     } catch(e) {}
   }
   function resetProgress() { if (!confirm('確定要清除第 14 課嘅學習進度？')) return; localStorage.removeItem('progress_ch14'); location.reload(); }
+  function markExtra(type) {
+    try {
+      const k = 'progress_ch14';
+      const p = JSON.parse(localStorage.getItem(k) || '{}');
+      p.extras = p.extras || { done: false, items: {} };
+      p.extras.items[type] = true;
+      const n = Object.keys(p.extras.items).length;
+      if (n >= 2) { p.extras.done = true; p.extras.coins = Math.min(5, n + 2); }
+      localStorage.setItem(k, JSON.stringify(p));
+    } catch(e) {}
+  }
   const initialTab = (location.hash || '').replace('#', '') || 'study';
   if (['study','quiz','games','tool','extras','ai','scores'].includes(initialTab)) switchTab(initialTab);
   renderProgress();
