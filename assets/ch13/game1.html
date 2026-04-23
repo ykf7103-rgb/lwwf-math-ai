@@ -30,7 +30,7 @@ body{
 }
 #startScreen h2{font-size:clamp(16px,3vw,24px);color:#f5c76a;margin-bottom:24px}
 #startScreen .hero{
-  width:min(200px,40vw);height:auto;margin:20px 0;
+  width:min(320px,60vw);height:auto;margin:20px 0;
   filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6));
   animation:float 3s ease-in-out infinite;
 }
@@ -69,13 +69,13 @@ body{
 
 /* Fighters */
 .arena{
-  width:100%;max-width:900px;height:min(180px,25vh);
+  width:100%;max-width:900px;height:min(260px,32vh);
   display:flex;justify-content:space-around;align-items:flex-end;
   position:relative;padding:0 20px;margin-bottom:12px;
 }
 .fighter{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
 .fighter-img{
-  width:clamp(90px,16vw,140px);height:auto;
+  width:clamp(140px,24vw,220px);height:auto;
   filter:drop-shadow(0 8px 16px rgba(0,0,0,0.7));
   transition:transform 0.3s;
 }
@@ -149,7 +149,7 @@ body{
   font-family:'Noto Serif TC',serif;font-size:clamp(28px,5.5vw,48px);
   color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;
 }
-#endScreen .end-character{width:min(140px,28vw);margin:8px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
+#endScreen .end-character{width:min(220px,45vw);margin:8px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
 .coins-row{display:flex;gap:12px;justify-content:center;margin:10px 0}
 .coin-img{width:clamp(40px,8vw,60px);height:clamp(40px,8vw,60px);opacity:0.3;transition:all 0.6s}
 .coin-img.earned{opacity:1;filter:drop-shadow(0 0 16px #FFD700);animation:coinPop 0.6s ease}
