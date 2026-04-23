@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第14課 小數乘法（二）— 學習入口</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 16px; background: linear-gradient(135deg, #FFE0B2 0%, #FFCCBC 40%, #FFAB91 100%); min-height: 100vh; color: #333; position: relative; }
+  body::before { content: ''; position: absolute; inset: 0; background-image: url('../common/images/school_bg.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; opacity: 0.2; z-index: -1; pointer-events: none; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 12px; }
+  h1 { color: #BF360C; font-size: 1.6rem; text-align: center; margin: 8px 0; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 14px; font-size: 0.9rem; }
+  .back { display: inline-block; margin-bottom: 12px; padding: 8px 16px; background: rgba(255,255,255,0.9); color: #BF360C; border-radius: 10px; text-decoration: none; font-weight: 700; border: 2px solid #BF360C; }
+  .back:hover { background: #BF360C; color: white; }
+
+  .tab-bar { background: white; border-radius: 16px; padding: 6px; display: flex; gap: 4px; overflow-x: auto; box-shadow: 0 4px 14px rgba(0,0,0,0.08); margin-bottom: 18px; scrollbar-width: thin; }
+  .tab-btn { flex: 1; min-width: 85px; padding: 10px 8px; border: none; border-radius: 10px; background: transparent; color: #666; font-weight: 800; cursor: pointer; font-size: 0.88rem; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.15s; white-space: nowrap; font-family: inherit; }
+  .tab-btn:hover { background: #FFF3E0; color: #BF360C; }
+  .tab-btn.active { background: linear-gradient(135deg, #E64A19, #BF360C); color: white; box-shadow: 0 2px 6px rgba(191,54,12,0.3); }
+  .tab-btn .tab-emoji { font-size: 1.3rem; }
+  .tab-btn .tab-label { font-size: 0.78rem; }
+  @media (max-width: 500px) { .tab-btn .tab-label { font-size: 0.7rem; } .tab-btn { padding: 8px 4px; min-width: 68px; } .tab-btn .tab-emoji { font-size: 1.1rem; } }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
+
+  .lo-box { background: linear-gradient(135deg, #FFCCBC, #FFAB91); border-left: 5px solid #BF360C; padding: 14px 18px; border-radius: 12px; margin-bottom: 18px; }
+  .lo-box h3 { margin: 0 0 8px; color: #BF360C; font-size: 1.1rem; }
+  .lo-box ul { margin: 4px 0; padding-left: 20px; line-height: 1.7; font-size: 0.9rem; }
+
+  .section { background: white; border-radius: 18px; padding: 16px 14px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); border: 2px solid #FFCCBC; }
+  .section-title { font-size: 1.1rem; font-weight: 900; padding: 8px 14px; border-radius: 10px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; color: white; }
+  .section-title .num { background: white; color: #333; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; flex-shrink: 0; }
+  .section.s1 { border-color: #FFCC80; }
+  .section.s1 .section-title { background: linear-gradient(135deg, #FB8C00, #EF6C00); }
+  .section.s1 .section-title .num { color: #EF6C00; }
+  .section.s2 { border-color: #F8BBD0; }
+  .section.s2 .section-title { background: linear-gradient(135deg, #E91E63, #C2185B); }
+  .section.s2 .section-title .num { color: #C2185B; }
+  .section.s3 { border-color: #B39DDB; }
+  .section.s3 .section-title { background: linear-gradient(135deg, #673AB7, #4527A0); }
+  .section.s3 .section-title .num { color: #4527A0; }
+
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .card { background: white; border: 2px solid #E0E7EE; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #333; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; text-align: center; min-height: 120px; position: relative; justify-content: center; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+  .card .step { position: absolute; top: 6px; left: 6px; background: #f0f0f0; color: #888; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
+  .card .arrow { position: absolute; top: 50%; right: -12px; transform: translateY(-50%); color: #BDBDBD; font-size: 1.3rem; z-index: 2; pointer-events: none; }
+  .card:last-child .arrow { display: none; }
+  .card-emoji { font-size: 1.8rem; }
+  .card-title { font-size: 0.88rem; font-weight: 800; line-height: 1.3; }
+  .card-desc { font-size: 0.72rem; color: #666; line-height: 1.3; }
+  .card.slides { border-color: #FFCC80; } .card.slides .card-title { color: #EF6C00; }
+  .card.prelearn { border-color: #F8BBD0; } .card.prelearn .card-title { color: #C2185B; }
+  .card.assess { border-color: #FFE0B2; } .card.assess .card-title { color: #E65100; }
+  .card.game { border-color: #B39DDB; } .card.game .card-title { color: #4527A0; }
+  .card .done-badge { position: absolute; top: 6px; right: 6px; background: #4CAF50; color: white; font-size: 0.62rem; padding: 2px 6px; border-radius: 8px; font-weight: 800; display: none; }
+  .card.done .done-badge { display: inline-block; }
+  .card.done { background: linear-gradient(135deg, #F1F8E9, white); }
+
+  .big-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .big-card { background: white; border: 2px solid #E0E7EE; border-radius: 16px; padding: 20px 16px; text-decoration: none; color: #333; transition: all 0.2s; position: relative; cursor: pointer; display: flex; flex-direction: column; gap: 8px; }
+  .big-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .big-card .big-emoji { font-size: 3rem; text-align: center; }
+  .big-card .big-title { font-size: 1.1rem; font-weight: 900; color: #E65100; text-align: center; }
+  .big-card .big-sub { font-size: 0.8rem; color: #666; text-align: center; }
+  .big-card .big-desc { font-size: 0.85rem; color: #555; line-height: 1.5; padding: 8px 10px; background: #FFF8E1; border-radius: 8px; border-left: 3px solid #FFB300; }
+
+  .ai-panel { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border: 2px solid #FFB300; border-radius: 18px; padding: 26px; text-align: center; }
+  .ai-panel h3 { color: #E65100; font-size: 1.3rem; margin-bottom: 10px; }
+  .ai-big-btn { display: inline-block; background: linear-gradient(135deg, #E65100, #F57C00); color: white; padding: 14px 36px; border-radius: 14px; text-decoration: none; font-weight: 900; font-size: 1.1rem; box-shadow: 0 6px 16px rgba(230,81,0,0.3); }
+
+  .scores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .score-cell { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #BDBDBD; }
+  .score-cell.done { border-left-color: #4CAF50; background: linear-gradient(135deg, #F1F8E9, white); }
+  .score-cell .sc-name { font-size: 0.9rem; font-weight: 800; color: #333; margin-bottom: 4px; }
+  .score-cell .sc-val { font-size: 1.2rem; font-weight: 900; color: #E65100; }
+  .scores-summary { background: linear-gradient(135deg, #FFCCBC, #FFAB91); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 16px; }
+  .scores-summary .summary-big { font-size: 2.5rem; font-weight: 900; color: #BF360C; }
+
+  .placeholder-note { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); border: 2px dashed #FF9800; border-radius: 12px; padding: 16px; text-align: center; color: #BF360C; font-weight: 700; margin-bottom: 14px; }
+
+  .reset-btn { display: block; margin: 24px auto 0; background: transparent; color: #999; border: 1px dashed #BBB; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-family: inherit; }
+  .reset-btn:hover { color: #BF360C; border-color: #BF360C; }
+
+  @media (max-width: 700px) { h1 { font-size: 1.35rem; } .flow { grid-template-columns: repeat(2, 1fr); gap: 8px; } .card { padding: 10px 6px; min-height: 100px; } .card .arrow { display: none !important; } .card-emoji { font-size: 1.5rem; } .card-title { font-size: 0.82rem; } .card-desc { font-size: 0.68rem; } .big-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="../../index.html" class="back">← 返回主頁</a>
+  <h1>🥟 第 14 課 小數乘法（二）</h1>
+  <p class="subtitle">小數 × 小數、取近似值、應用題 · 點心店主題</p>
+
+  <div class="tab-bar" role="tablist">
+    <button class="tab-btn active" data-tab="study" onclick="switchTab('study')"><span class="tab-emoji">📚</span><span class="tab-label">自學區</span></button>
+    <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')"><span class="tab-emoji">📝</span><span class="tab-label">測驗區</span></button>
+    <button class="tab-btn" data-tab="games" onclick="switchTab('games')"><span class="tab-emoji">🎮</span><span class="tab-label">遊戲區</span></button>
+    <button class="tab-btn" data-tab="tool" onclick="switchTab('tool')"><span class="tab-emoji">🔢</span><span class="tab-label">小數工具</span></button>
+    <button class="tab-btn" data-tab="extras" onclick="switchTab('extras')"><span class="tab-emoji">📖</span><span class="tab-label">補充教材</span></button>
+    <button class="tab-btn" data-tab="ai" onclick="switchTab('ai')"><span class="tab-emoji">🤖</span><span class="tab-label">AI問功課</span></button>
+    <button class="tab-btn" data-tab="scores" onclick="switchTab('scores')"><span class="tab-emoji">🏆</span><span class="tab-label">我的成績</span></button>
+  </div>
+
+  <!-- 自學區 -->
+  <div class="tab-panel active" data-tab="study">
+    <div class="lo-box">
+      <h3>🎯 本課學習目標</h3>
+      <ul>
+        <li>掌握 <b>一位小數 × 一位小數</b>（例：0.2 × 0.8 = 0.16）</li>
+        <li>掌握 <b>兩位小數 × 一位小數</b>（例：0.7 × 28.1 = 19.67）</li>
+        <li>掌握 <b>兩位小數 × 兩位小數</b>（例：12.5 × 6.4 = 80）</li>
+        <li>學會用 <b>≈</b> 取近似值至十分位 / 百分位</li>
+        <li>解 <b>小數乘法應用題</b>（面積、單價、分量）</li>
+      </ul>
+      <div style="margin-top:10px;padding:8px 12px;background:#FFF8E1;border-left:4px solid #FFB300;border-radius:6px;font-size:0.88rem;color:#555;">
+        💰 <b>完成所有區域，最多可賺 32 枚金幣</b><br>
+        <span style="font-size:0.82rem;color:#888;">簡報 2×3=6 · 預習 2×3=6 · 評估 2×3=6 · 遊戲 3×3=9 · 補充 +5</span>
+      </div>
+    </div>
+
+    <div class="section s1">
+      <div class="section-title"><span class="num">1</span>第一節 · 一位小數 × 一位小數</div>
+      <div class="flow">
+        <a href="slides1.html" class="card slides" data-key="slides1"><div class="step">STEP 1</div><span class="done-badge">✓</span><div class="card-emoji">🥟</div><div class="card-title">簡報 1</div><div class="card-desc">點心店情境 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="prelearn1.html" class="card prelearn" data-key="prelearn1"><div class="step">STEP 2</div><span class="done-badge">✓</span><div class="card-emoji">📝</div><div class="card-title">預習 1</div><div class="card-desc">MC + 填充 + 🎤 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="assess1.html" class="card assess" data-key="assess1"><div class="step">STEP 3</div><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 1</div><div class="card-desc">6 題 · 題+答 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="game1.html" class="card game" data-key="game1"><div class="step">STEP 4</div><span class="done-badge">✓</span><div class="card-emoji">🃏</div><div class="card-title">配對卡</div><div class="card-desc">Memory Match · 🪙3</div></a>
+      </div>
+    </div>
+
+    <div class="section s2">
+      <div class="section-title"><span class="num">2</span>第二節 · 兩位小數 × 一位小數</div>
+      <div class="flow">
+        <a href="slides2.html" class="card slides" data-key="slides2"><div class="step">STEP 1</div><span class="done-badge">✓</span><div class="card-emoji">🍰</div><div class="card-title">簡報 2</div><div class="card-desc">蛋糕單價計算 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="prelearn2.html" class="card prelearn" data-key="prelearn2"><div class="step">STEP 2</div><span class="done-badge">✓</span><div class="card-emoji">📝</div><div class="card-title">預習 2</div><div class="card-desc">MC + 填充 + 🎤 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="assess2.html" class="card assess" data-key="assess2"><div class="step">STEP 3</div><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 2</div><div class="card-desc">6 題 · 題+答 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="game2.html" class="card game" data-key="game2"><div class="step">STEP 4</div><span class="done-badge">✓</span><div class="card-emoji">🎈</div><div class="card-title">氣球爆破</div><div class="card-desc">Balloon Pop · 🪙3</div></a>
+      </div>
+    </div>
+
+    <div class="section s3">
+      <div class="section-title"><span class="num">3</span>第三節 · 兩位小數 × 兩位小數 + 應用題</div>
+      <div class="flow">
+        <a href="slides3.html" class="card slides" data-key="slides3"><div class="step">STEP 1</div><span class="done-badge">✓</span><div class="card-emoji">🥮</div><div class="card-title">簡報 3</div><div class="card-desc">面積 + 估算 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="prelearn3.html" class="card prelearn" data-key="prelearn3"><div class="step">STEP 2</div><span class="done-badge">✓</span><div class="card-emoji">📝</div><div class="card-title">預習 3</div><div class="card-desc">MC + 填充 + 🎤 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="assess3.html" class="card assess" data-key="assess3"><div class="step">STEP 3</div><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 3</div><div class="card-desc">6 題 · 題+答 · 🪙2</div><span class="arrow">▶</span></a>
+        <a href="game3.html" class="card game" data-key="game3"><div class="step">STEP 4</div><span class="done-badge">✓</span><div class="card-emoji">👨‍🍳</div><div class="card-title">廚神挑戰</div><div class="card-desc">Recipe Chef · 🪙3</div></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 測驗區 -->
+  <div class="tab-panel" data-tab="quiz">
+    <div style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #FF9800;">
+      <h3 style="margin:0 0 4px;color:#BF360C;">📝 測驗區 · 3 個評估</h3>
+      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">每個評估有 2 個模式（📊 簡報評估同 ⚡ 快速 MC）。做晒 3 個評估共 18 題，最多賺 🪙 6 枚金幣。</p>
+    </div>
+    <div class="big-grid">
+      <a href="assess1.html" class="big-card"><div class="big-emoji">✏️</div><div class="big-title">評估 1</div><div class="big-sub">一位 × 一位小數</div><div class="big-desc">6 題情境 MC · 點心店主題</div></a>
+      <a href="assess2.html" class="big-card"><div class="big-emoji">✏️</div><div class="big-title">評估 2</div><div class="big-sub">兩位 × 一位小數</div><div class="big-desc">6 題單價情境 MC · 估算 + 精確計算</div></a>
+      <a href="assess3.html" class="big-card"><div class="big-emoji">✏️</div><div class="big-title">評估 3</div><div class="big-sub">兩位 × 兩位 + 應用</div><div class="big-desc">6 題面積 + 生活應用題</div></a>
+    </div>
+  </div>
+
+  <!-- 遊戲區 -->
+  <div class="tab-panel" data-tab="games">
+    <div style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #673AB7;">
+      <h3 style="margin:0 0 4px;color:#4527A0;">🎮 遊戲區 · 3 款全新玩法（同 Ch12/13 完全唔同！）</h3>
+      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">配對卡 + 氣球爆破 + 廚神挑戰。每場最多 🪙 3 枚金幣。</p>
+    </div>
+    <div class="big-grid">
+      <a href="game1.html" class="big-card" style="border-color:#FFCC80;"><div class="big-emoji">🃏</div><div class="big-title" style="color:#EF6C00;">遊戲 1 · 配對卡</div><div class="big-sub">Memory Match · 10 對</div><div class="big-desc">翻卡配對算式同答案 · 考記憶力 + 快速口算</div></a>
+      <a href="game2.html" class="big-card" style="border-color:#F8BBD0;"><div class="big-emoji">🎈</div><div class="big-title" style="color:#C2185B;">遊戲 2 · 氣球爆破</div><div class="big-sub">Balloon Pop · 60 秒</div><div class="big-desc">氣球浮上屏幕 · 篤爆啱答案嘅氣球 · 越快越多分</div></a>
+      <a href="game3.html" class="big-card" style="border-color:#B39DDB;"><div class="big-emoji">👨‍🍳</div><div class="big-title" style="color:#4527A0;">遊戲 3 · 廚神挑戰</div><div class="big-sub">Recipe Chef · 10 單</div><div class="big-desc">顧客落單 · 你計錢 + 配料 · 限時結帳 · 應用題情境</div></a>
+    </div>
+  </div>
+
+  <!-- 小數工具 -->
+  <div class="tab-panel" data-tab="tool">
+    <div style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #7B1FA2;">
+      <h3 style="margin:0 0 4px;color:#4A148C;">🔢 小數點移動工具</h3>
+      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">拖小數點練習 × 10/100/1000 / × 0.1/0.01/0.001。用於驗證第 14 課嘅小數乘法位數規律。</p>
+    </div>
+    <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+      <iframe src="../../tools/decimal-shift.html" style="width:100%;height:78vh;min-height:540px;border:none;display:block;" title="小數點工具"></iframe>
+    </div>
+  </div>
+
+  <!-- 補充教材 -->
+  <div class="tab-panel" data-tab="extras">
+    <div class="placeholder-note">
+      🚧 NLM 正在生成教學影片、語音摘要、學習卡、學習指南...<br>
+      <span style="font-size:0.85rem;color:#666;font-weight:400;">生成完成後，老師會 commit 呢啲文件，再 refresh 呢度就會有晒。</span>
+    </div>
+    <div class="big-grid">
+      <div class="big-card" style="opacity:0.55;cursor:not-allowed;"><div class="big-emoji">🎬</div><div class="big-title">教學影片</div><div class="big-sub">8-10 分鐘 · 生成中...</div><div class="big-desc">🕐 NLM 西遊記 / 點心店風格教學影片</div></div>
+      <div class="big-card" style="opacity:0.55;cursor:not-allowed;"><div class="big-emoji">🎙️</div><div class="big-title">語音摘要</div><div class="big-sub">Deep Dive · 生成中...</div><div class="big-desc">🕐 兩位主持傾全課重點</div></div>
+      <div class="big-card" style="opacity:0.55;cursor:not-allowed;"><div class="big-emoji">🎵</div><div class="big-title">Suno 歌</div><div class="big-sub">v5.5 · 登入後生成</div><div class="big-desc">🕐 廣東話溫習歌 ×2</div></div>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="tab-panel" data-tab="ai">
+    <div class="ai-panel">
+      <div style="font-size:4rem;margin-bottom:8px;">🤖</div>
+      <h3>AI 數學小老師</h3>
+      <p>唔識做功課？可以拍低題目上傳 / 打字問 / 錄音問 AI！<br>AI 唔會直接畀答案，會引導你一步步諗出嚟 💪</p>
+      <a href="ai-help.html" class="ai-big-btn">💬 開 AI 助教</a>
+    </div>
+  </div>
+
+  <!-- 成績 -->
+  <div class="tab-panel" data-tab="scores">
+    <div class="scores-summary">
+      <div>完成度</div>
+      <div class="summary-big"><span id="summaryDone">0</span> / 12</div>
+      <div style="color:#555;font-size:0.9rem;margin-top:4px;">（簡報 3 + 預習 3 + 評估 3 + 遊戲 3）</div>
+    </div>
+    <div class="scores-grid" id="scoresGrid"></div>
+    <button class="reset-btn" onclick="resetProgress()">🗑 重設本課進度</button>
+  </div>
+</div>
+
+<script>
+  const STEP_KEYS = [
+    { k: 'slides1', n: '簡報 1', emoji: '🥟' }, { k: 'prelearn1', n: '預習 1', emoji: '📝' },
+    { k: 'assess1', n: '評估 1', emoji: '✏️' }, { k: 'game1', n: '配對卡', emoji: '🃏' },
+    { k: 'slides2', n: '簡報 2', emoji: '🍰' }, { k: 'prelearn2', n: '預習 2', emoji: '📝' },
+    { k: 'assess2', n: '評估 2', emoji: '✏️' }, { k: 'game2', n: '氣球爆破', emoji: '🎈' },
+    { k: 'slides3', n: '簡報 3', emoji: '🥮' }, { k: 'prelearn3', n: '預習 3', emoji: '📝' },
+    { k: 'assess3', n: '評估 3', emoji: '✏️' }, { k: 'game3', n: '廚神挑戰', emoji: '👨‍🍳' },
+  ];
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.tab === tab));
+    if (tab === 'scores') renderScores();
+    try { history.replaceState(null, '', '#' + tab); } catch(e) {}
+  }
+  function renderProgress() {
+    try {
+      const p = JSON.parse(localStorage.getItem('progress_ch14') || '{}');
+      document.querySelectorAll('[data-key]').forEach(el => { const k = el.dataset.key; if (p[k]?.done) el.classList.add('done'); });
+    } catch(e) {}
+  }
+  function renderScores() {
+    try {
+      const p = JSON.parse(localStorage.getItem('progress_ch14') || '{}');
+      let doneCount = 0, html = '';
+      STEP_KEYS.forEach(s => {
+        const data = p[s.k];
+        if (data?.done) doneCount++;
+        const val = data?.done ? (data.score !== undefined ? `${data.score}/${data.total || '—'}` : '✓ 完成') : '未做';
+        html += `<div class="score-cell${data?.done?' done':''}"><div class="sc-name">${s.emoji} ${s.n}</div><div class="sc-val" style="${data?.done?'':'color:#999;font-size:0.95rem;'}">${val}</div></div>`;
+      });
+      document.getElementById('summaryDone').textContent = doneCount;
+      document.getElementById('scoresGrid').innerHTML = html;
+    } catch(e) {}
+  }
+  function resetProgress() { if (!confirm('確定要清除第 14 課嘅學習進度？')) return; localStorage.removeItem('progress_ch14'); location.reload(); }
+  const initialTab = (location.hash || '').replace('#', '') || 'study';
+  if (['study','quiz','games','tool','extras','ai','scores'].includes(initialTab)) switchTab(initialTab);
+  renderProgress();
+</script>
+<script src="../common/feedback.js"></script>
+</body>
+</html>

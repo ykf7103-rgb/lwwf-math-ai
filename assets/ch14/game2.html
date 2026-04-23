@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>第14課 · 遊戲 2 — 氣球爆破 Balloon Pop</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; }
+  body { background: linear-gradient(to bottom, #E3F2FD 0%, #BBDEFB 40%, #90CAF9 100%); color: #333; position: relative; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4), transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3), transparent 40%); pointer-events: none; }
+  header { background: linear-gradient(135deg, #E91E63, #C2185B); color: white; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+  header h1 { font-size: 0.95rem; font-weight: 800; }
+  header .back { background: rgba(255,255,255,0.2); color: white; padding: 5px 10px; border-radius: 8px; text-decoration: none; font-size: 0.78rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
+
+  .arena { position: absolute; inset: 56px 0 0 0; overflow: hidden; }
+  .hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 8px; justify-content: space-around; z-index: 10; }
+  .hud-item { background: rgba(255,255,255,0.92); padding: 6px 14px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  .hud-item .val { color: #C2185B; font-size: 1.1rem; }
+  .hud-item.time .val { color: #D84315; }
+  .hud-item.score .val { color: #2E7D32; }
+
+  .target-q { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #FFF59D, #FFE082); border: 3px solid #FFA000; padding: 10px 22px; border-radius: 20px; font-weight: 900; font-size: 1.3rem; color: #BF360C; box-shadow: 0 4px 14px rgba(0,0,0,0.15); z-index: 10; }
+
+  .balloon { position: absolute; bottom: -100px; width: 80px; animation: floatUp linear forwards; cursor: pointer; transition: transform 0.15s; z-index: 5; }
+  .balloon:hover { transform: scale(1.1); }
+  .balloon .body { width: 80px; height: 100px; border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); box-shadow: inset -8px -10px 20px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.25); position: relative; }
+  .balloon .body::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; }
+  .balloon .string { position: absolute; top: 100%; left: 50%; width: 2px; height: 40px; background: #666; transform: translateX(-50%); }
+  .balloon.red .body { background: radial-gradient(circle at 30% 30%, #FF8A80, #D32F2F); }
+  .balloon.red .body::after { border-top: 12px solid #D32F2F; }
+  .balloon.blue .body { background: radial-gradient(circle at 30% 30%, #82B1FF, #1976D2); }
+  .balloon.blue .body::after { border-top: 12px solid #1976D2; }
+  .balloon.green .body { background: radial-gradient(circle at 30% 30%, #B9F6CA, #388E3C); }
+  .balloon.green .body::after { border-top: 12px solid #388E3C; }
+  .balloon.purple .body { background: radial-gradient(circle at 30% 30%, #E1BEE7, #7B1FA2); }
+  .balloon.purple .body::after { border-top: 12px solid #7B1FA2; }
+  .balloon.yellow .body { background: radial-gradient(circle at 30% 30%, #FFF59D, #FBC02D); color: #333; }
+  .balloon.yellow .body::after { border-top: 12px solid #FBC02D; }
+  @keyframes floatUp { from { transform: translateY(0); } to { transform: translateY(-110vh); } }
+  @keyframes pop { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(1.8); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
+  .balloon.popping { animation: pop 0.3s forwards; pointer-events: none; }
+  .balloon.wrong-pop { animation: wrongShake 0.4s, pop 0.4s 0.3s forwards; }
+  @keyframes wrongShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  .score-float { position: absolute; font-size: 1.8rem; font-weight: 900; pointer-events: none; animation: scorePop 0.8s forwards; z-index: 20; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+  @keyframes scorePop { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(1.5); } }
+
+  #introScreen, #endScreen { position: absolute; inset: 56px 0 0 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.95); z-index: 50; padding: 20px; }
+  #endScreen { display: none; }
+  .modal-box { background: white; border-radius: 20px; padding: 30px 24px; max-width: 450px; width: 100%; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+  .modal-box h2 { color: #C2185B; margin-bottom: 12px; font-size: 1.5rem; }
+  .modal-box p { color: #555; line-height: 1.7; margin: 10px 0; font-size: 0.95rem; }
+  .btn-big { background: linear-gradient(135deg, #E91E63, #C2185B); color: white; border: none; padding: 14px 36px; border-radius: 30px; font-size: 1.1rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 16px rgba(194,24,91,0.4); font-family: inherit; margin-top: 10px; }
+  .end-trophy { font-size: 5rem; }
+  .end-stats { display: flex; gap: 8px; justify-content: center; margin: 14px 0; flex-wrap: wrap; }
+  .end-stat { background: #F5F5F5; padding: 10px 16px; border-radius: 12px; }
+  .end-stat .l { font-size: 0.72rem; color: #999; } .end-stat .v { font-size: 1.3rem; font-weight: 900; color: #C2185B; }
+  .end-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .end-btns a, .end-btns button { background: #E91E63; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; text-decoration: none; cursor: pointer; font-family: inherit; font-size: 0.95rem; }
+  .end-btns a.outline, .end-btns button.outline { background: white; color: #C2185B; border: 2px solid #C2185B; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎈 第14課 · 氣球爆破</h1>
+  <a href="index.html" class="back">← 返第14課</a>
+</header>
+
+<div class="arena">
+  <div class="hud">
+    <div class="hud-item score">分數 <span class="val" id="scoreVal">0</span></div>
+    <div class="hud-item">篤中 <span class="val" id="hitsVal">0</span>/<span id="targetHits">10</span></div>
+    <div class="hud-item time">時間 <span class="val" id="timeVal">60</span>s</div>
+  </div>
+
+  <div class="target-q" id="targetQ">準備中...</div>
+</div>
+
+<!-- Intro -->
+<div id="introScreen">
+  <div class="modal-box">
+    <div style="font-size:4rem;">🎈</div>
+    <h2>氣球爆破挑戰</h2>
+    <p><b>60 秒內</b>篤爆 10 個正確答案嘅氣球！</p>
+    <p style="background:#FFF8E1;padding:10px;border-radius:8px;border-left:4px solid #FFB300;font-size:0.9rem;text-align:left;">
+      📖 <b>玩法</b>：<br>
+      • 上面顯示算式（如 2.35 × 4）<br>
+      • 屏幕飄住幾個答案氣球<br>
+      • 篤爆<b>啱答案</b>嘅氣球 +10 分 ✅<br>
+      • 篤錯 -5 分 ❌<br>
+      • 每爆一個氣球自動出下一條題<br>
+      • 篤 10 個啱 / 時間到 → 結算
+    </p>
+    <button class="btn-big" onclick="startGame()">開始挑戰 🚀</button>
+  </div>
+</div>
+
+<!-- End -->
+<div id="endScreen">
+  <div class="modal-box">
+    <div class="end-trophy" id="endTrophy">🏆</div>
+    <h2 id="endTitle">時間到！</h2>
+    <p id="endMsg"></p>
+    <div class="end-stats">
+      <div class="end-stat"><div class="l">分數</div><div class="v" id="endScore">0</div></div>
+      <div class="end-stat"><div class="l">篤中</div><div class="v" id="endHits">0</div></div>
+      <div class="end-stat"><div class="l">篤錯</div><div class="v" id="endWrongs">0</div></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;margin:10px 0;">
+      <img id="c1" src="../ch12/images/coin_new.png" style="width:44px;height:44px;opacity:0.3;transition:all 0.4s;">
+      <img id="c2" src="../ch12/images/coin_new.png" style="width:44px;height:44px;opacity:0.3;transition:all 0.4s;">
+      <img id="c3" src="../ch12/images/coin_new.png" style="width:44px;height:44px;opacity:0.3;transition:all 0.4s;">
+    </div>
+    <div class="end-btns">
+      <button onclick="location.reload()">🔁 再玩</button>
+      <a href="assess2.html" class="outline">📝 評估 2</a>
+      <a href="index.html" class="outline">🏠 入口</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const CHAPTER = 14, GAME_KEY = 'game2';
+const TOTAL_TIME = 60, TARGET_HITS = 10;
+
+// Question bank: expr → correct answer string (兩位小數 × 一位小數)
+const Q_BANK = [
+  { expr: '2.35 × 4', ans: '9.4', wrongs: ['94', '0.94', '9.40'] },
+  { expr: '1.25 × 8', ans: '10', wrongs: ['1', '100', '12.5'] },
+  { expr: '3.14 × 2', ans: '6.28', wrongs: ['0.628', '62.8', '6.14'] },
+  { expr: '0.75 × 6', ans: '4.5', wrongs: ['45', '0.45', '3.5'] },
+  { expr: '2.08 × 5', ans: '10.4', wrongs: ['1.04', '104', '10.40'] },
+  { expr: '1.35 × 4', ans: '5.4', wrongs: ['54', '0.54', '5.14'] },
+  { expr: '0.85 × 10', ans: '8.5', wrongs: ['0.085', '85', '0.85'] },
+  { expr: '4.25 × 3', ans: '12.75', wrongs: ['12.15', '127.5', '1.275'] },
+  { expr: '0.55 × 4', ans: '2.2', wrongs: ['22', '0.22', '2.02'] },
+  { expr: '1.5 × 8', ans: '12', wrongs: ['1.2', '120', '12.0'] },
+  { expr: '2.75 × 2', ans: '5.5', wrongs: ['55', '0.55', '4.5'] },
+  { expr: '3.6 × 5', ans: '18', wrongs: ['1.8', '180', '15'] },
+  { expr: '0.45 × 9', ans: '4.05', wrongs: ['40.5', '0.405', '4.5'] },
+  { expr: '1.8 × 6', ans: '10.8', wrongs: ['108', '1.08', '10.08'] },
+];
+
+const COLORS = ['red', 'blue', 'green', 'purple', 'yellow'];
+
+let state = { score: 0, hits: 0, wrongs: 0, timeLeft: TOTAL_TIME, active: [], currentQ: null, globalTick: null, spawnTick: null, running: false };
+
+function startGame() {
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'none';
+  state = { score: 0, hits: 0, wrongs: 0, timeLeft: TOTAL_TIME, active: [], currentQ: null, globalTick: null, spawnTick: null, running: true };
+  nextQuestion();
+  state.globalTick = setInterval(() => {
+    state.timeLeft--;
+    document.getElementById('timeVal').textContent = state.timeLeft;
+    if (state.timeLeft <= 0) endGame();
+  }, 1000);
+  // Spawn balloons periodically (every 1.2s)
+  state.spawnTick = setInterval(spawnBalloon, 1200);
+}
+
+function nextQuestion() {
+  const q = Q_BANK[Math.floor(Math.random() * Q_BANK.length)];
+  state.currentQ = q;
+  document.getElementById('targetQ').textContent = q.expr + ' = ?';
+  // Clear old balloons
+  state.active.forEach(b => b.el?.remove());
+  state.active = [];
+  // Pre-spawn 1 correct + 2 wrong balloons
+  spawnSpecific(q.ans, true);
+  spawnSpecific(q.wrongs[0], false);
+  spawnSpecific(q.wrongs[1], false);
+}
+
+function spawnBalloon() {
+  if (!state.running || !state.currentQ) return;
+  if (state.active.length > 6) return;  // Cap at 6 balloons
+  const q = state.currentQ;
+  const useCorrect = Math.random() < 0.35;
+  const text = useCorrect ? q.ans : q.wrongs[Math.floor(Math.random() * q.wrongs.length)];
+  spawnSpecific(text, useCorrect);
+}
+
+function spawnSpecific(text, isCorrect) {
+  const arena = document.querySelector('.arena');
+  const b = document.createElement('div');
+  b.className = 'balloon ' + COLORS[Math.floor(Math.random() * COLORS.length)];
+  const duration = 6 + Math.random() * 3;
+  const leftPct = 8 + Math.random() * 84;
+  b.style.left = leftPct + '%';
+  b.style.animationDuration = duration + 's';
+  b.innerHTML = `<div class="body">${text}</div><div class="string"></div>`;
+  b.onclick = (e) => popBalloon(b, text, isCorrect, e.clientX, e.clientY);
+  arena.appendChild(b);
+  const entry = { el: b, text, isCorrect };
+  state.active.push(entry);
+  // Remove after animation
+  setTimeout(() => {
+    b.remove();
+    state.active = state.active.filter(x => x !== entry);
+  }, duration * 1000 + 100);
+}
+
+function popBalloon(el, text, isCorrect, x, y) {
+  if (el.classList.contains('popping') || el.classList.contains('wrong-pop')) return;
+  if (isCorrect) {
+    el.classList.add('popping');
+    state.score += 10;
+    state.hits++;
+    showFloat('+10', x, y, '#2E7D32');
+    document.getElementById('scoreVal').textContent = state.score;
+    document.getElementById('hitsVal').textContent = state.hits;
+    setTimeout(() => el.remove(), 300);
+    // Small delay, new question
+    setTimeout(nextQuestion, 400);
+    if (state.hits >= TARGET_HITS) endGame();
+  } else {
+    el.classList.add('wrong-pop');
+    state.score = Math.max(0, state.score - 5);
+    state.wrongs++;
+    showFloat('-5', x, y, '#C62828');
+    document.getElementById('scoreVal').textContent = state.score;
+    setTimeout(() => el.remove(), 700);
+  }
+}
+
+function showFloat(text, x, y, color) {
+  const f = document.createElement('div');
+  f.className = 'score-float';
+  f.textContent = text;
+  f.style.color = color;
+  f.style.left = x + 'px';
+  f.style.top = y + 'px';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 800);
+}
+
+function endGame() {
+  if (!state.running) return;
+  state.running = false;
+  clearInterval(state.globalTick);
+  clearInterval(state.spawnTick);
+  state.active.forEach(b => b.el?.remove());
+  // End screen
+  document.getElementById('endScreen').style.display = 'flex';
+  document.getElementById('endScore').textContent = state.score;
+  document.getElementById('endHits').textContent = state.hits;
+  document.getElementById('endWrongs').textContent = state.wrongs;
+  let coins = 1, trophy = '🥉', msg = '👍 繼續努力，下次篤更多！';
+  if (state.hits >= TARGET_HITS) { coins = 3; trophy = '🏆'; msg = '🌟 完成目標！口算達人！'; }
+  else if (state.hits >= 6) { coins = 2; trophy = '🥈'; msg = '💪 唔錯！多啲練習反應就會更快！'; }
+  document.getElementById('endTrophy').textContent = trophy;
+  document.getElementById('endMsg').textContent = msg;
+  document.getElementById('endTitle').textContent = state.hits >= TARGET_HITS ? '🎉 任務達成！' : '⏰ 時間到！';
+  for (let i = 1; i <= coins; i++) {
+    const c = document.getElementById('c' + i);
+    c.style.opacity = '1';
+    c.style.filter = 'drop-shadow(0 0 12px #FFEB3B)';
+  }
+  try {
+    const k = `progress_ch${CHAPTER}`;
+    const p = JSON.parse(localStorage.getItem(k) || '{}');
+    p[GAME_KEY] = { done: true, score: state.score, hits: state.hits, wrongs: state.wrongs, coins, total: TARGET_HITS, ts: Date.now() };
+    localStorage.setItem(k, JSON.stringify(p));
+  } catch(e) {}
+  try { window.parent.postMessage({ type:'gameScore', game: GAME_KEY, score: state.score, hits: state.hits, coins }, '*'); } catch(e) {}
+}
+</script>
+<script src="../common/feedback.js"></script>
+</body>
+</html>
