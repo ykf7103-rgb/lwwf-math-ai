@@ -356,9 +356,42 @@
       <div class="big-card" style="margin-bottom:12px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
         <div class="big-emoji">🎵</div>
         <div class="big-title" style="color:#E65100;">Suno 廣東話溫習歌 × 2</div>
-        <div class="big-sub">由 Suno 生成 · 邊聽邊記口訣</div>
-        <div id="sunoSlots" style="margin-top:8px;font-size:0.9rem;color:#888;text-align:center;padding:14px;background:rgba(255,255,255,0.6);border-radius:10px;">
-          🎵 稍後將有兩首廣東話歌加入呢度
+        <div class="big-sub">Suno v5.5 Pro · 粵語 · 乾淨歌詞 · 邊聽邊記口訣</div>
+
+        <div style="margin-top:12px;background:rgba(255,255,255,0.85);border-radius:10px;padding:12px;">
+          <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎵 歌 1：《小數點位》一位/兩位小數 × 整數</div>
+          <div style="font-size:0.82rem;color:#666;margin-bottom:8px;">口訣：當係整數嚟乘 → 最後數點位 → 因數有幾多位小數，答案就有幾多位</div>
+          <audio controls preload="metadata" style="width:100%;" onplay="markExtra('suno1')">
+            <source src="audio/song1_v1.mp3" type="audio/mpeg">
+          </audio>
+          <details style="margin-top:6px;font-size:0.8rem;">
+            <summary style="cursor:pointer;color:#888;">🔀 版本 2（另一個風格）</summary>
+            <audio controls preload="metadata" style="width:100%;margin-top:6px;">
+              <source src="audio/song1_v2.mp3" type="audio/mpeg">
+            </audio>
+          </details>
+        </div>
+
+        <div style="margin-top:10px;background:rgba(255,255,255,0.85);border-radius:10px;padding:12px;">
+          <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎵 歌 2：《悟空十乘二十》小數 × 小數 + 估算</div>
+          <div style="font-size:0.82rem;color:#666;margin-bottom:8px;">口訣：當做整數先計乘 → 兩邊小數位數加埋 → 估算先做一次</div>
+          <!-- Ch13 Song 2 有 video version -->
+          <video controls preload="metadata" style="width:100%;border-radius:8px;background:#000;" onplay="markExtra('suno2')">
+            <source src="audio/song2_v1.mp4" type="video/mp4">
+          </video>
+          <details style="margin-top:6px;font-size:0.8rem;">
+            <summary style="cursor:pointer;color:#888;">🔀 版本 1（音頻）· 版本 2（另一風格）</summary>
+            <div style="margin-top:6px;">
+              <div style="font-size:0.78rem;color:#888;margin-bottom:4px;">版本 1（純音頻）：</div>
+              <audio controls preload="metadata" style="width:100%;">
+                <source src="audio/song2_v1.mp3" type="audio/mpeg">
+              </audio>
+              <div style="font-size:0.78rem;color:#888;margin:8px 0 4px;">版本 2：</div>
+              <audio controls preload="metadata" style="width:100%;">
+                <source src="audio/song2_v2.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+          </details>
         </div>
       </div>
 
