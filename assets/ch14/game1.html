@@ -261,7 +261,7 @@ function endGame() {
 
   // Save progress
   try {
-    const k = `progress_ch${CHAPTER}`;
+    const k = (()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();
     const p = JSON.parse(localStorage.getItem(k) || '{}');
     p[GAME_KEY] = { done: true, score: state.matched, total: PAIRS.length, coins, moves: state.moves, wrongs: state.wrongs, elapsed, ts: Date.now() };
     localStorage.setItem(k, JSON.stringify(p));

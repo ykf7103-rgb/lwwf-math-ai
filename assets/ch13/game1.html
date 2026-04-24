@@ -444,7 +444,7 @@ function endGame(){
   } catch(e){}
   // Save Ch13 progress to localStorage for ch13/index.html badge
   try {
-    const key = 'progress_ch13';
+    const _u=JSON.parse(localStorage.getItem('lwwf_auth_user')||'null');const key=_u?`progress_ch13_${_u.class}_${_u.number}`:'progress_ch13';
     const p = JSON.parse(localStorage.getItem(key) || '{}');
     p.game1 = { done: true, score: state.score, correct: state.correct, total: QUESTIONS.length, coins, ts: Date.now() };
     localStorage.setItem(key, JSON.stringify(p));

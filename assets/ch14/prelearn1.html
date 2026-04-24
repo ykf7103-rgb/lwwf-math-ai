@@ -628,7 +628,7 @@ function checkAllDone() {
   if (answered.mc && answered.fill && answered.voice) {
     document.getElementById('done').classList.add('show');
     try {
-      const key = `progress_ch${CHAPTER}`;
+      const key = (()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();
       const p = JSON.parse(localStorage.getItem(key) || '{}');
       p[PRELEARN_KEY] = { done: true, score: voiceData?.score || 0, ts: Date.now() };
       localStorage.setItem(key, JSON.stringify(p));

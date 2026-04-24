@@ -30,19 +30,42 @@
     } catch(e) { return null; }
   }
 
-  // Coin total across ALL chapters (scores_5F_01 etc)
+  // Coin total across ALL chapters from ALL possible keys:
+  //   Ch12 main index:  scores_{cls}_{num}           → { activityKey: { coins:N, ... } }
+  //   Ch13/14 per-user: progress_ch{N}_{cls}_{num}   → { stepKey: { coins:N, done:true, ... } }
+  //   Ch13/14 shared (legacy): progress_ch{N}        → same structure but全機共享（應該停用）
   function getTotalCoins(user) {
     if (!user) return 0;
     let total = 0;
     try {
-      const key = `scores_${user.class}_${user.number}`;
-      const scores = JSON.parse(localStorage.getItem(key) || '{}');
+      // 1) Ch12 scores_{cls}_{num}
+      const scoresKey = `scores_${user.class}_${user.number}`;
+      const scores = JSON.parse(localStorage.getItem(scoresKey) || '{}');
       Object.values(scores).forEach(s => {
         if (typeof s === 'object' && s !== null) {
           if (typeof s.coins === 'number') total += s.coins;
           else if (typeof s.score === 'number') total += s.score;
         }
       });
+      // 2) Ch13+ progress_ch{N}_{cls}_{num}  (per-user)
+      for (let ch = 13; ch <= 21; ch++) {
+        const perUserKey = `progress_ch${ch}_${user.class}_${user.number}`;
+        const perUser = JSON.parse(localStorage.getItem(perUserKey) || '{}');
+        Object.values(perUser).forEach(s => {
+          if (typeof s === 'object' && s !== null && typeof s.coins === 'number') total += s.coins;
+        });
+      }
+      // 3) Ch13+ legacy shared progress_ch{N} — only if no per-user key found (avoid double-count)
+      for (let ch = 13; ch <= 21; ch++) {
+        const perUserKey = `progress_ch${ch}_${user.class}_${user.number}`;
+        const sharedKey = `progress_ch${ch}`;
+        // skip shared if per-user exists
+        if (localStorage.getItem(perUserKey)) continue;
+        const shared = JSON.parse(localStorage.getItem(sharedKey) || '{}');
+        Object.values(shared).forEach(s => {
+          if (typeof s === 'object' && s !== null && typeof s.coins === 'number') total += s.coins;
+        });
+      }
     } catch(e) {}
     return total;
   }
@@ -327,6 +350,36 @@
   window.addEventListener('storage', () => renderRight());
 
   function mount() {
+    // Check if we're on a game page — if so, use minimal mode (smaller bar, no sticky)
+    const isGamePage = /\/game\d*\.html/.test(location.pathname);
+    if (isGamePage) {
+      bar.classList.add('minimal');
+      // Add CSS for minimal game mode
+      const s2 = document.createElement('style');
+      s2.textContent = `
+        .mathai-topbar.minimal {
+          position: static;
+          padding: 4px 8px;
+          margin: 0 0 6px;
+          border-radius: 8px;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+          font-size: 0.8rem;
+        }
+        .mathai-topbar.minimal .tb-logo { display: none; }
+        .mathai-topbar.minimal .tb-chapter-btn { font-size: 0.75rem; padding: 4px 8px; max-width: 140px; }
+        .mathai-topbar.minimal .tb-coin, .mathai-topbar.minimal .tb-edx { font-size: 0.72rem; padding: 3px 7px; }
+        .mathai-topbar.minimal .tb-coin img { width: 14px; height: 14px; }
+        .mathai-topbar.minimal .tb-avatar { width: 22px; height: 22px; font-size: 0.68rem; }
+        .mathai-topbar.minimal .tb-user-info { font-size: 0.72rem; }
+        .mathai-topbar.minimal .tb-btn-logout { padding: 3px 6px; font-size: 0.65rem; }
+        @media (max-width: 500px) {
+          .mathai-topbar.minimal .tb-user-info span.tb-name { display: none; }
+          .mathai-topbar.minimal .tb-edx { display: none; }
+        }
+      `;
+      document.head.appendChild(s2);
+    }
+
     // Insert topbar at the very top of body (before .wrap)
     if (document.body.firstChild) document.body.insertBefore(bar, document.body.firstChild);
     else document.body.appendChild(bar);

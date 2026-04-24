@@ -246,47 +246,50 @@
 
 <script>
 // ===== Problem sets =====
-// Ch13 covers: 一位小數×整數, 兩位小數×整數, 小數×小數
-// Each problem: top (multiplicand), bot (multiplier), pp[] (partial products), ans (final)
-// Using integers in tableau, then decimal point is applied after — this is how vertical multiplication is taught.
+// Ch13: 一位小數×整數, 兩位小數×整數, 小數×小數
+// HK 方法：對於 2-digit × 2-digit，先補 0 乘十位，再乘個位（TENS first in ppList）
+// Each problem: top, bot, ppList (partial products, integer only), ans (SIMPLIFIED 最終答案，無末尾零),
+//               raw (可選：未簡化嘅答案，用於教學對比),
+//               hint (解題提示)
 const LEVELS = {
   beginner: {
     name: '🌱 初級',
     desc: '一位小數 × 個位整數',
     problems: [
-      // 0.3 × 4 = 1.2  → 3 × 4 = 12, 1 decimal
-      { top: '0.3', bot: '4', ppList: ['12'], ans: '1.2', hint: '3×4=12，因為被乘數小數點後有 1 位，答案都有 1 位 → 1.2' },
-      { top: '0.6', bot: '5', ppList: ['30'], ans: '3.0', hint: '6×5=30，小數點後 1 位 → 3.0（或 3）' },
-      { top: '0.7', bot: '8', ppList: ['56'], ans: '5.6', hint: '7×8=56，小數點後 1 位 → 5.6' },
+      { top: '0.3', bot: '4', ppList: ['12'], ans: '1.2', hint: '3×4=12，一位小數 → 1.2' },
+      { top: '0.6', bot: '5', ppList: ['30'], ans: '3', raw: '3.0', hint: '6×5=30，一位小數本應係 3.0，但末尾零要簡化 → 答案 = 3' },
+      { top: '0.7', bot: '8', ppList: ['56'], ans: '5.6', hint: '7×8=56，一位小數 → 5.6' },
     ],
   },
   mid: {
     name: '🌿 中級',
     desc: '兩位小數 × 個位',
     problems: [
-      // 0.23 × 4 = 0.92
-      { top: '0.23', bot: '4', ppList: ['92'], ans: '0.92', hint: '23×4=92，小數點後 2 位 → 0.92' },
-      { top: '1.25', bot: '3', ppList: ['375'], ans: '3.75', hint: '125×3=375，小數點後 2 位 → 3.75' },
-      { top: '2.15', bot: '6', ppList: ['1290'], ans: '12.9', hint: '215×6=1290，小數點後 2 位 → 12.90（= 12.9）' },
+      { top: '0.23', bot: '4', ppList: ['92'], ans: '0.92', hint: '23×4=92，兩位小數 → 0.92' },
+      { top: '1.25', bot: '3', ppList: ['375'], ans: '3.75', hint: '125×3=375，兩位小數 → 3.75' },
+      { top: '2.15', bot: '6', ppList: ['1290'], ans: '12.9', raw: '12.90', hint: '215×6=1290，兩位小數本應 12.90，末尾零要簡化 → 12.9' },
     ],
   },
   advanced: {
     name: '🌳 高級',
-    desc: '小數 × 小數',
+    desc: '小數 × 小數（含 2 位 × 2 位 · HK 方法）',
     problems: [
-      // 0.3 × 0.4 = 0.12
-      { top: '0.3', bot: '0.4', ppList: ['12'], ans: '0.12', hint: '3×4=12，兩邊小數點後共 2 位 → 0.12' },
-      { top: '1.2', bot: '0.5', ppList: ['60'], ans: '0.60', hint: '12×5=60，小數點後共 2 位 → 0.60（= 0.6）' },
-      { top: '2.3', bot: '1.4', ppList: ['92','230'], ans: '3.22', hint: '23×14=322，小數點後共 2 位 → 3.22。（部分積：23×4=92、23×10=230）' },
+      { top: '0.3', bot: '0.4', ppList: ['12'], ans: '0.12', hint: '3×4=12，兩邊共 2 位小數 → 0.12' },
+      { top: '1.2', bot: '0.5', ppList: ['60'], ans: '0.6', raw: '0.60', hint: '12×5=60，兩位小數本應 0.60，末尾零要簡化 → 0.6' },
+      // HK 方法：2.3 × 1.4 → 先乘十位（23×10=230）再乘個位（23×4=92）
+      { top: '2.3', bot: '1.4', ppList: ['230','92'], ans: '3.22', hint: 'HK 方法：先 23×10=230（十位已補 0），再 23×4=92。合計 322，兩位小數 → 3.22' },
     ],
   },
   expert: {
     name: '🏆 超難',
-    desc: '兩位 × 兩位',
+    desc: '兩位 × 兩位（HK 方法：先補 0 乘十位，再乘個位）',
     problems: [
-      { top: '0.23', bot: '0.14', ppList: ['92','230'], ans: '0.0322', hint: '23×14=322，共 4 位小數 → 0.0322' },
-      { top: '1.25', bot: '0.36', ppList: ['750','3750'], ans: '0.4500', hint: '125×36=4500，共 4 位小數 → 0.4500（= 0.45）' },
-      { top: '2.08', bot: '1.25', ppList: ['1040','4160','2080'], ans: '2.6000', hint: '208×125=26000，共 4 位小數 → 2.6000（= 2.6）' },
+      // 0.23 × 0.14: HK: 23×10=230, 23×4=92, sum 322, 4 decimals → 0.0322
+      { top: '0.23', bot: '0.14', ppList: ['230','92'], ans: '0.0322', hint: 'HK 方法：先 23×10=230（補 0）→ 再 23×4=92。合計 322，四位小數 → 0.0322' },
+      // 1.25 × 0.36: HK: 125×30=3750 (補 0 乘十位), 125×6=750, sum 4500, 4 decimals → 0.45
+      { top: '1.25', bot: '0.36', ppList: ['3750','750'], ans: '0.45', raw: '0.4500', hint: 'HK 方法：先 125×30=3750（補 0）→ 再 125×6=750。合計 4500，四位小數本應 0.4500 → 末尾零簡化 → 0.45' },
+      // 2.08 × 1.25: HK: 208×100=20800, 208×20=4160, 208×5=1040, sum 26000, 4 decimals → 2.6
+      { top: '2.08', bot: '1.25', ppList: ['20800','4160','1040'], ans: '2.6', raw: '2.6000', hint: 'HK 方法：先 208×100=20800（補 00）→ 再 208×20=4160（補 0）→ 最後 208×5=1040。合計 26000，四位小數本應 2.6000 → 末尾零簡化 → 2.6' },
     ],
   },
 };
@@ -356,10 +359,11 @@ function buildTableau() {
   // PP row i is shifted LEFT by i positions from the rightmost (pp[0] rightmost-aligned, pp[1] shifts left by 1, etc.)
 
   // Compute max row width in slots (excluding op col)
+  // HK method: all PP are right-aligned (digits include trailing 0 padding), no shift
   const rowWidths = [
     topP.chars.length,
     botP.chars.length,
-    ...ppArr.map((pp, i) => pp.length + i),  // ppi shifted left i
+    ...ppArr.map(pp => pp.length),
     ansP.chars.length,
   ];
   const slotCount = Math.max(...rowWidths);
@@ -453,14 +457,12 @@ function buildTableau() {
   t.appendChild(hr1);
 
   // --- 4. Partial products (editable integer digits) ---
-  // pp[i] is shifted left by i positions
+  // HK method: digits already include trailing 0 padding, so ALL pp rows are right-aligned (no shift)
   ppArr.forEach((pp, i) => {
     const r = makeRow(i === 0 ? '' : '+');
-    const leftPad = slotCount - pp.length - i;
+    const leftPad = slotCount - pp.length;
     for (let p1 = 0; p1 < leftPad; p1++) addEmptySlot(r);
     pp.forEach(d => addEditableDigit(r, d, 'pp'));
-    // right pad for shift
-    for (let p2 = 0; p2 < i; p2++) addEmptySlot(r);
     t.appendChild(r);
   });
 
@@ -576,7 +578,23 @@ function checkAll() {
   });
   if (allCorrect) {
     streak++;
-    setStatus('ok', `🎉 全部答啱！連對 ${streak} 題。`);
+    const p = LEVELS[currentLevel].problems[problemIdx];
+    let msg = `🎉 全部答啱！連對 ${streak} 題。`;
+    if (p.raw) {
+      // Answer was simplified from a version with trailing zeros
+      msg = `🎉 答啱！但要注意：直接計出嚟係 <b>${p.raw}</b>，末尾嘅零可以簡化 → <b>${p.ans}</b>。連對 ${streak}。`;
+    }
+    setStatus('ok', msg);
+    // Also pop up the simplify hint banner if applicable
+    if (p.raw) {
+      const box = document.getElementById('hintBox');
+      box.innerHTML = `✨ <b>簡化規則</b>：小數末尾嘅 0 可以刪（唔改變值）。例如：<br>
+        · 3.0 = 3（全部小數位都係 0 → 可刪埋小數點）<br>
+        · 0.60 = 0.6（只係末尾嗰個 0 可刪）<br>
+        · 2.6000 = 2.6（所有末尾零都可刪）<br>
+        ⚠️ 但<b>中間</b>嘅零唔可以刪，例如 0.08 ≠ 0.8`;
+      box.classList.add('show');
+    }
     document.getElementById('nextBtn').disabled = false;
     document.getElementById('streakLabel').textContent = `🔥 連對 ${streak}`;
   } else {

@@ -259,7 +259,7 @@ function endGame() {
     c.style.filter = 'drop-shadow(0 0 12px #FFEB3B)';
   }
   try {
-    const k = `progress_ch${CHAPTER}`;
+    const k = (()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();
     const p = JSON.parse(localStorage.getItem(k) || '{}');
     p[GAME_KEY] = { done: true, score: state.score, hits: state.hits, wrongs: state.wrongs, coins, total: TARGET_HITS, ts: Date.now() };
     localStorage.setItem(k, JSON.stringify(p));

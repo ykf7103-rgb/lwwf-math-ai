@@ -309,6 +309,15 @@
 </div>
 
 <script>
+  // Per-user localStorage key (fix coin storage bug: was shared across students)
+  function _ch14Key() {
+    try {
+      const u = JSON.parse(localStorage.getItem('lwwf_auth_user') || 'null');
+      if (u && u.class && u.number) return `progress_ch14_${u.class}_${u.number}`;
+    } catch(e) {}
+    return 'progress_ch14';
+  }
+
   const STEP_KEYS = [
     { k: 'slides1', n: '簡報 1', emoji: '🥟' }, { k: 'prelearn1', n: '預習 1', emoji: '📝' },
     { k: 'assess1', n: '評估 1', emoji: '✏️' }, { k: 'game1', n: '配對卡', emoji: '🃏' },
@@ -325,7 +334,7 @@
   }
   function renderProgress() {
     try {
-      const p = JSON.parse(localStorage.getItem('progress_ch14') || '{}');
+      const p = JSON.parse(localStorage.getItem(_ch14Key()) || '{}');
       document.querySelectorAll('[data-key]').forEach(el => { const k = el.dataset.key; if (p[k]?.done) el.classList.add('done'); });
       // Hero progress
       const done = STEP_KEYS.filter(s => p[s.k]?.done).length;
@@ -337,7 +346,7 @@
   }
   function renderScores() {
     try {
-      const p = JSON.parse(localStorage.getItem('progress_ch14') || '{}');
+      const p = JSON.parse(localStorage.getItem(_ch14Key()) || '{}');
       let doneCount = 0, html = '';
       STEP_KEYS.forEach(s => {
         const data = p[s.k];
@@ -349,10 +358,10 @@
       document.getElementById('scoresGrid').innerHTML = html;
     } catch(e) {}
   }
-  function resetProgress() { if (!confirm('確定要清除第 14 課嘅學習進度？')) return; localStorage.removeItem('progress_ch14'); location.reload(); }
+  function resetProgress() { if (!confirm('確定要清除第 14 課嘅學習進度？')) return; localStorage.removeItem(_ch14Key()); location.reload(); }
   function markExtra(type) {
     try {
-      const k = 'progress_ch14';
+      const k = _ch14Key();
       const p = JSON.parse(localStorage.getItem(k) || '{}');
       p.extras = p.extras || { done: false, items: {} };
       p.extras.items[type] = true;

@@ -522,6 +522,15 @@
 </div>
 
 <script>
+  // Per-user localStorage key (fix coin storage bug: was shared across all students)
+  function _ch13Key() {
+    try {
+      const u = JSON.parse(localStorage.getItem('lwwf_auth_user') || 'null');
+      if (u && u.class && u.number) return `progress_ch13_${u.class}_${u.number}`;
+    } catch(e) {}
+    return 'progress_ch13';  // legacy fallback for non-logged-in
+  }
+
   const STEP_KEYS = [
     { k: 'slides1', n: '簡報 1', emoji: '📗' }, { k: 'prelearn1', n: '預習 1', emoji: '📝' },
     { k: 'assess1', n: '評估 1', emoji: '✏️' }, { k: 'game1', n: '遊戲 1', emoji: '⚔️' },
@@ -541,7 +550,7 @@
 
   function renderProgress() {
     try {
-      const p = JSON.parse(localStorage.getItem('progress_ch13') || '{}');
+      const p = JSON.parse(localStorage.getItem(_ch13Key()) || '{}');
       document.querySelectorAll('[data-key]').forEach(el => {
         const k = el.dataset.key;
         if (p[k]?.done) el.classList.add('done');
@@ -561,7 +570,7 @@
 
   function renderScores() {
     try {
-      const p = JSON.parse(localStorage.getItem('progress_ch13') || '{}');
+      const p = JSON.parse(localStorage.getItem(_ch13Key()) || '{}');
       let doneCount = 0;
       let html = '';
       STEP_KEYS.forEach(s => {
@@ -584,14 +593,14 @@
 
   function resetProgress() {
     if (!confirm('確定要清除第 13 課嘅學習進度？')) return;
-    localStorage.removeItem('progress_ch13');
+    localStorage.removeItem(_ch13Key());
     location.reload();
   }
 
   // Mark extras (video/audio) as viewed + count coins
   function markExtra(type) {
     try {
-      const k = 'progress_ch13';
+      const k = _ch13Key();
       const p = JSON.parse(localStorage.getItem(k) || '{}');
       p.extras = p.extras || { done: false, items: {} };
       p.extras.items[type] = true;

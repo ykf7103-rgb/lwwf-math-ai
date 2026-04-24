@@ -207,7 +207,7 @@ function endGame() {
   document.getElementById('endTitle').textContent = coins === 3 ? '🎉 廚神誕生！' : '完成 10 單！';
   for (let i = 1; i <= coins; i++) document.getElementById('c' + i).classList.add('earned');
   try {
-    const k = `progress_ch${CHAPTER}`;
+    const k = (()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();
     const p = JSON.parse(localStorage.getItem(k) || '{}');
     p[GAME_KEY] = { done: true, score: state.correct, total: ORDERS.length, wrongs: state.wrongs, coins, ts: Date.now() };
     localStorage.setItem(k, JSON.stringify(p));

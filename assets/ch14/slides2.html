@@ -128,7 +128,7 @@ function autoAdvance(pageNum){setTimeout(()=>{const uq=getUnansweredQ(pageNum);i
 function next(){const pageNum=idx+1;const uq=getUnansweredQ(pageNum);if(uq){showQuiz(pageNum);return;}if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});}else{doneBanner.classList.add('show');markDone();}}
 function prev(){if(idx>0){idx--;render();window.scrollTo({top:0,behavior:'smooth'});}}
 function goto(i){if(i>idx){for(let p=idx+1;p<=i;p++){const uq=getUnansweredQ(p);if(uq){idx=p-1;render();setTimeout(()=>showQuiz(p),300);return;}}}idx=Math.max(0,Math.min(TOTAL-1,i));render();}
-function markDone(){try{const key=`progress_ch${CHAPTER}`;const p=JSON.parse(localStorage.getItem(key)||'{}');p[DECK_KEY]={done:true,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(e){}}
+function markDone(){try{const key=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(key)||'{}');p[DECK_KEY]={done:true,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(e){}}
 document.addEventListener('keydown',e=>{if(lockModal.classList.contains('show'))return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}else if(e.key==='ArrowLeft'){e.preventDefault();prev();}});
 let touchX=0,touchY=0;
 document.querySelector('.viewer').addEventListener('touchstart',e=>{touchX=e.changedTouches[0].screenX;touchY=e.changedTouches[0].screenY;},{passive:true});

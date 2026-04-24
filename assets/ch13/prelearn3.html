@@ -260,7 +260,7 @@ async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}
 function resetVoice(){recordedBlob=null;voiceData=null;document.getElementById('transcript').innerHTML='<span style="color:#999;">按「開始錄音」試下</span>';document.getElementById('gradeResult').innerHTML='';document.getElementById('gradeBtn').disabled=true;document.getElementById('recStatus').textContent='按「開始錄音」試下';}
 function zoom(src){document.getElementById('zoomImg').src=src;document.getElementById('zoomOv').classList.add('show');}
 function unzoom(){document.getElementById('zoomOv').classList.remove('show');}
-function checkAllDone(){if(answered.mc&&answered.fill&&answered.voice){document.getElementById('done').classList.add('show');try{const key=`progress_ch${CHAPTER}`;const p=JSON.parse(localStorage.getItem(key)||'{}');p[PRELEARN_KEY]={done:true,score:voiceData?.score||0,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(_){}}}
+function checkAllDone(){if(answered.mc&&answered.fill&&answered.voice){document.getElementById('done').classList.add('show');try{const key=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(key)||'{}');p[PRELEARN_KEY]={done:true,score:voiceData?.score||0,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(_){}}}
 </script>
 <script src="../common/feedback.js"></script>
 <script src="../common/chapter-header.js" data-current-ch="13"></script>
