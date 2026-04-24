@@ -44,29 +44,51 @@
   }
   .problem .eq { color: #E65100; }
 
-  /* Vertical tableau */
+  /* Vertical tableau — grid-based alignment */
   .tableau {
     display: flex; flex-direction: column; align-items: center;
-    gap: 2px; padding: 14px 12px;
+    padding: 14px 12px;
     background: linear-gradient(180deg,#FFF8E1,#FFF3E0);
     border-radius: 12px; margin: 10px 0 18px;
     overflow-x: auto;
-  }
-  .row {
-    display: flex; gap: 6px; align-items: center;
     font-family: 'SF Mono','Menlo','Consolas',monospace;
   }
-  .row .op {
-    font-size: 1.7rem; font-weight: 800; color: #E65100;
-    width: 28px; text-align: right;
+  .trow {
+    display: grid;
+    /* 每行 = [op column 36px] + [N 個 slot]
+       slot 寬度會由 JS set CSS var --slot-count */
+    grid-template-columns: 36px repeat(var(--slot-count), 44px);
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 2px;
   }
-  .row.hr {
-    border-top: 3px solid #333; width: 100%; max-width: 320px;
-    margin-top: 4px; padding-top: 2px;
-    height: 2px;
+  .trow .op {
+    font-size: 1.7rem; font-weight: 800; color: #E65100;
+    text-align: right; padding-right: 2px;
+  }
+  .trow.hr {
+    grid-template-columns: 36px 1fr;
+    border: none; height: 4px; margin: 2px 0 4px;
+    width: calc(36px + var(--slot-count) * 44px + var(--slot-count) * 4px);
+    position: relative;
+  }
+  .trow.hr::before {
+    content: ''; position: absolute;
+    left: 36px; right: 0; top: 50%;
+    height: 3px; background: #333;
+  }
+  /* Each column slot is fixed 44px — digits AND dots use same slot width for perfect alignment */
+  .slot {
+    width: 44px; height: 52px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slot.empty-slot { /* blank placeholder — no visual */ }
+  .slot.dot-slot {
+    font-size: 2rem; font-weight: 900; color: #E65100;
+    line-height: 1;
   }
   .cell {
-    width: 42px; height: 52px;
+    width: 44px; height: 52px;
     border: 2px solid #FFB74D; border-radius: 8px;
     background: white; display: flex; align-items: center; justify-content: center;
     font-size: 1.55rem; font-weight: 800; color: #333;
@@ -164,8 +186,12 @@
   .hint-box b { color: #E65100; }
 
   @media (max-width: 500px) {
-    .cell { width: 34px; height: 44px; font-size: 1.3rem; }
-    .row .op { font-size: 1.4rem; width: 22px; }
+    .cell { width: 36px; height: 44px; font-size: 1.3rem; }
+    .slot { width: 36px; height: 44px; }
+    .trow { grid-template-columns: 28px repeat(var(--slot-count), 36px); gap: 3px; }
+    .trow.hr { width: calc(28px + var(--slot-count) * 36px + var(--slot-count) * 3px); }
+    .trow .op { font-size: 1.3rem; }
+    .slot.dot-slot { font-size: 1.6rem; }
     .key { padding: 12px 0; font-size: 1.05rem; }
   }
 </style>
@@ -288,134 +314,172 @@ function renderLevels() {
   });
 }
 
-// ===== Build tableau for current problem =====
+// ===== Build tableau for current problem (grid-based, perfect alignment) =====
 function buildTableau() {
   const p = LEVELS[currentLevel].problems[problemIdx];
   const t = document.getElementById('tableau');
   t.innerHTML = '';
   cells = [];
 
-  const topStr = p.top;
-  const botStr = p.bot;
-  const ansStr = p.ans;
-  const maxLen = Math.max(topStr.replace('.','').length + 2, ansStr.replace('.','').length);
-  // We'll render: top row (given), bot row (given with × op), hr, partial products (blank to fill), hr (if >1 pp), final answer (blank)
+  const topStr = p.top;       // "0.23"
+  const botStr = p.bot;       // "4"
+  const ansStr = p.ans;       // "0.92"
 
-  // helper: render a known (locked) row for given number string, right-aligned to width
-  function renderFixedRow(numStr, opChar) {
+  // === Compute slot grid ===
+  // Treat each character of top/bot/ans/pp as taking 1 slot. The answer's decimal
+  // position determines how many slots the grid needs.
+  //
+  // Integer partial products (pp) and factors are right-aligned on a single "ones" anchor.
+  // The answer's decimal position is anchored the same way as the factors (so slot positions
+  // of digits match between top and ans).
+  //
+  // Approach: convert each row to an array of slot characters, right-aligned with a known
+  // "ones position". Then pad left to fit the widest row.
+
+  // Convert "0.23" → { chars: ['0','.','2','3'], decimalIdx: 1 (from right: 2 digits after dot) }
+  function parseNum(s) {
+    const dot = s.indexOf('.');
+    const dpAfter = dot === -1 ? 0 : s.length - 1 - dot;  // digits after decimal
+    return { chars: s.split(''), dpAfter };
+  }
+
+  const topP = parseNum(topStr);
+  const botP = parseNum(botStr);
+  const ansP = parseNum(ansStr);
+  // Partial products are INTEGER strings, rendered WITHOUT decimal point in tableau
+  const ppArr = p.ppList.map(pp => pp.split(''));
+
+  // Each row is right-aligned using an "anchor position". The anchor is the ones place.
+  // For top/bot/ans: ones position = (total chars) - (dpAfter) - 1 (index from left of last digit before dot)
+  // We'll use a different strategy: each row has its "rightmost digit" aligned.
+  // For answer, we show it separately below — so top/bot/pp all right-align ones digit together.
+  // PP row i is shifted LEFT by i positions from the rightmost (pp[0] rightmost-aligned, pp[1] shifts left by 1, etc.)
+
+  // Compute max row width in slots (excluding op col)
+  const rowWidths = [
+    topP.chars.length,
+    botP.chars.length,
+    ...ppArr.map((pp, i) => pp.length + i),  // ppi shifted left i
+    ansP.chars.length,
+  ];
+  const slotCount = Math.max(...rowWidths);
+
+  // Set the grid's slot count
+  t.style.setProperty('--slot-count', slotCount);
+
+  // Helpers
+  function makeRow(opChar) {
     const row = document.createElement('div');
-    row.className = 'row';
+    row.className = 'trow';
     const op = document.createElement('span');
     op.className = 'op';
     op.textContent = opChar || '';
     row.appendChild(op);
-    // right-align: pad
-    const chars = numStr.split('');
-    // pad empty cells on left to align with maxLen (treat '.' as non-width but shown between)
-    const digitsOnly = numStr.replace('.', '');
-    const leftPad = maxLen - digitsOnly.length;
-    for (let i = 0; i < leftPad; i++) {
-      const ph = document.createElement('div');
-      ph.style.width = '42px';
-      row.appendChild(ph);
-    }
-    chars.forEach(ch => {
-      const c = document.createElement('div');
-      c.className = 'cell locked';
-      if (ch === '.') { c.textContent = '.'; c.style.width = '18px'; c.style.background = 'transparent'; c.style.border = 'none'; }
-      else c.textContent = ch;
-      row.appendChild(c);
-    });
     return row;
   }
-
-  // helper: render an EDITABLE row for a target string (digits only — decimal comes later).
-  // We'll render each target digit as blank cell.
-  function renderEditableRow(targetDigits, opChar, rowType, indentRight) {
-    const row = document.createElement('div');
-    row.className = 'row';
-    const op = document.createElement('span');
-    op.className = 'op';
-    op.textContent = opChar || '';
-    row.appendChild(op);
-    const digits = String(targetDigits).split('');
-    const leftPad = maxLen - digits.length - (indentRight || 0);
-    for (let i = 0; i < leftPad; i++) {
-      const ph = document.createElement('div');
-      ph.style.width = '42px';
-      row.appendChild(ph);
-    }
-    digits.forEach((d, i) => {
-      const c = document.createElement('div');
-      c.className = 'cell empty';
-      const idx = cells.length;
-      c.dataset.idx = idx;
-      c.onclick = () => selectCell(idx);
-      row.appendChild(c);
-      cells.push({ el: c, correct: d, user: '', type: rowType });
-    });
-    // right pad for indent
-    for (let i = 0; i < (indentRight || 0); i++) {
-      const ph = document.createElement('div');
-      ph.style.width = '42px';
-      row.appendChild(ph);
-    }
-    return row;
+  function addEmptySlot(row) {
+    const s = document.createElement('div');
+    s.className = 'slot empty-slot';
+    row.appendChild(s);
+    return s;
+  }
+  function addDotSlot(row) {
+    const s = document.createElement('div');
+    s.className = 'slot dot-slot';
+    s.textContent = '·';
+    row.appendChild(s);
+    return s;
+  }
+  function addLockedDigit(row, d) {
+    const s = document.createElement('div');
+    s.className = 'slot';
+    const c = document.createElement('div');
+    c.className = 'cell locked';
+    c.textContent = d;
+    s.appendChild(c);
+    row.appendChild(s);
+    return s;
+  }
+  function addEditableDigit(row, correct, type) {
+    const s = document.createElement('div');
+    s.className = 'slot';
+    const c = document.createElement('div');
+    c.className = 'cell empty';
+    const idx = cells.length;
+    c.dataset.idx = idx;
+    c.onclick = () => selectCell(idx);
+    s.appendChild(c);
+    row.appendChild(s);
+    cells.push({ el: c, correct, user: '', type });
+    return s;
+  }
+  function addEditableDot(row) {
+    const s = document.createElement('div');
+    s.className = 'slot';
+    const c = document.createElement('div');
+    c.className = 'cell empty';
+    const idx = cells.length;
+    c.dataset.idx = idx;
+    c.onclick = () => selectCell(idx);
+    s.appendChild(c);
+    row.appendChild(s);
+    cells.push({ el: c, correct: '.', user: '', type: 'ans', isDot: true });
+    return s;
   }
 
-  // 1. top row (locked)
-  t.appendChild(renderFixedRow(topStr, ''));
-  // 2. bot row (locked, × op)
-  t.appendChild(renderFixedRow(botStr, '×'));
-  // 3. hr
-  const hr = document.createElement('div'); hr.className = 'row hr'; t.appendChild(hr);
+  // --- 1. Top row (locked) — right-aligned ---
+  const r1 = makeRow('');
+  const topPad = slotCount - topP.chars.length;
+  for (let i = 0; i < topPad; i++) addEmptySlot(r1);
+  topP.chars.forEach(ch => {
+    if (ch === '.') addDotSlot(r1);
+    else addLockedDigit(r1, ch);
+  });
+  t.appendChild(r1);
 
-  // 4. partial products
-  const pps = p.ppList;
-  pps.forEach((pp, i) => {
-    // Indent right by i digits (classic multiplication)
-    t.appendChild(renderEditableRow(pp, i === 0 ? '' : '+', 'pp', i));
+  // --- 2. Bot row (locked × op) ---
+  const r2 = makeRow('×');
+  const botPad = slotCount - botP.chars.length;
+  for (let i = 0; i < botPad; i++) addEmptySlot(r2);
+  botP.chars.forEach(ch => {
+    if (ch === '.') addDotSlot(r2);
+    else addLockedDigit(r2, ch);
+  });
+  t.appendChild(r2);
+
+  // --- 3. HR ---
+  const hr1 = document.createElement('div');
+  hr1.className = 'trow hr';
+  t.appendChild(hr1);
+
+  // --- 4. Partial products (editable integer digits) ---
+  // pp[i] is shifted left by i positions
+  ppArr.forEach((pp, i) => {
+    const r = makeRow(i === 0 ? '' : '+');
+    const leftPad = slotCount - pp.length - i;
+    for (let p1 = 0; p1 < leftPad; p1++) addEmptySlot(r);
+    pp.forEach(d => addEditableDigit(r, d, 'pp'));
+    // right pad for shift
+    for (let p2 = 0; p2 < i; p2++) addEmptySlot(r);
+    t.appendChild(r);
   });
 
-  // 5. if multiple PP: add hr, then final answer (digits-only since we show as integer underneath, then final with dot)
-  if (pps.length > 1) {
-    const hr2 = document.createElement('div'); hr2.className = 'row hr'; t.appendChild(hr2);
+  // --- 5. Second HR if multi-PP ---
+  if (ppArr.length > 1) {
+    const hr2 = document.createElement('div');
+    hr2.className = 'trow hr';
+    t.appendChild(hr2);
   }
 
-  // 6. final answer — with decimal point in right place.
-  // Show a dedicated row with "=" label + the answer string blanks
-  const ansRow = document.createElement('div');
-  ansRow.className = 'row';
-  const ansOp = document.createElement('span'); ansOp.className = 'op'; ansOp.textContent = '='; ansRow.appendChild(ansOp);
-  const ansChars = ansStr.split('');
-  const ansDigitsLen = ansStr.replace('.','').length;
-  const leftPad = maxLen - ansDigitsLen;
-  for (let i = 0; i < leftPad; i++) {
-    const ph = document.createElement('div'); ph.style.width = '42px'; ansRow.appendChild(ph);
-  }
-  ansChars.forEach((ch, i) => {
-    if (ch === '.') {
-      // Dot is editable — student must decide where to put it!
-      // We render as a small narrow cell
-      const idx = cells.length;
-      const c = document.createElement('div');
-      c.className = 'cell empty';
-      c.style.width = '22px';
-      c.dataset.idx = idx;
-      c.onclick = () => selectCell(idx);
-      ansRow.appendChild(c);
-      cells.push({ el: c, correct: '.', user: '', type: 'ans', isDot: true });
-    } else {
-      const idx = cells.length;
-      const c = document.createElement('div');
-      c.className = 'cell empty';
-      c.dataset.idx = idx;
-      c.onclick = () => selectCell(idx);
-      ansRow.appendChild(c);
-      cells.push({ el: c, correct: ch, user: '', type: 'ans' });
-    }
+  // --- 6. Answer row (editable, "=" op) ---
+  const rA = makeRow('=');
+  const ansPad = slotCount - ansP.chars.length;
+  for (let i = 0; i < ansPad; i++) addEmptySlot(rA);
+  ansP.chars.forEach(ch => {
+    if (ch === '.') addEditableDot(rA);
+    else addEditableDigit(rA, ch, 'ans');
   });
-  t.appendChild(ansRow);
+  t.appendChild(rA);
 
   // Update problem line + progress
   document.getElementById('problem').innerHTML = `<span>${p.top}</span> <span style="color:#888;margin:0 6px;">×</span> <span>${p.bot}</span> <span class="eq">= ?</span>`;

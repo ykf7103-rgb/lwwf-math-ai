@@ -25,7 +25,8 @@
 
   function getUser() {
     try {
-      return JSON.parse(localStorage.getItem('mathai_user') || sessionStorage.getItem('mathai_user') || 'null');
+      // Main index uses 'lwwf_auth_user'. 'mathai_user' is legacy fallback.
+      return JSON.parse(localStorage.getItem('lwwf_auth_user') || localStorage.getItem('mathai_user') || sessionStorage.getItem('lwwf_auth_user') || sessionStorage.getItem('mathai_user') || 'null');
     } catch(e) { return null; }
   }
 
@@ -298,21 +299,28 @@
   window.__mathaiLoginSubmit = () => {
     const cls = document.getElementById('mathaiLoginCls').value.trim().toUpperCase();
     const num = document.getElementById('mathaiLoginNum').value.trim();
-    const name = document.getElementById('mathaiLoginName').value.trim();
+    const name = document.getElementById('mathaiLoginName').value.trim() || `${cls}${num}`;
     if (!cls || !num) { alert('班別同學號都要填！'); return; }
-    const user = { class: cls, number: num, name: name || null };
+    const user = { class: cls, number: num, name, role: 'student' };
+    // Write to BOTH keys for compat with main index
+    localStorage.setItem('lwwf_auth_user', JSON.stringify(user));
     localStorage.setItem('mathai_user', JSON.stringify(user));
-    sessionStorage.setItem('mathai_user', JSON.stringify(user));
+    sessionStorage.setItem('lwwf_auth_user', JSON.stringify(user));
+    try { localStorage.setItem('lwwf_auth_lastActive', String(Date.now())); } catch(e) {}
     loginOv.classList.remove('show');
     renderRight();
     setTimeout(() => location.reload(), 300);
   };
   window.__mathaiLogout = () => {
     if (!confirm('確定要登出？進度仍會保留喺本機。')) return;
+    localStorage.removeItem('lwwf_auth_user');
     localStorage.removeItem('mathai_user');
+    localStorage.removeItem('lwwf_auth_lastActive');
+    sessionStorage.removeItem('lwwf_auth_user');
     sessionStorage.removeItem('mathai_user');
     renderRight();
-    setTimeout(() => location.reload(), 300);
+    // Redirect back to main login
+    setTimeout(() => { location.href = '../../index.html'; }, 300);
   };
 
   // Listen for storage changes to refresh coins
