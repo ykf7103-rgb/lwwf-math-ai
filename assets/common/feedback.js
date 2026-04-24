@@ -237,7 +237,16 @@
         submitBtn.textContent = '提交';
       }, 2500);
     } catch(e) {
-      resultEl.innerHTML = `<div class="fb-error">❌ 提交失敗：${e.message}</div>`;
+      let friendly = '❌ 提交失敗';
+      const errMsg = e.message || String(e);
+      if (/Failed to fetch|NetworkError|CORS|Origin|ERR_NETWORK/i.test(errMsg)) {
+        friendly = '🚫 網站未授權 (CORS)。請通知楊老師：Supabase 要加 ' + location.origin + ' 入 allowed origins。';
+      } else if (/does not exist|student_feedback/.test(errMsg)) {
+        friendly = '⚠️ 資料表未建立（老師：請去 Supabase 跑一次 /supabase/feedback_table_migration.sql）';
+      } else if (/401|403|JWT|unauthor/i.test(errMsg)) {
+        friendly = '🔒 權限錯誤 — anon key 可能過期，通知楊老師。';
+      }
+      resultEl.innerHTML = `<div class="fb-error">${friendly}<div style="margin-top:6px;font-size:0.75rem;font-weight:400;opacity:0.75;">${errMsg.slice(0, 200)}</div></div>`;
       submitBtn.disabled = false;
       submitBtn.textContent = '提交';
     }

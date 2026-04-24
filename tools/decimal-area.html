@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小數面積可視化 · 第14課</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; padding: 14px 14px 40px;
+    font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%);
+    min-height: 100vh; color: #222;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { color: #E65100; font-size: 1.25rem; text-align: center; margin: 4px 0 4px; }
+  .sub { text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 14px; line-height: 1.5; }
+
+  .card {
+    background: white; border-radius: 18px; padding: 16px 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border: 2px solid #FFE0B2; margin-bottom: 12px;
+  }
+
+  /* Sliders */
+  .slider-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .slider-row label {
+    min-width: 80px; font-weight: 800; color: #E65100; font-size: 0.95rem;
+  }
+  .slider-row input[type=range] {
+    flex: 1; accent-color: #FF9800;
+  }
+  .slider-row .val {
+    min-width: 52px; text-align: right; font-family: 'SF Mono','Menlo',monospace;
+    font-size: 1.1rem; font-weight: 800; color: #333;
+    background: #FFF8E1; padding: 4px 8px; border-radius: 6px;
+  }
+
+  .eq-line {
+    text-align: center; padding: 12px 10px;
+    background: linear-gradient(135deg,#FFF8E1,#FFECB3);
+    border-radius: 12px; margin-bottom: 14px;
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'SF Mono','Menlo',monospace;
+    color: #E65100;
+  }
+  .eq-line .a, .eq-line .b { color: #1565C0; }
+  .eq-line .p { color: #2E7D32; font-size: 1.4rem; }
+
+  /* Grid */
+  .grid-wrap {
+    display: flex; justify-content: center; margin-bottom: 10px;
+    overflow-x: auto;
+  }
+  svg { max-width: 100%; height: auto; display: block; }
+
+  .legend {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    font-size: 0.85rem; color: #555; margin-top: 8px;
+  }
+  .legend .item { display: flex; align-items: center; gap: 5px; }
+  .legend .sw { display: inline-block; width: 16px; height: 16px; border: 1.5px solid #555; border-radius: 3px; }
+
+  .tip {
+    padding: 10px 14px;
+    background: #E8F5E9; border-left: 4px solid #4CAF50;
+    border-radius: 8px; font-size: 0.88rem; color: #1B5E20; line-height: 1.6;
+    margin-top: 8px;
+  }
+  .tip b { color: #2E7D32; }
+
+  .presets {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    margin-top: 10px;
+  }
+  .preset {
+    padding: 10px 4px; border: 2px solid #FFB74D; background: white;
+    border-radius: 8px; font-weight: 700; cursor: pointer;
+    color: #E65100; font-size: 0.85rem; font-family: inherit;
+    transition: all 0.12s;
+  }
+  .preset:hover { background: #FFF3E0; }
+
+  @media (max-width: 500px) {
+    .slider-row label { min-width: 60px; font-size: 0.85rem; }
+    .eq-line { font-size: 1rem; padding: 10px 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📐 小數面積可視化</h1>
+  <p class="sub">拖滑桿調整兩個小數，睇下面格仔點樣變。綠色格仔總面積 = 兩數相乘嘅答案！</p>
+
+  <div class="card">
+    <div class="slider-row">
+      <label>第一數 a =</label>
+      <input type="range" id="aSlider" min="0.1" max="1" step="0.1" value="0.3">
+      <span class="val" id="aVal">0.3</span>
+    </div>
+    <div class="slider-row">
+      <label>第二數 b =</label>
+      <input type="range" id="bSlider" min="0.1" max="1" step="0.1" value="0.4">
+      <span class="val" id="bVal">0.4</span>
+    </div>
+
+    <div class="eq-line">
+      <span class="a" id="eqA">0.3</span> × <span class="b" id="eqB">0.4</span> = <span class="p" id="eqP">0.12</span>
+    </div>
+
+    <div class="grid-wrap">
+      <svg id="grid" width="360" height="360" viewBox="0 0 360 360"></svg>
+    </div>
+
+    <div class="legend">
+      <span class="item"><span class="sw" style="background:#C8E6C9"></span>綠色格仔 = 答案（a × b）</span>
+      <span class="item"><span class="sw" style="background:#FFF3E0"></span>淺色區域 = 整個 1 × 1 嘅格仔</span>
+    </div>
+
+    <div class="tip" id="tip"></div>
+
+    <div style="margin-top:12px;font-weight:800;color:#E65100;font-size:0.9rem;">⚡ 快速試：</div>
+    <div class="presets">
+      <button class="preset" onclick="setVals(0.3, 0.4)">0.3 × 0.4</button>
+      <button class="preset" onclick="setVals(0.5, 0.5)">0.5 × 0.5</button>
+      <button class="preset" onclick="setVals(0.6, 0.8)">0.6 × 0.8</button>
+      <button class="preset" onclick="setVals(0.2, 0.7)">0.2 × 0.7</button>
+      <button class="preset" onclick="setVals(0.9, 0.9)">0.9 × 0.9</button>
+      <button class="preset" onclick="setVals(1.0, 1.0)">1 × 1</button>
+    </div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
+    <div style="font-weight:800;color:#E65100;margin-bottom:6px;">📝 規律發現</div>
+    <ol style="margin:4px 0 4px 20px;padding:0;font-size:0.88rem;line-height:1.7;color:#555;">
+      <li>10 × 10 = 100 個小格，每格係成個面積嘅 <b>1/100</b>。</li>
+      <li>a × b 嘅格仔數 = <b>10a × 10b</b>。例如 0.3 × 0.4 ⇒ 3 × 4 = 12 個小格。</li>
+      <li>12 個小格 ÷ 100 = <b>0.12</b>（面積）。</li>
+      <li>所以「兩個一位小數相乘 ⇒ 答案有 2 位小數」，就係咁嚟！</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+const svg = document.getElementById('grid');
+const SIZE = 340;
+const OFFSET = 10;
+const CELLS = 10;      // 10x10 grid
+const CELL = SIZE / CELLS;
+
+function fmt(n) {
+  // show up to 2 decimals, strip trailing
+  const s = n.toFixed(2);
+  return s.replace(/\.?0+$/, '') || '0';
+}
+
+function render() {
+  const a = parseFloat(document.getElementById('aSlider').value);
+  const b = parseFloat(document.getElementById('bSlider').value);
+  const p = a * b;
+  document.getElementById('aVal').textContent = fmt(a);
+  document.getElementById('bVal').textContent = fmt(b);
+  document.getElementById('eqA').textContent = fmt(a);
+  document.getElementById('eqB').textContent = fmt(b);
+  document.getElementById('eqP').textContent = fmt(p);
+
+  // Compute how many small cells are "green" for a×b
+  const greenW = Math.round(a * CELLS);
+  const greenH = Math.round(b * CELLS);
+  const greenCount = greenW * greenH;
+
+  // Build SVG
+  let s = '';
+  // Background
+  s += `<rect x="${OFFSET}" y="${OFFSET}" width="${SIZE}" height="${SIZE}" fill="#FFF3E0" stroke="#333" stroke-width="2"/>`;
+
+  // Green area (a wide × b tall, from top-left)
+  s += `<rect x="${OFFSET}" y="${OFFSET}" width="${greenW * CELL}" height="${greenH * CELL}" fill="#C8E6C9" stroke="#2E7D32" stroke-width="2"/>`;
+
+  // Grid lines
+  for (let i = 1; i < CELLS; i++) {
+    s += `<line x1="${OFFSET + i * CELL}" y1="${OFFSET}" x2="${OFFSET + i * CELL}" y2="${OFFSET + SIZE}" stroke="#BDBDBD" stroke-width="1"/>`;
+    s += `<line x1="${OFFSET}" y1="${OFFSET + i * CELL}" x2="${OFFSET + SIZE}" y2="${OFFSET + i * CELL}" stroke="#BDBDBD" stroke-width="1"/>`;
+  }
+
+  // Labels on axes
+  // Top: "a = 0.X" showing tick at greenW
+  s += `<text x="${OFFSET + greenW * CELL}" y="${OFFSET - 2}" font-size="13" font-weight="700" fill="#1565C0" text-anchor="middle">← a = ${fmt(a)} →</text>`;
+  // Left: "b = 0.X" rotated
+  s += `<text x="${OFFSET - 4}" y="${OFFSET + greenH * CELL / 2}" font-size="13" font-weight="700" fill="#1565C0" text-anchor="end" dominant-baseline="middle" transform="rotate(-90 ${OFFSET - 4} ${OFFSET + greenH * CELL / 2})">↑ b = ${fmt(b)} ↓</text>`;
+
+  // Count label inside green area
+  if (greenCount <= 100) {
+    s += `<text x="${OFFSET + greenW * CELL / 2}" y="${OFFSET + greenH * CELL / 2}" font-size="22" font-weight="900" fill="#2E7D32" text-anchor="middle" dominant-baseline="middle" style="text-shadow:1px 1px 2px white;">${greenCount}/100</text>`;
+    s += `<text x="${OFFSET + greenW * CELL / 2}" y="${OFFSET + greenH * CELL / 2 + 22}" font-size="13" font-weight="700" fill="#2E7D32" text-anchor="middle" dominant-baseline="middle" style="text-shadow:1px 1px 2px white;">= ${fmt(p)}</text>`;
+  }
+
+  svg.innerHTML = s;
+
+  // Tip
+  const tipEl = document.getElementById('tip');
+  tipEl.innerHTML = `💡 <b>${fmt(a)} × ${fmt(b)} = ${fmt(p)}</b>：整幅圖分 100 個小格，綠色部分有 <b>${greenCount} 個小格</b>。
+  每個小格係 <b>1/100 = 0.01</b>。所以答案 = ${greenCount} × 0.01 = <b>${fmt(greenCount / 100)}</b>。`;
+}
+
+function setVals(a, b) {
+  document.getElementById('aSlider').value = a;
+  document.getElementById('bSlider').value = b;
+  render();
+}
+
+document.getElementById('aSlider').addEventListener('input', render);
+document.getElementById('bSlider').addEventListener('input', render);
+render();
+</script>
+</body>
+</html>

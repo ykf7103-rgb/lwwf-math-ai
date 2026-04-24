@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>直式乘法輸入工具 · 第13課</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; padding: 14px 14px 40px;
+    font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    background: linear-gradient(135deg, #FFFEF7 0%, #FFF8DC 50%, #FFF0E0 100%);
+    min-height: 100vh; color: #222;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { color: #E65100; font-size: 1.3rem; text-align: center; margin: 4px 0 6px; }
+  .sub { text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 14px; line-height: 1.5; }
+
+  /* Level picker */
+  .levels {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin-bottom: 14px;
+  }
+  .level-btn {
+    padding: 10px 6px; border: 2px solid #FFB74D; background: white;
+    border-radius: 10px; font-weight: 800; cursor: pointer;
+    color: #E65100; font-size: 0.85rem; font-family: inherit;
+    transition: all 0.15s;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .level-btn:hover { background: #FFF3E0; }
+  .level-btn.active { background: linear-gradient(135deg,#FF9800,#E65100); color: white; border-color: #E65100; box-shadow: 0 3px 10px rgba(230,81,0,0.3); }
+  .level-btn small { font-size: 0.7rem; font-weight: 600; opacity: 0.85; }
+
+  /* Main card */
+  .card {
+    background: white; border-radius: 18px; padding: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border: 2px solid #FFE0B2;
+  }
+  .problem {
+    text-align: center; font-size: 1.1rem; font-weight: 800;
+    color: #333; margin-bottom: 10px;
+  }
+  .problem .eq { color: #E65100; }
+
+  /* Vertical tableau */
+  .tableau {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px; padding: 14px 12px;
+    background: linear-gradient(180deg,#FFF8E1,#FFF3E0);
+    border-radius: 12px; margin: 10px 0 18px;
+    overflow-x: auto;
+  }
+  .row {
+    display: flex; gap: 6px; align-items: center;
+    font-family: 'SF Mono','Menlo','Consolas',monospace;
+  }
+  .row .op {
+    font-size: 1.7rem; font-weight: 800; color: #E65100;
+    width: 28px; text-align: right;
+  }
+  .row.hr {
+    border-top: 3px solid #333; width: 100%; max-width: 320px;
+    margin-top: 4px; padding-top: 2px;
+    height: 2px;
+  }
+  .cell {
+    width: 42px; height: 52px;
+    border: 2px solid #FFB74D; border-radius: 8px;
+    background: white; display: flex; align-items: center; justify-content: center;
+    font-size: 1.55rem; font-weight: 800; color: #333;
+    cursor: pointer; user-select: none;
+    transition: all 0.12s;
+    position: relative;
+  }
+  .cell:hover:not(.locked):not(.correct) { background: #FFF3E0; transform: translateY(-1px); }
+  .cell.active {
+    border-color: #E65100; background: #FFE0B2;
+    box-shadow: 0 0 0 3px rgba(255,152,0,0.3);
+  }
+  .cell.correct {
+    background: #C8E6C9; border-color: #4CAF50; color: #2E7D32;
+    cursor: default;
+  }
+  .cell.wrong {
+    background: #FFCDD2; border-color: #F44336; color: #C62828;
+    animation: shake 0.3s;
+  }
+  .cell.locked {
+    background: #F5F5F5; border-color: #E0E0E0; color: #999;
+    cursor: default;
+  }
+  .cell .dot {
+    position: absolute; bottom: 2px; right: 4px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #E65100;
+  }
+  .cell.empty { color: #bbb; }
+  .cell.empty::before {
+    content: '?'; opacity: 0.5;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  /* Digit keypad */
+  .keypad-title { text-align: center; font-size: 0.85rem; color: #666; margin: 4px 0 6px; }
+  .keypad {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+    max-width: 320px; margin: 0 auto 14px;
+  }
+  .key {
+    padding: 14px 0; border: 2px solid #FF9800; background: white;
+    border-radius: 10px; font-size: 1.2rem; font-weight: 800;
+    color: #E65100; cursor: pointer; font-family: inherit;
+    transition: all 0.1s;
+  }
+  .key:hover { background: #FFF3E0; }
+  .key:active { transform: scale(0.95); }
+  .key.dot { background: linear-gradient(135deg,#FFE0B2,#FFCC80); }
+  .key.clear { background: linear-gradient(135deg,#FFEBEE,#FFCDD2); border-color: #E57373; color: #C62828; }
+
+  /* Status + buttons */
+  .status {
+    padding: 10px 14px; border-radius: 10px; margin: 10px 0;
+    text-align: center; font-weight: 700; font-size: 0.95rem;
+    min-height: 1.5em; line-height: 1.5;
+  }
+  .status.info { background: #E3F2FD; color: #1565C0; border: 1.5px solid #90CAF9; }
+  .status.ok { background: #E8F5E9; color: #2E7D32; border: 1.5px solid #81C784; animation: pop 0.3s; }
+  .status.err { background: #FFEBEE; color: #C62828; border: 1.5px solid #E57373; }
+  @keyframes pop { 0% { transform: scale(0.9); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+
+  .controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .btn {
+    padding: 10px 20px; border-radius: 10px; border: 2px solid;
+    font-weight: 800; cursor: pointer; font-size: 0.95rem;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .btn.primary { background: linear-gradient(135deg,#4CAF50,#2E7D32); color: white; border-color: #2E7D32; }
+  .btn.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(46,125,50,0.4); }
+  .btn.secondary { background: white; color: #1565C0; border-color: #1565C0; }
+  .btn.secondary:hover { background: #E3F2FD; }
+  .btn.hint { background: white; color: #F57C00; border-color: #F57C00; }
+  .btn.hint:hover { background: #FFF3E0; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .progress {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 0.88rem; color: #555;
+  }
+  .streak { color: #E65100; font-weight: 800; }
+
+  .hint-box {
+    margin-top: 10px; padding: 10px 14px;
+    background: #FFF8E1; border-left: 4px solid #FFC107;
+    border-radius: 8px; font-size: 0.88rem; color: #555; line-height: 1.6;
+    display: none;
+  }
+  .hint-box.show { display: block; }
+  .hint-box b { color: #E65100; }
+
+  @media (max-width: 500px) {
+    .cell { width: 34px; height: 44px; font-size: 1.3rem; }
+    .row .op { font-size: 1.4rem; width: 22px; }
+    .key { padding: 12px 0; font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔢 直式乘法輸入工具</h1>
+  <p class="sub">選擇一個關卡，然後按格仔 → 再按數字鍵輸入。全部答啱先過關！</p>
+
+  <!-- Level picker -->
+  <div class="levels" id="levels"></div>
+
+  <!-- Main card -->
+  <div class="card">
+    <div class="progress">
+      <span>🎯 第 <b id="qIdx">1</b> / <b id="qTotal">3</b> 題</span>
+      <span class="streak" id="streakLabel">🔥 連對 0</span>
+    </div>
+
+    <div class="problem" id="problem"></div>
+
+    <div class="tableau" id="tableau"></div>
+
+    <div class="keypad-title">👇 按下面數字鍵輸入</div>
+    <div class="keypad" id="keypad">
+      <button class="key" onclick="input(1)">1</button>
+      <button class="key" onclick="input(2)">2</button>
+      <button class="key" onclick="input(3)">3</button>
+      <button class="key" onclick="input(4)">4</button>
+      <button class="key" onclick="input(5)">5</button>
+      <button class="key" onclick="input(6)">6</button>
+      <button class="key" onclick="input(7)">7</button>
+      <button class="key" onclick="input(8)">8</button>
+      <button class="key" onclick="input(9)">9</button>
+      <button class="key" onclick="input(0)">0</button>
+      <button class="key dot" onclick="inputDot()" title="小數點">·</button>
+      <button class="key clear" onclick="clearCell()" style="grid-column:span 2;">✕ 清除</button>
+      <button class="key" onclick="checkAll()" style="background:linear-gradient(135deg,#81C784,#2E7D32);color:white;border-color:#2E7D32;grid-column:span 2;">✅ 檢查</button>
+    </div>
+
+    <div class="status info" id="status">👉 先按任何一格空白，然後用下方鍵盤輸入數字</div>
+
+    <div class="controls">
+      <button class="btn hint" onclick="showHint()">💡 提示</button>
+      <button class="btn secondary" onclick="resetProblem()">🔄 重做</button>
+      <button class="btn primary" id="nextBtn" onclick="nextProblem()" disabled>下一題 ▶</button>
+    </div>
+
+    <div class="hint-box" id="hintBox"></div>
+  </div>
+</div>
+
+<script>
+// ===== Problem sets =====
+// Ch13 covers: 一位小數×整數, 兩位小數×整數, 小數×小數
+// Each problem: top (multiplicand), bot (multiplier), pp[] (partial products), ans (final)
+// Using integers in tableau, then decimal point is applied after — this is how vertical multiplication is taught.
+const LEVELS = {
+  beginner: {
+    name: '🌱 初級',
+    desc: '一位小數 × 個位整數',
+    problems: [
+      // 0.3 × 4 = 1.2  → 3 × 4 = 12, 1 decimal
+      { top: '0.3', bot: '4', ppList: ['12'], ans: '1.2', hint: '3×4=12，因為被乘數小數點後有 1 位，答案都有 1 位 → 1.2' },
+      { top: '0.6', bot: '5', ppList: ['30'], ans: '3.0', hint: '6×5=30，小數點後 1 位 → 3.0（或 3）' },
+      { top: '0.7', bot: '8', ppList: ['56'], ans: '5.6', hint: '7×8=56，小數點後 1 位 → 5.6' },
+    ],
+  },
+  mid: {
+    name: '🌿 中級',
+    desc: '兩位小數 × 個位',
+    problems: [
+      // 0.23 × 4 = 0.92
+      { top: '0.23', bot: '4', ppList: ['92'], ans: '0.92', hint: '23×4=92，小數點後 2 位 → 0.92' },
+      { top: '1.25', bot: '3', ppList: ['375'], ans: '3.75', hint: '125×3=375，小數點後 2 位 → 3.75' },
+      { top: '2.15', bot: '6', ppList: ['1290'], ans: '12.9', hint: '215×6=1290，小數點後 2 位 → 12.90（= 12.9）' },
+    ],
+  },
+  advanced: {
+    name: '🌳 高級',
+    desc: '小數 × 小數',
+    problems: [
+      // 0.3 × 0.4 = 0.12
+      { top: '0.3', bot: '0.4', ppList: ['12'], ans: '0.12', hint: '3×4=12，兩邊小數點後共 2 位 → 0.12' },
+      { top: '1.2', bot: '0.5', ppList: ['60'], ans: '0.60', hint: '12×5=60，小數點後共 2 位 → 0.60（= 0.6）' },
+      { top: '2.3', bot: '1.4', ppList: ['92','230'], ans: '3.22', hint: '23×14=322，小數點後共 2 位 → 3.22。（部分積：23×4=92、23×10=230）' },
+    ],
+  },
+  expert: {
+    name: '🏆 超難',
+    desc: '兩位 × 兩位',
+    problems: [
+      { top: '0.23', bot: '0.14', ppList: ['92','230'], ans: '0.0322', hint: '23×14=322，共 4 位小數 → 0.0322' },
+      { top: '1.25', bot: '0.36', ppList: ['750','3750'], ans: '0.4500', hint: '125×36=4500，共 4 位小數 → 0.4500（= 0.45）' },
+      { top: '2.08', bot: '1.25', ppList: ['1040','4160','2080'], ans: '2.6000', hint: '208×125=26000，共 4 位小數 → 2.6000（= 2.6）' },
+    ],
+  },
+};
+
+// ===== State =====
+let currentLevel = 'beginner';
+let problemIdx = 0;
+let cells = [];         // array of cell objects: { el, correct:'5'|'.'|null, user:'', type:'pp'|'ans', locked:bool, hasDot:bool }
+let activeCell = -1;
+let streak = 0;
+
+// ===== Build level buttons =====
+const levelsWrap = document.getElementById('levels');
+Object.entries(LEVELS).forEach(([key, lv]) => {
+  const btn = document.createElement('button');
+  btn.className = 'level-btn' + (key === currentLevel ? ' active' : '');
+  btn.innerHTML = `<span>${lv.name}</span><small>${lv.desc}</small>`;
+  btn.onclick = () => { currentLevel = key; problemIdx = 0; streak = 0; rebuild(); renderLevels(); };
+  levelsWrap.appendChild(btn);
+});
+function renderLevels() {
+  [...levelsWrap.children].forEach((b, i) => {
+    const k = Object.keys(LEVELS)[i];
+    b.classList.toggle('active', k === currentLevel);
+  });
+}
+
+// ===== Build tableau for current problem =====
+function buildTableau() {
+  const p = LEVELS[currentLevel].problems[problemIdx];
+  const t = document.getElementById('tableau');
+  t.innerHTML = '';
+  cells = [];
+
+  const topStr = p.top;
+  const botStr = p.bot;
+  const ansStr = p.ans;
+  const maxLen = Math.max(topStr.replace('.','').length + 2, ansStr.replace('.','').length);
+  // We'll render: top row (given), bot row (given with × op), hr, partial products (blank to fill), hr (if >1 pp), final answer (blank)
+
+  // helper: render a known (locked) row for given number string, right-aligned to width
+  function renderFixedRow(numStr, opChar) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const op = document.createElement('span');
+    op.className = 'op';
+    op.textContent = opChar || '';
+    row.appendChild(op);
+    // right-align: pad
+    const chars = numStr.split('');
+    // pad empty cells on left to align with maxLen (treat '.' as non-width but shown between)
+    const digitsOnly = numStr.replace('.', '');
+    const leftPad = maxLen - digitsOnly.length;
+    for (let i = 0; i < leftPad; i++) {
+      const ph = document.createElement('div');
+      ph.style.width = '42px';
+      row.appendChild(ph);
+    }
+    chars.forEach(ch => {
+      const c = document.createElement('div');
+      c.className = 'cell locked';
+      if (ch === '.') { c.textContent = '.'; c.style.width = '18px'; c.style.background = 'transparent'; c.style.border = 'none'; }
+      else c.textContent = ch;
+      row.appendChild(c);
+    });
+    return row;
+  }
+
+  // helper: render an EDITABLE row for a target string (digits only — decimal comes later).
+  // We'll render each target digit as blank cell.
+  function renderEditableRow(targetDigits, opChar, rowType, indentRight) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const op = document.createElement('span');
+    op.className = 'op';
+    op.textContent = opChar || '';
+    row.appendChild(op);
+    const digits = String(targetDigits).split('');
+    const leftPad = maxLen - digits.length - (indentRight || 0);
+    for (let i = 0; i < leftPad; i++) {
+      const ph = document.createElement('div');
+      ph.style.width = '42px';
+      row.appendChild(ph);
+    }
+    digits.forEach((d, i) => {
+      const c = document.createElement('div');
+      c.className = 'cell empty';
+      const idx = cells.length;
+      c.dataset.idx = idx;
+      c.onclick = () => selectCell(idx);
+      row.appendChild(c);
+      cells.push({ el: c, correct: d, user: '', type: rowType });
+    });
+    // right pad for indent
+    for (let i = 0; i < (indentRight || 0); i++) {
+      const ph = document.createElement('div');
+      ph.style.width = '42px';
+      row.appendChild(ph);
+    }
+    return row;
+  }
+
+  // 1. top row (locked)
+  t.appendChild(renderFixedRow(topStr, ''));
+  // 2. bot row (locked, × op)
+  t.appendChild(renderFixedRow(botStr, '×'));
+  // 3. hr
+  const hr = document.createElement('div'); hr.className = 'row hr'; t.appendChild(hr);
+
+  // 4. partial products
+  const pps = p.ppList;
+  pps.forEach((pp, i) => {
+    // Indent right by i digits (classic multiplication)
+    t.appendChild(renderEditableRow(pp, i === 0 ? '' : '+', 'pp', i));
+  });
+
+  // 5. if multiple PP: add hr, then final answer (digits-only since we show as integer underneath, then final with dot)
+  if (pps.length > 1) {
+    const hr2 = document.createElement('div'); hr2.className = 'row hr'; t.appendChild(hr2);
+  }
+
+  // 6. final answer — with decimal point in right place.
+  // Show a dedicated row with "=" label + the answer string blanks
+  const ansRow = document.createElement('div');
+  ansRow.className = 'row';
+  const ansOp = document.createElement('span'); ansOp.className = 'op'; ansOp.textContent = '='; ansRow.appendChild(ansOp);
+  const ansChars = ansStr.split('');
+  const ansDigitsLen = ansStr.replace('.','').length;
+  const leftPad = maxLen - ansDigitsLen;
+  for (let i = 0; i < leftPad; i++) {
+    const ph = document.createElement('div'); ph.style.width = '42px'; ansRow.appendChild(ph);
+  }
+  ansChars.forEach((ch, i) => {
+    if (ch === '.') {
+      // Dot is editable — student must decide where to put it!
+      // We render as a small narrow cell
+      const idx = cells.length;
+      const c = document.createElement('div');
+      c.className = 'cell empty';
+      c.style.width = '22px';
+      c.dataset.idx = idx;
+      c.onclick = () => selectCell(idx);
+      ansRow.appendChild(c);
+      cells.push({ el: c, correct: '.', user: '', type: 'ans', isDot: true });
+    } else {
+      const idx = cells.length;
+      const c = document.createElement('div');
+      c.className = 'cell empty';
+      c.dataset.idx = idx;
+      c.onclick = () => selectCell(idx);
+      ansRow.appendChild(c);
+      cells.push({ el: c, correct: ch, user: '', type: 'ans' });
+    }
+  });
+  t.appendChild(ansRow);
+
+  // Update problem line + progress
+  document.getElementById('problem').innerHTML = `<span>${p.top}</span> <span style="color:#888;margin:0 6px;">×</span> <span>${p.bot}</span> <span class="eq">= ?</span>`;
+  document.getElementById('qIdx').textContent = (problemIdx + 1);
+  document.getElementById('qTotal').textContent = LEVELS[currentLevel].problems.length;
+  document.getElementById('streakLabel').textContent = `🔥 連對 ${streak}`;
+
+  activeCell = -1;
+  // auto-select first empty cell
+  if (cells.length) selectCell(0);
+  setStatus('info', '👉 按任何一個空格，然後用下方鍵盤輸入數字。部分積要一步步填落去！');
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('nextBtn').disabled = true;
+}
+
+function selectCell(idx) {
+  const c = cells[idx];
+  if (!c || c.el.classList.contains('correct')) return;
+  if (activeCell >= 0 && cells[activeCell]) cells[activeCell].el.classList.remove('active');
+  activeCell = idx;
+  c.el.classList.add('active');
+  c.el.classList.remove('wrong', 'empty');
+}
+
+function input(digit) {
+  if (activeCell < 0) { setStatus('err', '⚠️ 先點一個格仔！'); return; }
+  const c = cells[activeCell];
+  if (c.el.classList.contains('correct')) return;
+  if (c.isDot) { setStatus('err', '⚠️ 呢格要小數點「·」，唔係數字。'); c.el.classList.add('wrong'); setTimeout(()=>c.el.classList.remove('wrong'), 400); return; }
+  c.user = String(digit);
+  c.el.textContent = String(digit);
+  c.el.classList.remove('empty', 'wrong');
+  // auto-check this cell
+  if (c.user === c.correct) {
+    c.el.classList.add('correct');
+    c.el.classList.remove('active');
+    // auto advance to next empty cell
+    const next = findNextEmpty(activeCell);
+    activeCell = -1;
+    if (next >= 0) selectCell(next);
+    else checkAll();
+  } else {
+    c.el.classList.add('wrong');
+    setStatus('err', `❌ ${digit} 唔啱。再試或者按「💡 提示」睇步驟。`);
+  }
+}
+
+function inputDot() {
+  if (activeCell < 0) { setStatus('err', '⚠️ 先點一個格仔！'); return; }
+  const c = cells[activeCell];
+  if (c.el.classList.contains('correct')) return;
+  if (!c.isDot) {
+    c.el.classList.add('wrong');
+    setTimeout(()=>c.el.classList.remove('wrong'), 400);
+    setStatus('err', '❌ 呢格唔係小數點位置。諗下：兩邊總共有幾多位小數？');
+    return;
+  }
+  c.user = '.';
+  c.el.textContent = '.';
+  c.el.classList.remove('empty', 'wrong');
+  c.el.classList.add('correct');
+  c.el.classList.remove('active');
+  const next = findNextEmpty(activeCell);
+  activeCell = -1;
+  if (next >= 0) selectCell(next);
+  else checkAll();
+}
+
+function clearCell() {
+  if (activeCell < 0) return;
+  const c = cells[activeCell];
+  if (c.el.classList.contains('correct')) return;
+  c.user = '';
+  c.el.textContent = '';
+  c.el.classList.add('empty');
+  c.el.classList.remove('wrong');
+}
+
+function findNextEmpty(from) {
+  for (let i = from + 1; i < cells.length; i++) {
+    if (!cells[i].el.classList.contains('correct')) return i;
+  }
+  // wrap around
+  for (let i = 0; i < from; i++) {
+    if (!cells[i].el.classList.contains('correct')) return i;
+  }
+  return -1;
+}
+
+function checkAll() {
+  let allCorrect = true;
+  cells.forEach(c => {
+    if (!c.el.classList.contains('correct')) allCorrect = false;
+  });
+  if (allCorrect) {
+    streak++;
+    setStatus('ok', `🎉 全部答啱！連對 ${streak} 題。`);
+    document.getElementById('nextBtn').disabled = false;
+    document.getElementById('streakLabel').textContent = `🔥 連對 ${streak}`;
+  } else {
+    const remaining = cells.filter(c => !c.el.classList.contains('correct')).length;
+    setStatus('err', `仲有 ${remaining} 格要填。繼續加油！`);
+  }
+}
+
+function showHint() {
+  const p = LEVELS[currentLevel].problems[problemIdx];
+  const box = document.getElementById('hintBox');
+  box.innerHTML = `💡 <b>提示</b>：${p.hint}`;
+  box.classList.add('show');
+}
+
+function resetProblem() {
+  streak = 0;
+  buildTableau();
+}
+
+function nextProblem() {
+  problemIdx++;
+  if (problemIdx >= LEVELS[currentLevel].problems.length) {
+    // finished this level
+    document.getElementById('problem').innerHTML = `🎊 <span style="color:#2E7D32;">全部 ${LEVELS[currentLevel].problems.length} 題都做完！</span> 連對 ${streak} 題！`;
+    document.getElementById('tableau').innerHTML = `<div style="text-align:center;padding:20px;font-size:1.1rem;">
+      <div style="font-size:3rem;">🏆</div>
+      <div style="font-weight:800;color:#E65100;margin:8px 0;">關卡完成！</div>
+      <div style="color:#666;">揀其他難度繼續練，或者按「🔄 重做」再試一次。</div>
+    </div>`;
+    document.getElementById('status').innerHTML = '🎉 恭喜完成！';
+    document.getElementById('status').className = 'status ok';
+    document.getElementById('nextBtn').disabled = true;
+    return;
+  }
+  buildTableau();
+}
+
+function rebuild() { problemIdx = 0; streak = 0; buildTableau(); }
+
+function setStatus(cls, msg) {
+  const s = document.getElementById('status');
+  s.textContent = msg;
+  s.className = 'status ' + cls;
+}
+
+// Keyboard shortcut: allow typing directly
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key >= '0' && e.key <= '9') input(parseInt(e.key));
+  else if (e.key === '.' || e.key === '·') inputDot();
+  else if (e.key === 'Backspace' || e.key === 'Delete') clearCell();
+  else if (e.key === 'Enter') checkAll();
+  else if (e.key === 'Tab') { e.preventDefault(); const next = findNextEmpty(activeCell < 0 ? -1 : activeCell); if (next >= 0) selectCell(next); }
+});
+
+// Init
+buildTableau();
+</script>
+</body>
+</html>
