@@ -206,9 +206,34 @@
       <div class="big-card" style="margin-bottom:12px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
         <div class="big-emoji">🎵</div>
         <div class="big-title" style="color:#E65100;">Suno 廣東話溫習歌 × 2</div>
-        <div class="big-sub">由 Suno 生成 · 邊聽邊記口訣</div>
-        <div id="sunoSlots" style="margin-top:8px;font-size:0.9rem;color:#888;text-align:center;padding:14px;background:rgba(255,255,255,0.6);border-radius:10px;">
-          🎵 稍後將有兩首廣東話歌加入呢度
+        <div class="big-sub">Suno v4.5 Pro · 粵語 · 邊聽邊記口訣</div>
+
+        <div style="margin-top:12px;background:rgba(255,255,255,0.85);border-radius:10px;padding:12px;">
+          <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎵 歌 1：《小數補零歌》</div>
+          <div style="font-size:0.82rem;color:#666;margin-bottom:8px;">口訣：因數位數相加 → 答案位數要足夠 → 唔夠補零</div>
+          <audio controls preload="metadata" style="width:100%;" onplay="markExtra('suno1')">
+            <source src="audio/song1_v1.mp3" type="audio/mpeg">
+          </audio>
+          <details style="margin-top:6px;font-size:0.8rem;">
+            <summary style="cursor:pointer;color:#888;">🔀 版本 2（另一個風格）</summary>
+            <audio controls preload="metadata" style="width:100%;margin-top:6px;">
+              <source src="audio/song1_v2.mp3" type="audio/mpeg">
+            </audio>
+          </details>
+        </div>
+
+        <div style="margin-top:10px;background:rgba(255,255,255,0.85);border-radius:10px;padding:12px;">
+          <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎵 歌 2：《零點零八咪》（點心閣面積大冒險）</div>
+          <div style="font-size:0.82rem;color:#666;margin-bottom:8px;">口訣：面積 = 長 × 闊 + 估算近似值 + 生活應用</div>
+          <audio controls preload="metadata" style="width:100%;" onplay="markExtra('suno2')">
+            <source src="audio/song2_v1.mp3" type="audio/mpeg">
+          </audio>
+          <details style="margin-top:6px;font-size:0.8rem;">
+            <summary style="cursor:pointer;color:#888;">🔀 版本 2（另一個風格）</summary>
+            <audio controls preload="metadata" style="width:100%;margin-top:6px;">
+              <source src="audio/song2_v2.mp3" type="audio/mpeg">
+            </audio>
+          </details>
         </div>
       </div>
 
