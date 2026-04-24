@@ -99,7 +99,6 @@
     <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')"><span class="tab-emoji">📝</span><span class="tab-label">測驗區</span></button>
     <button class="tab-btn" data-tab="games" onclick="switchTab('games')"><span class="tab-emoji">🎮</span><span class="tab-label">遊戲區</span></button>
     <button class="tab-btn" data-tab="tool" onclick="switchTab('tool')"><span class="tab-emoji">🔢</span><span class="tab-label">小數工具</span></button>
-    <button class="tab-btn" data-tab="extras" onclick="switchTab('extras')"><span class="tab-emoji">📖</span><span class="tab-label">補充教材</span></button>
     <button class="tab-btn" data-tab="ai" onclick="switchTab('ai')"><span class="tab-emoji">🤖</span><span class="tab-label">AI問功課</span></button>
     <button class="tab-btn" data-tab="scores" onclick="switchTab('scores')"><span class="tab-emoji">🏆</span><span class="tab-label">我的成績</span></button>
   </div>
@@ -150,6 +149,47 @@
         <a href="game3.html" class="card game" data-key="game3"><div class="step">STEP 4</div><span class="done-badge">✓</span><div class="card-emoji">👨‍🍳</div><div class="card-title">廚神挑戰</div><div class="card-desc">Recipe Chef · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">3</div></a>
       </div>
     </div>
+
+    <!-- 🎁 額外教材（原「補充教材」併入自學區）-->
+    <div class="section" style="border-color:#C8E6C9;margin-top:20px;">
+      <div class="section-title" style="background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;"><span class="num" style="color:#2E7D32;">🎁</span>額外教材（完成可賺 <img src="images/coin_new.png" style="width:16px;height:16px;vertical-align:middle;"> 5 金幣）</div>
+      <p style="color:#555;font-size:0.88rem;margin:-6px 0 12px;padding:0 6px;">教學影片 · 語音摘要 · Suno 廣東話歌 · 學習卡 · 學習指南 · Bonus 測驗</p>
+
+      <div class="big-card" style="margin-bottom:12px;">
+        <div class="big-emoji">🎬</div>
+        <div class="big-title" style="color:#C62828;">教學影片 · 天庭點心閣</div>
+        <div class="big-sub">NLM 生成 · 西遊記 / 點心店主題</div>
+        <video controls preload="metadata" style="width:100%;border-radius:12px;background:#000;margin-top:8px;" onplay="markExtra('video')">
+          <source src="video/teaching.mp4" type="video/mp4">
+          您的瀏覽器唔支援影片播放。
+        </video>
+      </div>
+
+      <div class="big-card" style="margin-bottom:12px;">
+        <div class="big-emoji">🎙️</div>
+        <div class="big-title" style="color:#6A1B9A;">語音摘要 · Deep Dive</div>
+        <div class="big-sub">兩位主持傾全課重點 · 粵語</div>
+        <audio controls preload="metadata" style="width:100%;margin-top:8px;" onplay="markExtra('audio')">
+          <source src="audio/summary.mp4" type="audio/mp4">
+          您的瀏覽器唔支援音頻播放。
+        </audio>
+      </div>
+
+      <div class="big-card" style="margin-bottom:12px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
+        <div class="big-emoji">🎵</div>
+        <div class="big-title" style="color:#E65100;">Suno 廣東話溫習歌 × 2</div>
+        <div class="big-sub">由 Suno 生成 · 邊聽邊記口訣</div>
+        <div id="sunoSlots" style="margin-top:8px;font-size:0.9rem;color:#888;text-align:center;padding:14px;background:rgba(255,255,255,0.6);border-radius:10px;">
+          🎵 稍後將有兩首廣東話歌加入呢度
+        </div>
+      </div>
+
+      <div class="big-grid">
+        <a href="flashcards.html" target="_blank" class="big-card" style="border-color:#BBDEFB;"><div class="big-emoji">🃏</div><div class="big-title" style="color:#1565C0;">學習卡</div><div class="big-sub">點擊翻牌記重點</div><div class="big-desc">NLM 自動生成，包括概念、例題、口訣</div></a>
+        <a href="study-guide.md" target="_blank" class="big-card" style="border-color:#FFE0B2;"><div class="big-emoji">📋</div><div class="big-title" style="color:#E65100;">學習指南</div><div class="big-sub">濃縮版本課筆記</div><div class="big-desc">全課精華一頁看盡，考前溫習用</div></a>
+        <a href="bonus-quiz.html" target="_blank" class="big-card" style="border-color:#C8E6C9;"><div class="big-emoji">🎯</div><div class="big-title" style="color:#00897B;">額外測驗</div><div class="big-sub">NLM · 10 題</div><div class="big-desc">Bonus 挑戰題，難度 3 星</div></a>
+      </div>
+    </div>
   </div>
 
   <!-- 測驗區 -->
@@ -191,50 +231,6 @@
     <p style="text-align:center;margin-top:10px;">
       <a href="../../tools/decimal-area.html" target="_blank" style="color:#7B1FA2;font-weight:700;text-decoration:none;">🔗 新窗口開工具</a>
     </p>
-  </div>
-
-  <!-- 補充教材 -->
-  <div class="tab-panel" data-tab="extras">
-    <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #4CAF50;">
-      <h3 style="margin:0 0 4px;color:#1B5E20;">📖 補充教材</h3>
-      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">睇影片 + 聽語音 + 用學習卡 + Suno 歌。播放即計完成，最多 <img src="images/coin_new.png" style="width:16px;height:16px;vertical-align:middle;"> 5 金幣。</p>
-    </div>
-
-    <div class="big-card" style="margin-bottom:16px;">
-      <div class="big-emoji">🎬</div>
-      <div class="big-title" style="color:#C62828;">教學影片 · 天庭點心閣</div>
-      <div class="big-sub">NLM 生成 · 西遊記 / 點心店主題</div>
-      <video controls preload="metadata" style="width:100%;border-radius:12px;background:#000;margin-top:8px;" onplay="markExtra('video')">
-        <source src="video/teaching.mp4" type="video/mp4">
-        您的瀏覽器唔支援影片播放。
-      </video>
-    </div>
-
-    <div class="big-card" style="margin-bottom:16px;">
-      <div class="big-emoji">🎙️</div>
-      <div class="big-title" style="color:#6A1B9A;">語音摘要 · Deep Dive</div>
-      <div class="big-sub">兩位主持傾全課重點 · 粵語</div>
-      <audio controls preload="metadata" style="width:100%;margin-top:8px;" onplay="markExtra('audio')">
-        <source src="audio/summary.mp4" type="audio/mp4">
-        您的瀏覽器唔支援音頻播放。
-      </audio>
-    </div>
-
-    <div class="big-card" style="margin-bottom:16px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
-      <div class="big-emoji">🎵</div>
-      <div class="big-title" style="color:#E65100;">Suno 廣東話溫習歌 × 2</div>
-      <div class="big-sub">由 Suno v5.5 生成 · 邊聽邊記口訣</div>
-      <div style="margin-top:8px;font-size:0.9rem;color:#888;text-align:center;padding:14px;background:rgba(255,255,255,0.6);border-radius:10px;">
-        🕐 兩首歌未生成<br>
-        <span style="font-size:0.82rem;">老師登入 Suno PRO (v5.5) 後可生成並 commit 上 audio/ 資料夾</span>
-      </div>
-    </div>
-
-    <div class="big-grid">
-      <a href="flashcards.html" target="_blank" class="big-card" style="border-color:#BBDEFB;"><div class="big-emoji">🃏</div><div class="big-title" style="color:#1565C0;">學習卡</div><div class="big-sub">點擊翻牌記重點</div><div class="big-desc">NLM 自動生成，包括概念、例題、口訣</div></a>
-      <a href="study-guide.md" target="_blank" class="big-card" style="border-color:#FFE0B2;"><div class="big-emoji">📋</div><div class="big-title" style="color:#E65100;">學習指南</div><div class="big-sub">濃縮版本課筆記</div><div class="big-desc">全課精華一頁看盡，考前溫習用</div></a>
-      <a href="bonus-quiz.html" target="_blank" class="big-card" style="border-color:#C8E6C9;"><div class="big-emoji">🎯</div><div class="big-title" style="color:#00897B;">額外測驗</div><div class="big-sub">NLM · 10 題</div><div class="big-desc">Bonus 挑戰題，難度 3 星</div></a>
-    </div>
   </div>
 
   <!-- AI -->
