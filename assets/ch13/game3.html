@@ -11,7 +11,7 @@ html,body{height:100%;overflow:hidden;background:#000}
 body{
   background:
     linear-gradient(to bottom,rgba(20,5,0,0.5),rgba(60,20,0,0.7)),
-    url('images/bg_mountain.png') center/cover no-repeat;
+    url('images/battle_bg.png') center/cover no-repeat;
   color:#fff5e6;min-height:100vh;display:flex;flex-direction:column;
 }
 .screen{display:none;flex:1;flex-direction:column;align-items:center;padding:12px;text-align:center;overflow-y:auto}
@@ -111,7 +111,7 @@ body{
 <div id="startScreen" class="screen active">
   <h1>🛡️ 取經路塔防戰 🛡️</h1>
   <h2>第13課 小數 × 小數 + 估算 · 西遊記</h2>
-  <img src="images/monkey_tower.png" class="hero" alt="悟空">
+  <img src="images/tower_monkey.png" class="hero" alt="悟空">
   <p>妖怪從西方進攻唐僧！每隻妖怪都帶住一條<b>小數乘法 / 估算題</b>。<br>
   ⚠️ <b style="color:#ff6b6b;">答錯一次扣唐僧 10 血</b>，唔好亂猜！<br>
   點擊妖怪，答啱嘅話悟空就會發射金箍棒擊殺佢！<br>
@@ -130,7 +130,7 @@ body{
   <div class="battlefield" id="battlefield">
     <div class="battle-bg"></div>
     <div class="path-line"></div>
-    <div class="tower"><img src="images/monkey_tower.png"></div>
+    <div class="tower"><img src="images/tower_monkey.png"></div>
     <div class="base-station"><img src="images/tang_monk_praying.png"><div class="base-label">唐僧</div></div>
   </div>
   <div class="q-panel" id="qPanel">
@@ -477,7 +477,7 @@ function endGame() {
   bgMusic.play(won ? 'victory' : 'defeat');
 
   document.getElementById('endTitle').textContent = won ? '🎉 成功守護唐僧！' : '💔 唐僧被擒...';
-  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_think.png';
+  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_casting.png';
 
   // Coins: based on kills
   let coins = 0;

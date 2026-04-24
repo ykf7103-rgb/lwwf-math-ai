@@ -80,7 +80,13 @@
 <!-- Intro -->
 <div id="introScreen">
   <div class="modal-box">
-    <div style="font-size:4rem;">🎈</div>
+    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:8px;">
+      <img src="images/balloon_red.png" style="width:60px;height:60px;animation:float 2s ease-in-out infinite;">
+      <img src="images/balloon_blue.png" style="width:60px;height:60px;animation:float 2s 0.3s ease-in-out infinite;">
+      <img src="images/balloon_yellow.png" style="width:60px;height:60px;animation:float 2s 0.6s ease-in-out infinite;">
+      <img src="images/balloon_green.png" style="width:60px;height:60px;animation:float 2s 0.9s ease-in-out infinite;">
+    </div>
+    <style>@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }</style>
     <h2>氣球爆破挑戰</h2>
     <p><b>60 秒內</b>篤爆 10 個正確答案嘅氣球！</p>
     <p style="background:#FFF8E1;padding:10px;border-radius:8px;border-left:4px solid #FFB300;font-size:0.9rem;text-align:left;">

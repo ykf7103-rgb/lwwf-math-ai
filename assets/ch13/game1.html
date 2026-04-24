@@ -11,7 +11,7 @@ html,body{height:100%;overflow:hidden;background:#000}
 body{
   background:
     linear-gradient(to bottom,rgba(20,5,0,0.6),rgba(60,20,0,0.8)),
-    url('images/bg_mountain.png') center/cover no-repeat;
+    url('images/battle_bg.png') center/cover no-repeat;
   color:#fff5e6;
   min-height:100vh;
   display:flex;
@@ -178,7 +178,7 @@ body{
 <div id="startScreen" class="screen active">
   <h1>西遊記大冒險</h1>
   <h2>第13課 ── 一位小數 × 整數</h2>
-  <img src="images/monkey_happy.png" alt="悟空" class="hero">
+  <img src="images/monkey_battle.png" alt="悟空" class="hero">
   <p>
     悟空取經途中遇到妖怪攔路！<br>
     答對 = <b style="color:#40ff80">⚔️ 攻擊妖怪</b>｜答錯 = <b style="color:#ff8080">💔 被攻擊</b><br>
@@ -209,12 +209,12 @@ body{
   <!-- Arena -->
   <div class="arena">
     <div class="fighter" id="heroFighter">
-      <img src="images/monkey_happy.png" alt="悟空" class="fighter-img" id="heroImg">
+      <img src="images/monkey_battle.png" alt="悟空" class="fighter-img" id="heroImg">
       <div class="fighter-name">齊天大聖</div>
     </div>
     <div class="vs">VS</div>
     <div class="fighter" id="monsterFighter">
-      <img src="images/demon_ox.png" alt="妖怪" class="fighter-img" id="monsterImg">
+      <img src="images/boss_demon_ox.png" alt="妖怪" class="fighter-img" id="monsterImg">
       <div class="fighter-name" id="monsterNameLabel">小妖怪</div>
     </div>
   </div>
@@ -355,7 +355,7 @@ function loadQuestion(){
   document.getElementById('nextBtn').classList.remove('show');
 
   // Hero back to default pose
-  document.getElementById('heroImg').src = 'images/monkey_happy.png';
+  document.getElementById('heroImg').src = 'images/monkey_battle.png';
   document.getElementById('heroFighter').className = 'fighter';
   document.getElementById('monsterFighter').className = 'fighter';
 }
@@ -385,7 +385,7 @@ function answer(idx){
     setTimeout(()=>playTone(1320, 0.4), 150);
   } else {
     state.hp = Math.max(0, state.hp - 20);
-    document.getElementById('heroImg').src = 'images/monkey_think.png';
+    document.getElementById('heroImg').src = 'images/monkey_casting.png';
     document.getElementById('heroFighter').className = 'fighter hit';
     document.getElementById('monsterFighter').className = 'fighter attack';
     document.getElementById('heroHp').style.width = state.hp + '%';
@@ -422,7 +422,7 @@ function endGame(){
   const won = state.hp > 0 && state.correct >= 6;
   bgMusic.play(won ? 'victory' : 'defeat');
   document.getElementById('endTitle').textContent = won ? '🎉 取經成功！' : '💔 戰敗了...';
-  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_think.png';
+  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_casting.png';
 
   // Coins: 1 coin per 3 correct answers, cap 3
   const coins = Math.min(3, Math.floor(state.correct/3));
