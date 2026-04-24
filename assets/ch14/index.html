@@ -6,21 +6,36 @@
 <title>第14課 小數乘法（二）— 學習入口</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 16px; background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%); min-height: 100vh; color: #333; position: relative; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 12px; background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%); min-height: 100vh; color: #333; position: relative; }
   body::before { content: ''; position: absolute; inset: 0; background-image: url('../common/images/school_bg.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; opacity: 0.08; z-index: -1; pointer-events: none; }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 12px; }
-  h1 { color: #BF360C; font-size: 1.6rem; text-align: center; margin: 8px 0; }
-  .subtitle { text-align: center; color: #666; margin-bottom: 14px; font-size: 0.9rem; }
-  .back { display: inline-block; margin-bottom: 12px; padding: 8px 16px; background: rgba(255,255,255,0.9); color: #BF360C; border-radius: 10px; text-decoration: none; font-weight: 700; border: 2px solid #BF360C; }
-  .back:hover { background: #BF360C; color: white; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 8px; }
 
-  .tab-bar { background: white; border-radius: 16px; padding: 6px; display: flex; gap: 4px; overflow-x: auto; box-shadow: 0 4px 14px rgba(0,0,0,0.08); margin-bottom: 18px; scrollbar-width: thin; }
-  .tab-btn { flex: 1; min-width: 85px; padding: 10px 8px; border: none; border-radius: 10px; background: transparent; color: #666; font-weight: 800; cursor: pointer; font-size: 0.88rem; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.15s; white-space: nowrap; font-family: inherit; }
-  .tab-btn:hover { background: #FFF3E0; color: #BF360C; }
-  .tab-btn.active { background: linear-gradient(135deg, #E64A19, #BF360C); color: white; box-shadow: 0 2px 6px rgba(191,54,12,0.3); }
-  .tab-btn .tab-emoji { font-size: 1.3rem; }
-  .tab-btn .tab-label { font-size: 0.78rem; }
-  @media (max-width: 500px) { .tab-btn .tab-label { font-size: 0.7rem; } .tab-btn { padding: 8px 4px; min-width: 68px; } .tab-btn .tab-emoji { font-size: 1.1rem; } }
+  /* ==== HERO (Premium) ==== */
+  .hero {
+    background: linear-gradient(135deg, #BF360C 0%, #E64A19 40%, #FF7043 100%);
+    color: white; padding: 28px 24px; border-radius: 22px;
+    margin-bottom: 18px; box-shadow: 0 10px 30px rgba(191,54,12,0.35);
+    position: relative; overflow: hidden;
+  }
+  .hero::before { content: '🥟'; position: absolute; font-size: 8rem; opacity: 0.15; top: 50%; right: 20px; transform: translateY(-50%); pointer-events: none; }
+  .hero h1 { margin: 0 0 6px; font-size: 1.9rem; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); letter-spacing: 0.5px; }
+  .hero .subtitle { color: rgba(255,255,255,0.92); font-size: 1rem; margin: 4px 0 10px; font-weight: 500; }
+  .hero .progress-bar { background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; height: 10px; margin-top: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+  .hero .progress-fill { background: linear-gradient(90deg, #FFF8E1, #FFE082, #FFC107); height: 100%; width: 0%; transition: width 0.6s ease; box-shadow: 0 0 8px rgba(255,193,7,0.6); }
+  .hero .progress-label { font-size: 0.82rem; color: rgba(255,255,255,0.92); margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .hero .coin-tag { display: inline-flex; align-items: center; gap: 5px; background: linear-gradient(135deg, #FFF8E1, #FFE082); color: #BF360C; padding: 4px 12px; border-radius: 16px; font-weight: 800; font-size: 0.85rem; border: 2px solid rgba(255,255,255,0.6); }
+  @media (max-width: 600px) { .hero { padding: 22px 18px; } .hero h1 { font-size: 1.5rem; } .hero::before { font-size: 6rem; right: 10px; } }
+
+  .back { display: none; }
+
+  .tab-bar { background: white; border-radius: 18px; padding: 8px; display: flex; gap: 6px; overflow-x: auto; box-shadow: 0 6px 20px rgba(0,0,0,0.1); margin-bottom: 20px; scrollbar-width: thin; position: sticky; top: 70px; z-index: 40; }
+  .tab-btn { flex: 1; min-width: 92px; padding: 12px 10px; border: none; border-radius: 12px; background: transparent; color: #666; font-weight: 800; cursor: pointer; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all 0.2s cubic-bezier(0.4,0,0.2,1); white-space: nowrap; font-family: inherit; position: relative; }
+  .tab-btn:hover:not(.active) { background: linear-gradient(135deg,#FFF3E0,#FFE0B2); color: #BF360C; transform: translateY(-2px); }
+  .tab-btn.active { background: linear-gradient(135deg, #BF360C, #E64A19); color: white; box-shadow: 0 6px 14px rgba(191,54,12,0.4); transform: translateY(-2px); }
+  .tab-btn.active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #BF360C; }
+  .tab-btn .tab-emoji { font-size: 1.5rem; }
+  .tab-btn .tab-label { font-size: 0.8rem; }
+  @media (max-width: 500px) { .tab-btn .tab-label { font-size: 0.72rem; } .tab-btn { padding: 10px 6px; min-width: 76px; } .tab-btn .tab-emoji { font-size: 1.25rem; } }
 
   .tab-panel { display: none; }
   .tab-panel.active { display: block; animation: fadeIn 0.3s; }
@@ -43,22 +58,23 @@
   .section.s3 .section-title { background: linear-gradient(135deg, #673AB7, #4527A0); }
   .section.s3 .section-title .num { color: #4527A0; }
 
-  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .card { background: white; border: 2px solid #E0E7EE; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #333; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; text-align: center; min-height: 120px; position: relative; justify-content: center; }
-  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
-  .card .step { position: absolute; top: 6px; left: 6px; background: #f0f0f0; color: #888; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
-  .card .arrow { position: absolute; top: 50%; right: -12px; transform: translateY(-50%); color: #BDBDBD; font-size: 1.3rem; z-index: 2; pointer-events: none; }
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .card { background: white; border: 2px solid #E0E7EE; border-radius: 16px; padding: 18px 10px; text-decoration: none; color: #333; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; gap: 6px; text-align: center; min-height: 140px; position: relative; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+  .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 12px 28px rgba(0,0,0,0.15); }
+  .card .step { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg,#f5f5f5,#eee); color: #888; font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 8px; letter-spacing: 0.5px; }
+  .card .arrow { position: absolute; top: 50%; right: -14px; transform: translateY(-50%); color: #BF360C; font-size: 1.6rem; z-index: 2; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(191,54,12,0.3)); animation: flowPulse 2s ease-in-out infinite; }
+  @keyframes flowPulse { 0%,100% { transform: translateY(-50%) translateX(0); opacity: 0.6; } 50% { transform: translateY(-50%) translateX(3px); opacity: 1; } }
   .card:last-child .arrow { display: none; }
-  .card-emoji { font-size: 1.8rem; }
-  .card-title { font-size: 0.88rem; font-weight: 800; line-height: 1.3; }
-  .card-desc { font-size: 0.72rem; color: #666; line-height: 1.3; }
-  .card.slides { border-color: #FFCC80; } .card.slides .card-title { color: #EF6C00; }
-  .card.prelearn { border-color: #F8BBD0; } .card.prelearn .card-title { color: #C2185B; }
-  .card.assess { border-color: #FFE0B2; } .card.assess .card-title { color: #E65100; }
-  .card.game { border-color: #B39DDB; } .card.game .card-title { color: #4527A0; }
-  .card .done-badge { position: absolute; top: 6px; right: 6px; background: #4CAF50; color: white; font-size: 0.62rem; padding: 2px 6px; border-radius: 8px; font-weight: 800; display: none; }
+  .card-emoji { font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+  .card-title { font-size: 0.95rem; font-weight: 900; line-height: 1.3; letter-spacing: 0.3px; }
+  .card-desc { font-size: 0.74rem; color: #666; line-height: 1.4; }
+  .card.slides { border-color: #FFCC80; background: linear-gradient(135deg, #ffffff 0%, #FFF3E0 100%); } .card.slides .card-title { color: #EF6C00; }
+  .card.prelearn { border-color: #F8BBD0; background: linear-gradient(135deg, #ffffff 0%, #FCE4EC 100%); } .card.prelearn .card-title { color: #C2185B; }
+  .card.assess { border-color: #FFE0B2; background: linear-gradient(135deg, #ffffff 0%, #FFF8E1 100%); } .card.assess .card-title { color: #E65100; }
+  .card.game { border-color: #B39DDB; background: linear-gradient(135deg, #ffffff 0%, #EDE7F6 100%); } .card.game .card-title { color: #4527A0; }
+  .card .done-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg,#66BB6A,#388E3C); color: white; font-size: 0.68rem; padding: 3px 8px; border-radius: 10px; font-weight: 900; display: none; box-shadow: 0 2px 6px rgba(56,142,60,0.4); }
   .card.done .done-badge { display: inline-block; }
-  .card.done { background: linear-gradient(135deg, #F1F8E9, white); }
+  .card.done { background: linear-gradient(135deg, #C8E6C9 0%, #F1F8E9 100%); border-color: #4CAF50; }
 
   .big-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
   .big-card { background: white; border: 2px solid #E0E7EE; border-radius: 16px; padding: 20px 16px; text-decoration: none; color: #333; transition: all 0.2s; position: relative; cursor: pointer; display: flex; flex-direction: column; gap: 8px; }
@@ -90,9 +106,21 @@
 </head>
 <body>
 <div class="wrap">
-  <a href="../../index.html" class="back">← 返回主頁</a>
-  <h1>🥟 第 14 課 小數乘法（二）</h1>
-  <p class="subtitle">小數 × 小數、取近似值、應用題 · 點心店主題</p>
+  <!-- ======== Hero Banner ======== -->
+  <div class="hero">
+    <h1>🥟 第 14 課 · 小數乘法（二）</h1>
+    <div class="subtitle">小數 × 小數 · 取近似值 · 應用題 · 點心店主題</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+      <span class="coin-tag"><img src="images/coin_new.png" style="width:14px;height:14px;"> 最多可賺 32 金幣</span>
+      <span class="coin-tag" style="background:linear-gradient(135deg,#EDE7F6,#B39DDB);color:#4527A0;">📐 面積應用</span>
+      <span class="coin-tag" style="background:linear-gradient(135deg,#FCE4EC,#F48FB1);color:#AD1457;">👨‍🍳 天庭點心閣</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="heroFill"></div></div>
+    <div class="progress-label">
+      <span>📈 本課完成度</span>
+      <span><b id="heroPct">0</b>% · <span id="heroDone">0</span>/12 步驟</span>
+    </div>
+  </div>
 
   <div class="tab-bar" role="tablist">
     <button class="tab-btn active" data-tab="study" onclick="switchTab('study')"><span class="tab-emoji">📚</span><span class="tab-label">自學區</span></button>
@@ -274,6 +302,12 @@
     try {
       const p = JSON.parse(localStorage.getItem('progress_ch14') || '{}');
       document.querySelectorAll('[data-key]').forEach(el => { const k = el.dataset.key; if (p[k]?.done) el.classList.add('done'); });
+      // Hero progress
+      const done = STEP_KEYS.filter(s => p[s.k]?.done).length;
+      const pct = Math.round(done / STEP_KEYS.length * 100);
+      const fill = document.getElementById('heroFill'); if (fill) fill.style.width = pct + '%';
+      const pctEl = document.getElementById('heroPct'); if (pctEl) pctEl.textContent = pct;
+      const doneEl = document.getElementById('heroDone'); if (doneEl) doneEl.textContent = done;
     } catch(e) {}
   }
   function renderScores() {
