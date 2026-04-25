@@ -79,7 +79,7 @@
   </div>
   <div class="controls">
     <button class="btn" id="prev" onclick="prev()">◀ 上一頁</button>
-    <div class="indicator" id="ind">1 / 11</div>
+    <div class="indicator" id="ind">1 / 14</div>
     <button class="btn primary" id="next" onclick="next()">下一頁 ▶</button>
   </div>
   <div class="thumbs" id="thumbs"></div>
@@ -98,18 +98,21 @@
   </div>
 </div>
 <script>
-const PREFIX = 'slides3', TOTAL = 15, CHAPTER = 14, DECK_KEY = 'slides3';
-// v3 Ch14 Part 3: 兩位小數 × 兩位小數 + 應用（15 頁 manga 風）
+const PREFIX = 'slides3', TOTAL = 14, CHAPTER = 14, DECK_KEY = 'slides3';
+// v4 Ch14 Part 3: LO3 兩位×兩位純運算 + LO5 應用題（14 頁，西遊後勤大作戰，應用題情境）
 const SLIDE_QUESTIONS = [
-  // p07: 兩位×兩位 基本
-  { afterPage:7, type:'mc', q:'簡報練習：0.23 × 0.14 = ?', options:['0.0322','0.322','3.22','32.2'], correct:0, hint:'23 × 14 = 322，合共 4 位小數 → 0.0322' },
-  { afterPage:7, type:'fill', q:'簡報練習：1.25 × 0.36 = ?', accept:['0.45','0.4500','0.450'], hint:'125 × 36 = 4500，合共 4 位小數 → 0.4500 = 0.45' },
-  // p11: 面積應用
-  { afterPage:11, type:'mc', q:'簡報練習（面積）：長 2.5 米 × 闊 1.4 米 = ? 平方米', options:['3.5','35','0.35','350'], correct:0, hint:'25 × 14 = 350，合共 2 位小數 → 3.50 = 3.5 平方米' },
-  { afterPage:11, type:'fill', q:'簡報練習：單價 × 重量：每公斤 $24.50，買 1.5 公斤 = $?', accept:['36.75','36.750','$36.75'], hint:'24.5 × 1.5 = 36.75，1+1 = 2 位小數' },
-  // p14: 綜合評估
-  { afterPage:14, type:'mc', q:'📊 綜合評估題：2.08 × 1.25 = ?', options:['2.60（= 2.6）','26','0.26','260'], correct:0, hint:'208 × 125 = 26000，合共 4 位小數 → 2.6000 = 2.6（整數偽裝！）' },
-  { afterPage:14, type:'fill', q:'📊 綜合評估題：一塊布長 1.2 米、闊 0.85 米，面積 = ? 平方米', accept:['1.02','1.020'], hint:'1.2 × 0.85：12 × 85 = 1020，合共 3 位小數 → 1.020 = 1.02 平方米' }
+  // p04 應用題① 容量（LO5）— 花生油 3.24 升 × 4 瓶
+  { afterPage:4, type:'fill', q:'簡報練習：每瓶花生油 3.24 升，八戒買咗 4 瓶，共需幾多升？', accept:['12.96','12.96升','12.96 升'], hint:'3.24 × 4 = 12.96 升（兩位小數 × 整數）' },
+  // p06 應用題② 面積（LO5）— 橫額 1.84 × 0.95
+  { afterPage:6, type:'mc', q:'簡報練習：招牌橫額長 1.84 米 × 闊 0.95 米 = ? 平方米', options:['1.748','17.48','0.1748','174.8'], correct:0, hint:'184 × 95 = 17480，2+2 = 4 位小數 → 1.7480 = 1.748 平方米' },
+  // p08 應用題③ 單價（LO5）— 肉丸 45.6 × 0.8
+  { afterPage:8, type:'fill', q:'簡報練習：每公斤肉丸 45.6 元，八戒買 0.8 公斤要付幾多元？', accept:['36.48','36.48元','$36.48','36.48 元'], hint:'45.6 × 0.8 = 36.48 元（1+1 = 2 位小數）' },
+  // p10 應用題④ 距離（LO5）— 緩跑徑 1.32 × 3.5
+  { afterPage:10, type:'mc', q:'簡報練習：緩跑徑一圈 1.32 公里，悟空跑咗 3.5 圈，共幾多公里？', options:['4.62','4.6','46.2','0.462'], correct:0, hint:'132 × 35 = 4620，2+1 = 3 位小數 → 4.620 = 4.62 公里' },
+  // p12 應用題⑤ 重量 + 單位轉換（LO5）— 杯子蛋糕 80g × 42
+  { afterPage:12, type:'fill', q:'簡報練習：每個杯子蛋糕 80 克，烤 42 個，共幾多公斤？（注意單位！）', accept:['3.36','3.36公斤','3.36kg','3.36 公斤','3.36 kg'], hint:'80 × 42 = 3360 克 → 1000 克 = 1 公斤 → 3.36 公斤' },
+  // p14 取近似值（LO4）— 36.48 ≈ 36.5
+  { afterPage:14, type:'mc', q:'📊 綜合評估：師父核帳，36.48 元取近似值至十分位 ≈ ?', options:['36.5 元','36.4 元','36 元','36.50 元'], correct:0, hint:'看百分位數字 8，8 ≥ 5 要進 1 → 36.5 元' }
 ];
 let idx = 0;
 const slideQuizAnswered = {}, slideQuizWrong = {};
