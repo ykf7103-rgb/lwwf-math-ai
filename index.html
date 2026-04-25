@@ -4300,6 +4300,18 @@ function playSlideLecture() {
     const cfg = getCurrentThemeVoiceConfig();
     const voice = getChineseVoice(cfg.gender);
 
+    // Android Chrome race condition: voices not loaded yet on first click
+    if (!voice && !speechSynthesis.getVoices().length) {
+        const status = document.getElementById('lectureStatus');
+        if (status) status.textContent = '⌛ 正在載入語音，請稍後再按一次...';
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.onvoiceschanged = null;
+            playSlideLecture();
+        };
+        window.speechSynthesis.getVoices(); // trigger async load
+        return;
+    }
+
     // Only add intro for page 1 (opening) to keep it fresh
     const fullText = (pageNum === 1 && cfg.intro) ? (cfg.intro + ' ' + text) : text;
 
@@ -4347,9 +4359,10 @@ function stopSlideLecture() {
     if (status) status.textContent = '';
 }
 
-// Load voices when they become available
+// Load voices when they become available (Android Chrome loads them async)
 if (window.speechSynthesis) {
-    window.speechSynthesis.onvoiceschanged = () => { /* voices ready */ };
+    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+    window.speechSynthesis.getVoices(); // trigger initial load
 }
 
 function getProgressKey() {
