@@ -126,10 +126,14 @@
         <div style="background:white;display:inline-block;padding:0 14px;position:relative;top:-11px;color:#999;font-weight:700;">或者打字代替錄音</div>
       </div>
       <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
-        <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案（同錄音一樣由 AI 評分）</div>
-        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">冇得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
+        <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字 / 語音輸入答案（同錄音一樣由 AI 評分）</div>
+        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">冇得錄音？可以打字 OR 用 🎙️「語音輸入」（手機麥克風講字會自動轉成文字）。打 10 字以上解釋，AI 會一樣評分。</div>
         <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="打字寫低你會點教同學（例：「答案係 1.2。因為 0.3 係 3 個 0.1，乘 4 就係 12 個 0.1 = 1.2」）"></textarea>
-        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn purple" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+          <button class="btn outline" id="sttBtn" style="border:2px solid #9C27B0;color:#6A1B9A;background:white;" onclick="toggleSTT()">🎙️ 語音輸入</button>
+        </div>
+        <div id="sttStatus" style="margin-top:6px;font-size:0.82rem;color:#999;min-height:1.2em;"></div>
       </div>
 
       <details style="margin-top:10px;font-size:0.82rem;color:#666;">
@@ -178,6 +182,67 @@ const answered = { mc: false, fill: false, voice: false };
 let mcSelected = -1;
 let mediaRecorder = null, audioChunks = [], recordStartTime = 0, recordTimer = null;
 let recordedBlob = null;
+
+// === Speech-to-Text (Web Speech API) ===
+let _stt = null, _sttListening = false;
+function toggleSTT() {
+  const btn = document.getElementById('sttBtn');
+  const status = document.getElementById('sttStatus');
+  const ta = document.getElementById('textFallback');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    status.innerHTML = '<span style="color:#C62828;">⚠️ 你個瀏覽器唔支援語音輸入。請用 Chrome / Edge / Safari。</span>';
+    return;
+  }
+  if (_sttListening) {
+    try { _stt.stop(); } catch(e) {}
+    _sttListening = false;
+    btn.textContent = '🎙️ 語音輸入';
+    btn.style.background = 'white';
+    status.textContent = '';
+    return;
+  }
+  _stt = new SR();
+  _stt.lang = 'yue-Hant-HK';  // Cantonese first, fallback to zh-HK then zh-CN
+  _stt.continuous = true;
+  _stt.interimResults = true;
+  let finalTranscript = ta.value;
+  _stt.onstart = () => { status.innerHTML = '🎤 講啦... 講完撳停止'; };
+  _stt.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalTranscript += t;
+      else interim += t;
+    }
+    ta.value = finalTranscript + interim;
+  };
+  _stt.onerror = (e) => {
+    status.innerHTML = `<span style="color:#C62828;">⚠️ 語音識別出錯：${e.error}。試吓改用打字。</span>`;
+    if (e.error === 'language-not-supported') {
+      // Fallback to zh-HK
+      try { _stt.lang = 'zh-HK'; _stt.start(); return; } catch(e2) {}
+    }
+    _sttListening = false;
+    btn.textContent = '🎙️ 語音輸入';
+  };
+  _stt.onend = () => {
+    if (_sttListening) {  // auto-restart if user didn't manually stop
+      try { _stt.start(); } catch(e) {}
+    } else {
+      btn.textContent = '🎙️ 語音輸入';
+      btn.style.background = 'white';
+    }
+  };
+  try {
+    _stt.start();
+    _sttListening = true;
+    btn.textContent = '⏹ 停止語音輸入';
+    btn.style.background = '#FFEBEE';
+  } catch(e) {
+    status.innerHTML = `<span style="color:#C62828;">⚠️ 開唔到 mic：${e.message}</span>`;
+  }
+}
 let voiceData = null;
 
 // ============ Environment check (runs on load) ============
@@ -363,6 +428,8 @@ document.getElementById('fillInput').addEventListener('keydown', e => { if (e.ke
 // ============ Voice ============
 async function startRec() {
   if (mediaRecorder && mediaRecorder.state === 'recording') { try { mediaRecorder.stop(); } catch(_){} }
+  document.getElementById('recStatus').innerHTML = '<span style="color:#1565C0;">⌛ 正在請求麥克風存取，請允許權限...</span>';
+  document.getElementById('recBtn').disabled = true;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioChunks = [];
@@ -638,5 +705,6 @@ function checkAllDone() {
 </script>
 <script src="../common/feedback.js"></script>
 <script src="../common/chapter-header.js" data-current-ch="13"></script>
+<script src="../common/stt.js"></script>
 </body>
 </html>

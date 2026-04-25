@@ -363,6 +363,8 @@ document.getElementById('fillInput').addEventListener('keydown', e => { if (e.ke
 // ============ Voice ============
 async function startRec() {
   if (mediaRecorder && mediaRecorder.state === 'recording') { try { mediaRecorder.stop(); } catch(_){} }
+  document.getElementById('recStatus').innerHTML = '<span style="color:#1565C0;">⌛ 正在請求麥克風存取，請允許權限...</span>';
+  document.getElementById('recBtn').disabled = true;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioChunks = [];
@@ -638,5 +640,6 @@ function checkAllDone() {
 </script>
 <script src="../common/feedback.js"></script>
 <script src="../common/chapter-header.js" data-current-ch="14"></script>
+<script src="../common/stt.js"></script>
 </body>
 </html>

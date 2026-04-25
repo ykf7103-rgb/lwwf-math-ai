@@ -375,8 +375,10 @@
         <div style="margin-top:10px;background:rgba(255,255,255,0.85);border-radius:10px;padding:12px;">
           <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎵 歌 2：《悟空十乘二十》小數 × 小數 + 估算</div>
           <div style="font-size:0.82rem;color:#666;margin-bottom:8px;">口訣：當做整數先計乘 → 兩邊小數位數加埋 → 估算先做一次</div>
-          <!-- Ch13 Song 2 有 video version -->
-          <video controls preload="metadata" style="width:100%;border-radius:8px;background:#000;" onplay="markExtra('suno2')">
+          <!-- Ch13 Song 2 有 video version — 細小播放器 max 320px，唔佔晒空間 -->
+          <video controls preload="metadata"
+            style="display:block;max-width:320px;width:100%;height:auto;border-radius:8px;background:#000;margin:0 auto;"
+            onplay="markExtra('suno2')">
             <source src="audio/song2_v1.mp4" type="video/mp4">
           </video>
           <details style="margin-top:6px;font-size:0.8rem;">
