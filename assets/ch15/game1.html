@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第15課 · 遊戲 1 — 體積偵探（哆啦A夢）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#FFE0B2 0%,#FFCC80 50%,#FFB74D 100%);min-height:100vh;color:#222;overflow-x:hidden}
+  header{background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:100}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:920px;margin:0 auto;padding:14px 12px}
+  .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.85rem;color:#666}
+  .stats .val{font-size:1.4rem;color:#E65100;font-weight:900;line-height:1}
+  .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px}
+  .doraemon{position:fixed;bottom:14px;left:14px;width:min(120px,18vw);z-index:50;pointer-events:none;filter:drop-shadow(2px 4px 6px rgba(0,0,0,0.3))}
+  .speech{background:linear-gradient(135deg,#FFF59D,#FFE082);border:2px solid #F57C00;padding:14px 16px;border-radius:14px;margin-bottom:18px;font-weight:700;color:#5D4037;line-height:1.5}
+  .speech::before{content:'💡 哆啦A夢偵探：';display:block;font-weight:900;color:#E65100;margin-bottom:4px}
+  .item-display{text-align:center;margin:24px 0;padding:24px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:16px;border:3px dashed #1976D2}
+  .item-emoji{font-size:5rem;line-height:1;margin-bottom:12px;display:block}
+  .item-name{font-size:1.5rem;font-weight:900;color:#0D47A1}
+  .item-question{font-size:1rem;color:#666;margin-top:8px}
+  .options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:18px 0}
+  @media(max-width:520px){.options{grid-template-columns:1fr}}
+  .opt{padding:18px 12px;border:3px solid;border-radius:14px;font-weight:900;cursor:pointer;font-size:1.1rem;text-align:center;transition:all .2s;background:white}
+  .opt.solid{border-color:#5D4037;color:#5D4037}
+  .opt.liquid{border-color:#1976D2;color:#1976D2}
+  .opt.gas{border-color:#7B1FA2;color:#7B1FA2}
+  .opt.none{border-color:#757575;color:#757575}
+  .opt:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
+  .opt:disabled{cursor:not-allowed;opacity:.5}
+  .opt.correct{background:#C8E6C9;border-color:#2E7D32;color:#2E7D32}
+  .opt.wrong{background:#FFCDD2;border-color:#C62828;color:#C62828;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{margin-top:14px;padding:12px 14px;border-radius:10px;font-weight:700;display:none;line-height:1.55}
+  .feedback.show{display:block;animation:fadeIn .3s}
+  .feedback.right{background:#E8F5E9;color:#2E7D32;border:2px solid #4CAF50}
+  .feedback.wrong{background:#FFEBEE;color:#C62828;border:2px solid #F44336}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px}
+  .next-btn.show{display:block;animation:pop .4s}
+  @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+  .progress-bar{height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;margin-bottom:14px}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#FFB74D,#F57C00);transition:width .4s;width:0}
+  .lock-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+  .lock-modal.show{display:flex;animation:fadeIn .25s}
+  .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+  .lock-box .big{font-size:3.5rem}
+  .lock-box h2{margin:6px 0 10px;font-size:1.4rem}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px}
+  .done-banner{background:linear-gradient(135deg,#FFC107,#FF8F00);color:white;padding:18px;border-radius:14px;text-align:center;font-weight:900;margin-top:14px;display:none;font-size:1.05rem;line-height:1.55}
+  .done-banner.show{display:block;animation:pop .5s}
+  .coin-row{font-size:2.5rem;letter-spacing:6px;margin:10px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>🕵️ 第15課 · 遊戲 1 — 體積偵探</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<img src="images/doraemon.png" alt="哆啦A夢" class="doraemon" onerror="this.style.display='none'">
+<div class="wrap">
+  <div class="stats">
+    <div class="item"><div class="val" id="qNum">1/10</div><div>題數</div></div>
+    <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
+    <div class="item"><div class="val" id="coins">🪙×0</div><div>金幣</div></div>
+    <div class="item"><div class="val" id="wrongs">0/5</div><div>錯誤</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+  <div class="scene">
+    <div class="speech" id="hint">幫哆啦A夢偵察！睇下呢樣嘢嘅狀態係咩，揀「固體 / 液體 / 氣體 / 冇體積」。<br><b>記住：固/液/氣都有體積，但影子之類冇體積！</b></div>
+    <div class="item-display">
+      <span class="item-emoji" id="itemEmoji">📦</span>
+      <div class="item-name" id="itemName">物件</div>
+      <div class="item-question">呢樣嘢屬咩狀態？</div>
+    </div>
+    <div class="options">
+      <button class="opt solid" data-cat="solid" onclick="answer('solid')">🪨 固體</button>
+      <button class="opt liquid" data-cat="liquid" onclick="answer('liquid')">💧 液體</button>
+      <button class="opt gas" data-cat="gas" onclick="answer('gas')">💨 氣體</button>
+      <button class="opt none" data-cat="none" onclick="answer('none')">❌ 冇體積</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">下一題 ▶</button>
+  </div>
+  <div class="done-banner" id="doneBanner">
+    🎉 偵察任務完成！<br>
+    <span id="finalScore"></span><br>
+    <span class="coin-row" id="finalCoins"></span>
+    <a href="index.html" style="color:white;background:#7B1FA2;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px">回課題</a>
+  </div>
+</div>
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box">
+    <div class="big">🔒</div>
+    <h2>哆啦A夢話：要由頭再嚟！</h2>
+    <p>你已經錯咗 <b>5 次</b>。要由第 1 題重頭做，加深印象。</p>
+    <button onclick="restart()">🔁 由頭再嚟</button>
+  </div>
+</div>
+<script>
+const CHAPTER = 15, GAME_KEY = 'game1';
+
+// 10 items 嚴格按本課 LO（固/液/氣 + 反例）
+const ITEMS = [
+  { emoji: '🍎', name: '蘋果', cat: 'solid', hint: '蘋果係固體，佔咗檯面空間 → 有體積（固體）' },
+  { emoji: '💧', name: '一杯水', cat: 'liquid', hint: '水係液體，佔咗杯嘅空間 → 有體積（液體）' },
+  { emoji: '🎈', name: '吹脹咗嘅氣球', cat: 'gas', hint: '氣球入面嘅空氣係氣體，佔咗氣球空間 → 有體積（氣體）' },
+  { emoji: '👤', name: '影子', cat: 'none', hint: '影子只係光被擋住嘅暗區，唔佔空間 → 冇體積' },
+  { emoji: '🍊', name: '一個橙', cat: 'solid', hint: '橙係固體，佔空間 → 有體積（固體）' },
+  { emoji: '🥤', name: '杯裝橙汁', cat: 'liquid', hint: '橙汁係液體，杯入面佔咗空間 → 有體積（液體）' },
+  { emoji: '☁️', name: '一朵雲（水蒸氣）', cat: 'gas', hint: '雲係水蒸氣（氣體），佔咗天空空間 → 有體積（氣體）' },
+  { emoji: '🌈', name: '彩虹', cat: 'none', hint: '彩虹係光線折射現象，唔係物件，唔佔空間 → 冇體積' },
+  { emoji: '🥛', name: '一杯牛奶', cat: 'liquid', hint: '牛奶係液體，佔杯嘅空間 → 有體積（液體）' },
+  { emoji: '💨', name: '哆啦A夢空氣砲射出嘅氣', cat: 'gas', hint: '空氣砲射出嘅都係氣體，會佔空間 → 有體積（氣體）' }
+];
+
+let qIdx = 0, score = 0, wrongs = 0, coins = 0;
+const TOTAL = ITEMS.length;
+const qNumEl = document.getElementById('qNum'), scoreEl = document.getElementById('score'), coinsEl = document.getElementById('coins'), wrongsEl = document.getElementById('wrongs');
+const itemEmoji = document.getElementById('itemEmoji'), itemName = document.getElementById('itemName'), hint = document.getElementById('hint'), fb = document.getElementById('fb'), nextBtn = document.getElementById('nextBtn'), pfill = document.getElementById('pfill'), doneBanner = document.getElementById('doneBanner'), lockModal = document.getElementById('lockModal');
+
+function render() {
+  const q = ITEMS[qIdx];
+  itemEmoji.textContent = q.emoji;
+  itemName.textContent = q.name;
+  qNumEl.textContent = `${qIdx+1}/${TOTAL}`;
+  scoreEl.textContent = score;
+  coinsEl.textContent = `🪙×${coins}`;
+  wrongsEl.textContent = `${wrongs}/5`;
+  pfill.style.width = ((qIdx)/TOTAL*100)+'%';
+  fb.classList.remove('show','right','wrong');
+  nextBtn.classList.remove('show');
+  document.querySelectorAll('.opt').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+}
+
+function answer(cat) {
+  const q = ITEMS[qIdx];
+  const btn = document.querySelector(`.opt[data-cat="${cat}"]`);
+  document.querySelectorAll('.opt').forEach(b => b.disabled = true);
+  if (cat === q.cat) {
+    btn.classList.add('correct');
+    score += 10;
+    fb.className = 'feedback right show';
+    fb.innerHTML = `✅ 正確！${q.hint}`;
+    nextBtn.classList.add('show');
+  } else {
+    btn.classList.add('wrong');
+    wrongs++;
+    wrongsEl.textContent = `${wrongs}/5`;
+    fb.className = 'feedback wrong show';
+    fb.innerHTML = `❌ 錯啦！${q.hint}<br>正確答案：<b>${labelFor(q.cat)}</b>`;
+    if (wrongs >= 5) { setTimeout(triggerLock, 700); return; }
+    setTimeout(() => { document.querySelectorAll('.opt').forEach(b => { if (!b.classList.contains('wrong')) b.disabled = false; }); }, 800);
+  }
+  scoreEl.textContent = score;
+}
+function labelFor(c){return {solid:'🪨 固體', liquid:'💧 液體', gas:'💨 氣體', none:'❌ 冇體積'}[c];}
+
+function nextQ() {
+  qIdx++;
+  if (qIdx >= TOTAL) { finishGame(); return; }
+  render();
+}
+
+function finishGame() {
+  if (score >= 90) coins = 3;
+  else if (score >= 70) coins = 2;
+  else if (score >= 50) coins = 1;
+  saveScore();
+  document.querySelector('.scene').style.display = 'none';
+  document.getElementById('finalScore').textContent = `得分：${score} / 100`;
+  document.getElementById('finalCoins').textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
+  doneBanner.classList.add('show');
+}
+
+function triggerLock(){lockModal.classList.add('show');}
+function restart(){qIdx=0;score=0;wrongs=0;coins=0;lockModal.classList.remove('show');render();}
+
+function saveScore() {
+  try {
+    const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })();
+    const p = JSON.parse(localStorage.getItem(key)||'{}');
+    p[GAME_KEY] = { score, coins, ts: Date.now() };
+    localStorage.setItem(key, JSON.stringify(p));
+  } catch(e){}
+}
+render();
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="15"></script>
+</body></html>

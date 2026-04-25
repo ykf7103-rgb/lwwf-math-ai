@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第15課 · 預習資訊圖（哆啦A夢）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#FFF9C4 0%,#FFF59D 50%,#FFF176 100%);min-height:100vh}
+  header{background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:920px;margin:0 auto;padding:14px}
+  .stage{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px}
+  .stage-head{font-weight:900;color:#1565C0;font-size:1.1rem;margin-bottom:10px}
+  .info-img{width:100%;border-radius:12px;border:2px solid #E0E0E0;display:block}
+  .quiz-box{margin-top:14px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);border:3px solid #FFB300;border-radius:14px;padding:14px}
+  .q-text{font-weight:900;color:#333;line-height:1.5;margin-bottom:10px}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:520px){.opts{grid-template-columns:1fr}}
+  .opt{padding:12px;background:white;border:2px solid #FFB74D;border-radius:10px;font-weight:700;cursor:pointer;text-align:left;font-size:.95rem}
+  .opt:hover:not(:disabled){background:#FFF3E0}
+  .opt.correct{background:#C8E6C9;border-color:#2E7D32}
+  .opt.wrong{background:#FFCDD2;border-color:#C62828;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{margin-top:10px;padding:8px 12px;border-radius:8px;font-weight:700;display:none;line-height:1.55}
+  .feedback.show{display:block}
+  .feedback.right{background:#E8F5E9;color:#2E7D32}
+  .feedback.wrong{background:#FFEBEE;color:#C62828}
+  .stage[data-locked="true"] {filter:grayscale(0.5) opacity(0.5);pointer-events:none}
+  .lock-overlay{display:none;text-align:center;padding:20px;color:#999;font-size:1rem}
+  .stage[data-locked="true"] .lock-overlay{display:block}
+  .stage[data-locked="true"] .info-img,.stage[data-locked="true"] .quiz-box{display:none}
+  .done-banner{background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;padding:14px 18px;border-radius:14px;text-align:center;font-weight:900;display:none;margin-top:12px}
+  .done-banner.show{display:block;animation:pop .5s}
+  @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+  .lock-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+  .lock-modal.show{display:flex}
+  .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center}
+  .lock-box .big{font-size:3.5rem}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 第15課 · 預習資訊圖</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="stage" id="s1" data-locked="false">
+    <div class="stage-head">📊 第 1 區：三態都有體積</div>
+    <img src="images/info1.png" alt="三態都有體積" class="info-img">
+    <div class="quiz-box">
+      <div class="q-text" id="q1text">睇完上面，邊個正確？</div>
+      <div class="opts" id="q1opts"></div>
+      <div class="feedback" id="q1fb"></div>
+    </div>
+    <div class="lock-overlay">🔒 答啱上一區先解鎖</div>
+  </div>
+  <div class="stage" id="s2" data-locked="true">
+    <div class="stage-head">📊 第 2 區：直觀比較秘訣</div>
+    <img src="images/info1.png" alt="直觀比較秘訣 (用 info1)" class="info-img">
+    <div class="quiz-box">
+      <div class="q-text" id="q2text"></div>
+      <div class="opts" id="q2opts"></div>
+      <div class="feedback" id="q2fb"></div>
+    </div>
+    <div class="lock-overlay">🔒 答啱第 1 區先解鎖</div>
+  </div>
+  <div class="stage" id="s3" data-locked="true">
+    <div class="stage-head">📊 第 3 區：快速自測</div>
+    <img src="images/info3.png" alt="快速自測" class="info-img">
+    <div class="quiz-box">
+      <div class="q-text" id="q3text"></div>
+      <div class="opts" id="q3opts"></div>
+      <div class="feedback" id="q3fb"></div>
+    </div>
+    <div class="lock-overlay">🔒 答啱第 2 區先解鎖</div>
+  </div>
+  <div class="done-banner" id="doneBanner">🎉 預習完成！哆啦A夢覺得你準備好上課啦！<br><a href="slides1.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:8px">📗 開始第 1 課簡報</a></div>
+</div>
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box">
+    <div class="big">🔒</div>
+    <h2>哆啦A夢話：要重頭預習！</h2>
+    <p>你已經錯咗 5 次。要由第 1 區重頭睇。</p>
+    <button onclick="restart()">🔁 重頭再嚟</button>
+  </div>
+</div>
+<script>
+const QS = [
+  { text:'三態都有體積：邊一個**唔啱**？', opts:['影子有體積','固體有體積','液體有體積','氣體有體積'], correct:0, hint:'影子冇體積！只係光被擋住嘅暗區。固/液/氣 3 種狀態先有體積。' },
+  { text:'兩個一樣嘅瓶仔，葡萄汁水位高過橙汁。邊個體積大？', opts:['葡萄汁','橙汁','一樣','睇唔到'], correct:0, hint:'瓶仔一樣 → 水位高 = 液體佔嘅空間多 → 葡萄汁體積大。直觀觀察就得，唔需要單位。' },
+  { text:'唔同距離拍嘅相，可唔可以直接比體積？', opts:['不可以','可以','要看光線','要量度'], correct:0, hint:'拍攝距離影響相片入面物件嘅大細表現 → 唔可以直接比。第15課重點！' }
+];
+let wrongTotal = 0;
+QS.forEach((q, i) => {
+  const idx = i+1;
+  document.getElementById('q'+idx+'text').textContent = q.text;
+  const optsEl = document.getElementById('q'+idx+'opts');
+  q.opts.forEach((opt, oi) => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = `${['A','B','C','D'][oi]}. ${opt}`;
+    b.onclick = () => check(idx, oi, b);
+    optsEl.appendChild(b);
+  });
+});
+function check(idx, oi, btn) {
+  const q = QS[idx-1];
+  const fb = document.getElementById('q'+idx+'fb');
+  const opts = document.querySelectorAll('#q'+idx+'opts .opt');
+  if (oi === q.correct) {
+    btn.classList.add('correct');
+    opts.forEach(b => b.disabled = true);
+    fb.className = 'feedback right show';
+    fb.innerHTML = `✅ 正確！${q.hint}`;
+    if (idx < 3) document.getElementById('s'+(idx+1)).setAttribute('data-locked','false');
+    else { document.getElementById('doneBanner').classList.add('show'); }
+  } else {
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    fb.className = 'feedback wrong show';
+    fb.innerHTML = `❌ 再試！💡 ${q.hint}`;
+    wrongTotal++;
+    if (wrongTotal >= 5) document.getElementById('lockModal').classList.add('show');
+  }
+}
+function restart() {
+  wrongTotal = 0;
+  document.getElementById('lockModal').classList.remove('show');
+  document.getElementById('doneBanner').classList.remove('show');
+  ['s1','s2','s3'].forEach((id,i) => {
+    document.getElementById(id).setAttribute('data-locked', i === 0 ? 'false' : 'true');
+    const fb = document.getElementById('q'+(i+1)+'fb'); fb.classList.remove('show');
+    document.querySelectorAll('#q'+(i+1)+'opts .opt').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+  });
+}
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="15"></script>
+</body></html>

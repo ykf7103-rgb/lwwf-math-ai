@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第15課 · 遊戲 2 — 體積比較推理（哆啦A夢）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#E1BEE7 0%,#CE93D8 50%,#BA68C8 100%);min-height:100vh;color:#222;overflow-x:hidden}
+  header{background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:100}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:920px;margin:0 auto;padding:14px 12px}
+  .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.85rem;color:#666}
+  .stats .val{font-size:1.4rem;color:#7B1FA2;font-weight:900;line-height:1}
+  .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px}
+  .character{position:fixed;bottom:14px;left:14px;width:min(120px,18vw);z-index:50;pointer-events:none;filter:drop-shadow(2px 4px 6px rgba(0,0,0,0.3))}
+  .speech{background:linear-gradient(135deg,#FFF59D,#FFE082);border:2px solid #F57C00;padding:14px 16px;border-radius:14px;margin-bottom:18px;font-weight:700;color:#5D4037;line-height:1.5}
+  .speech::before{content:'💭 大雄推理：';display:block;font-weight:900;color:#7B1FA2;margin-bottom:4px}
+  .compare-box{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin:24px 0}
+  @media(max-width:520px){.compare-box{grid-template-columns:1fr}}
+  .item-card{padding:18px 12px;background:linear-gradient(135deg,#F3E5F5,#E1BEE7);border:3px solid #9C27B0;border-radius:16px;cursor:pointer;text-align:center;transition:all .25s}
+  .item-card:hover:not(.locked){transform:translateY(-4px);box-shadow:0 8px 20px rgba(123,31,162,0.3)}
+  .item-card.selected-correct{background:#C8E6C9;border-color:#2E7D32;animation:correctPulse .6s}
+  .item-card.selected-wrong{background:#FFCDD2;border-color:#C62828;animation:shake .4s}
+  @keyframes correctPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .item-emoji{font-size:5rem;line-height:1;margin-bottom:6px;display:block}
+  .item-label{font-size:1.1rem;font-weight:900;color:#4A148C;line-height:1.4}
+  .vs{display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#7B1FA2;background:white;border-radius:50%;width:60px;height:60px;margin:auto;border:3px solid #9C27B0}
+  @media(max-width:520px){.vs{margin:6px auto;width:50px;height:50px;font-size:1.6rem}}
+  .question-prompt{font-size:1.15rem;font-weight:900;color:#4A148C;text-align:center;background:#F3E5F5;padding:14px;border-radius:12px;margin-bottom:8px}
+  .extra-opt{display:flex;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .extra-btn{padding:12px 18px;border:2px solid #9C27B0;background:white;color:#7B1FA2;border-radius:10px;font-weight:700;cursor:pointer;font-size:.95rem}
+  .extra-btn:hover:not(:disabled){background:#F3E5F5}
+  .extra-btn.selected-correct{background:#C8E6C9;border-color:#2E7D32;color:#2E7D32}
+  .extra-btn.selected-wrong{background:#FFCDD2;border-color:#C62828;color:#C62828;animation:shake .4s}
+  .extra-btn:disabled{cursor:not-allowed;opacity:.6}
+  .feedback{margin-top:14px;padding:12px 14px;border-radius:10px;font-weight:700;display:none;line-height:1.55}
+  .feedback.show{display:block;animation:fadeIn .3s}
+  .feedback.right{background:#E8F5E9;color:#2E7D32;border:2px solid #4CAF50}
+  .feedback.wrong{background:#FFEBEE;color:#C62828;border:2px solid #F44336}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px}
+  .next-btn.show{display:block;animation:pop .4s}
+  @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+  .progress-bar{height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;margin-bottom:14px}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#BA68C8,#7B1FA2);transition:width .4s;width:0}
+  .lock-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+  .lock-modal.show{display:flex}
+  .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center}
+  .lock-box .big{font-size:3.5rem}
+  .lock-box h2{margin:6px 0 10px}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px}
+  .done-banner{background:linear-gradient(135deg,#FFC107,#FF8F00);color:white;padding:18px;border-radius:14px;text-align:center;font-weight:900;display:none;font-size:1.05rem;line-height:1.55}
+  .done-banner.show{display:block;animation:pop .5s}
+  .coin-row{font-size:2.5rem;letter-spacing:6px;margin:10px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧠 第15課 · 遊戲 2 — 比較推理</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<img src="images/nobita.png" alt="大雄" class="character" onerror="this.style.display='none'">
+<div class="wrap">
+  <div class="stats">
+    <div class="item"><div class="val" id="qNum">1/10</div><div>題數</div></div>
+    <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
+    <div class="item"><div class="val" id="coins">🪙×0</div><div>金幣</div></div>
+    <div class="item"><div class="val" id="wrongs">0/5</div><div>錯誤</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+  <div class="scene">
+    <div class="speech" id="hint">幫大雄推理：兩件物件，邊個體積大？或者要揀「一樣 / 唔可以比」？<br><b>記住：直觀比較唔用單位，淨係用眼睇。</b></div>
+    <div class="question-prompt" id="prompt">邊個體積大？</div>
+    <div class="compare-box">
+      <div class="item-card" id="cardA" onclick="pickItem('A')">
+        <span class="item-emoji" id="emojiA">🍎</span>
+        <div class="item-label" id="labelA">物件 A</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="item-card" id="cardB" onclick="pickItem('B')">
+        <span class="item-emoji" id="emojiB">🥝</span>
+        <div class="item-label" id="labelB">物件 B</div>
+      </div>
+    </div>
+    <div class="extra-opt">
+      <button class="extra-btn" onclick="pickItem('same')">⚖️ 一樣大</button>
+      <button class="extra-btn" onclick="pickItem('cant')">❓ 唔可以比</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">下一題 ▶</button>
+  </div>
+  <div class="done-banner" id="doneBanner">
+    🎉 推理任務完成！<br>
+    <span id="finalScore"></span><br>
+    <span class="coin-row" id="finalCoins"></span>
+    <a href="index.html" style="color:white;background:#7B1FA2;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px">回課題</a>
+  </div>
+</div>
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box">
+    <div class="big">🔒</div>
+    <h2>大雄話：要從頭再嚟！</h2>
+    <p>你已經錯咗 <b>5 次</b>。要由第 1 題重頭做。</p>
+    <button onclick="restart()">🔁 從頭再嚟</button>
+  </div>
+</div>
+<script>
+const CHAPTER = 15, GAME_KEY = 'game2';
+
+// 10 道題：直觀比較體積（嚴格按本課 LO，唔用單位）
+const QUESTIONS = [
+  { a:{e:'🐘',l:'大象'}, b:{e:'🐭',l:'老鼠'}, ans:'A', hint:'大象明顯比老鼠大好多 → 大象體積大' },
+  { a:{e:'🍉',l:'西瓜'}, b:{e:'🍓',l:'士多啤梨'}, ans:'A', hint:'西瓜明顯比士多啤梨大 → 西瓜體積大' },
+  { a:{e:'🥤',l:'A 杯：水位 ▲▲▲'}, b:{e:'🥤',l:'B 杯：水位 ▲'}, ans:'A', hint:'兩杯一樣大 → 水位高嘅杯水體積大' },
+  { a:{e:'🎈',l:'吹脹氣球'}, b:{e:'🎈',l:'未吹氣球'}, ans:'A', hint:'吹脹咗嘅氣球入面氣體佔空間多 → 體積大' },
+  { a:{e:'⚽',l:'足球'}, b:{e:'🏐',l:'排球'}, ans:'same', hint:'足球同排球大細差不多，可視為一樣' },
+  { a:{e:'🏖️ 📷',l:'遠拍嘅大象（小）'}, b:{e:'🐭 📷',l:'近拍嘅老鼠（大）'}, ans:'cant', hint:'唔同距離拍嘅照片唔可以直接比體積（第15課重點！）' },
+  { a:{e:'🍔',l:'漢堡包'}, b:{e:'🍪',l:'曲奇餅'}, ans:'A', hint:'漢堡包明顯比曲奇大 → 漢堡包體積大' },
+  { a:{e:'🥛',l:'A 樽（細樽，水滿）'}, b:{e:'🍶',l:'B 大瓶（半滿）'}, ans:'cant', hint:'容器形狀大細唔同，難直觀比 → 直觀比較唔可靠' },
+  { a:{e:'☁️',l:'雲'}, b:{e:'👤',l:'影子'}, ans:'A', hint:'雲係水蒸氣（氣體）有體積；影子冇體積 → 雲體積大' },
+  { a:{e:'🐳',l:'藍鯨'}, b:{e:'🐠',l:'金魚'}, ans:'A', hint:'藍鯨係地球上最大動物 → 體積大過金魚好多' }
+];
+
+let qIdx = 0, score = 0, wrongs = 0, coins = 0;
+const TOTAL = QUESTIONS.length;
+const els = {};
+['qNum','score','coins','wrongs','pfill','emojiA','labelA','emojiB','labelB','fb','nextBtn','doneBanner','lockModal','prompt'].forEach(id => els[id] = document.getElementById(id));
+
+function render() {
+  const q = QUESTIONS[qIdx];
+  els.emojiA.textContent = q.a.e; els.labelA.textContent = q.a.l;
+  els.emojiB.textContent = q.b.e; els.labelB.textContent = q.b.l;
+  els.qNum.textContent = `${qIdx+1}/${TOTAL}`;
+  els.score.textContent = score;
+  els.coins.textContent = `🪙×${coins}`;
+  els.wrongs.textContent = `${wrongs}/5`;
+  els.pfill.style.width = ((qIdx)/TOTAL*100)+'%';
+  els.fb.classList.remove('show','right','wrong');
+  els.nextBtn.classList.remove('show');
+  ['cardA','cardB'].forEach(id => { const c = document.getElementById(id); c.classList.remove('selected-correct','selected-wrong','locked'); });
+  document.querySelectorAll('.extra-btn').forEach(b => { b.classList.remove('selected-correct','selected-wrong'); b.disabled = false; });
+}
+
+function pickItem(choice) {
+  const q = QUESTIONS[qIdx];
+  const correct = choice === q.ans;
+  let target;
+  if (choice === 'A') target = document.getElementById('cardA');
+  else if (choice === 'B') target = document.getElementById('cardB');
+  else target = document.querySelector(`.extra-btn[onclick*="'${choice}'"]`);
+  ['cardA','cardB'].forEach(id => document.getElementById(id).classList.add('locked'));
+  document.querySelectorAll('.extra-btn').forEach(b => b.disabled = true);
+  if (correct) {
+    target.classList.add('selected-correct');
+    score += 10;
+    els.fb.className = 'feedback right show';
+    els.fb.innerHTML = `✅ 正確！${q.hint}`;
+    els.nextBtn.classList.add('show');
+  } else {
+    target.classList.add('selected-wrong');
+    wrongs++;
+    els.wrongs.textContent = `${wrongs}/5`;
+    els.fb.className = 'feedback wrong show';
+    let ansLabel = q.ans === 'A' ? '物件 A' : q.ans === 'B' ? '物件 B' : q.ans === 'same' ? '一樣大' : '唔可以比';
+    els.fb.innerHTML = `❌ 錯啦！${q.hint}<br>正確答案：<b>${ansLabel}</b>`;
+    if (wrongs >= 5) { setTimeout(triggerLock, 700); return; }
+    els.nextBtn.classList.add('show');
+  }
+  els.score.textContent = score;
+}
+
+function nextQ() { qIdx++; if (qIdx >= TOTAL) { finishGame(); return; } render(); }
+function finishGame() {
+  if (score >= 90) coins = 3; else if (score >= 70) coins = 2; else if (score >= 50) coins = 1;
+  saveScore();
+  document.querySelector('.scene').style.display = 'none';
+  document.getElementById('finalScore').textContent = `得分：${score} / 100`;
+  document.getElementById('finalCoins').textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
+  els.doneBanner.classList.add('show');
+}
+function triggerLock(){els.lockModal.classList.add('show');}
+function restart(){qIdx=0;score=0;wrongs=0;coins=0;els.lockModal.classList.remove('show');render();}
+function saveScore() {
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+}
+render();
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="15"></script>
+</body></html>

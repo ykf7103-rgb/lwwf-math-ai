@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第15課 · 遊戲 3 — 照片證據驗證（哆啦A夢）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#FFCDD2 0%,#EF9A9A 50%,#E57373 100%);min-height:100vh;color:#222;overflow-x:hidden}
+  header{background:linear-gradient(135deg,#C62828,#B71C1C);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:100}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:920px;margin:0 auto;padding:14px 12px}
+  .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.85rem;color:#666}
+  .stats .val{font-size:1.4rem;color:#C62828;font-weight:900;line-height:1}
+  .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px}
+  .character{position:fixed;bottom:14px;left:14px;width:min(120px,18vw);z-index:50;pointer-events:none;filter:drop-shadow(2px 4px 6px rgba(0,0,0,0.3))}
+  .speech{background:linear-gradient(135deg,#FFF59D,#FFE082);border:2px solid #F57C00;padding:14px 16px;border-radius:14px;margin-bottom:18px;font-weight:700;color:#5D4037;line-height:1.5}
+  .speech::before{content:'📷 靜香相簿驗證：';display:block;font-weight:900;color:#C62828;margin-bottom:4px}
+  .photo-frame{background:linear-gradient(135deg,#FFFDE7,#FFF9C4);border:6px double #C62828;border-radius:14px;padding:24px;margin:18px 0;text-align:center;box-shadow:inset 0 0 20px rgba(198,40,40,0.1)}
+  .photo-tag{display:inline-block;background:#C62828;color:white;padding:5px 12px;border-radius:20px;font-size:.82rem;font-weight:900;margin-bottom:14px}
+  .photo-emoji{font-size:5rem;line-height:1;margin-bottom:6px}
+  .photo-desc{font-weight:900;color:#B71C1C;line-height:1.5;font-size:1.05rem;margin-top:8px}
+  .verdict-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+  .verdict{padding:18px 12px;border:3px solid;border-radius:16px;font-weight:900;cursor:pointer;font-size:1.15rem;text-align:center;transition:all .25s;background:white}
+  .verdict.yes{border-color:#2E7D32;color:#2E7D32}
+  .verdict.no{border-color:#C62828;color:#C62828}
+  .verdict:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
+  .verdict.selected-correct{background:#C8E6C9;animation:correctPulse .6s}
+  .verdict.selected-wrong{background:#FFCDD2;animation:shake .4s}
+  .verdict:disabled{cursor:not-allowed;opacity:.5}
+  @keyframes correctPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{margin-top:14px;padding:12px 14px;border-radius:10px;font-weight:700;display:none;line-height:1.55}
+  .feedback.show{display:block;animation:fadeIn .3s}
+  .feedback.right{background:#E8F5E9;color:#2E7D32;border:2px solid #4CAF50}
+  .feedback.wrong{background:#FFEBEE;color:#C62828;border:2px solid #F44336}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px}
+  .next-btn.show{display:block;animation:pop .4s}
+  @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+  .progress-bar{height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;margin-bottom:14px}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#EF9A9A,#C62828);transition:width .4s;width:0}
+  .lock-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+  .lock-modal.show{display:flex}
+  .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center}
+  .lock-box .big{font-size:3.5rem}
+  .lock-box h2{margin:6px 0 10px}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px}
+  .done-banner{background:linear-gradient(135deg,#FFC107,#FF8F00);color:white;padding:18px;border-radius:14px;text-align:center;font-weight:900;display:none;font-size:1.05rem;line-height:1.55}
+  .done-banner.show{display:block;animation:pop .5s}
+  .coin-row{font-size:2.5rem;letter-spacing:6px;margin:10px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>📸 第15課 · 遊戲 3 — 照片證據驗證</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<img src="images/shizuka.png" alt="靜香" class="character" onerror="this.style.display='none'">
+<div class="wrap">
+  <div class="stats">
+    <div class="item"><div class="val" id="qNum">1/10</div><div>題數</div></div>
+    <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
+    <div class="item"><div class="val" id="coins">🪙×0</div><div>金幣</div></div>
+    <div class="item"><div class="val" id="wrongs">0/5</div><div>錯誤</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+  <div class="scene">
+    <div class="speech" id="hint">幫靜香驗證照片證據！睇下呢張照片可唔可以用嚟比較體積？<br><b>記住：唔同照片唔可比，同一張照片內可比。</b></div>
+    <div class="photo-frame">
+      <div class="photo-tag" id="photoTag">📷 證物 #1</div>
+      <div class="photo-emoji" id="photoEmoji">🎬</div>
+      <div class="photo-desc" id="photoDesc">情境描述</div>
+    </div>
+    <div class="verdict-row">
+      <button class="verdict yes" data-v="yes" onclick="pick('yes')">✅ 可以比體積</button>
+      <button class="verdict no" data-v="no" onclick="pick('no')">❌ 唔可以比</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">下一題 ▶</button>
+  </div>
+  <div class="done-banner" id="doneBanner">
+    🎉 驗證任務完成！<br>
+    <span id="finalScore"></span><br>
+    <span class="coin-row" id="finalCoins"></span>
+    <a href="index.html" style="color:white;background:#7B1FA2;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px">回課題</a>
+  </div>
+</div>
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box">
+    <div class="big">🔒</div>
+    <h2>靜香話：要再驗一次！</h2>
+    <p>你已經錯咗 <b>5 次</b>。要由第 1 題重頭驗證。</p>
+    <button onclick="restart()">🔁 從頭再嚟</button>
+  </div>
+</div>
+<script>
+const CHAPTER = 15, GAME_KEY = 'game3';
+
+// 10 道：照片證據驗證 — LO #1 + #2 + 照片限制
+const QUESTIONS = [
+  { emoji:'🐟📷  🐳📷', desc:'**唔同距離**影嘅金魚同藍鯨照片，可唔可以直接比體積？', ans:'no', hint:'唔同距離拍 → 大細失真 → 唔可以直接比。藍鯨體積實際好大，但近拍嘅金魚可能睇起嚟更大。' },
+  { emoji:'🍎🍊', desc:'**同一張**照片影到一個蘋果同一個橙，可唔可以比？', ans:'yes', hint:'同一張照片 → 拍攝距離一樣 → 可以直接比體積。' },
+  { emoji:'👤', desc:'兩個人嘅影子放埋一齊，可唔可以比體積？', ans:'no', hint:'影子冇體積，唔佔空間 → 根本冇得比。' },
+  { emoji:'🍉🍓', desc:'**同一張**照片：西瓜同士多啤梨喺同一檯面上，可唔可以比體積？', ans:'yes', hint:'同一張照片內，物件相對大細真實 → 可以比。西瓜大過士多啤梨。' },
+  { emoji:'📸 🐘  📸 🐭', desc:'胖虎遠拍嘅大象 vs 小夫近拍嘅老鼠，可唔可以比體積？', ans:'no', hint:'唔同距離拍 → 失真 → 唔可以直接比。第15課重點就係呢個！' },
+  { emoji:'🥤🥤', desc:'**同一張**照片影兩個一樣嘅杯，水位高度唔同，可唔可以比水體積？', ans:'yes', hint:'容器一樣 + 同一張照片 → 直接比水位 → 可以比體積。' },
+  { emoji:'☁️', desc:'雲（水蒸氣）嘅體積可唔可以用照片直觀比？', ans:'no', hint:'雲嘅形狀大細隨距離、角度變化 → 照片難準確比。實際雲都有體積。' },
+  { emoji:'🎈🎈', desc:'**同一張**照片：黃氣球比綠氣球更鼓，可唔可以比氣體體積？', ans:'yes', hint:'同一張照片內，氣球鼓脹度比較直觀 → 可以比氣體體積。' },
+  { emoji:'🌈', desc:'彩虹有冇體積？可唔可以比？', ans:'no', hint:'彩虹係光線折射現象，唔係實物，唔佔空間 → 冇體積，根本冇得比。' },
+  { emoji:'🐠 vs 🐠', desc:'兩條金魚喺**唔同魚缸**影嘅相，魚缸大細唔知。可唔可以比金魚體積？', ans:'no', hint:'唔同照片 → 距離參考唔同 → 唔可以直接比。要用單位（cm³，第16課）量度先準確。' }
+];
+
+let qIdx = 0, score = 0, wrongs = 0, coins = 0;
+const TOTAL = QUESTIONS.length;
+const els = {};
+['qNum','score','coins','wrongs','pfill','photoEmoji','photoDesc','photoTag','fb','nextBtn','doneBanner','lockModal'].forEach(id => els[id] = document.getElementById(id));
+
+function render() {
+  const q = QUESTIONS[qIdx];
+  els.photoEmoji.textContent = q.emoji;
+  els.photoDesc.innerHTML = q.desc;
+  els.photoTag.textContent = `📷 證物 #${qIdx+1}`;
+  els.qNum.textContent = `${qIdx+1}/${TOTAL}`;
+  els.score.textContent = score;
+  els.coins.textContent = `🪙×${coins}`;
+  els.wrongs.textContent = `${wrongs}/5`;
+  els.pfill.style.width = ((qIdx)/TOTAL*100)+'%';
+  els.fb.classList.remove('show','right','wrong');
+  els.nextBtn.classList.remove('show');
+  document.querySelectorAll('.verdict').forEach(b => { b.disabled = false; b.classList.remove('selected-correct','selected-wrong'); });
+}
+
+function pick(v) {
+  const q = QUESTIONS[qIdx];
+  const btn = document.querySelector(`.verdict[data-v="${v}"]`);
+  document.querySelectorAll('.verdict').forEach(b => b.disabled = true);
+  if (v === q.ans) {
+    btn.classList.add('selected-correct');
+    score += 10;
+    els.fb.className = 'feedback right show';
+    els.fb.innerHTML = `✅ 正確！${q.hint}`;
+    els.nextBtn.classList.add('show');
+  } else {
+    btn.classList.add('selected-wrong');
+    wrongs++;
+    els.wrongs.textContent = `${wrongs}/5`;
+    els.fb.className = 'feedback wrong show';
+    const ansLabel = q.ans === 'yes' ? '可以比' : '唔可以比';
+    els.fb.innerHTML = `❌ 錯啦！${q.hint}<br>正確答案：<b>${ansLabel}</b>`;
+    if (wrongs >= 5) { setTimeout(triggerLock, 700); return; }
+    els.nextBtn.classList.add('show');
+  }
+  els.score.textContent = score;
+}
+
+function nextQ() { qIdx++; if (qIdx >= TOTAL) { finishGame(); return; } render(); }
+function finishGame() {
+  if (score >= 90) coins = 3; else if (score >= 70) coins = 2; else if (score >= 50) coins = 1;
+  saveScore();
+  document.querySelector('.scene').style.display = 'none';
+  document.getElementById('finalScore').textContent = `得分：${score} / 100`;
+  document.getElementById('finalCoins').textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
+  els.doneBanner.classList.add('show');
+}
+function triggerLock(){els.lockModal.classList.add('show');}
+function restart(){qIdx=0;score=0;wrongs=0;coins=0;els.lockModal.classList.remove('show');render();}
+function saveScore() {
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+}
+render();
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="15"></script>
+</body></html>
