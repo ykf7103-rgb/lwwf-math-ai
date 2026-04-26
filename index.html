@@ -2227,6 +2227,7 @@ body::before {
             <button class="teacher-subtab active" id="tSubCompletion" onclick="switchTeacherSection('completion')">📋 完成名單</button>
             <button class="teacher-subtab" id="tSubIQ" onclick="switchTeacherSection('iq')">📖 課前預習答案</button>
             <button class="teacher-subtab" id="tSubStats" onclick="switchTeacherSection('stats')">📊 總數據</button>
+            <button class="teacher-subtab" id="tSubFeedback" onclick="switchTeacherSection('feedback')">📨 回報/許願 <span id="feedbackBadge" style="background:#F44336;color:white;border-radius:10px;padding:2px 6px;font-size:0.75rem;font-weight:900;display:none;margin-left:4px;">0</span></button>
         </div>
 
         <!-- Section 1: Completion (default active) -->
@@ -2321,6 +2322,34 @@ body::before {
             </table>
         </div>
         </div><!-- /#secStats -->
+
+        <!-- Section 4: 📨 Feedback / Wishes -->
+        <div id="secFeedback" class="teacher-section">
+        <div style="background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+                <h3 style="margin:0;">📨 學生回報 / 許願</h3>
+                <div style="display:flex;gap:8px;">
+                    <select id="feedbackTypeFilter" onchange="renderFeedbackList()" style="padding:8px 12px;border:2px solid var(--primary);border-radius:8px;font-size:0.9rem;">
+                        <option value="all">全部</option>
+                        <option value="bug">🐛 Bug 回報</option>
+                        <option value="wish">⭐ 許願</option>
+                    </select>
+                    <select id="feedbackStatusFilter" onchange="renderFeedbackList()" style="padding:8px 12px;border:2px solid var(--primary);border-radius:8px;font-size:0.9rem;">
+                        <option value="open">⏳ 未處理</option>
+                        <option value="reviewing">🔍 處理中</option>
+                        <option value="resolved">✅ 已解決</option>
+                        <option value="dismissed">❌ 已駁回</option>
+                        <option value="all">全部狀態</option>
+                    </select>
+                    <button class="btn btn-sm btn-primary" onclick="loadFeedbackData()">🔄 重新載入</button>
+                </div>
+            </div>
+            <div id="feedbackStats" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;font-size:0.85rem;color:#666;"></div>
+            <div id="feedbackList" style="display:flex;flex-direction:column;gap:12px;max-height:65vh;overflow-y:auto;padding-right:6px;">
+                <div style="text-align:center;padding:30px;color:#999;">⏳ 載入中…</div>
+            </div>
+        </div>
+        </div><!-- /#secFeedback -->
 
         </div><!-- /#teacherContent -->
     </div>
@@ -3590,16 +3619,164 @@ function selectChapter(num, status) {
     window.location.href = `assets/ch${num}/index.html`;
 }
 
-// Switch teacher sub-section (completion / iq / stats) — only one visible at a time
+// Switch teacher sub-section (completion / iq / stats / feedback) — only one visible at a time
 function switchTeacherSection(name) {
-    const map = { completion: 'secCompletion', iq: 'secIQ', stats: 'secStats' };
-    const btnMap = { completion: 'tSubCompletion', iq: 'tSubIQ', stats: 'tSubStats' };
+    const map = { completion: 'secCompletion', iq: 'secIQ', stats: 'secStats', feedback: 'secFeedback' };
+    const btnMap = { completion: 'tSubCompletion', iq: 'tSubIQ', stats: 'tSubStats', feedback: 'tSubFeedback' };
     document.querySelectorAll('.teacher-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.teacher-subtab').forEach(b => b.classList.remove('active'));
     const sec = document.getElementById(map[name]);
     const btn = document.getElementById(btnMap[name]);
     if (sec) sec.classList.add('active');
     if (btn) btn.classList.add('active');
+    if (name === 'feedback') loadFeedbackData();
+}
+
+// ====== 📨 回報 / 許願 — Teacher View ======
+let _feedbackCache = [];
+
+async function loadFeedbackData() {
+    const list = document.getElementById('feedbackList');
+    if (!list) return;
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">⏳ 載入中…</div>';
+    try {
+        // Read directly from Supabase REST API (anon allowed by RLS for SELECT)
+        const SUPA_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
+        const SUPA_KEY = SUPABASE_ANON_KEY;
+        const r = await fetch(`${SUPA_URL}/rest/v1/student_feedback?select=*&order=created_at.desc&limit=200`, {
+            headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        _feedbackCache = await r.json();
+        renderFeedbackList();
+        updateFeedbackBadge();
+    } catch (e) {
+        list.innerHTML = `<div style="background:#FFEBEE;color:#C62828;padding:16px;border-radius:10px;">❌ 載入失敗：${e.message}<br><small>確認 Supabase student_feedback table 已 create + RLS allows anon SELECT</small></div>`;
+    }
+}
+
+function updateFeedbackBadge() {
+    const badge = document.getElementById('feedbackBadge');
+    if (!badge) return;
+    const openCount = _feedbackCache.filter(f => f.status === 'open').length;
+    if (openCount > 0) {
+        badge.textContent = openCount;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function renderFeedbackList() {
+    const list = document.getElementById('feedbackList');
+    const stats = document.getElementById('feedbackStats');
+    if (!list) return;
+    const typeF = document.getElementById('feedbackTypeFilter')?.value || 'all';
+    const statusF = document.getElementById('feedbackStatusFilter')?.value || 'open';
+    let items = _feedbackCache.slice();
+    if (typeF !== 'all') items = items.filter(f => f.type === typeF);
+    if (statusF !== 'all') items = items.filter(f => f.status === statusF);
+
+    // Stats summary
+    const totals = {
+        bug: _feedbackCache.filter(f => f.type === 'bug').length,
+        wish: _feedbackCache.filter(f => f.type === 'wish').length,
+        open: _feedbackCache.filter(f => f.status === 'open').length,
+        resolved: _feedbackCache.filter(f => f.status === 'resolved').length
+    };
+    if (stats) stats.innerHTML = `
+        <span style="background:#FFEBEE;color:#C62828;padding:4px 10px;border-radius:12px;font-weight:700;">🐛 Bug ${totals.bug}</span>
+        <span style="background:#E3F2FD;color:#1565C0;padding:4px 10px;border-radius:12px;font-weight:700;">⭐ 許願 ${totals.wish}</span>
+        <span style="background:#FFF3E0;color:#E65100;padding:4px 10px;border-radius:12px;font-weight:700;">⏳ 未處理 ${totals.open}</span>
+        <span style="background:#E8F5E9;color:#2E7D32;padding:4px 10px;border-radius:12px;font-weight:700;">✅ 已解決 ${totals.resolved}</span>
+        <span style="margin-left:auto;color:#999;">顯示 ${items.length} / ${_feedbackCache.length}</span>
+    `;
+
+    if (items.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">📭 冇符合條件嘅項目</div>';
+        return;
+    }
+
+    list.innerHTML = items.map(f => {
+        const typeIcon = f.type === 'bug' ? '🐛' : '⭐';
+        const typeBg = f.type === 'bug' ? '#FFEBEE' : '#E3F2FD';
+        const typeColor = f.type === 'bug' ? '#C62828' : '#1565C0';
+        const statusInfo = {
+            open: { icon: '⏳', label: '未處理', bg: '#FFF3E0', color: '#E65100' },
+            reviewing: { icon: '🔍', label: '處理中', bg: '#E1F5FE', color: '#0277BD' },
+            resolved: { icon: '✅', label: '已解決', bg: '#E8F5E9', color: '#2E7D32' },
+            dismissed: { icon: '❌', label: '已駁回', bg: '#FAFAFA', color: '#757575' }
+        }[f.status] || { icon: '?', label: f.status, bg: '#fff', color: '#000' };
+        const date = new Date(f.created_at).toLocaleString('zh-Hant', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        const studentInfo = (f.class && f.number) ? `${f.class}-${f.number} ${f.student_name || ''}` : (f.student_name || '匿名');
+
+        return `
+        <div style="background:white;border-radius:14px;padding:14px 16px;border-left:5px solid ${typeColor};box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="background:${typeBg};color:${typeColor};padding:4px 10px;border-radius:10px;font-weight:900;font-size:0.85rem;">${typeIcon} ${f.type === 'bug' ? 'Bug' : '許願'} #${f.id}</span>
+                    <span style="background:${statusInfo.bg};color:${statusInfo.color};padding:4px 10px;border-radius:10px;font-weight:700;font-size:0.82rem;">${statusInfo.icon} ${statusInfo.label}</span>
+                    <span style="color:#999;font-size:0.78rem;">👤 ${studentInfo}</span>
+                    ${f.page ? `<span style="color:#999;font-size:0.78rem;">📄 ${f.page}</span>` : ''}
+                </div>
+                <span style="color:#bbb;font-size:0.78rem;">${date}</span>
+            </div>
+            <div style="background:#FAFAFA;padding:12px;border-radius:8px;line-height:1.6;color:#333;font-size:0.95rem;white-space:pre-wrap;margin-bottom:10px;">${escapeHtml(f.content)}</div>
+            ${f.teacher_note ? `<div style="background:#E8F5E9;padding:8px 12px;border-radius:8px;font-size:0.88rem;color:#2E7D32;margin-bottom:8px;border-left:3px solid #4CAF50;">📝 教師備註：${escapeHtml(f.teacher_note)}</div>` : ''}
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                ${f.status !== 'reviewing' ? `<button class="btn btn-sm" style="background:#0277BD;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'reviewing')">🔍 標記處理中</button>` : ''}
+                ${f.status !== 'resolved' ? `<button class="btn btn-sm" style="background:#2E7D32;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'resolved')">✅ 標記已解決</button>` : ''}
+                ${f.status !== 'dismissed' ? `<button class="btn btn-sm" style="background:#757575;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'dismissed')">❌ 駁回</button>` : ''}
+                ${f.status !== 'open' ? `<button class="btn btn-sm" style="background:#E65100;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'open')">↩️ 重開</button>` : ''}
+                <button class="btn btn-sm" style="background:#7B1FA2;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="addTeacherNote(${f.id})">📝 加備註</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function updateFeedbackStatus(id, newStatus) {
+    try {
+        const SUPA_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
+        const SUPA_KEY = SUPABASE_ANON_KEY;
+        const body = { status: newStatus };
+        if (newStatus === 'resolved') body.resolved_at = new Date().toISOString();
+        const r = await fetch(`${SUPA_URL}/rest/v1/student_feedback?id=eq.${id}`, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify(body)
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const item = _feedbackCache.find(f => f.id === id);
+        if (item) { item.status = newStatus; if (body.resolved_at) item.resolved_at = body.resolved_at; }
+        renderFeedbackList();
+        updateFeedbackBadge();
+    } catch(e) {
+        alert('❌ 更新失敗：' + e.message);
+    }
+}
+
+async function addTeacherNote(id) {
+    const item = _feedbackCache.find(f => f.id === id);
+    const note = prompt('加教師備註（學生會見到）：', item?.teacher_note || '');
+    if (note === null) return;
+    try {
+        const SUPA_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
+        const SUPA_KEY = SUPABASE_ANON_KEY;
+        const r = await fetch(`${SUPA_URL}/rest/v1/student_feedback?id=eq.${id}`, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ teacher_note: note })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        if (item) item.teacher_note = note;
+        renderFeedbackList();
+    } catch(e) {
+        alert('❌ 加備註失敗：' + e.message);
+    }
+}
+
+function escapeHtml(s) {
+    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 // Unified completion / score lookup (簡報 / 評估 / MC / 遊戲)

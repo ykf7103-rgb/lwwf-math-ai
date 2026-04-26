@@ -14,6 +14,7 @@
     { id: '12', title: 'Ch.12 有趣的乘法', emoji: '📚', href: '../../index.html?ch=12' },
     { id: '13', title: 'Ch.13 小數乘法（一）', emoji: '📘', href: '../ch13/index.html' },
     { id: '14', title: 'Ch.14 小數乘法（二）', emoji: '🥟', href: '../ch14/index.html' },
+    { id: '15', title: 'Ch.15 體積的認識', emoji: '📦', href: '../ch15/index.html' },
   ];
 
   function buildHref(targetCh) {
@@ -170,6 +171,26 @@
       box-shadow: 0 2px 8px rgba(46,125,50,0.3);
     }
     .mathai-topbar .tb-btn-login:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,125,50,0.45); }
+    .mathai-topbar .tb-back-btn {
+      padding: 6px 12px; font-size: 0.85rem;
+      background: linear-gradient(135deg,#7B1FA2,#4A148C);
+      color: white; text-decoration: none; border-radius: 20px;
+      font-weight: 800; box-shadow: 0 2px 8px rgba(123,31,162,0.3);
+      white-space: nowrap; transition: all 0.15s;
+    }
+    .mathai-topbar .tb-back-btn:hover { transform: translateX(-2px); box-shadow: 0 4px 12px rgba(123,31,162,0.45); }
+    .mathai-topbar .tb-nav-ch {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #F0F4F8; color: #1565C0;
+      display: inline-flex; align-items: center; justify-content: center;
+      text-decoration: none; font-weight: 900; font-size: 0.9rem;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .mathai-topbar .tb-nav-ch:hover { background: #1565C0; color: white; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(21,101,192,0.4); }
+    @media (max-width: 720px) {
+      .mathai-topbar .tb-back-btn { font-size: 0.72rem; padding: 4px 8px; }
+      .mathai-topbar .tb-nav-ch { width: 24px; height: 24px; font-size: 0.78rem; }
+    }
 
     @media (max-width: 720px) {
       .mathai-topbar { padding: 8px 12px; gap: 6px; flex-wrap: wrap; }
@@ -242,13 +263,26 @@
 
   const bar = document.createElement('div');
   bar.className = 'mathai-topbar';
+  // Find prev/next chapter for navigation
+  const curIdx = CHAPTERS.findIndex(c => c.id === currentCh);
+  const prevCh = curIdx > 0 ? CHAPTERS[curIdx - 1] : null;
+  const nextCh = curIdx < CHAPTERS.length - 1 ? CHAPTERS[curIdx + 1] : null;
+
+  // Detect if on sub-page (game/slides/assess/etc) vs chapter index
+  const onSubPage = /\/ch\d+\/(?!index\.html$)[^/]+\.html/.test(location.pathname);
+  const subBackHref = onSubPage ? 'index.html' : '../../index.html';
+  const subBackLabel = onSubPage ? '← 返回課題' : '← 主頁';
+
   bar.innerHTML = `
     <div class="tb-left">
+      <a href="${subBackHref}" class="tb-back-btn" title="${subBackLabel}">${subBackLabel}</a>
       <span class="tb-logo">數學AI學習區</span>
       <button class="tb-chapter-btn" onclick="window.__mathaiOpenChapter()" title="切換課題">
         <span>${chInfo.emoji} ${chInfo.title}</span>
         <span style="opacity:0.7;">▾</span>
       </button>
+      ${prevCh ? `<a href="${buildHref(prevCh.id)}" class="tb-nav-ch" title="上一課：${prevCh.title}">◀</a>` : ''}
+      ${nextCh ? `<a href="${buildHref(nextCh.id)}" class="tb-nav-ch" title="下一課：${nextCh.title}">▶</a>` : ''}
     </div>
     <div class="tb-right" id="mathaiTbRight"></div>
   `;
