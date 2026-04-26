@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第16課 · 預習 2 — 兩位小數 × 一位小數</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%); min-height: 100vh; color: #222; position: relative; }
+  body::before { content: ''; position: fixed; inset: 0; background: url('../common/images/school_bg.jpg') center/cover no-repeat; opacity: 0.08; z-index: -1; pointer-events: none; }
+  header { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+  header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+  header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 14px; }
+  .intro { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); border-left: 5px solid #7B1FA2; padding: 14px 18px; border-radius: 12px; margin-bottom: 16px; }
+  .intro h2 { margin: 0 0 6px; color: #4A148C; font-size: 1.1rem; }
+  .intro p { margin: 4px 0; font-size: 0.9rem; line-height: 1.6; color: #555; }
+  .info-card { background: white; border-radius: 16px; padding: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 16px; }
+  .info-card h3 { margin: 4px 0 10px; color: #7B1FA2; font-size: 1.05rem; border-bottom: 2px dashed #E1BEE7; padding-bottom: 8px; }
+  .info-card img { width: 100%; height: auto; display: block; border-radius: 10px; background: #fafafa; cursor: zoom-in; }
+  .q-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-left: 5px solid #FFB300; }
+  .q-card.done { border-left-color: #4CAF50; background: #F1F8E9; }
+  .q-card h3 { margin: 0 0 10px; font-size: 1rem; color: #333; line-height: 1.5; }
+  .type-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; color: white; font-weight: 700; margin-left: 6px; }
+  .type-badge.mc { background: #1565C0; }
+  .type-badge.fill { background: #7B1FA2; }
+  .type-badge.voice { background: #E65100; }
+  .mc-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mc-opt { padding: 12px 10px; background: white; border: 2px solid #FFB74D; border-radius: 10px; font-weight: 700; cursor: pointer; color: #333; text-align: left; font-size: 0.95rem; }
+  .mc-opt:hover:not(:disabled) { background: #FFF3E0; }
+  .mc-opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; }
+  .mc-opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; animation: shake 0.4s; }
+  .fill-box { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .fill-input { flex: 1; min-width: 180px; padding: 12px 14px; border: 2px solid #FFB74D; border-radius: 10px; font-size: 1rem; color: #333; outline: none; }
+  .fill-input.correct { border-color: #4CAF50; background: #E8F5E9; color: #2E7D32; }
+  .fill-input.wrong { animation: shake 0.4s; border-color: #F44336; }
+  .btn { padding: 10px 20px; border: 2px solid #FF8F00; border-radius: 10px; background: linear-gradient(135deg, #FFB74D, #FF8F00); color: white; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn.purple { border-color: #6A1B9A; background: linear-gradient(135deg, #9C27B0, #6A1B9A); }
+  .btn.red { border-color: #C62828; background: linear-gradient(135deg, #EF5350, #C62828); }
+  .btn.green { border-color: #2E7D32; background: linear-gradient(135deg, #66BB6A, #2E7D32); }
+  .btn.outline { background: white; color: #333; }
+  .hint-msg { margin-top: 10px; padding: 8px 10px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; display: none; }
+  .hint-msg.wrong { background: #FFEBEE; color: #C62828; display: block; }
+  .hint-msg.correct { background: #E8F5E9; color: #2E7D32; display: block; font-weight: 700; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .voice-section { margin-top: 10px; }
+  .voice-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+  .rec-status { font-size: 0.9rem; margin: 8px 0; min-height: 1.5em; }
+  .transcript { background: #F5F5F5; border-radius: 8px; padding: 10px; margin: 8px 0; font-size: 0.9rem; color: #333; min-height: 2em; line-height: 1.5; }
+  .voice-hint { font-size: 0.85rem; color: #555; background: #FFF8E1; padding: 8px 10px; border-radius: 8px; margin: 8px 0; line-height: 1.5; }
+  .zoom-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 200; cursor: zoom-out; padding: 20px; }
+  .zoom-overlay.show { display: flex; }
+  .zoom-overlay img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+  .zoom-overlay .close { position: absolute; top: 16px; right: 20px; background: rgba(255,255,255,0.9); color: #333; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; cursor: pointer; }
+  .done-banner { background: linear-gradient(135deg, #4CAF50, #388E3C); color: white; padding: 16px 20px; border-radius: 12px; text-align: center; font-weight: 800; margin: 20px 0 10px; display: none; }
+  .done-banner.show { display: block; animation: pop 0.4s; }
+  @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+  @media (max-width: 600px) { header h1 { font-size: 0.9rem; } .mc-opts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>📝 第16課 · 預習 2 — 兩位小數 × 一位小數</h1>
+  <a href="index.html" class="back">← 返回第16課</a>
+</header>
+<div class="wrap">
+  <div class="intro">
+    <h2>🎯 預習 2</h2>
+    <p>先睇資訊圖，再做 3 條題目（選擇 + 填充 + 🎤 錄音講解）。做啱先算完成預習。</p>
+  </div>
+  <div class="info-card">
+    <h3>📙 資訊圖 2：兩位小數 × 整數</h3>
+    <img src="images/infographic2.jpg" alt="資訊圖 2" onclick="zoom(this.src)" />
+  </div>
+  <div class="q-card" id="qc0">
+    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>計算 2.35 × 4 =？</h3>
+    <div class="mc-opts" id="mcOpts">
+      <button class="mc-opt" data-i="0" onclick="selectMC(0)">A. 94</button>
+      <button class="mc-opt" data-i="1" onclick="selectMC(1)">B. 9.4</button>
+      <button class="mc-opt" data-i="2" onclick="selectMC(2)">C. 0.94</button>
+      <button class="mc-opt" data-i="3" onclick="selectMC(3)">D. 9.40</button>
+    </div>
+    <div class="hint-msg" id="mcHint"></div>
+  </div>
+  <div class="q-card" id="qc1">
+    <h3>第 2 題<span class="type-badge fill">填充題</span><br>填充：0.25 × 8 = ?（只填數字）</h3>
+    <div class="fill-box">
+      <input type="text" class="fill-input" id="fillInput" placeholder="輸入答案..." />
+      <button class="btn purple" onclick="checkFill()">提交</button>
+    </div>
+    <div class="hint-msg" id="fillHint"></div>
+  </div>
+  <div class="q-card" id="qc2">
+    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：2.35 × 4 嘅小數點點樣數？講 10-30 秒。</h3>
+    <div class="voice-hint">💡 提示：可以咁樣講 👉「答案係 9.4。先當 235 × 4 = 940，因為 2.35 有 2 位小數，所以小數點向左移 2 位 → 9.40 = 9.4」</div>
+    <div class="voice-section">
+      <div id="envWarn" style="display:none;background:#FFEBEE;border:2px solid #C62828;color:#C62828;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.9rem;"></div>
+      <div class="voice-row">
+        <button class="btn outline" onclick="testMic()" style="font-size:0.85rem;">🎤 試咪 2 秒</button>
+        <button class="btn red" id="recBtn" onclick="startRec()">🎤 開始錄音</button>
+        <button class="btn outline" id="stopBtn" onclick="stopRec()" disabled>⏹ 停止</button>
+        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交俾 AI 評分</button>
+      </div>
+      <div class="rec-status" id="recStatus">按「開始錄音」試下（iPhone 要用 Safari；Android / 電腦用 Chrome）</div>
+      <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析你講咗乜。</span></div>
+      <div class="grade-result" id="gradeResult"></div>
+
+      <div style="text-align:center;margin:18px 0 10px;position:relative;">
+        <div style="height:1px;background:#ddd;"></div>
+        <div style="background:white;display:inline-block;padding:0 14px;position:relative;top:-11px;color:#999;font-weight:700;">或者打字代替錄音</div>
+      </div>
+      <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
+        <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案（同錄音一樣由 AI 評分）</div>
+        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">冇得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
+        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「答案係 9.4。235 × 4 = 940，因為 2.35 有 2 位小數，所以小數點向左移 2 位」"></textarea>
+        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+      </div>
+
+      <details style="margin-top:10px;font-size:0.82rem;color:#666;">
+        <summary style="cursor:pointer;color:#7B1FA2;font-weight:700;">🆘 錄音出錯？點睇解決方法</summary>
+        <div style="padding:8px 12px;background:#FFF8E1;border-radius:6px;margin-top:6px;line-height:1.6;">
+          iPhone：設定 → Safari → 麥克風 → 容許 / Android：網址旁 🔒 → 麥克風 → 容許
+        </div>
+      </details>
+    </div>
+  </div>
+  <div class="done-banner" id="done">
+    🎉 預習 2 完成！下一步做評估 2！
+    <div style="margin-top:10px"><a href="assess2.html" style="color:white;background:#E65100;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:900">📝 做評估 2</a></div>
+  </div>
+</div>
+<div class="zoom-overlay" id="zoomOv" onclick="unzoom()">
+  <div class="close">×</div>
+  <img id="zoomImg" alt="放大圖" />
+</div>
+<script>
+const CHAPTER = 14, PRELEARN_KEY = 'prelearn2';
+const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev/ask';
+const VOICE_Q = {
+  q: '教一教同學：2.35 × 4 嘅小數點點樣數？',
+  concept: '兩位小數 × 整數：先當整數乘，再按小數位數移小數點',
+  rubric: '講出：答案係 9.4 + 任何一個原理（例如：235 × 4 = 940；或 2.35 有 2 位小數所以小數點左移 2 位；或 940 變 9.40 = 9.4）',
+  hint: '講到答案 + 任何一個原理就合格（~80 分）'
+};
+const MC_CORRECT = 1, MC_HINT = '235 × 4 = 940，兩位小數 → 9.40 = 9.4';
+const FILL_ACCEPT = ['2','2.0','2.00'], FILL_HINT = '25 × 8 = 200，兩位小數 → 2.00 = 2';
+const answered = { mc:false, fill:false, voice:false };
+let mediaRecorder=null, audioChunks=[], recordStartTime=0, recordTimer=null, recordedBlob=null, voiceData=null;
+
+(function envCheck(){
+  const warn = document.getElementById('envWarn'); const msgs = [];
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') msgs.push('⚠️ 必須用 HTTPS 網址先可以錄音。請用 <b>https://ykf7103-rgb.github.io/lwwf-math-ai/</b>');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) msgs.push('⚠️ 你個瀏覽器唔支援錄音。iPhone 請用 Safari，Android / 電腦請用 Chrome。');
+  if (!window.MediaRecorder) msgs.push('⚠️ 你個瀏覽器太舊，冇 MediaRecorder。');
+  if (msgs.length) { warn.innerHTML = msgs.join('<br>'); warn.style.display = 'block'; }
+})();
+
+async function testMic(){
+  const status = document.getElementById('recStatus');
+  status.innerHTML = '<span style="color:#1565C0;">🔍 檢查麥克風中...</span>';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    status.innerHTML = '<span style="color:#2E7D32;font-weight:700;">✅ 麥克風 OK！等 2 秒測試音量...</span>';
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser(); analyser.fftSize = 512;
+    src.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    let maxLevel = 0; const startT = Date.now();
+    const interval = setInterval(() => {
+      analyser.getByteFrequencyData(data);
+      const avg = data.reduce((a,b)=>a+b,0) / data.length;
+      maxLevel = Math.max(maxLevel, avg);
+      if (Date.now() - startT > 2000) {
+        clearInterval(interval); stream.getTracks().forEach(t => t.stop()); ctx.close();
+        if (maxLevel < 2) status.innerHTML = '<span style="color:#C62828;font-weight:700;">❌ 聽唔到聲音！請大聲啲講 + 檢查系統 mic 設定</span>';
+        else if (maxLevel < 10) status.innerHTML = `<span style="color:#F57F17;font-weight:700;">⚠️ 聲音好細（${Math.round(maxLevel)}/255）。請大聲啲講。</span>`;
+        else status.innerHTML = `<span style="color:#2E7D32;font-weight:700;">✅ 麥克風正常！音量 ${Math.round(maxLevel)}/255。可以正式錄音。</span>`;
+      }
+    }, 100);
+  } catch (err) {
+    const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError'
+      ? '❌ 麥克風權限被拒！iPhone：設定 → Safari → 麥克風 → 容許。Android：🔒 → 麥克風 → 容許。'
+      : err.name === 'NotFoundError' ? '❌ 搵唔到麥克風。' : '❌ ' + (err.message || err.name);
+    status.innerHTML = `<span style="color:#C62828;font-weight:700;">${msg}</span>`;
+  }
+}
+
+async function submitText(){
+  const textVal = document.getElementById('textFallback').value.trim();
+  if (textVal.length < 8) { alert('請至少打字寫 8 個字以上的解釋。'); return; }
+  const resEl = document.getElementById('gradeResult');
+  resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在評分你嘅文字答案，約需 3-8 秒...</div>';
+  const prompt = `你係小學五年級粵語數學老師。
+題目：「${VOICE_Q.q}」
+核心概念：${VOICE_Q.concept}
+評分要點：${VOICE_Q.rubric}
+合格要求：${VOICE_Q.hint}
+
+⚠️ 學生今次係用**打字**代替錄音。佢打字嘅答案：
+${textVal}
+
+評分：答案對 + 有原理 → 80-100；答案對 + 無原理 → 50-70；答案錯 → 20-40。
+
+嚴格返回純 JSON（無 \`\`\`）：
+{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"評語（60字內）"}`;
+  try {
+    const res = await fetch(WORKER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ messages:[{role:'user',content:prompt}] }) });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const reply = data.reply || data.text || '';
+    if (!reply) throw new Error('AI 未回應');
+    const result = extractJSON(reply);
+    let score, feedback;
+    if (!result) {
+      const has_answer = /9\.4|九點四/.test(textVal);
+      const has_reason = textVal.length >= 20 && /(235|940|小數|乘|位|向左移|等於|因為)/.test(textVal);
+      score = !has_answer ? 30 : (has_reason ? 75 : 55);
+      feedback = has_reason ? '✅ 文字答案合格' : '⚠️ 只有答案，未解釋原理';
+    } else {
+      score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
+      feedback = cleanChineseOnly(result.feedback);
+    }
+    voiceData = { transcript: textVal, score, feedback };
+    const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
+    const bg = score >= 80 ? '#E8F5E9' : score >= 60 ? '#FFF8E1' : '#FFEBEE';
+    const escFb = (feedback||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    resEl.innerHTML = `<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};"><div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div><div style="margin-top:6px;color:#333;">${escFb}</div><div style="margin-top:6px;font-size:0.8rem;color:#666;">📝 打字答案</div></div>`;
+    if (score >= 60) { answered.voice = true; document.getElementById('qc2').classList.add('done'); checkAllDone(); }
+  } catch(e) {
+    resEl.innerHTML = `<div style="color:#C62828;padding:10px;background:#FFEBEE;border-radius:8px;">⚠️ AI 評分失敗：${e.message}<div style="margin-top:8px;"><button class="btn" onclick="submitText()">🔄 重試</button></div></div>`;
+  }
+}
+function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
+function checkFill(){if(answered.fill)return;const input=document.getElementById('fillInput');const hint=document.getElementById('fillHint');const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=FILL_ACCEPT.some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;answered.fill=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+FILL_HINT;checkAllDone();}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${FILL_HINT}`;setTimeout(()=>input.classList.remove('wrong'),500);}}
+document.getElementById('fillInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkFill();});
+async function startRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}document.getElementById('recStatus').innerHTML='<span style="color:#1565C0;">⌛ 正在請求麥克風存取，請允許權限...</span>';document.getElementById('recBtn').disabled=true;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioChunks=[];let options={mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:64000};if(!window.MediaRecorder||!MediaRecorder.isTypeSupported(options.mimeType))options={audioBitsPerSecond:64000};mediaRecorder=new MediaRecorder(stream,options);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const mimeType=audioChunks[0]?.type||'audio/webm';const blob=new Blob(audioChunks,{type:mimeType});const durationSec=(Date.now()-recordStartTime)/1000;clearInterval(recordTimer);document.getElementById('recBtn').disabled=false;document.getElementById('stopBtn').disabled=true;const tooShort=durationSec<3;const tooSmall=blob.size<8000;if(tooShort||tooSmall){const reason=tooShort?`錄音時間只有 ${durationSec.toFixed(1)} 秒`:`錄音太細（${Math.round(blob.size/1024)} KB）`;document.getElementById('recStatus').innerHTML=`<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。</span>`;document.getElementById('transcript').innerHTML='<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';document.getElementById('gradeBtn').disabled=true;recordedBlob=null;return;}recordedBlob=blob;document.getElementById('recStatus').innerHTML=`<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;document.getElementById('transcript').innerHTML='<span style="color:#999;">⬇️ 按「提交俾 AI 評分」分析</span>';document.getElementById('gradeBtn').disabled=false;};mediaRecorder.start();recordStartTime=Date.now();document.getElementById('recBtn').disabled=true;document.getElementById('stopBtn').disabled=false;document.getElementById('gradeBtn').disabled=true;document.getElementById('transcript').innerHTML='<span style="color:#666;">🎤 正在錄音中...</span>';if(recordTimer)clearInterval(recordTimer);recordTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recordStartTime)/1000);const color=sec>45?'#F44336':sec>30?'#F57F17':'#C62828';document.getElementById('recStatus').innerHTML=`<span style="color:${color};font-weight:700;">🔴 錄音中 ${sec} 秒</span>`+(sec>=30?' <span style="font-size:0.85rem;color:#666;">（建議 10-30 秒）</span>':'');if(sec>=60)stopRec();},250);}catch(err){const msg=err.name==='NotAllowedError'||err.name==='PermissionDeniedError'?'⚠️ 請允許麥克風權限':'❌ '+err.message;document.getElementById('recStatus').innerHTML=msg;document.getElementById('recBtn').disabled=false;}}
+function stopRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}}
+function blobToBase64(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=reject;r.readAsDataURL(blob);});}
+async function encodeToWav(blob){const AudioCtx=window.AudioContext||window.webkitAudioContext;const OfflineCtx=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!AudioCtx||!OfflineCtx)throw new Error('browser lacks AudioContext');const arrayBuffer=await blob.arrayBuffer();const decodeCtx=new AudioCtx();if(decodeCtx.state==='suspended'){try{await decodeCtx.resume();}catch(_){}}const audioBuffer=await new Promise((resolve,reject)=>{try{const p=decodeCtx.decodeAudioData(arrayBuffer.slice(0),resolve,reject);if(p&&typeof p.then==='function')p.then(resolve,reject);}catch(e){reject(e);}});try{decodeCtx.close();}catch(_){}const targetSR=22050;const length=Math.max(1,Math.floor(audioBuffer.duration*targetSR));const offline=new OfflineCtx(1,length,targetSR);const src=offline.createBufferSource();src.buffer=audioBuffer;src.connect(offline.destination);src.start(0);const rendered=await offline.startRendering();return audioBufferToWavBlob(rendered);}
+function audioBufferToWavBlob(buffer){const numChannels=buffer.numberOfChannels,sampleRate=buffer.sampleRate,samples=buffer.length,dataSize=samples*numChannels*2;const buf=new ArrayBuffer(44+dataSize);const view=new DataView(buf);let off=0;const w=s=>{for(let i=0;i<s.length;i++)view.setUint8(off++,s.charCodeAt(i));};w('RIFF');view.setUint32(off,36+dataSize,true);off+=4;w('WAVE');w('fmt ');view.setUint32(off,16,true);off+=4;view.setUint16(off,1,true);off+=2;view.setUint16(off,numChannels,true);off+=2;view.setUint32(off,sampleRate,true);off+=4;view.setUint32(off,sampleRate*numChannels*2,true);off+=4;view.setUint16(off,numChannels*2,true);off+=2;view.setUint16(off,16,true);off+=2;w('data');view.setUint32(off,dataSize,true);off+=4;const chans=[];for(let c=0;c<numChannels;c++)chans.push(buffer.getChannelData(c));for(let i=0;i<samples;i++){for(let c=0;c<numChannels;c++){let s=Math.max(-1,Math.min(1,chans[c][i]));view.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}}return new Blob([buf],{type:'audio/wav'});}
+function extractJSON(text){if(!text)return null;const fence=text.match(/```(?:json)?\s*([\s\S]*?)```/);let candidate=fence?fence[1]:text;const start=candidate.indexOf('{'),end=candidate.lastIndexOf('}');if(start!==-1&&end>start){const js=candidate.slice(start,end+1);try{return JSON.parse(js);}catch(_){}try{return JSON.parse(js.replace(/,\s*(\}|\])/g,'$1').replace(/\n/g,' '));}catch(_){}}const tM=text.match(/"transcript"\s*:\s*"([^"]*(?:\\.[^"]*)*)"/);const sM=text.match(/"score"\s*:\s*(\d+)/);const fM=text.match(/"feedback"\s*:\s*"([^"]*(?:\\.[^"]*)*)"/);if(tM||sM||fM)return{transcript:tM?tM[1].replace(/\\"/g,'"'):'',score:sM?parseInt(sM[1]):0,feedback:fM?fM[1].replace(/\\"/g,'"'):''};return null;}
+function cleanChineseOnly(s){if(!s)return '';return String(s).replace(/```[a-z]*|```/gi,'').replace(/\{[^}]*\}/g,'').replace(/^\s*["\{\[]+|["\}\]]+\s*$/g,'').trim();}
+async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}const resEl=document.getElementById('gradeResult');const gradeBtn=document.getElementById('gradeBtn');gradeBtn.disabled=true;resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 AI 正在分析...</div>';document.getElementById('transcript').innerHTML='<span style="color:#666;">🔄 分析中...</span>';const prompt=`你係小學五年級粵語數學老師。
+題目：「${VOICE_Q.q}」
+核心概念：${VOICE_Q.concept}
+評分要點：${VOICE_Q.rubric}
+合格要求：${VOICE_Q.hint}
+
+⚠️ 重要：題目問「點解 / 教一教」，學生必須解釋原理。
+⚠️ 請逐個對比 rubric 要點。
+
+請做兩件事：
+1. 聽呢段錄音，轉寫成完整通順嘅粵語句子，整理重複同語氣詞。
+2. 根據 rubric 評分。
+
+請嚴格返回純 JSON（唔好加 \`\`\`）：
+{"transcript": "完整粵語句子", "score": 整數0-100, "feedback": "評語（60字內）"}`;try{let uploadBlob;try{uploadBlob=await encodeToWav(recordedBlob);}catch(e){uploadBlob=recordedBlob;}const base64=await blobToBase64(uploadBlob);const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}],audio:{mimeType:uploadBlob.type||'audio/wav',data:base64}})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();const reply=data.reply||data.text||'';if(!reply)throw new Error('AI 未回應');const result=extractJSON(reply);if(!result){resEl.innerHTML=`<div style="padding:12px;background:#FFEBEE;border-radius:8px;color:#C62828;">⚠️ 評分失敗<div style="margin-top:8px;"><button class="btn" onclick="submitVoice()">🔄 重試</button> <button class="btn outline" onclick="resetVoice()">🎤 重錄</button></div></div>`;gradeBtn.disabled=false;return;}const score=Math.max(0,Math.min(100,parseInt(result.score)||0));const feedback=cleanChineseOnly(result.feedback);const transcript=cleanChineseOnly(result.transcript);const rawTranscript=(data.rawTranscript||'').trim();const chineseChars=data.chineseChars||0;const overridden=!!data.overridden;const fabricated=!!data.fabricated;voiceData={transcript,score,feedback};const esc=s=>String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');const escRaw=esc(rawTranscript)||'<i style="color:#C62828;">（系統冇聽到聲音）</i>';const escTrans=esc(transcript)||'<i style="color:#999;">（AI 未整理）</i>';const showDiff=transcript&&transcript!==rawTranscript;const ccColor=chineseChars>=25?'#2E7D32':chineseChars>=10?'#F57F17':'#C62828';const ccLabel=chineseChars>=25?'充足':chineseChars>=10?'偏少':'嚴重不足';document.getElementById('transcript').innerHTML=`<div style="background:#F5F5F5;border-left:4px solid #1565C0;padding:10px;border-radius:6px;margin-bottom:8px;"><div style="color:#1565C0;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🎤 AI 聽到你講：</div><div style="color:#333;line-height:1.6;">${escRaw}</div><div style="margin-top:6px;font-size:0.8rem;color:${ccColor};">📊 共 <b>${chineseChars}</b> 個中文字（${ccLabel}）${overridden?' · <b style="color:#C62828;">⚠️ 分數已被系統修正</b>':''}</div></div>${fabricated?`<div style="background:#FFEBEE;border-left:4px solid #C62828;padding:10px;border-radius:6px;margin-bottom:8px;"><div style="color:#C62828;font-weight:700;font-size:0.9rem;">⚠️ 系統偵測 AI 嘗試擴寫答案，已還原並重新評分。</div></div>`:''}${(!fabricated&&showDiff)?`<div style="background:#E8F5E9;border-left:4px solid #2E7D32;padding:10px;border-radius:6px;"><div style="color:#2E7D32;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🤖 AI 修正錯字後：</div><div style="color:#333;line-height:1.6;">${escTrans}</div></div>`:''}`;const color=score>=80?'#2E7D32':score>=60?'#F57F17':'#C62828';const bg=score>=80?'#E8F5E9':score>=60?'#FFF8E1':'#FFEBEE';const escFb=feedback.replace(/</g,'&lt;').replace(/>/g,'&gt;');resEl.innerHTML=`<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};"><div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div><div style="margin-top:6px;color:#333;line-height:1.5;">${escFb}</div><div style="margin-top:10px;">${score<60?`<button class="btn outline" onclick="resetVoice()">🔄 重錄</button>`:'<div style="color:#2E7D32;font-weight:700;">✅ 合格！已計入完成</div>'}</div></div>`;if(score>=60){answered.voice=true;document.getElementById('qc2').classList.add('done');checkAllDone();}gradeBtn.disabled=false;}catch(e){const errMsg=e.message||String(e);let friendly='⚠️ 評分失敗';if(/429|RATE_LIMIT/.test(errMsg))friendly='⏸ 太多同學同時用，請等 1 分鐘再試';else if(/403/.test(errMsg))friendly='🚫 網站未授權，通知老師';else if(/Failed to fetch|NetworkError|Load failed/.test(errMsg))friendly='📶 網絡連唔到 AI，請檢查 WiFi';else if(/500|502|503|504/.test(errMsg))friendly='🔧 AI 伺服器暫時有問題，等 30 秒再試';resEl.innerHTML=`<div style="color:#C62828;padding:10px;background:#FFEBEE;border-radius:8px;">${friendly}<div style="margin-top:6px;font-size:0.78rem;color:#888;">詳細錯誤：${errMsg}</div><div style="margin-top:8px;"><button class="btn" onclick="submitVoice()">🔄 重試</button> <button class="btn outline" onclick="resetVoice()">🎤 重錄</button></div></div>`;gradeBtn.disabled=false;}}
+function resetVoice(){recordedBlob=null;voiceData=null;document.getElementById('transcript').innerHTML='<span style="color:#999;">按「開始錄音」試下</span>';document.getElementById('gradeResult').innerHTML='';document.getElementById('gradeBtn').disabled=true;document.getElementById('recStatus').textContent='按「開始錄音」試下';}
+function zoom(src){document.getElementById('zoomImg').src=src;document.getElementById('zoomOv').classList.add('show');}
+function unzoom(){document.getElementById('zoomOv').classList.remove('show');}
+function checkAllDone(){if(answered.mc&&answered.fill&&answered.voice){document.getElementById('done').classList.add('show');try{const key=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(key)||'{}');p[PRELEARN_KEY]={done:true,score:voiceData?.score||0,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(_){}}}
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="14"></script>
+<script src="../common/stt.js"></script>
+</body>
+</html>
