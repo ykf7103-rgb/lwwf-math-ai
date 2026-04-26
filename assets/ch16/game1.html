@@ -3,41 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第16課 · 遊戲 1 — 立方塊數一數（Minecraft）</title>
+<title>第16課 · 遊戲 1 — Minecraft 砌方塊達標</title>
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
   body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#A5D6A7 0%,#66BB6A 50%,#388E3C 100%);min-height:100vh;color:#222;overflow-x:hidden}
   header{background:linear-gradient(135deg,#1B5E20,#2E7D32);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:100}
   header h1{margin:0;font-size:1.05rem;font-weight:800}
   header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
-  .wrap{max-width:920px;margin:0 auto;padding:14px 12px}
+  .wrap{max-width:680px;margin:0 auto;padding:14px 12px}
   .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
-  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.85rem;color:#666}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.82rem;color:#666}
   .stats .val{font-size:1.4rem;color:#2E7D32;font-weight:900;line-height:1}
   .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px}
-  .speech{background:linear-gradient(135deg,#C8E6C9,#A5D6A7);border:2px solid #2E7D32;padding:14px 16px;border-radius:14px;margin-bottom:18px;font-weight:700;color:#1B5E20;line-height:1.5}
-  .speech::before{content:'⛏️ Steve：';display:block;font-weight:900;color:#2E7D32;margin-bottom:4px}
-  .cube-display{background:linear-gradient(135deg,#FFF8E1,#FFE0B2);border:3px dashed #F57C00;border-radius:16px;padding:24px;text-align:center;margin:18px 0}
-  .cube-3d{display:grid;grid-template-columns:repeat(var(--cols,3),50px);grid-auto-rows:50px;gap:2px;justify-content:center;margin:14px auto;width:fit-content;perspective:600px}
-  .cube-3d .blk{width:50px;height:50px;background:linear-gradient(135deg,#8D6E63,#5D4037);border:2px solid #3E2723;border-radius:6px;box-shadow:inset -3px -3px 0 rgba(0,0,0,0.3),inset 3px 3px 0 rgba(255,255,255,0.2);transition:transform .2s}
-  .cube-3d .blk:hover{transform:scale(1.1)}
-  .cube-3d .blk.grass{background:linear-gradient(135deg,#66BB6A,#388E3C)}
-  .cube-3d .blk.stone{background:linear-gradient(135deg,#9E9E9E,#616161)}
-  .cube-3d .blk.diamond{background:linear-gradient(135deg,#4FC3F7,#0288D1)}
-  .cube-question{font-size:1.15rem;font-weight:900;color:#1B5E20;text-align:center;margin-top:14px;background:white;padding:12px;border-radius:10px}
-  .input-row{display:flex;gap:8px;margin:14px 0}
-  .ans-input{flex:1;padding:14px;border:3px solid #2E7D32;border-radius:10px;font-size:1.2rem;font-weight:900;text-align:center;font-family:inherit;color:#1B5E20}
-  .ans-input:focus{outline:none;border-color:#1B5E20;background:#E8F5E9}
-  .ans-input.correct{background:#C8E6C9;border-color:#1B5E20}
-  .ans-input.wrong{background:#FFCDD2;border-color:#C62828;animation:shake .4s}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  .ans-btn{padding:14px 26px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:10px;font-weight:900;cursor:pointer;font-size:1.1rem;font-family:inherit}
-  .feedback{margin-top:14px;padding:12px 14px;border-radius:10px;font-weight:700;display:none;line-height:1.55}
+  .target-box{background:linear-gradient(135deg,#FFE082,#FFB74D);border:3px solid #E65100;padding:14px;border-radius:14px;text-align:center;margin-bottom:14px}
+  .target-label{font-weight:800;color:#BF360C;font-size:1rem}
+  .target-val{font-size:2.2rem;font-weight:900;color:#E65100;line-height:1.1;margin:4px 0}
+  .target-hint{font-size:.85rem;color:#666}
+  .build-area{background:linear-gradient(135deg,#E0F2F1,#B2DFDB);border:3px dashed #00695C;border-radius:14px;padding:14px;margin-bottom:14px}
+  .grid-3d{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:340px;margin:0 auto}
+  .cell{aspect-ratio:1;background:rgba(255,255,255,0.4);border:2px dashed #80CBC4;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#555;transition:all .15s;position:relative}
+  .cell:hover{background:rgba(255,255,255,0.7)}
+  .cell.has-block{background:linear-gradient(135deg,#8D6E63,#5D4037);border:2px solid #3E2723;border-style:solid;color:#FFE082;box-shadow:inset -2px -2px 0 rgba(0,0,0,0.3),inset 2px 2px 0 rgba(255,255,255,0.2)}
+  .cell.has-block.lvl-2{background:linear-gradient(135deg,#66BB6A,#388E3C);color:white}
+  .cell.has-block.lvl-3{background:linear-gradient(135deg,#9E9E9E,#616161)}
+  .cell.has-block.lvl-4{background:linear-gradient(135deg,#4FC3F7,#0288D1)}
+  .layer-controls{display:flex;justify-content:center;gap:6px;margin-top:14px;flex-wrap:wrap}
+  .layer-btn{padding:8px 14px;background:#FAFAFA;border:2px solid #BDBDBD;border-radius:8px;cursor:pointer;font-weight:800;font-size:0.85rem;font-family:inherit}
+  .layer-btn.active{background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border-color:#2E7D32;box-shadow:0 3px 8px rgba(46,125,50,0.4)}
+  .build-status{display:flex;justify-content:space-between;background:white;padding:10px 14px;border-radius:10px;margin-top:10px;font-weight:800}
+  .build-status .label{color:#666;font-size:0.82rem}
+  .build-status .v{color:#2E7D32;font-size:1.2rem}
+  .actions{display:flex;gap:8px;margin-top:14px}
+  .btn-clear{flex:1;padding:12px;background:#F5F5F5;border:2px solid #BDBDBD;border-radius:10px;cursor:pointer;font-weight:800;font-family:inherit}
+  .btn-submit{flex:2;padding:12px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-family:inherit;font-size:1rem}
+  .feedback{margin-top:14px;padding:12px;border-radius:10px;font-weight:700;display:none;line-height:1.55}
   .feedback.show{display:block;animation:fadeIn .3s}
   .feedback.right{background:#E8F5E9;color:#2E7D32;border:2px solid #4CAF50}
   .feedback.wrong{background:#FFEBEE;color:#C62828;border:2px solid #F44336}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px}
+  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px;font-family:inherit}
   .next-btn.show{display:block;animation:pop .4s}
   @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
   .progress-bar{height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;margin-bottom:14px}
@@ -46,40 +50,51 @@
   .lock-modal.show{display:flex}
   .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center}
   .lock-box .big{font-size:3.5rem}
-  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px;font-family:inherit}
   .done-banner{background:linear-gradient(135deg,#FFC107,#FF8F00);color:white;padding:18px;border-radius:14px;text-align:center;font-weight:900;display:none;font-size:1.05rem;line-height:1.55}
   .done-banner.show{display:block;animation:pop .5s}
   .coin-row{font-size:2.5rem;letter-spacing:6px;margin:10px 0}
+  .speech{background:linear-gradient(135deg,#C8E6C9,#A5D6A7);border:2px solid #2E7D32;padding:12px 14px;border-radius:12px;margin-bottom:14px;font-weight:700;color:#1B5E20;font-size:0.92rem;line-height:1.55}
+  .speech::before{content:'⛏️ Steve：';display:block;font-weight:900;color:#2E7D32;margin-bottom:3px}
 </style>
 </head>
 <body>
 <header>
-  <h1>⛏️ 第16課 · 遊戲 1 — Minecraft 立方塊數一數</h1>
+  <h1>⛏️ 第16課 · 遊戲 1 — Minecraft 砌方塊達標</h1>
   <a href="index.html" class="back">← 返回</a>
 </header>
 <div class="wrap">
   <div class="stats">
-    <div class="item"><div class="val" id="qNum">1/10</div><div>關卡</div></div>
+    <div class="item"><div class="val" id="qNum">1/8</div><div>關卡</div></div>
     <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
     <div class="item"><div class="val" id="coins">🪙×0</div><div>金幣</div></div>
     <div class="item"><div class="val" id="wrongs">0/5</div><div>錯誤</div></div>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
   <div class="scene">
-    <div class="speech" id="hint">幫 Steve 量度 Minecraft 立方塊建築嘅體積！每個方塊 = 1 cm³，數齊先過關。</div>
-    <div class="cube-display">
-      <div id="cubeShape"></div>
-      <div class="cube-question" id="qText">呢個建築有幾多 cm³？</div>
+    <div class="speech" id="hint">點擊網格嘅格仔砌方塊！每個方塊 = 1 cm³。砌到目標體積就提交。<br>🎯 切換層數 (L1-L4) 可以一格上面再疊方塊。</div>
+    <div class="target-box">
+      <div class="target-label">🎯 目標體積</div>
+      <div class="target-val"><span id="targetVal">0</span> cm³</div>
+      <div class="target-hint" id="targetHint"></div>
     </div>
-    <div class="input-row">
-      <input type="number" class="ans-input" id="ansInput" placeholder="輸入體積（單位 cm³）">
-      <button class="ans-btn" onclick="checkAnswer()">提交</button>
+    <div class="build-area">
+      <div class="grid-3d" id="grid"></div>
+      <div class="layer-controls" id="layerCtrls"></div>
+      <div class="build-status">
+        <div><span class="label">已砌方塊：</span><span class="v" id="curBlocks">0</span></div>
+        <div><span class="label">當前體積：</span><span class="v" id="curVol">0 cm³</span></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-clear" onclick="clearGrid()">🗑 清空</button>
+      <button class="btn-submit" onclick="submitBuild()">✓ 提交</button>
     </div>
     <div class="feedback" id="fb"></div>
     <button class="next-btn" id="nextBtn" onclick="nextQ()">下一關 ▶</button>
   </div>
   <div class="done-banner" id="doneBanner">
-    🎉 Minecraft 量度大師！<br>
+    🎉 Minecraft 砌嘢大師！<br>
     <span id="finalScore"></span><br>
     <span class="coin-row" id="finalCoins"></span>
     <a href="index.html" style="color:white;background:#7B1FA2;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px">回課題</a>
@@ -89,99 +104,163 @@
   <div class="lock-box">
     <div class="big">🔒</div>
     <h2>Steve 話：要重砌！</h2>
-    <p>你已經錯咗 <b>5 次</b>。要由第 1 關重新挑戰。</p>
+    <p>你已經錯咗 <b>5 次</b>。要由第 1 關重新砌。</p>
     <button onclick="restart()">🔁 從頭再嚟</button>
   </div>
 </div>
 <script>
 const CHAPTER = 16, GAME_KEY = 'game1';
-
-// 10 關 — 由淺到深 cm³ 量度
-const QUESTIONS = [
-  // 簡單堆疊
-  { rows: 1, cols: 2, depth: 1, ans: 2, hint:'1 × 2 × 1 = 2 個方塊 → 2 cm³' },
-  { rows: 1, cols: 3, depth: 1, ans: 3, hint:'1 × 3 × 1 = 3 個方塊 → 3 cm³' },
-  { rows: 2, cols: 2, depth: 1, ans: 4, hint:'2 × 2 × 1 = 4 個方塊 → 4 cm³（一個正方形薄餅）' },
-  { rows: 2, cols: 3, depth: 1, ans: 6, hint:'2 × 3 × 1 = 6 個方塊 → 6 cm³' },
-  // 立方
-  { rows: 2, cols: 2, depth: 2, ans: 8, hint:'2 × 2 × 2 = 8 個方塊 → 8 cm³（小立方體）' },
-  { rows: 3, cols: 3, depth: 1, ans: 9, hint:'3 × 3 × 1 = 9 個方塊 → 9 cm³' },
-  { rows: 3, cols: 2, depth: 2, ans: 12, hint:'3 × 2 × 2 = 12 個方塊 → 12 cm³' },
-  { rows: 3, cols: 3, depth: 2, ans: 18, hint:'3 × 3 × 2 = 18 個方塊 → 18 cm³' },
-  { rows: 3, cols: 3, depth: 3, ans: 27, hint:'3 × 3 × 3 = 27 → 27 cm³（魔方大細）' },
-  { rows: 4, cols: 4, depth: 2, ans: 32, hint:'4 × 4 × 2 = 32 → 32 cm³（Minecraft 城牆）' }
+const GRID_SIZE = 5;  // 5x5 base
+const MAX_LAYERS = 4;
+const LEVELS = [
+  { target: 4,  hint:'砌個 2×2 嘅單層平台' },
+  { target: 6,  hint:'2×3 嘅單層長方形' },
+  { target: 8,  hint:'砌 2×2×2 嘅小立方體（要 2 層）' },
+  { target: 12, hint:'試試 3×2×2 或者 4×3×1' },
+  { target: 18, hint:'3×3×2 嘅厚平台' },
+  { target: 24, hint:'多層砌 — 例 4×3×2' },
+  { target: 27, hint:'砌 3×3×3 完美立方體！' },
+  { target: 40, hint:'最終挑戰：你諗點砌都得 — 4×5×2 / 5×4×2 / 4×4×2.5 等等' }
 ];
 
 let qIdx = 0, score = 0, wrongs = 0, coins = 0;
-const TOTAL = QUESTIONS.length;
-const els = {};
-['qNum','score','coins','wrongs','pfill','cubeShape','qText','ansInput','fb','nextBtn','doneBanner','lockModal'].forEach(id => els[id] = document.getElementById(id));
+let curLayer = 1;  // 1 = base, up to MAX_LAYERS
+const occupancy = {};  // key = "r,c,L" -> true (块存在)
+const TOTAL = LEVELS.length;
 
-function buildCube(q) {
-  els.cubeShape.innerHTML = '';
-  const shape = document.createElement('div');
-  shape.className = 'cube-3d';
-  shape.style.setProperty('--cols', q.cols);
-  // Show all blocks in flat 2D representation grouped by depth (visual approximation)
-  for (let d = 0; d < q.depth; d++) {
-    for (let r = 0; r < q.rows; r++) {
-      for (let c = 0; c < q.cols; c++) {
-        const blk = document.createElement('div');
-        blk.className = 'blk ' + (d === 0 ? 'grass' : (d === 1 ? 'stone' : 'diamond'));
-        shape.appendChild(blk);
-      }
+const els = {};
+['qNum','score','coins','wrongs','pfill','targetVal','targetHint','curBlocks','curVol','grid','layerCtrls','fb','nextBtn','doneBanner','lockModal'].forEach(id => els[id] = document.getElementById(id));
+
+function buildGrid() {
+  els.grid.innerHTML = '';
+  for (let r = 0; r < GRID_SIZE; r++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r; cell.dataset.c = c;
+      cell.onclick = () => toggleCell(r, c);
+      els.grid.appendChild(cell);
     }
   }
-  els.cubeShape.appendChild(shape);
+}
+
+function buildLayerCtrls() {
+  els.layerCtrls.innerHTML = '';
+  for (let l = 1; l <= MAX_LAYERS; l++) {
+    const b = document.createElement('button');
+    b.className = 'layer-btn' + (l === curLayer ? ' active' : '');
+    b.textContent = `L${l}`;
+    b.onclick = () => { curLayer = l; updateGridDisplay(); buildLayerCtrls(); };
+    els.layerCtrls.appendChild(b);
+  }
+}
+
+function toggleCell(r, c) {
+  const key = `${r},${c},${curLayer}`;
+  // 上面層必須有低層 support
+  if (curLayer > 1 && !occupancy[`${r},${c},${curLayer-1}`]) {
+    flashError(); return;
+  }
+  if (occupancy[key]) {
+    // 不可以刪 — 上面有方塊嘅話
+    if (occupancy[`${r},${c},${curLayer+1}`]) { flashError(); return; }
+    delete occupancy[key];
+  } else {
+    occupancy[key] = true;
+  }
+  updateGridDisplay();
+  updateStatus();
+}
+
+function flashError() {
+  els.fb.className = 'feedback wrong show';
+  els.fb.innerHTML = '⚠️ 方塊冇 support！上面嘅方塊要先砌底層。';
+  setTimeout(() => els.fb.classList.remove('show'), 2000);
+}
+
+function updateGridDisplay() {
+  document.querySelectorAll('.cell').forEach(c => {
+    const r = parseInt(c.dataset.r), col = parseInt(c.dataset.c);
+    // Show highest layer at this position
+    let topLayer = 0;
+    for (let l = MAX_LAYERS; l >= 1; l--) {
+      if (occupancy[`${r},${col},${l}`]) { topLayer = l; break; }
+    }
+    c.className = 'cell';
+    if (topLayer > 0) {
+      c.classList.add('has-block', `lvl-${topLayer}`);
+      c.textContent = topLayer;
+    } else {
+      c.textContent = '';
+    }
+    // Highlight current layer being edited
+    if (occupancy[`${r},${col},${curLayer}`]) {
+      c.style.outline = '3px solid #FF6F00';
+    } else {
+      c.style.outline = '';
+    }
+  });
+}
+
+function updateStatus() {
+  const total = Object.keys(occupancy).length;
+  els.curBlocks.textContent = total;
+  els.curVol.textContent = `${total} cm³`;
+}
+
+function clearGrid() {
+  Object.keys(occupancy).forEach(k => delete occupancy[k]);
+  updateGridDisplay();
+  updateStatus();
+  els.fb.classList.remove('show');
+}
+
+function submitBuild() {
+  const lvl = LEVELS[qIdx];
+  const total = Object.keys(occupancy).length;
+  if (total === lvl.target) {
+    score += 12;
+    els.fb.className = 'feedback right show';
+    els.fb.innerHTML = `✅ 完美！砌咗 ${total} cm³ = 目標 ${lvl.target} cm³`;
+    els.nextBtn.classList.add('show');
+  } else {
+    wrongs++;
+    els.wrongs.textContent = `${wrongs}/5`;
+    els.fb.className = 'feedback wrong show';
+    if (total < lvl.target) {
+      els.fb.innerHTML = `❌ 唔夠！你砌咗 ${total} cm³，差 ${lvl.target - total} cm³。${lvl.hint}`;
+    } else {
+      els.fb.innerHTML = `❌ 多咗！你砌咗 ${total} cm³，多咗 ${total - lvl.target} cm³。${lvl.hint}`;
+    }
+    if (wrongs >= 5) { setTimeout(triggerLock, 700); }
+  }
+  els.score.textContent = score;
 }
 
 function render() {
-  const q = QUESTIONS[qIdx];
-  buildCube(q);
-  els.qText.textContent = `呢個建築有幾多 cm³？（共 ${q.rows} × ${q.cols} × ${q.depth} = ?）`;
+  const lvl = LEVELS[qIdx];
+  els.targetVal.textContent = lvl.target;
+  els.targetHint.textContent = lvl.hint;
   els.qNum.textContent = `${qIdx+1}/${TOTAL}`;
   els.score.textContent = score;
   els.coins.textContent = `🪙×${coins}`;
   els.wrongs.textContent = `${wrongs}/5`;
   els.pfill.style.width = ((qIdx)/TOTAL*100)+'%';
-  els.fb.classList.remove('show','right','wrong');
+  els.fb.classList.remove('show');
   els.nextBtn.classList.remove('show');
-  els.ansInput.value = '';
-  els.ansInput.classList.remove('correct','wrong');
-  els.ansInput.disabled = false;
-  els.ansInput.focus();
+  Object.keys(occupancy).forEach(k => delete occupancy[k]);
+  curLayer = 1;
+  buildLayerCtrls();
+  updateGridDisplay();
+  updateStatus();
 }
-
-function checkAnswer() {
-  const q = QUESTIONS[qIdx];
-  const v = parseInt(els.ansInput.value.trim());
-  if (isNaN(v)) { els.ansInput.focus(); return; }
-  if (v === q.ans) {
-    els.ansInput.classList.add('correct'); els.ansInput.disabled = true;
-    score += 10;
-    els.fb.className = 'feedback right show';
-    els.fb.innerHTML = `✅ 答啱！${q.hint}`;
-    els.nextBtn.classList.add('show');
-  } else {
-    els.ansInput.classList.add('wrong');
-    setTimeout(() => els.ansInput.classList.remove('wrong'), 500);
-    wrongs++;
-    els.wrongs.textContent = `${wrongs}/5`;
-    els.fb.className = 'feedback wrong show';
-    els.fb.innerHTML = `❌ 唔啱（你答 ${v}）！💡 ${q.hint}`;
-    if (wrongs >= 5) { setTimeout(triggerLock, 700); return; }
-  }
-  els.score.textContent = score;
-}
-
-els.ansInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
 
 function nextQ() { qIdx++; if (qIdx >= TOTAL) { finishGame(); return; } render(); }
 function finishGame() {
-  if (score >= 90) coins = 3; else if (score >= 70) coins = 2; else if (score >= 50) coins = 1;
+  if (score >= 80) coins = 3; else if (score >= 60) coins = 2; else if (score >= 40) coins = 1;
   saveScore();
   document.querySelector('.scene').style.display = 'none';
-  document.getElementById('finalScore').textContent = `得分：${score} / 100`;
+  document.getElementById('finalScore').textContent = `得分：${score} / 96`;
   document.getElementById('finalCoins').textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
   els.doneBanner.classList.add('show');
 }
@@ -190,7 +269,7 @@ function restart(){qIdx=0;score=0;wrongs=0;coins=0;els.lockModal.classList.remov
 function saveScore() {
   try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
 }
-render();
+buildGrid(); render();
 </script>
 <script src="../common/feedback.js"></script>
 <script src="../common/chapter-header.js" data-current-ch="16"></script>

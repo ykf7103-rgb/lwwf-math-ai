@@ -3,40 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第16課 · 遊戲 3 — 單位偵探（cm³ vs m³）</title>
+<title>第16課 · 遊戲 3 — 立方體拆解迷宮</title>
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#B39DDB 0%,#7E57C2 50%,#4527A0 100%);min-height:100vh;overflow-x:hidden}
-  header{background:linear-gradient(135deg,#4527A0,#311B92);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#B39DDB 0%,#7E57C2 50%,#4527A0 100%);min-height:100vh;color:#222;overflow-x:hidden}
+  header{background:linear-gradient(135deg,#311B92,#1A237E);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
   header h1{margin:0;font-size:1.05rem;font-weight:800}
   header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
-  .wrap{max-width:920px;margin:0 auto;padding:14px 12px}
+  .wrap{max-width:680px;margin:0 auto;padding:14px 12px}
   .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
-  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.85rem;color:#666}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.82rem;color:#666}
   .stats .val{font-size:1.4rem;color:#4527A0;font-weight:900;line-height:1}
   .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px}
-  .speech{background:linear-gradient(135deg,#E1BEE7,#CE93D8);border:2px solid #4527A0;padding:14px 16px;border-radius:14px;margin-bottom:18px;font-weight:700;color:#311B92;line-height:1.5}
-  .speech::before{content:'🔍 單位偵探：';display:block;font-weight:900;color:#4527A0;margin-bottom:4px}
-  .obj-card{background:linear-gradient(135deg,#F3E5F5,#E1BEE7);border:3px solid #7E57C2;border-radius:16px;padding:24px;text-align:center;margin:18px 0}
-  .obj-emoji{font-size:5rem}
-  .obj-name{font-size:1.4rem;font-weight:900;color:#311B92}
-  .obj-question{font-size:1.05rem;color:#666;margin-top:10px}
-  .unit-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
-  .unit-btn{padding:24px 12px;border:3px solid;border-radius:16px;font-weight:900;cursor:pointer;font-size:1.5rem;text-align:center;transition:all .2s;background:white}
-  .unit-btn.cm{border-color:#1976D2;color:#0D47A1}
-  .unit-btn.m{border-color:#E65100;color:#BF360C}
-  .unit-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
-  .unit-btn:disabled{cursor:not-allowed;opacity:.5}
-  .unit-btn.selected-correct{background:#C8E6C9;border-color:#2E7D32;color:#2E7D32;animation:pulse .6s}
-  .unit-btn.selected-wrong{background:#FFCDD2;border-color:#C62828;color:#C62828;animation:shake .4s}
-  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  .feedback{margin-top:14px;padding:12px 14px;border-radius:10px;font-weight:700;display:none;line-height:1.55}
+  .speech{background:linear-gradient(135deg,#E1BEE7,#CE93D8);border:2px solid #4527A0;padding:12px 14px;border-radius:12px;margin-bottom:14px;font-weight:700;color:#311B92;font-size:0.92rem;line-height:1.55}
+  .speech::before{content:'🧩 拆解大師：';display:block;font-weight:900;color:#4527A0;margin-bottom:3px}
+
+  /* Compound shape display */
+  .shape-display{background:linear-gradient(135deg,#F3E5F5,#E1BEE7);border:3px solid #7E57C2;border-radius:14px;padding:14px;margin-bottom:14px;text-align:center}
+  .shape-area{display:grid;grid-template-columns:repeat(8,30px);grid-auto-rows:30px;gap:1px;justify-content:center;margin:10px auto}
+  .shape-cell{background:transparent}
+  .shape-cell.solid{background:linear-gradient(135deg,#5C6BC0,#283593);border:1.5px solid #1A237E;border-radius:3px;box-shadow:inset -2px -2px 0 rgba(0,0,0,0.25),inset 2px 2px 0 rgba(255,255,255,0.2)}
+  .shape-cell.solid.hi{background:linear-gradient(135deg,#FFEB3B,#F57F17);border-color:#E65100}
+  .shape-info{font-size:0.95rem;color:#311B92;margin-top:8px;font-weight:700}
+
+  /* Decompose pieces input */
+  .decompose-q{background:linear-gradient(135deg,#FFF8E1,#FFE0B2);border:3px dashed #E65100;border-radius:14px;padding:14px;margin-bottom:14px}
+  .decompose-q-label{font-weight:900;color:#BF360C;font-size:1.05rem;margin-bottom:10px;line-height:1.5}
+  .pieces-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .piece-row{background:white;padding:12px;border-radius:10px;border:2px solid #FFB74D;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .piece-row .lab{font-size:0.85rem;color:#BF360C;font-weight:800}
+  .piece-row .formula{font-size:0.75rem;color:#888}
+  .piece-row input{width:80px;padding:8px;border:2px solid #FFB74D;border-radius:6px;font-size:1rem;text-align:center;font-weight:900;font-family:inherit}
+  .piece-row input:focus{outline:none;border-color:#E65100;background:#FFF3E0}
+  .piece-row input.ok{background:#C8E6C9;border-color:#2E7D32}
+  .piece-row input.bad{background:#FFCDD2;border-color:#C62828;animation:shake .3s}
+
+  .total-row{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #2E7D32;padding:14px;border-radius:14px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .total-row .lab{font-weight:900;color:#1B5E20;font-size:1.05rem}
+  .total-input{width:120px;padding:10px;border:3px solid #2E7D32;border-radius:8px;font-size:1.2rem;font-weight:900;text-align:center;font-family:inherit;color:#1B5E20}
+  .total-input:focus{outline:none}
+
+  .submit-btn{width:100%;margin-top:14px;padding:14px;background:linear-gradient(135deg,#4527A0,#311B92);color:white;border:none;border-radius:14px;cursor:pointer;font-weight:900;font-size:1.1rem;font-family:inherit}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .feedback{margin-top:12px;padding:12px;border-radius:10px;font-weight:700;display:none;line-height:1.55;font-size:0.95rem}
   .feedback.show{display:block;animation:fadeIn .3s}
   .feedback.right{background:#E8F5E9;color:#2E7D32;border:2px solid #4CAF50}
   .feedback.wrong{background:#FFEBEE;color:#C62828;border:2px solid #F44336}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px}
+  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px;font-family:inherit}
   .next-btn.show{display:block;animation:pop .4s}
   @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
   .progress-bar{height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;margin-bottom:14px}
@@ -45,7 +59,7 @@
   .lock-modal.show{display:flex}
   .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center}
   .lock-box .big{font-size:3.5rem}
-  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px;font-family:inherit}
   .done-banner{background:linear-gradient(135deg,#FFC107,#FF8F00);color:white;padding:18px;border-radius:14px;text-align:center;font-weight:900;display:none;font-size:1.05rem;line-height:1.55}
   .done-banner.show{display:block;animation:pop .5s}
   .coin-row{font-size:2.5rem;letter-spacing:6px;margin:10px 0}
@@ -53,33 +67,38 @@
 </head>
 <body>
 <header>
-  <h1>🔍 第16課 · 遊戲 3 — 單位偵探</h1>
+  <h1>🧩 第16課 · 遊戲 3 — 立方體拆解迷宮</h1>
   <a href="index.html" class="back">← 返回</a>
 </header>
 <div class="wrap">
   <div class="stats">
-    <div class="item"><div class="val" id="qNum">1/10</div><div>關卡</div></div>
+    <div class="item"><div class="val" id="qNum">1/6</div><div>關卡</div></div>
     <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
     <div class="item"><div class="val" id="coins">🪙×0</div><div>金幣</div></div>
     <div class="item"><div class="val" id="wrongs">0/5</div><div>錯誤</div></div>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
   <div class="scene">
-    <div class="speech" id="hint">幫單位偵探搵啱單位！細物件用 cm³，大物件用 m³。揀啱令數字易讀。</div>
-    <div class="obj-card">
-      <div class="obj-emoji" id="objEmoji">📦</div>
-      <div class="obj-name" id="objName">物件</div>
-      <div class="obj-question">應該用咩單位記體積？</div>
+    <div class="speech">睇複雜立體圖形 → 拆解成簡單長方體 → 計算每塊體積 → 加埋總和。<br>📐 提示：圖入面**唔同顏色 / 高低嘅方塊**通常係唔同 piece。</div>
+    <div class="shape-display">
+      <div class="shape-area" id="shapeArea"></div>
+      <div class="shape-info" id="shapeInfo"></div>
     </div>
-    <div class="unit-row">
-      <button class="unit-btn cm" data-u="cm" onclick="pick('cm')">cm³<br><span style="font-size:0.7rem;font-weight:700;">立方厘米（細物）</span></button>
-      <button class="unit-btn m" data-u="m" onclick="pick('m')">m³<br><span style="font-size:0.7rem;font-weight:700;">立方米（大物）</span></button>
+    <div class="decompose-q">
+      <div class="decompose-q-label" id="qLabel">將呢個立體拆解成 N 塊長方體，計算每塊體積：</div>
+      <div class="pieces-grid" id="piecesGrid"></div>
     </div>
+    <div class="total-row">
+      <div class="lab">📊 總體積：</div>
+      <input type="number" class="total-input" id="totalInput" placeholder="? cm³">
+      <span style="font-weight:900;color:#1B5E20;font-size:1.1rem">cm³</span>
+    </div>
+    <button class="submit-btn" onclick="submit()">✓ 提交答案</button>
     <div class="feedback" id="fb"></div>
     <button class="next-btn" id="nextBtn" onclick="nextQ()">下一關 ▶</button>
   </div>
   <div class="done-banner" id="doneBanner">
-    🎉 單位偵探畢業！<br>
+    🎉 拆解迷宮通關！<br>
     <span id="finalScore"></span><br>
     <span class="coin-row" id="finalCoins"></span>
     <a href="index.html" style="color:white;background:#7B1FA2;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px">回課題</a>
@@ -88,76 +107,199 @@
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>偵探話：要再練！</h2>
-    <p>你已經 5 次揀錯單位。要由第 1 關重新揀。</p>
+    <h2>拆解大師話：要重練！</h2>
+    <p>你已經錯咗 <b>5 次</b>。要由第 1 關重新拆。</p>
     <button onclick="restart()">🔁 從頭再嚟</button>
   </div>
 </div>
 <script>
 const CHAPTER = 16, GAME_KEY = 'game3';
 
-// 10 道：細物 cm³ vs 大物 m³
+// 6 道：複雜立體拆解。每題：grid display + pieces 陣列（要算）
+// shape: cells 陣列（每個 cell 用 grid coord 表示），pieces: 每塊嘅 dims [長闊高] (高 = 視覺 layer 數)
 const QUESTIONS = [
-  { e:'🍎', n:'蘋果', ans:'cm', hint:'蘋果只係手掌大細 → cm³（約 200 cm³）' },
-  { e:'🚗', n:'私家車', ans:'m', hint:'車係大物件 → m³（約 12 m³）' },
-  { e:'📱', n:'手機', ans:'cm', hint:'手機 → cm³（約 80 cm³）' },
-  { e:'🏠', n:'屋（5層唐樓單位）', ans:'m', hint:'單位係大空間 → m³（約 200 m³）' },
-  { e:'🥤', n:'罐裝可樂', ans:'cm', hint:'可樂罐 330 mL = 330 cm³ → cm³' },
-  { e:'🚢', n:'貨櫃箱', ans:'m', hint:'貨櫃 → m³（約 67 m³，可裝好多嘢）' },
-  { e:'💎', n:'鑽石（戒指上）', ans:'cm', hint:'鑽石細到極 → cm³（約 0.05 cm³）' },
-  { e:'🏊', n:'學校游泳池', ans:'m', hint:'泳池 → m³（約 500 m³）' },
-  { e:'📚', n:'一本字典', ans:'cm', hint:'字典約手掌大 → cm³（約 1,000 cm³）' },
-  { e:'🚀', n:'太空船船艙', ans:'m', hint:'船艙係大空間 → m³（國際太空站約 900 m³）' }
+  {
+    title:'L 型立體',
+    cells: [{r:0,c:0,h:1},{r:0,c:1,h:1},{r:0,c:2,h:1},{r:1,c:0,h:1}],  // L 形 4 塊單層
+    pieces: [
+      { lab:'橫向長條', formula:'3 × 1 × 1', vol: 3 },
+      { lab:'下方一塊', formula:'1 × 1 × 1', vol: 1 }
+    ],
+    total: 4,
+    hint:'L 型可以拆做：上方 3×1 + 左下 1×1 = 3 + 1 = 4 cm³'
+  },
+  {
+    title:'T 型立體（單層）',
+    cells: [{r:0,c:0,h:1},{r:0,c:1,h:1},{r:0,c:2,h:1},{r:1,c:1,h:1},{r:2,c:1,h:1}],
+    pieces: [
+      { lab:'頂部橫條', formula:'3 × 1 × 1', vol: 3 },
+      { lab:'下方直條', formula:'1 × 2 × 1', vol: 2 }
+    ],
+    total: 5,
+    hint:'T 字型：橫 3×1 + 直 1×2 = 3 + 2 = 5 cm³'
+  },
+  {
+    title:'階梯立體（2 層）',
+    cells: [{r:0,c:0,h:1},{r:0,c:1,h:1},{r:0,c:0,h:2}],  // 一格疊兩層 + 隔離一格單層
+    pieces: [
+      { lab:'底層長條', formula:'2 × 1 × 1', vol: 2 },
+      { lab:'上方多疊', formula:'1 × 1 × 1', vol: 1 }
+    ],
+    total: 3,
+    hint:'底層 2 個 + 上層 1 個 = 3 cm³（似階梯）'
+  },
+  {
+    title:'十字立體',
+    cells: [{r:0,c:1,h:1},{r:1,c:0,h:1},{r:1,c:1,h:1},{r:1,c:2,h:1},{r:2,c:1,h:1}],
+    pieces: [
+      { lab:'橫條', formula:'3 × 1 × 1', vol: 3 },
+      { lab:'上下兩塊', formula:'2 × 1 × 1', vol: 2 }
+    ],
+    total: 5,
+    hint:'十字 = 橫 3 + 上下兩塊 2 = 5 cm³（中間一塊已喺橫條入面）'
+  },
+  {
+    title:'雙層長方體 + 突出',
+    cells: [{r:0,c:0,h:1},{r:0,c:1,h:1},{r:0,c:2,h:1},{r:0,c:3,h:1},{r:0,c:0,h:2},{r:0,c:1,h:2},{r:1,c:1,h:1}],
+    pieces: [
+      { lab:'底層 4×1 條', formula:'4 × 1 × 1', vol: 4 },
+      { lab:'上層 2×1', formula:'2 × 1 × 1', vol: 2 },
+      { lab:'前突 1×1', formula:'1 × 1 × 1', vol: 1 }
+    ],
+    total: 7,
+    hint:'底 4 + 上 2 + 突 1 = 7 cm³'
+  },
+  {
+    title:'巨型 Minecraft 城堡',
+    cells: (() => { const arr=[]; for(let r=0;r<3;r++)for(let c=0;c<4;c++)arr.push({r,c,h:1}); for(let r=0;r<2;r++)for(let c=0;c<3;c++)arr.push({r,c,h:2}); for(let c=0;c<2;c++)arr.push({r:0,c,h:3}); return arr; })(),
+    pieces: [
+      { lab:'底層 3×4', formula:'3 × 4 × 1', vol: 12 },
+      { lab:'2 層 2×3', formula:'2 × 3 × 1', vol: 6 },
+      { lab:'頂層 1×2', formula:'1 × 2 × 1', vol: 2 }
+    ],
+    total: 20,
+    hint:'城堡：底 12 + 2 層 6 + 頂 2 = 20 cm³（金字塔 stacking）'
+  }
 ];
 
 let qIdx = 0, score = 0, wrongs = 0, coins = 0;
 const TOTAL = QUESTIONS.length;
 const els = {};
-['qNum','score','coins','wrongs','pfill','objEmoji','objName','fb','nextBtn','doneBanner','lockModal'].forEach(id => els[id] = document.getElementById(id));
+['qNum','score','coins','wrongs','pfill','shapeArea','shapeInfo','qLabel','piecesGrid','totalInput','fb','nextBtn','doneBanner','lockModal'].forEach(id => els[id] = document.getElementById(id));
+
+function buildShapeDisplay(q) {
+  els.shapeArea.innerHTML = '';
+  // determine bounds
+  let maxR = 0, maxC = 0;
+  q.cells.forEach(c => { maxR = Math.max(maxR, c.r); maxC = Math.max(maxC, c.c); });
+  const cols = maxC + 1;
+  els.shapeArea.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
+
+  // Render each cell. For multi-layer, indicate via height label
+  const cellMap = {};
+  q.cells.forEach(c => {
+    const key = `${c.r},${c.c}`;
+    if (!cellMap[key]) cellMap[key] = 0;
+    cellMap[key]++;
+  });
+
+  for (let r = 0; r <= maxR; r++) {
+    for (let c = 0; c <= maxC; c++) {
+      const key = `${r},${c}`;
+      const div = document.createElement('div');
+      const layers = cellMap[key] || 0;
+      if (layers > 0) {
+        div.className = 'shape-cell solid' + (layers > 1 ? ' hi' : '');
+        div.textContent = layers > 1 ? layers : '';
+        div.style.fontWeight = '900';
+        div.style.color = layers > 1 ? '#BF360C' : 'white';
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'center';
+        div.style.fontSize = '0.7rem';
+      } else {
+        div.className = 'shape-cell';
+      }
+      els.shapeArea.appendChild(div);
+    }
+  }
+  els.shapeInfo.textContent = `${q.title} — 拆解成 ${q.pieces.length} 塊長方體（黃格表示有上層疊加）`;
+}
+
+function buildPiecesUI(q) {
+  els.piecesGrid.innerHTML = '';
+  q.pieces.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'piece-row';
+    div.innerHTML = `
+      <div class="lab">塊 ${i+1}：${p.lab}</div>
+      <div class="formula">${p.formula} = ?</div>
+      <input type="number" data-i="${i}" placeholder="?">
+    `;
+    els.piecesGrid.appendChild(div);
+  });
+}
 
 function render() {
   const q = QUESTIONS[qIdx];
-  els.objEmoji.textContent = q.e;
-  els.objName.textContent = q.n;
   els.qNum.textContent = `${qIdx+1}/${TOTAL}`;
   els.score.textContent = score;
   els.coins.textContent = `🪙×${coins}`;
   els.wrongs.textContent = `${wrongs}/5`;
   els.pfill.style.width = ((qIdx)/TOTAL*100)+'%';
-  els.fb.classList.remove('show','right','wrong');
+  els.qLabel.innerHTML = `將「<b>${q.title}</b>」拆解成 ${q.pieces.length} 塊長方體，計算每塊體積，再求總和：`;
+  buildShapeDisplay(q);
+  buildPiecesUI(q);
+  els.totalInput.value = '';
+  els.totalInput.disabled = false;
+  els.fb.classList.remove('show');
   els.nextBtn.classList.remove('show');
-  document.querySelectorAll('.unit-btn').forEach(b => { b.disabled = false; b.classList.remove('selected-correct','selected-wrong'); });
 }
 
-function pick(u) {
+function submit() {
   const q = QUESTIONS[qIdx];
-  const btn = document.querySelector(`.unit-btn[data-u="${u}"]`);
-  document.querySelectorAll('.unit-btn').forEach(b => b.disabled = true);
-  if (u === q.ans) {
-    btn.classList.add('selected-correct');
-    score += 10;
+  const pieceInputs = els.piecesGrid.querySelectorAll('input');
+  const totalV = parseInt(els.totalInput.value);
+  if (isNaN(totalV)) { els.totalInput.focus(); return; }
+  let allPiecesOk = true;
+  pieceInputs.forEach((inp, i) => {
+    const v = parseInt(inp.value);
+    if (v === q.pieces[i].vol) {
+      inp.classList.add('ok'); inp.classList.remove('bad');
+    } else {
+      inp.classList.add('bad'); inp.classList.remove('ok');
+      allPiecesOk = false;
+    }
+  });
+  const totalOk = totalV === q.total;
+  if (allPiecesOk && totalOk) {
+    score += 15;
+    pieceInputs.forEach(i => i.disabled = true);
+    els.totalInput.disabled = true;
     els.fb.className = 'feedback right show';
-    els.fb.innerHTML = `✅ 揀啱啦！${q.hint}`;
+    els.fb.innerHTML = `✅ 拆解完美！${q.hint}`;
     els.nextBtn.classList.add('show');
   } else {
-    btn.classList.add('selected-wrong');
     wrongs++;
     els.wrongs.textContent = `${wrongs}/5`;
     els.fb.className = 'feedback wrong show';
-    const ansLabel = q.ans === 'cm' ? 'cm³' : 'm³';
-    els.fb.innerHTML = `❌ 唔啱！${q.hint}<br>正確：<b>${ansLabel}</b>`;
-    if (wrongs >= 5) { setTimeout(triggerLock, 700); return; }
-    els.nextBtn.classList.add('show');
+    let msg = '❌ ';
+    if (!allPiecesOk && !totalOk) msg += '塊體積同總和都唔啱。';
+    else if (!allPiecesOk) msg += '塊體積有錯。';
+    else msg += '總和唔啱（提示：求加各塊體積）。';
+    msg += `<br>💡 ${q.hint}`;
+    els.fb.innerHTML = msg;
+    if (wrongs >= 5) { setTimeout(triggerLock, 700); }
   }
   els.score.textContent = score;
 }
 
 function nextQ() { qIdx++; if (qIdx >= TOTAL) { finishGame(); return; } render(); }
 function finishGame() {
-  if (score >= 90) coins = 3; else if (score >= 70) coins = 2; else if (score >= 50) coins = 1;
+  if (score >= 80) coins = 3; else if (score >= 60) coins = 2; else if (score >= 40) coins = 1;
   saveScore();
   document.querySelector('.scene').style.display = 'none';
-  document.getElementById('finalScore').textContent = `得分：${score} / 100`;
+  document.getElementById('finalScore').textContent = `得分：${score} / 90`;
   document.getElementById('finalCoins').textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
   els.doneBanner.classList.add('show');
 }
