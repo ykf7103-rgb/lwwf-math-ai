@@ -108,7 +108,7 @@
 <div class="wrap">
   <!-- ======== Hero Banner ======== -->
   <div class="hero">
-    <h1>📦 第 14 課 · 體積的認識</h1>
+    <h1>📦 第 15 課 · 體積的認識</h1>
     <div class="subtitle">小數 × 小數 · 取近似值 · 應用題 · 點心店主題</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
       <span class="coin-tag"><img src="images/coin_new.png" style="width:14px;height:14px;"> 最多可賺 32 金幣</span>
@@ -314,12 +314,12 @@
 
 <script>
   // Per-user localStorage key (fix coin storage bug: was shared across students)
-  function _ch14Key() {
+  function _ch15Key() {
     try {
       const u = JSON.parse(localStorage.getItem('lwwf_auth_user') || 'null');
-      if (u && u.class && u.number) return `progress_ch14_${u.class}_${u.number}`;
+      if (u && u.class && u.number) return `progress_ch15_${u.class}_${u.number}`;
     } catch(e) {}
-    return 'progress_ch14';
+    return 'progress_ch15';
   }
 
   const STEP_KEYS = [
@@ -338,7 +338,7 @@
   }
   function renderProgress() {
     try {
-      const p = JSON.parse(localStorage.getItem(_ch14Key()) || '{}');
+      const p = JSON.parse(localStorage.getItem(_ch15Key()) || '{}');
       document.querySelectorAll('[data-key]').forEach(el => { const k = el.dataset.key; if (p[k]?.done) el.classList.add('done'); });
       // Hero progress
       const done = STEP_KEYS.filter(s => p[s.k]?.done).length;
@@ -350,7 +350,7 @@
   }
   function renderScores() {
     try {
-      const p = JSON.parse(localStorage.getItem(_ch14Key()) || '{}');
+      const p = JSON.parse(localStorage.getItem(_ch15Key()) || '{}');
       let doneCount = 0, html = '';
       STEP_KEYS.forEach(s => {
         const data = p[s.k];
@@ -362,10 +362,10 @@
       document.getElementById('scoresGrid').innerHTML = html;
     } catch(e) {}
   }
-  function resetProgress() { if (!confirm('確定要清除第 14 課嘅學習進度？')) return; localStorage.removeItem(_ch14Key()); location.reload(); }
+  function resetProgress() { if (!confirm('確定要清除第 15 課嘅學習進度？')) return; localStorage.removeItem(_ch15Key()); location.reload(); }
   function markExtra(type) {
     try {
-      const k = _ch14Key();
+      const k = _ch15Key();
       const p = JSON.parse(localStorage.getItem(k) || '{}');
       p.extras = p.extras || { done: false, items: {} };
       p.extras.items[type] = true;
