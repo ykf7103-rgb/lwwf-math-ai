@@ -4909,6 +4909,12 @@ async function startVoiceRecording(qi) {
         try { mediaRecorder.stop(); } catch(e){}
     }
 
+    // Immediate UI feedback so user knows the click was received (Safari may stall silently on getUserMedia)
+    const _preStatusEl = document.getElementById('recStatus'+qi);
+    if (_preStatusEl) _preStatusEl.innerHTML = '<span style="color:#1565C0;">⌛ 正在請求麥克風存取，請允許權限...</span>';
+    const _preRecBtn = document.getElementById('recBtn'+qi);
+    if (_preRecBtn) _preRecBtn.disabled = true;
+
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioChunks = [];
