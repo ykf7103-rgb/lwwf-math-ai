@@ -2245,31 +2245,7 @@ body::before {
                 <h3 style="margin:0;">📋 完成名單 / 分數查詢</h3>
                 <select id="completionSelect" onchange="renderCompletionView()" style="padding:8px 12px;border:2px solid var(--primary);border-radius:8px;font-size:0.95rem;background:white;">
                     <option value="" disabled selected>— 揀一個項目查看名單 —</option>
-                    <optgroup label="📚 教學簡報">
-                        <option value="slides1">簡報 1（悟空的放大法術）</option>
-                        <option value="slides2">簡報 2（唐僧的縮小心法）</option>
-                        <option value="slides3">簡報 3（單位轉換大冒險）</option>
-                    </optgroup>
-                    <optgroup label="📖 課前預習（含答案）">
-                        <option value="iq_quiz1">課前預習 1（放大法術）</option>
-                        <option value="iq_quiz2">課前預習 2（縮小心法）</option>
-                        <option value="iq_quiz3">課前預習 3（單位轉換）</option>
-                    </optgroup>
-                    <optgroup label="📝 MC 測驗">
-                        <option value="mc_quiz1">MC 測驗 1</option>
-                        <option value="mc_quiz4">MC 測驗 2</option>
-                    </optgroup>
-                    <optgroup label="✏️ 評估（含分數）">
-                        <option value="assess1">評估 1</option>
-                        <option value="assess2">評估 2</option>
-                        <option value="assess3">評估 3</option>
-                    </optgroup>
-                    <optgroup label="🎮 遊戲（含分數）">
-                        <option value="game1">遊戲 1</option>
-                        <option value="game2">遊戲 2</option>
-                        <option value="game3">遊戲 3</option>
-                        <option value="game4">遊戲 4</option>
-                    </optgroup>
+                    <!-- Options will be dynamically populated by rebuildCompletionSelect() based on CHAPTER -->
                 </select>
             </div>
             <div id="completionContent" style="min-height:60px;">
@@ -2396,11 +2372,60 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 // Chapter system: ?ch=13 switches chapter via URL. Default is 12.
 let CHAPTER = parseInt(new URLSearchParams(location.search).get('ch') || '12');
+// Per-chapter activity labels (for teacher dropdown)
+const CH_ACTIVITY_LABELS = {
+    12: { slides: ['悟空的放大法術', '唐僧的縮小心法', '單位轉換大冒險'], iq: ['放大法術', '縮小心法', '單位轉換'], theme: '西遊記' },
+    13: { slides: ['一位×整數', '兩位×整數', '估算+常見錯誤'], iq: ['熱身', '進階', '估算'], theme: '小數乘法（一）' },
+    14: { slides: ['一位×一位', '兩位×一位+取近似值', '兩位×兩位+應用'], iq: ['熱身', '進階', '應用'], theme: '小數乘法（二）' },
+    15: { slides: ['體積概念認識', '直觀比較體積', '照片限制+整合'], iq: ['概念', '比較', '整合'], theme: '哆啦A夢 · 體積' },
+    16: { slides: ['認識 cm³ + 量度', '估計 + 認識 m³', '選擇單位 + 應用'], iq: ['cm³ 量度', '估計+m³', '單位'], theme: 'Minecraft · 體積量度' }
+};
+
+function rebuildCompletionSelect() {
+    const sel = document.getElementById('completionSelect');
+    if (!sel) return;
+    const labels = CH_ACTIVITY_LABELS[CHAPTER] || CH_ACTIVITY_LABELS[12];
+    sel.innerHTML = `
+        <option value="" disabled selected>— 揀第 ${CHAPTER} 課項目查看名單 —</option>
+        <optgroup label="📚 教學簡報">
+            <option value="slides1">簡報 1（${labels.slides[0]}）</option>
+            <option value="slides2">簡報 2（${labels.slides[1]}）</option>
+            <option value="slides3">簡報 3（${labels.slides[2]}）</option>
+        </optgroup>
+        <optgroup label="📖 課前預習（含答案）">
+            <option value="iq_quiz1">課前預習 1（${labels.iq[0]}）</option>
+            <option value="iq_quiz2">課前預習 2（${labels.iq[1]}）</option>
+            <option value="iq_quiz3">課前預習 3（${labels.iq[2]}）</option>
+        </optgroup>
+        <optgroup label="📝 MC 測驗">
+            <option value="mc_quiz1">MC 測驗 1</option>
+            <option value="mc_quiz4">MC 測驗 2</option>
+        </optgroup>
+        <optgroup label="✏️ 評估（含分數）">
+            <option value="assess1">評估 1（${labels.slides[0]}）</option>
+            <option value="assess2">評估 2（${labels.slides[1]}）</option>
+            <option value="assess3">評估 3（${labels.slides[2]}）</option>
+        </optgroup>
+        <optgroup label="🎮 遊戲（含分數）">
+            <option value="game1">遊戲 1</option>
+            <option value="game2">遊戲 2</option>
+            <option value="game3">遊戲 3</option>
+            ${CHAPTER === 12 ? '<option value="game4">遊戲 4</option>' : ''}
+        </optgroup>
+    `;
+    // Reset content area
+    const content = document.getElementById('completionContent');
+    if (content) content.innerHTML = `<p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 揀上面嘅下拉選單查看第 ${CHAPTER} 課邊個完成咗</p>`;
+}
+
 function changeTeacherChapter(ch) {
     CHAPTER = parseInt(ch) || 12;
     try { localStorage.setItem('teacher_view_chapter', String(CHAPTER)); } catch(e) {}
+    rebuildCompletionSelect();
     renderTeacherData();
 }
+// Populate dropdown on initial load
+setTimeout(rebuildCompletionSelect, 200);
 // Restore teacher's last viewed chapter on load
 try {
     const saved = parseInt(localStorage.getItem('teacher_view_chapter') || '0');
