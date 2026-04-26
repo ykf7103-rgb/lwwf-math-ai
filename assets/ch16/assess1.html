@@ -243,8 +243,8 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
-    document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！史蒂夫都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainBody').innerHTML = `💡 <b>史蒂夫筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
   }
@@ -383,7 +383,7 @@ function showFinal(correct) {
   f.classList.add('show');
   document.getElementById('finalScore').textContent = correct;
   let m, t;
-  if (correct === Q.length) { m = '🌟 滿分！點心大廚冇難度！'; t = '🏆'; }
+  if (correct === Q.length) { m = '🌟 滿分！麥塊建造大師完美 cm³ 量度！'; t = '🏆'; }
   else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
   else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
   else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }

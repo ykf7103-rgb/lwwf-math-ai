@@ -154,7 +154,7 @@
 
   <div class="final-screen" id="finalScreen">
     <div class="trophy" id="finalTrophy">🏆</div>
-    <div>評估 1 完成！</div>
+    <div>評估 2 完成！</div>
     <div class="score-big"><span id="finalScore">0</span> / 6</div>
     <p id="finalMsg" style="margin:10px 0;"></p>
     <div>
@@ -177,16 +177,35 @@
 <script>
 const CHAPTER = 16, DECK_KEY = 'assess2', IMG_PREFIX = 'assess2';
 
-// Ch15 評估 2 · LO #2 直觀比較體積（哆啦A夢 anime 風）
-// p01-p12 = 6 對 Q-A（Q 奇頁、A 偶頁）— 共 12 頁
-// ⚠️ 嚴格按本課 LO：直觀比較不用單位/數字
+// Ch16 評估 2 · 體積估算策略 + 1 m³ 量感（Minecraft 風）
+// p01 封面 | p02 Level 介紹 | p03-p04 Q2(烽火台隱藏方塊) | p05-p06 Q4(寶箱基準) |
+// p07-p08 Q6(鐵魔像分割) | p09-p10 Q8(1m³ 4小朋友) | p11-p12 Q10(大物選 m³) | p13-p14 Q12(游泳池)
+// ⚠️ MC 文字必須與 JPG 顯示題目相符
 const Q = [
-  { q: 'Q1 哆啦A夢出謎：火龍果 vs 奇異果，邊個體積大？', opts: ['火龍果','奇異果','一樣大','要量度'], a: 0, hint: '用眼直觀觀察：火龍果明顯大過奇異果，所以火龍果體積大。', pageQ: 1, pageA: 2 },
-  { q: 'Q2 靜香問題：兩個一樣嘅瓶仔，葡萄汁水位高過橙汁。邊個體積大？', opts: ['葡萄汁','橙汁','一樣','要打開先知'], a: 0, hint: '瓶子相同 → 水位高 = 液體佔嘅空間大 → 葡萄汁體積大。', pageQ: 3, pageA: 4 },
-  { q: 'Q3 胖虎挑戰：黃氣球比綠氣球更鼓 → 邊個入面氣體體積大？', opts: ['黃氣球','綠氣球','一樣','睇唔到'], a: 0, hint: '氣球越鼓 = 氣體佔嘅空間越大 → 黃氣球氣體體積大。', pageQ: 5, pageA: 6 },
-  { q: 'Q4 大雄發問：本課嘅「直觀比較體積」需要用咩工具？', opts: ['唔需要工具，用眼睇就得','尺','秤','量度單位 cm³'], a: 0, hint: '直觀比較係用眼睇大細，本課唔用任何工具或單位（單位 cm³ 係第16課先教）。', pageQ: 7, pageA: 8 },
-  { q: 'Q5 哆啦A夢偵察：大雄拎兩個一樣嘅杯，A 杯水位高過 B 杯。咩體積比較大？', opts: ['A 杯水體積比較大','B 杯水體積比較大','一樣大','要倒出嚟先知'], a: 0, hint: '杯子一樣大 → 水位高 = 水佔嘅空間大 → A 杯水體積大。', pageQ: 9, pageA: 10 },
-  { q: 'Q6 終極關：用眼直觀比較體積，可以用嚟比邊樣？（多選正確）', opts: ['固體、液體、氣體都可以','只可以比固體','只可以比液體','要先量單位'], a: 0, hint: '直觀比較適用於三種狀態：火龍果（固）、葡萄汁（液）、氣球（氣）都可以用眼比。', pageQ: 11, pageA: 12 }
+  { q: 'Q2 烽火台挑戰：建造烽火台時，看不見的「隱藏方塊」也要算進去！上層放 1 個金方塊，下層必須有方塊支撐 → 體積係多少？',
+    opts: ['4 cm³','5 cm³','6 cm³','7 cm³'], a: 2,
+    hint: '上層 1 個金方塊放穩，下層必有 5 個鐵方塊（十字形）支撐。1 + 5 = 6 cm³。隱藏方塊都要計！',
+    pageQ: 3, pageA: 4 },
+  { q: 'Q4 寶箱估算：用 1 支火把（約 10 cm³）做基準，寶箱大約可以塞 4 到 5 支火把。寶箱體積大約係？',
+    opts: ['5 cm³','10 cm³','45 cm³','200 cm³'], a: 2,
+    hint: '基準物估算法：1 火把 ≈ 10 cm³，寶箱可塞 4-5 支 → 10 × 4.5 = 45 cm³，最合理估算！',
+    pageQ: 5, pageA: 6 },
+  { q: 'Q6 鐵魔像難題：遇到形狀不規則嘅鐵魔像（頭 + 身體 + 雙手與腳），該如何估算體積？',
+    opts: ['只算最高嗰疊方塊','把它拆解成長寬高的三個長方體來估算加總','無法估算'], a: 1,
+    hint: '分割與填補策略：將複雜形狀切分為簡單嘅長方體（頭、身體、雙手與腳 3 部分），分別計算後相加！',
+    pageQ: 7, pageA: 8 },
+  { q: 'Q8 真實量感：一個 1 m³ 嘅空間（1 米 × 1 米 × 1 米），大約可以塞進幾個五年級小朋友？',
+    opts: ['1 個','4 個','10 個','50 個'], a: 1,
+    hint: '真實體驗：4 個五年級學生大約可以填滿 1 m³ 嘅空間。記住呢個量感，估算大空間就有譜！',
+    pageQ: 9, pageA: 10 },
+  { q: 'Q10 單位選擇：若要記錄「飛機」或「終界飛龍」嘅體積，該用哪種單位？',
+    opts: ['cm²','m²','cm³','m³'], a: 3,
+    hint: '平方(²) 係面積唔係體積！cm³ 用嚟記龐然大物會變天文數字。m³ 先係大型物體專屬最佳單位！',
+    pageQ: 11, pageA: 12 },
+  { q: 'Q12 終極估算：挖一個長 10 m × 寬 5 m × 深 2 m 嘅長方形游泳池，需要挖走多少 m³ 嘅泥土？',
+    opts: ['17 m³','50 m³','100 m³','100 cm³'], a: 2,
+    hint: '底層方塊：10 × 5 = 50 個（50 m³）。共 2 層深 → 50 × 2 = 100 m³。⚠️ 注意單位陷阱：係 m³ 唔係 cm³！',
+    pageQ: 13, pageA: 14 }
 ];
 
 function pad2(n){ return String(n).padStart(2,'0'); }
@@ -244,8 +263,8 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
-    document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！史蒂夫都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainBody').innerHTML = `💡 <b>史蒂夫筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
   }
@@ -384,10 +403,10 @@ function showFinal(correct) {
   f.classList.add('show');
   document.getElementById('finalScore').textContent = correct;
   let m, t;
-  if (correct === Q.length) { m = '🌟 滿分！你完全掌握一位小數乘整數！'; t = '🏆'; }
+  if (correct === Q.length) { m = '🌟 滿分！你完全掌握體積估算 + 1 m³ 量感！'; t = '🏆'; }
   else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
   else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  else { m = '📖 多啲溫習簡報 2，再嚟挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

@@ -154,7 +154,7 @@
 
   <div class="final-screen" id="finalScreen">
     <div class="trophy" id="finalTrophy">🏆</div>
-    <div>評估 1 完成！</div>
+    <div>評估 3 完成！</div>
     <div class="score-big"><span id="finalScore">0</span> / 6</div>
     <p id="finalMsg" style="margin:10px 0;"></p>
     <div>
@@ -177,18 +177,35 @@
 <script>
 const CHAPTER = 16, DECK_KEY = 'assess3', IMG_PREFIX = 'assess3';
 
-// Ch14 Section 3 · v2 評估簡報（基礎對位 + 雙重驗證 + 面積應用，11 頁，6 題）
-// 結構：p01 封面 | p02 任務列表 | p03 Q1+Q2 · p04 A1+A2 | p05 Q3+Q4 · p06 A3+A4 |
-//       p07 Q5+Q6（雙重驗證法）· p08 A5+A6 | p09 終極（面積應用）· p10 A終 | p11 錯誤陷阱指南
-// Ch15 評估 3 · 照片限制 + 概念整合（哆啦A夢 anime 風）
-// p01-p12 = 6 對 Q-A（Q 奇頁、A 偶頁）— 共 12 頁
+// Ch16 評估 3 · 體積單位選擇 + 換算（Minecraft 麥塊探索之旅）
+// p01 封面 | p02 任務介紹 | p03-p04 Q1(智能電話) | p05-p06 Q2(貨櫃) |
+// p07-p08 Q3(書包 vs 1m³) | p09-p10 Q4(雙層巴士 vs 1m³) | p11-p12 魔王關卡 Q5+Q6（同頁兩題：m³↔cm³ 換算）
+// ⚠️ MC 文字必須與 JPG 顯示題目相符；NLM JPG 多數係 2 選 1，唔加假選項
 const Q = [
-  { q: 'Q1 小夫炫耀相簿：兩條魚喺**唔同距離**影嘅相，可唔可以直接比體積？', opts: ['不可以','可以','要看光線','要量度'], a: 0, hint: '照片受拍攝距離影響：近啲拍個物件睇起嚟大啲。所以唔同照片唔可以直接比體積。', pageQ: 1, pageA: 2 },
-  { q: 'Q2 哆啦A夢追問：**同一張**照片入面嘅兩件物件可唔可以比？', opts: ['可以','不可以','要量度','要先大細一樣'], a: 0, hint: '同一張照片入面，物件嘅相對大細真實反映實際體積（拍攝距離一樣）。可以直接比。', pageQ: 3, pageA: 4 },
-  { q: 'Q3 大雄陷阱：影子可唔可以比體積？', opts: ['唔可以，影子冇體積','可以','要看大細','要比形狀'], a: 0, hint: '影子只係光線被擋住嘅暗區，唔佔空間，所以根本冇體積。', pageQ: 5, pageA: 6 },
-  { q: 'Q4 終極技能：唔同照片要準確比體積，最佳方法？', opts: ['用單位量度（cm³，第16課）','靠估','問哆啦A夢','用感覺'], a: 0, hint: '要準確比較唔同照片嘅體積，最可靠係用單位（cm³）量度 — 第16課嘅內容。', pageQ: 7, pageA: 8 },
-  { q: 'Q5 三態整合：哆啦A夢、大雄、葡萄汁、氣球，邊個冇體積？', opts: ['全部都有體積','哆啦A夢','大雄','氣球'], a: 0, hint: '哆啦A夢/大雄（固體）、葡萄汁（液體）、氣球嘅空氣（氣體）— 全部都佔空間 → 全部有體積。', pageQ: 9, pageA: 10 },
-  { q: 'Q6 終極挑戰：哆啦A夢用縮小電筒射大雄。大雄嘅體積會點？', opts: ['變細','變大','一樣','消失'], a: 0, hint: '縮小電筒令物件嘅體積（佔嘅空間）變細。漫畫情節展示體積概念。', pageQ: 11, pageA: 12 }
+  { q: 'Q1 關卡 1 · 村莊的遺落物：記錄「智能電話」嘅體積，應選用哪個單位較合適？',
+    opts: ['立方厘米 (cm³)','立方米 (m³)'], a: 0,
+    hint: '智能電話係細小物件，用 cm³ 記錄比較合適。如果用 m³ 數字會變得太細小（< 0.001 m³）！',
+    pageQ: 3, pageA: 4 },
+  { q: 'Q2 關卡 2 · 港口的巨獸：記錄「貨櫃」嘅體積，應選用哪個單位較合適？',
+    opts: ['立方厘米 (cm³)','立方米 (m³)'], a: 1,
+    hint: '貨櫃係大型物件，用 m³ 記錄比較合適。如果用 cm³ 數字會變成天文數字（幾千萬 cm³）！',
+    pageQ: 5, pageA: 6 },
+  { q: 'Q3 關卡 3 · 裝備庫存檢查：你嘅「書包」體積比 1 m³ 大，定係比 1 m³ 細？',
+    opts: ['比 1 m³ 大','比 1 m³ 細'], a: 1,
+    hint: '1 m³ 大約係 4 個小朋友站埋一齊嘅空間。書包遠細過呢個空間，所以書包 < 1 m³。',
+    pageQ: 7, pageA: 8 },
+  { q: 'Q4 關卡 4 · 龐大的交通工具：「雙層巴士」嘅體積比 1 m³ 大，定係比 1 m³ 細？',
+    opts: ['比 1 m³ 大','比 1 m³ 細'], a: 0,
+    hint: '雙層巴士好龐大，遠遠大過 4 個小朋友站埋一齊（即 1 m³）。所以雙層巴士 > 1 m³。',
+    pageQ: 9, pageA: 10 },
+  { q: 'Q5 魔王關卡 · 鍊金術士嘅換算考驗：建造一個 1 m³ 嘅終界水池，其體積相當於多少 cm³？',
+    opts: ['1,000 cm³','1,000,000 cm³'], a: 1,
+    hint: '1 m = 100 cm，所以 1 m³ = 100 × 100 × 100 = 1,000,000 cm³。記住：6 個 0！',
+    pageQ: 11, pageA: 12 },
+  { q: 'Q6 魔王關卡 · 鍊金術士嘅換算考驗：創世神嘅神殿體積係 7,000,000 cm³，換算後係多少 m³？',
+    opts: ['7 m³','70 m³'], a: 0,
+    hint: '1 m³ = 1,000,000 cm³，所以 7,000,000 ÷ 1,000,000 = 7 m³。要除 6 個 0！',
+    pageQ: 11, pageA: 12 }
 ];
 
 function pad2(n){ return String(n).padStart(2,'0'); }
@@ -246,8 +263,8 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
-    document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！史蒂夫都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainBody').innerHTML = `💡 <b>史蒂夫筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
   }
@@ -386,10 +403,10 @@ function showFinal(correct) {
   f.classList.add('show');
   document.getElementById('finalScore').textContent = correct;
   let m, t;
-  if (correct === Q.length) { m = '🌟 滿分！你完全掌握一位小數乘整數！'; t = '🏆'; }
+  if (correct === Q.length) { m = '🌟 滿分！你完全掌握 cm³/m³ 單位選擇 + 換算！'; t = '🏆'; }
   else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
   else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  else { m = '📖 多啲溫習簡報 3，再嚟挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});
