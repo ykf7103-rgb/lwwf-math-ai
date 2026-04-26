@@ -2208,6 +2208,13 @@ body::before {
                 <option value="5C">5C</option>
                 <option value="5D">5D</option>
             </select>
+            <select id="teacherChapterFilter" onchange="changeTeacherChapter(this.value)" style="padding:8px 12px;border:2px solid var(--primary);border-radius:8px;font-weight:700;font-size:0.95rem;">
+                <option value="12">📚 第12課 有趣的乘法</option>
+                <option value="13">📘 第13課 小數乘法（一）</option>
+                <option value="14">🥟 第14課 小數乘法（二）</option>
+                <option value="15">📦 第15課 體積的認識</option>
+                <option value="16">🎯 第16課 體積的量度</option>
+            </select>
             <button class="btn btn-sm btn-outline" onclick="exportCSV()">📥 匯出 CSV</button>
             <button class="btn btn-sm btn-outline" onclick="renderTeacherData()">🔄 刷新數據</button>
         </div>
@@ -2388,7 +2395,20 @@ const SUPABASE_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHN2d3VnaHFzdHVid3hoem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMTM3NzUsImV4cCI6MjA5MTg4OTc3NX0.DBsx2945F0Vdfhptx-Tr9mVqaa2i9jE4tMQIvjffvII';
 
 // Chapter system: ?ch=13 switches chapter via URL. Default is 12.
-const CHAPTER = parseInt(new URLSearchParams(location.search).get('ch') || '12');
+let CHAPTER = parseInt(new URLSearchParams(location.search).get('ch') || '12');
+function changeTeacherChapter(ch) {
+    CHAPTER = parseInt(ch) || 12;
+    try { localStorage.setItem('teacher_view_chapter', String(CHAPTER)); } catch(e) {}
+    renderTeacherData();
+}
+// Restore teacher's last viewed chapter on load
+try {
+    const saved = parseInt(localStorage.getItem('teacher_view_chapter') || '0');
+    if (saved >= 12 && saved <= 21) {
+        CHAPTER = saved;
+        setTimeout(() => { const sel = document.getElementById('teacherChapterFilter'); if (sel) sel.value = String(saved); }, 100);
+    }
+} catch(e) {}
 const CHAPTER_ID = 'ch' + CHAPTER;
 const ASSET_BASE = 'assets/' + CHAPTER_ID;
 const COMMON_BASE = 'assets/common';
