@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>Minecraft 體積建造器 — 第16課專用</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:14px;background:linear-gradient(135deg,#A5D6A7,#66BB6A 50%,#388E3C);min-height:100vh;color:#222}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{margin:0 0 10px;color:white;font-size:1.4rem;text-shadow:2px 2px 0 rgba(0,0,0,0.25)}
+  .panel{background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,0.1)}
+  .panel h3{margin:0 0 10px;color:#1B5E20;font-size:1.05rem}
+  .slider-row{display:grid;grid-template-columns:60px 1fr 70px;gap:10px;align-items:center;margin-bottom:10px}
+  .slider-row .label{font-weight:900;color:#2E7D32;font-size:0.95rem}
+  .slider-row input[type=range]{width:100%;cursor:pointer;accent-color:#2E7D32}
+  .slider-row .val{background:#E8F5E9;padding:6px 10px;border-radius:8px;font-weight:900;color:#1B5E20;font-size:1rem;text-align:center}
+
+  .unit-toggle{display:flex;gap:6px;background:#F5F5F5;padding:5px;border-radius:10px;margin-bottom:14px}
+  .unit-toggle button{flex:1;padding:10px;border:none;border-radius:7px;font-weight:900;font-size:0.95rem;cursor:pointer;background:transparent;color:#666;font-family:inherit}
+  .unit-toggle button.active{background:linear-gradient(135deg,#388E3C,#1B5E20);color:white;box-shadow:0 3px 8px rgba(46,125,50,0.4)}
+
+  .display-3d{background:linear-gradient(135deg,#E0F2F1,#B2DFDB);border:3px solid #00695C;border-radius:14px;padding:18px;margin-bottom:14px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .cube-vis{display:grid;gap:1px;justify-content:center;perspective:600px;margin:8px 0}
+  .cube-vis .b{background:linear-gradient(135deg,#8D6E63,#5D4037);border:1.5px solid #3E2723;border-radius:3px;box-shadow:inset -2px -2px 0 rgba(0,0,0,0.3),inset 2px 2px 0 rgba(255,255,255,0.2)}
+  .cube-vis .b.lvl-1{background:linear-gradient(135deg,#66BB6A,#388E3C)}
+  .cube-vis .b.lvl-2{background:linear-gradient(135deg,#FFA726,#E65100)}
+  .cube-vis .b.lvl-3{background:linear-gradient(135deg,#42A5F5,#0D47A1)}
+  .cube-info{font-weight:900;color:#1B5E20;line-height:1.5;margin-top:8px;font-size:0.92rem}
+  .cube-tip{font-size:0.82rem;color:#666;margin-top:4px}
+
+  .result{background:linear-gradient(135deg,#FFF8E1,#FFE082);border:3px solid #F57F17;border-radius:14px;padding:16px;text-align:center;margin-bottom:14px}
+  .result .formula{font-size:1.15rem;font-weight:800;color:#BF360C;margin-bottom:6px}
+  .result .value{font-size:2.6rem;font-weight:900;color:#E65100;line-height:1.05;margin:8px 0}
+  .result .unit-info{font-size:0.92rem;color:#666;margin-top:4px}
+
+  .conversion{background:linear-gradient(135deg,#E1F5FE,#B3E5FC);border:3px dashed #0277BD;border-radius:14px;padding:14px;margin-bottom:14px}
+  .conversion h4{margin:0 0 8px;color:#01579B;font-size:1rem}
+  .conv-row{display:flex;justify-content:space-around;text-align:center;font-weight:900;color:#01579B;flex-wrap:wrap;gap:8px}
+  .conv-row .item{background:white;padding:10px 14px;border-radius:10px;flex:1;min-width:120px}
+  .conv-row .v{font-size:1.3rem;color:#0D47A1}
+  .conv-row .l{font-size:0.78rem;color:#666;font-weight:700}
+
+  .preset-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+  @media(max-width:520px){.preset-row{grid-template-columns:1fr 1fr}}
+  .preset-btn{padding:10px;background:#FFF3E0;border:2px solid #E65100;border-radius:10px;font-weight:800;color:#BF360C;cursor:pointer;font-family:inherit;font-size:0.85rem;line-height:1.3}
+  .preset-btn:hover{background:#FFE0B2;transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧊 Minecraft 體積建造器</h1>
+
+  <div class="unit-toggle" id="unitToggle">
+    <button data-unit="cm" class="active" onclick="setUnit('cm')">📏 cm 單位（細物）</button>
+    <button data-unit="m" onclick="setUnit('m')">🏠 m 單位（大物）</button>
+  </div>
+
+  <div class="panel">
+    <h3 id="panelTitle">📐 調整長闊高（cm）</h3>
+    <div class="slider-row">
+      <span class="label">長</span>
+      <input type="range" id="lInp" min="1" max="10" value="3">
+      <span class="val" id="lVal">3 cm</span>
+    </div>
+    <div class="slider-row">
+      <span class="label">闊</span>
+      <input type="range" id="wInp" min="1" max="10" value="2">
+      <span class="val" id="wVal">2 cm</span>
+    </div>
+    <div class="slider-row">
+      <span class="label">高</span>
+      <input type="range" id="hInp" min="1" max="10" value="2">
+      <span class="val" id="hVal">2 cm</span>
+    </div>
+  </div>
+
+  <div class="display-3d">
+    <div class="cube-vis" id="cubeVis"></div>
+    <div class="cube-info" id="cubeInfo">3 × 2 × 2 = 12 個方塊</div>
+    <div class="cube-tip">💡 每個方塊代表 1 個 cm³（或 1 個 m³，視乎單位）</div>
+  </div>
+
+  <div class="result">
+    <div class="formula" id="formula">3 × 2 × 2</div>
+    <div class="value" id="value">12 cm³</div>
+    <div class="unit-info" id="unitInfo">立方厘米（cm³）</div>
+  </div>
+
+  <div class="conversion">
+    <h4>🔁 單位換算（即時更新）</h4>
+    <div class="conv-row">
+      <div class="item"><div class="v" id="convCm">12</div><div class="l">cm³</div></div>
+      <div class="item"><div class="v" id="convM">0.000012</div><div class="l">m³</div></div>
+      <div class="item"><div class="v" id="convL">0.012</div><div class="l">公升 (L)</div></div>
+    </div>
+    <p style="margin:10px 0 0;font-size:0.82rem;color:#01579B;text-align:center;">💡 1 m³ = 1,000,000 cm³ ・ 1 L = 1,000 cm³</p>
+  </div>
+
+  <div class="panel">
+    <h3>🎯 試一試 preset 大細</h3>
+    <div class="preset-row">
+      <button class="preset-btn" onclick="setPreset(1,1,1)">1×1×1<br>骰仔大細</button>
+      <button class="preset-btn" onclick="setPreset(2,2,2)">2×2×2<br>魔方</button>
+      <button class="preset-btn" onclick="setPreset(3,3,3)">3×3×3<br>27 cm³</button>
+      <button class="preset-btn" onclick="setPreset(5,5,5)">5×5×5<br>125 cm³</button>
+      <button class="preset-btn" onclick="setPreset(10,10,10)">10×10×10<br>= 1,000 cm³ (1 L!)</button>
+      <button class="preset-btn" onclick="setPreset(4,3,1)">4×3×1<br>長方形薄板</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUnit = 'cm'; // 'cm' or 'm'
+const els = {};
+['lInp','wInp','hInp','lVal','wVal','hVal','cubeVis','cubeInfo','formula','value','unitInfo','convCm','convM','convL','panelTitle'].forEach(id => els[id] = document.getElementById(id));
+
+function setUnit(u) {
+  currentUnit = u;
+  document.querySelectorAll('.unit-toggle button').forEach(b => b.classList.toggle('active', b.dataset.unit === u));
+  els.panelTitle.textContent = u === 'cm' ? '📐 調整長闊高（cm）' : '📐 調整長闊高（m）';
+  update();
+}
+
+function update() {
+  const l = parseInt(els.lInp.value);
+  const w = parseInt(els.wInp.value);
+  const h = parseInt(els.hInp.value);
+  const unit = currentUnit;
+  els.lVal.textContent = `${l} ${unit}`;
+  els.wVal.textContent = `${w} ${unit}`;
+  els.hVal.textContent = `${h} ${unit}`;
+
+  // Build 3D-ish visualization (top-down with layer count badges)
+  els.cubeVis.innerHTML = '';
+  els.cubeVis.style.gridTemplateColumns = `repeat(${l}, ${Math.min(36, 280/l)}px)`;
+  for (let r = 0; r < w; r++) {
+    for (let c = 0; c < l; c++) {
+      const div = document.createElement('div');
+      div.className = 'b lvl-' + Math.min(h-1, 3);
+      div.style.aspectRatio = '1';
+      div.style.display = 'flex';
+      div.style.alignItems = 'center';
+      div.style.justifyContent = 'center';
+      div.style.color = 'white';
+      div.style.fontWeight = '900';
+      div.style.fontSize = '0.7rem';
+      div.textContent = h > 1 ? h : '';
+      els.cubeVis.appendChild(div);
+    }
+  }
+  const total = l * w * h;
+  els.cubeInfo.innerHTML = `${l} × ${w} × ${h} = <b>${total}</b> 個方塊`;
+  els.formula.textContent = `${l} × ${w} × ${h}`;
+  els.value.textContent = `${total.toLocaleString()} ${unit}³`;
+  els.unitInfo.textContent = unit === 'cm' ? '立方厘米（cm³）— 細物件單位' : '立方米（m³）— 大物件單位';
+
+  // Conversion (if cm: → m³, L; if m: → cm³, L)
+  if (unit === 'cm') {
+    els.convCm.textContent = total.toLocaleString();
+    const m3 = total / 1000000;
+    els.convM.textContent = m3 < 0.0001 ? m3.toExponential(2) : m3.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
+    els.convL.textContent = (total / 1000).toLocaleString();
+  } else {
+    const cm3 = total * 1000000;
+    els.convCm.textContent = cm3.toLocaleString();
+    els.convM.textContent = total.toLocaleString();
+    els.convL.textContent = (total * 1000).toLocaleString();
+  }
+}
+
+function setPreset(l, w, h) {
+  els.lInp.value = l; els.wInp.value = w; els.hInp.value = h;
+  update();
+}
+
+[els.lInp, els.wInp, els.hInp].forEach(i => i.addEventListener('input', update));
+update();
+</script>
+</body>
+</html>
