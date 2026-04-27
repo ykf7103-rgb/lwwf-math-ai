@@ -126,20 +126,24 @@
 <script>
 const PREFIX = 'slides1', TOTAL = 15, CHAPTER = 13, DECK_KEY = 'slides1';
 
-// Embedded quiz questions — students must answer correctly before advancing past the afterPage
+// 新格式 Q array — 對齊 NLM JPG（5 對 Q+A 頁，每對 1 主 MC + 1 額外估算題）
+// p05/p07/p09/p11/p13 = Q 頁，p06/p08/p10/p12/p14 = A 頁
 const SLIDE_QUESTIONS = [
-  // p05: 一位小數×整數 基本
-  { afterPage:5, type:'mc', q:'簡報練習：0.4 × 3 = ?', options:['0.12','1.2','12','4.3'], correct:1, hint:'4 × 3 = 12，一位小數 → 1.2' },
-  { afterPage:5, type:'fill', q:'簡報練習：0.7 × 5 = ?', accept:['3.5','3.50'], hint:'7 × 5 = 35，一位小數 → 3.5' },
-  // p10: 進階
-  { afterPage:10, type:'mc', q:'簡報練習：2.3 × 4 = ?', options:['9.2','0.92','92','6.3'], correct:0, hint:'23 × 4 = 92，一位小數 → 9.2' },
-  { afterPage:10, type:'fill', q:'簡報練習：1.8 × 6 = ?', accept:['10.8','10.80'], hint:'18 × 6 = 108，一位小數 → 10.8' },
-  // p13: 口訣
-  { afterPage:13, type:'fill', q:'口訣：一位小數 × 整數，積都係___位小數（只填數字）', accept:['1','一'], hint:'因數一共有幾多位小數，積就有幾多位。' },
-  // p15: 📊 綜合評估題（3 題，全部答啱先完成）
-  { afterPage:15, type:'mc', q:'📊 綜合評估題：0.4 × 8 = ?', options:['0.32','3.2','32','4.8'], correct:1, hint:'4 × 8 = 32，一位小數 → 3.2' },
-  { afterPage:15, type:'fill', q:'📊 綜合評估題：3.6 × 5 = ?', accept:['18','18.0','18.00'], hint:'36 × 5 = 180，一位小數 → 18.0 = 18' },
-  { afterPage:15, type:'mc', q:'📊 綜合評估題（應用）：一條繩 2.5 米，買 6 條共長幾米？', options:['12米','1.5米','15米','150米'], correct:2, hint:'2.5 × 6 = 15.0 = 15 米' }
+  // p05 Q1: 0.6 × 7（主 MC + 火眼金睛估算題）
+  { afterPage:5, type:'mc', q:'任務 Q1：0.6 × 7 = ?', options:['0.42','4.2','42','0.042'], correct:1, hint:'6 × 7 = 42，一位小數 → 4.2（B）' },
+  { afterPage:5, type:'mc', q:'🔥 火眼金睛額外題：估算 0.6 × 7 ≈ ?', options:['0.7','4','7','42'], correct:2, hint:'0.6 約成 1，1 × 7 = 7（實際 4.2 接近 → 證明小數點冇放錯）' },
+  // p07 Q2: 1.4 × 5
+  { afterPage:7, type:'mc', q:'任務 Q2：1.4 × 5 = ?', options:['7.0','0.7','70','0.07'], correct:0, hint:'14 × 5 = 70，一位小數 → 7.0（A）' },
+  { afterPage:7, type:'mc', q:'🔥 估算：1.4 × 5 ≈ ?', options:['5','7','10','70'], correct:1, hint:'1.4 約成 1，1 × 5 = 5（實際 7.0 接近）' },
+  // p09 Q3: 3.7 × 8（填充）
+  { afterPage:9, type:'fill', q:'任務 Q3（沒選項，自己列直式）：3.7 × 8 = ___', accept:['29.6','29.60'], hint:'37 × 8 = 296，一位小數 → 29.6' },
+  { afterPage:9, type:'mc', q:'🔥 估算：3.7 × 8 ≈ ?', options:['24','32','37','40'], correct:1, hint:'3.7 約成 4，4 × 8 = 32（實際 29.6 接近）' },
+  // p11 Q4: 應用題 5 × 2.3 元
+  { afterPage:11, type:'mc', q:'任務 Q4：悟空買 5 條香蕉，每條 2.3 元，總共幾錢？', options:['1.15 元','10.5 元','11.5 元','115 元'], correct:2, hint:'2.3 × 5 = 11.5 元（23×5=115，一位小數 → 11.5）' },
+  { afterPage:11, type:'mc', q:'🔥 估算：2.3 × 5 ≈ ?', options:['5 元','10 元','15 元','20 元'], correct:1, hint:'2.3 約成 2，2 × 5 = 10 元（實際 11.5 元 接近）' },
+  // p13 Q5: 陷阱題 6.4 × 9
+  { afterPage:13, type:'mc', q:'任務 Q5（陷阱題！）：6.4 × 9 = ?', options:['5.76','57.6','576','0.576'], correct:1, hint:'64 × 9 = 576，一位小數 → 57.6。學生常錯成 5.76（小數點放錯位置）' },
+  { afterPage:13, type:'mc', q:'🔥 用估算 check 小數點啱唔啱：6.4 × 9 ≈ ?', options:['5','12','54','576'], correct:2, hint:'6.4 約成 6，6 × 9 = 54。所以實際 57.6 啱，5.76 太細 100 倍唔合理！' }
 ];
 
 let idx = 0;

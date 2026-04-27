@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第13課 · 簡報 3 — 小數 × 小數 + 估算</title>
+<title>第13課 · 簡報 3 — 估算技巧深化 + 整合應用</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFFEF7 0%, #FFF8DC 50%, #FFF0E0 100%); min-height: 100vh; color: #222; position: relative; overflow-x: hidden; }
@@ -66,7 +66,7 @@
 </head>
 <body>
 <header>
-  <h1>📙 第13課 · 簡報 3 — 小數 × 小數 + 估算</h1>
+  <h1>📙 第13課 · 簡報 3 — 估算技巧深化 + 整合應用</h1>
   <a href="index.html" class="back">← 返回第13課</a>
 </header>
 <div class="wrap">
@@ -99,19 +99,25 @@
 </div>
 <script>
 const PREFIX = 'slides3', TOTAL = 15, CHAPTER = 13, DECK_KEY = 'slides3';
+// 新格式 Q array — 第13課 Part 3 估算技巧深化 + 一位/兩位小數×整數整合應用
+// ⚠️ 注意：舊版內容係小數×小數（屬第14課 LO），已修正返第13課嘅 LO
+// p05/p07/p09/p11/p13 = Q 頁 (估算 MC + 實際填充)；p06/p08/p10/p12/p14 = A 頁
 const SLIDE_QUESTIONS = [
-  // p05: 小數×小數 基本
-  { afterPage:5, type:'mc', q:'簡報練習：0.3 × 0.4 = ?', options:['0.12','1.2','0.012','12'], correct:0, hint:'3 × 4 = 12，合共 2 位小數 → 0.12' },
-  { afterPage:5, type:'fill', q:'簡報練習：0.5 × 0.6 = ?', accept:['0.3','0.30','.3'], hint:'5 × 6 = 30，合共 2 位小數 → 0.30 = 0.3' },
-  // p10: 估算
-  { afterPage:10, type:'mc', q:'簡報練習：估算 2.9 × 3.1 最接近…', options:['9','6','12','30'], correct:0, hint:'2.9 ≈ 3，3.1 ≈ 3，3 × 3 = 9。實際答案 8.99。' },
-  { afterPage:10, type:'fill', q:'簡報練習：1.2 × 0.5 = ?（填數字）', accept:['0.6','0.60','.6'], hint:'12 × 5 = 60，合共 2 位小數 → 0.60 = 0.6' },
-  // p13: 綜合估算
-  { afterPage:13, type:'fill', q:'估算：9.8 × 2.1 最接近 ___（只填整數）', accept:['20','二十'], hint:'9.8 ≈ 10，2.1 ≈ 2，10 × 2 = 20。實際 20.58。' },
-  // p15: 📊 綜合評估題（3 題，全部答啱先完成）
-  { afterPage:15, type:'mc', q:'📊 綜合評估題：0.8 × 0.5 = ?', options:['0.4','4','0.04','40'], correct:0, hint:'8 × 5 = 40，合共 2 位小數 → 0.40 = 0.4' },
-  { afterPage:15, type:'fill', q:'📊 綜合評估題：估算 7.2 × 2.8 最接近 ___（只填整數）', accept:['21','二十一'], hint:'7.2 ≈ 7，2.8 ≈ 3，7 × 3 = 21。實際 20.16。' },
-  { afterPage:15, type:'mc', q:'📊 綜合評估題（應用）：每升汽油 $8.50，買 2.5 升大約要幾多錢？', options:['約$21','$1.7','$50','$5'], correct:0, hint:'8.5 × 2.5，估算：9 × 2 = 18 或 9 × 3 = 27，實際 21.25，約 $21' }
+  // p05 Q1: 沙僧暖身 5.2 × 7
+  { afterPage:5, type:'mc', q:'沙僧暖身 Q1：估算 5.2 × 7 約等於 ?', options:['30','35','42','50'], correct:1, hint:'5.2 約成 5，5 × 7 = 35（B，實際 36.4 接近）' },
+  { afterPage:5, type:'fill', q:'⚒️ 實際計算：5.2 × 7 = ___', accept:['36.4','36.40'], hint:'52 × 7 = 364，一位小數 → 36.4' },
+  // p07 Q2: 悟空迷霧 0.9 × 4
+  { afterPage:7, type:'mc', q:'悟空迷霧 Q2：估算 0.9 × 4 約等於 ?', options:['0','4','9','36'], correct:1, hint:'0.9 約成 1，1 × 4 = 4（B，實際 3.6 接近）' },
+  { afterPage:7, type:'fill', q:'⚒️ 實際計算：0.9 × 4 = ___', accept:['3.6','3.60'], hint:'9 × 4 = 36，一位小數 → 3.6' },
+  // p09 Q3: 沙僧採買西瓜 6 × 4.5（一位小數應用題）
+  { afterPage:9, type:'mc', q:'沙僧採買西瓜 Q3：估算沙僧大概買咗多重？(每西瓜 4.5 公斤，買 6 個)', options:['24 公斤','25 公斤','30 公斤','45 公斤'], correct:2, hint:'4.5 約成 5，5 × 6 = 30 公斤（C，實際 27 公斤接近）' },
+  { afterPage:9, type:'fill', q:'⚒️ 實際總重量：6 × 4.5 = ___ 公斤', accept:['27','27.0','27.00'], hint:'45 × 6 = 270，一位小數 → 27.0 = 27 公斤' },
+  // p11 Q4: 悟空大戰妖怪 8 × 3.25（兩位小數應用題）
+  { afterPage:11, type:'mc', q:'悟空大戰妖怪 Q4：估算贏咗大約幾多金幣？(8 個妖怪，每個 3.25 個金幣)', options:['11 個','24 個','32 個','40 個'], correct:1, hint:'3.25 約成 3，3 × 8 = 24 個（B，實際 26 個接近）' },
+  { afterPage:11, type:'fill', q:'⚒️ 實際獲得：8 × 3.25 = ___ 個金幣', accept:['26','26.0','26.00'], hint:'325 × 8 = 2600，兩位小數 → 26.00 = 26 個金幣' },
+  // p13 Q5: 終極試煉 — 用估算判斷學生答案 7.4 × 5 = 0.37 對唔對？
+  { afterPage:13, type:'mc', q:'終極試煉 Q5：學生算到 7.4 × 5 = 0.37，用估算判斷對唔對？', options:['對，因為 4×5=20，所以小數點往左移','錯，答案應該大約 35 左右','對，答案應該大約 70 左右','對，計算睇起嚟好完美'], correct:1, hint:'7.4 約成 7，7 × 5 = 35。0.37 完全唔合理（縮小咗 100 倍）！正確答案 = 37（B）' },
+  { afterPage:13, type:'fill', q:'⚒️ 寫出正確答案：7.4 × 5 = ___', accept:['37','37.0','37.00'], hint:'74 × 5 = 370，一位小數 → 37.0 = 37（學生原本將小數點放錯位置）' }
 ];
 let idx = 0;
 const slideQuizAnswered = {}, slideQuizWrong = {};
