@@ -1691,6 +1691,7 @@ body::before {
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/common/progress.js"></script>
 </head>
 <body>
 
@@ -2968,7 +2969,17 @@ function updateCoinDisplay() {
     if (!currentUser) return;
     const key = `scores_${currentUser.class}_${currentUser.number}`;
     const scores = JSON.parse(localStorage.getItem(key) || '{}');
-    const earnedCoins = computeEarnedCoins(scores);
+    let earnedCoins = computeEarnedCoins(scores);
+    // Add Ch13+ coins from unified LWWFProgress (cross-chapter total)
+    if (window.LWWFProgress && typeof window.LWWFProgress.computeCoins === 'function') {
+        for (let ch = 13; ch <= 21; ch++) {
+            try {
+                const pk = `progress_ch${ch}_${currentUser.class}_${currentUser.number}`;
+                const p = JSON.parse(localStorage.getItem(pk) || '{}');
+                earnedCoins += window.LWWFProgress.computeCoins(p);
+            } catch(e) {}
+        }
+    }
     const edxHistory = window.currentEdxHistory || [];
     const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
     const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
@@ -2980,6 +2991,11 @@ function updateCoinDisplay() {
     if (edxEl) edxEl.textContent = totalEdx;
     updateAssessCardStatus(scores);
 }
+
+// Live re-render Ch12 coin badge on cloud sync, cross-tab updates, or local writes
+window.addEventListener('lwwf-progress-changed', () => {
+    if (currentUser) updateCoinDisplay();
+});
 
 async function exchangeEdx(rateIdx) {
     if (!currentUser) return;

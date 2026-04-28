@@ -377,8 +377,14 @@
   const initialTab = (location.hash || '').replace('#', '') || 'study';
   if (['study','quiz','games','tool','extras','ai','scores'].includes(initialTab)) switchTab(initialTab);
   renderProgress();
+
+  // Live re-render on cloud sync, cross-tab updates, or local writes (LWWFProgress)
+  window.addEventListener('lwwf-progress-changed', () => {
+    renderProgress();
+    if (document.querySelector('#scoresGrid')) renderScores();
+  });
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js" data-current-ch="14"></script>
+<script src="../common/chapter-header.js" data-current-ch="16"></script>
 </body>
 </html>

@@ -10,6 +10,15 @@
     return m ? m[1] : '12';
   })();
 
+  // Auto-load shared progress sync module (Supabase ↔ localStorage hybrid).
+  // 一加一個 <script> 就搞掂全網所有 sub-page 嘅進度同步。
+  if (!window.LWWFProgress && scriptEl && scriptEl.src) {
+    const ps = document.createElement('script');
+    ps.src = scriptEl.src.replace(/chapter-header\.js(\?.*)?$/, 'progress.js');
+    ps.async = false;
+    document.head.appendChild(ps);
+  }
+
   const CHAPTERS = [
     { id: '12', title: 'Ch.12 有趣的乘法', emoji: '📚', href: '../../index.html?ch=12' },
     { id: '13', title: 'Ch.13 小數乘法（一）', emoji: '📘', href: '../ch13/index.html' },
@@ -296,7 +305,11 @@
       right.innerHTML = `<button class="tb-btn-login" onclick="window.__mathaiLoginOpen()">👤 登入</button>`;
       return;
     }
-    const coins = getTotalCoins(user);
+    // Prefer unified LWWFProgress.getTotalCoinsAllChapters when available
+    // (consistent rules across pages); fall back to legacy getTotalCoins.
+    const coins = (window.LWWFProgress && typeof window.LWWFProgress.getTotalCoinsAllChapters === 'function')
+      ? window.LWWFProgress.getTotalCoinsAllChapters(user)
+      : getTotalCoins(user);
     const edx = getEdx(user);
     const avatarChar = (user.name || '測').trim().charAt(0) || '測';
     const nameStr = user.name ? `${user.class || ''} ${user.number || ''} ${user.name}` : `${user.class || ''} ${user.number || ''}`;
@@ -383,6 +396,8 @@
 
   // Listen for storage changes to refresh coins
   window.addEventListener('storage', () => renderRight());
+  // Listen for unified LWWFProgress events (same-tab + cross-tab + cloud-load)
+  window.addEventListener('lwwf-progress-changed', () => renderRight());
 
   function mount() {
     // Check if we're on a game page — if so, use minimal mode (smaller bar, no sticky)
