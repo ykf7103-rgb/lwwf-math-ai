@@ -59,10 +59,57 @@
     return sb;
   }
 
+  // ---------- mergeBest: 「best of」semantics — 永遠保留最高分/最多金幣 ----------
+  // 解決 bug：學生重玩遊戲拎咗低分時，唔好用低分 overwrite 高分
+  // 同 cloud sync race condition：唔好用 stale cloud 數據 overwrite local 新分
+  const MAX_FIELDS = ['coins','score','correct','passed','total','attempts'];
+  function mergeBest(oldP, newP) {
+    if (!oldP || typeof oldP !== 'object') return newP;
+    if (!newP || typeof newP !== 'object') return oldP;
+    const merged = { ...oldP };
+    Object.entries(newP).forEach(([stepId, freshVal]) => {
+      const oldVal = merged[stepId];
+      if (!oldVal || typeof oldVal !== 'object' || !freshVal || typeof freshVal !== 'object') {
+        merged[stepId] = freshVal;
+        return;
+      }
+      // Both are objects: shallow merge with MAX-semantics on numeric fields
+      const out = { ...oldVal, ...freshVal };
+      MAX_FIELDS.forEach(k => {
+        const oldNum = typeof oldVal[k] === 'number' ? oldVal[k] : null;
+        const newNum = typeof freshVal[k] === 'number' ? freshVal[k] : null;
+        if (oldNum !== null && newNum !== null) out[k] = Math.max(oldNum, newNum);
+        else if (oldNum !== null && newNum === null) out[k] = oldNum;  // preserve old if new missing
+      });
+      // done: sticky true (once done, always done)
+      if (oldVal.done || freshVal.done) out.done = true;
+      // ts: take latest
+      if (typeof oldVal.ts === 'number' && typeof freshVal.ts === 'number') {
+        out.ts = Math.max(oldVal.ts, freshVal.ts);
+      }
+      merged[stepId] = out;
+    });
+    return merged;
+  }
+
   // ---------- localStorage.setItem hijack ----------
   const origSetItem = Storage.prototype.setItem;
+  const origGetItem = Storage.prototype.getItem;
   Storage.prototype.setItem = function(key, value) {
-    origSetItem.call(this, key, value);
+    let finalValue = value;
+    // 🚨 Apply mergeBest BEFORE write — 防止 sub-page 嘅 markDone() overwrite 高分
+    if (this === localStorage && !_isCloudLoading && typeof key === 'string') {
+      const m = key.match(/^progress_ch(\d+)_([^_]+)_(.+)$/);
+      if (m) {
+        try {
+          const oldRaw = origGetItem.call(this, key);
+          const oldP = JSON.parse(oldRaw || '{}');
+          const newP = JSON.parse(value || '{}');
+          finalValue = JSON.stringify(mergeBest(oldP, newP));
+        } catch(e) {}
+      }
+    }
+    origSetItem.call(this, key, finalValue);
     if (this !== localStorage || _isCloudLoading) return;
     if (typeof key !== 'string') return;
     // Only watch progress_ch{N}_{class}_{num} (per-user). Anonymous progress_chN ignored.
@@ -73,14 +120,14 @@
     // Same-tab event for chapter index UI updates
     try {
       window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
-        detail: { chapter, key, raw: value, source: 'local' }
+        detail: { chapter, key, raw: finalValue, source: 'local' }
       }));
     } catch {}
-    // Debounced cloud sync
+    // Debounced cloud sync — 用 finalValue（已 mergeBest）唔係 raw value
     clearTimeout(debouncedSync[key]);
     debouncedSync[key] = setTimeout(() => {
       delete debouncedSync[key];
-      syncToCloud(chapter, cls, num, value).catch(() => {});
+      syncToCloud(chapter, cls, num, finalValue).catch(() => {});
     }, DEBOUNCE_MS);
   };
 
@@ -141,19 +188,23 @@
           .select('activity_key,data')
           .eq('class', user.class).eq('student_number', user.number).eq('chapter', chapter),
       ]);
-      const merged = JSON.parse(JSON.stringify(local || {}));
+      // 🚨 Build cloud-side object first, THEN mergeBest with local — 確保
+      // 唔會用 stale cloud 數據 overwrite local 新分（race condition）
+      const cloudP = {};
       (progRes.data || []).forEach(r => {
-        merged[r.step_id] = Object.assign(merged[r.step_id] || {}, {
+        cloudP[r.step_id] = {
           done: true,
           ts: r.done_at ? new Date(r.done_at).getTime() : Date.now()
-        });
+        };
       });
       (scoreRes.data || []).forEach(r => {
-        merged[r.activity_key] = Object.assign(
-          merged[r.activity_key] || { done: true },
+        cloudP[r.activity_key] = Object.assign(
+          cloudP[r.activity_key] || { done: true },
           r.data || {}
         );
       });
+      // mergeBest: 取 max 嘅 coins/score，保留最新 ts，done 一旦 true 永遠 true
+      const merged = mergeBest(local || {}, cloudP);
       // Write back without re-firing the hijack
       _isCloudLoading = true;
       try { origSetItem.call(localStorage, key, JSON.stringify(merged)); }
@@ -282,6 +333,16 @@
     computeCoins,
     getTotalCoinsAllChapters,
     flushPending,
-    _ensureSupabase: ensureSupabase,  // exposed for advanced use
+    mergeBest,                           // exposed for testing
+    _ensureSupabase: ensureSupabase,
   };
+
+  // 🚨 Fire init event so chapter-header.js / chapter index pages can re-render
+  // 用統一 computeCoins() 規則（解決首次 page load 用 legacy getTotalCoins
+  // 漏計 default coins 嘅 bug）
+  try {
+    window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
+      detail: { source: 'init' }
+    }));
+  } catch {}
 })();
