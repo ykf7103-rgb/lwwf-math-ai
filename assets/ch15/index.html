@@ -59,6 +59,23 @@
   .section.s3 .section-title .num { color: #4527A0; }
 
   .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  /* v5 layout: 遊戲區 top shelf + flow-2 (簡報→評估) */
+  .game-shelf { background: linear-gradient(135deg,#FFF3E0,#FFE0B2); border:3px solid #FF8F00; border-radius:16px; padding:14px; margin-bottom:18px; }
+  .game-shelf-title { font-weight:900; color:#E65100; margin-bottom:10px; font-size:1.05rem; display:flex; align-items:center; gap:6px; }
+  .game-shelf-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  @media (max-width:600px) { .game-shelf-cards { grid-template-columns:1fr; } }
+  .game-card { background:white; border-radius:12px; padding:14px 10px; text-align:center; text-decoration:none; color:#333; position:relative; border:2px solid #FFB74D; transition:all 0.2s; display:flex; flex-direction:column; gap:6px; }
+  .game-card:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(255,143,0,0.3); }
+  .game-card.done { background:linear-gradient(135deg,#C8E6C9 0%,#F1F8E9 100%); border-color:#4CAF50; }
+  .game-card .done-badge { position:absolute; top:6px; right:6px; background:linear-gradient(135deg,#66BB6A,#388E3C); color:white; font-size:0.65rem; padding:2px 7px; border-radius:8px; font-weight:900; display:none; }
+  .game-card.done .done-badge { display:inline-block; }
+  .game-card .ge { font-size:2rem; }
+  .game-card .gt { font-weight:900; color:#E65100; font-size:0.95rem; line-height:1.25; }
+  .game-card .gd { font-size:0.78rem; color:#666; line-height:1.3; }
+  .game-card .gc { display:inline-flex; align-items:center; gap:4px; background:#FFF8E1; padding:2px 8px; border-radius:10px; font-weight:800; color:#F57F17; font-size:0.82rem; align-self:center; }
+  .flow.flow-2 { grid-template-columns:1fr 1fr; gap:10px; align-items:stretch; }
+  @media (max-width:520px) { .flow.flow-2 { grid-template-columns:1fr; } }
+
   .card { background: white; border: 2px solid #E0E7EE; border-radius: 16px; padding: 18px 10px; text-decoration: none; color: #333; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; gap: 6px; text-align: center; min-height: 140px; position: relative; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
   .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 12px 28px rgba(0,0,0,0.15); }
   .card .step { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg,#f5f5f5,#eee); color: #888; font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 8px; letter-spacing: 0.5px; }
@@ -148,34 +165,39 @@
       </div>
     </div>
 
+    
+  <!-- 🎮 遊戲區（v5 — top shelf 隨時可玩） -->
+  <div class="game-shelf">
+    <div class="game-shelf-title">🎮 遊戲區（隨時可入去玩，賺金幣）</div>
+    <div class="game-shelf-cards">
+      <a href="game1.html" class="game-card" data-key="game1"><span class="done-badge">✓</span><div class="ge">🃏</div><div class="gt">遊戲 1：配對卡</div><div class="gd">Memory Match ·</div><div class="gc"><img src="images/coin_new.png" style="width:14px;height:14px;">3</div></a>
+      <a href="game2.html" class="game-card" data-key="game2"><span class="done-badge">✓</span><div class="ge">🎈</div><div class="gt">遊戲 2：氣球爆破</div><div class="gd">Balloon Pop ·</div><div class="gc"><img src="images/coin_new.png" style="width:14px;height:14px;">3</div></a>
+      <a href="game3.html" class="game-card" data-key="game3"><span class="done-badge">✓</span><div class="ge">👨‍🍳</div><div class="gt">遊戲 3：廚神挑戰</div><div class="gd">Recipe Chef ·</div><div class="gc"><img src="images/coin_new.png" style="width:14px;height:14px;">3</div></a>
+    </div>
+  </div>
+
     <div class="section s1">
       <div class="section-title"><span class="num">1</span>第一節 · 一位小數 × 一位小數</div>
-      <div class="flow">
-        <a href="slides1.html" class="card slides" data-key="slides1"><div class="step">STEP 1</div><span class="done-badge">✓</span><div class="card-emoji">📦</div><div class="card-title">簡報 1</div><div class="card-desc">點心店情境 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="prelearn1.html" class="card prelearn" data-key="prelearn1"><div class="step">STEP 2</div><span class="done-badge">✓</span><div class="card-emoji">📝</div><div class="card-title">預習 1</div><div class="card-desc">MC + 填充 + 🎤 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="assess1.html" class="card assess" data-key="assess1"><div class="step">STEP 3</div><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 1</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="game1.html" class="card game" data-key="game1"><div class="step">STEP 4</div><span class="done-badge">✓</span><div class="card-emoji">🃏</div><div class="card-title">配對卡</div><div class="card-desc">Memory Match · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">3</div></a>
-      </div>
+      <div class="flow flow-2">
+        <a href="slides1.html" class="card slides" data-key="slides1"><span class="done-badge">✓</span><div class="card-emoji">📦</div><div class="card-title">簡報 1</div><div class="card-desc">點心店情境 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
+                <a href="assess1.html" class="card assess" data-key="assess1"><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 1</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
+            </div>
     </div>
 
     <div class="section s2">
       <div class="section-title"><span class="num">2</span>第二節 · 兩位小數 × 一位小數</div>
-      <div class="flow">
-        <a href="slides2.html" class="card slides" data-key="slides2"><div class="step">STEP 1</div><span class="done-badge">✓</span><div class="card-emoji">🍰</div><div class="card-title">簡報 2</div><div class="card-desc">蛋糕單價計算 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="prelearn2.html" class="card prelearn" data-key="prelearn2"><div class="step">STEP 2</div><span class="done-badge">✓</span><div class="card-emoji">📝</div><div class="card-title">預習 2</div><div class="card-desc">MC + 填充 + 🎤 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="assess2.html" class="card assess" data-key="assess2"><div class="step">STEP 3</div><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 2</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="game2.html" class="card game" data-key="game2"><div class="step">STEP 4</div><span class="done-badge">✓</span><div class="card-emoji">🎈</div><div class="card-title">氣球爆破</div><div class="card-desc">Balloon Pop · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">3</div></a>
-      </div>
+      <div class="flow flow-2">
+        <a href="slides2.html" class="card slides" data-key="slides2"><span class="done-badge">✓</span><div class="card-emoji">🍰</div><div class="card-title">簡報 2</div><div class="card-desc">蛋糕單價計算 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
+                <a href="assess2.html" class="card assess" data-key="assess2"><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 2</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
+            </div>
     </div>
 
     <div class="section s3">
       <div class="section-title"><span class="num">3</span>第三節 · 兩位小數 × 兩位小數 + 應用題</div>
-      <div class="flow">
-        <a href="slides3.html" class="card slides" data-key="slides3"><div class="step">STEP 1</div><span class="done-badge">✓</span><div class="card-emoji">🥮</div><div class="card-title">簡報 3</div><div class="card-desc">面積 + 估算 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="prelearn3.html" class="card prelearn" data-key="prelearn3"><div class="step">STEP 2</div><span class="done-badge">✓</span><div class="card-emoji">📝</div><div class="card-title">預習 3</div><div class="card-desc">MC + 填充 + 🎤 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="assess3.html" class="card assess" data-key="assess3"><div class="step">STEP 3</div><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 3</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="game3.html" class="card game" data-key="game3"><div class="step">STEP 4</div><span class="done-badge">✓</span><div class="card-emoji">👨‍🍳</div><div class="card-title">廚神挑戰</div><div class="card-desc">Recipe Chef · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">3</div></a>
-      </div>
+      <div class="flow flow-2">
+        <a href="slides3.html" class="card slides" data-key="slides3"><span class="done-badge">✓</span><div class="card-emoji">🥮</div><div class="card-title">簡報 3</div><div class="card-desc">面積 + 估算 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
+                <a href="assess3.html" class="card assess" data-key="assess3"><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 3</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
+            </div>
     </div>
 
     <!-- 🎁 額外教材（原「補充教材」併入自學區）-->
@@ -323,11 +345,11 @@
   }
 
   const STEP_KEYS = [
-    { k: 'slides1', n: '簡報 1', emoji: '📦' }, { k: 'prelearn1', n: '預習 1', emoji: '📝' },
+    { k: 'slides1', n: '簡報 1', emoji: '📦' },
     { k: 'assess1', n: '評估 1', emoji: '✏️' }, { k: 'game1', n: '配對卡', emoji: '🃏' },
-    { k: 'slides2', n: '簡報 2', emoji: '🍰' }, { k: 'prelearn2', n: '預習 2', emoji: '📝' },
+    { k: 'slides2', n: '簡報 2', emoji: '🍰' },
     { k: 'assess2', n: '評估 2', emoji: '✏️' }, { k: 'game2', n: '氣球爆破', emoji: '🎈' },
-    { k: 'slides3', n: '簡報 3', emoji: '🥮' }, { k: 'prelearn3', n: '預習 3', emoji: '📝' },
+    { k: 'slides3', n: '簡報 3', emoji: '🥮' },
     { k: 'assess3', n: '評估 3', emoji: '✏️' }, { k: 'game3', n: '廚神挑戰', emoji: '👨‍🍳' },
   ];
   function switchTab(tab) {
