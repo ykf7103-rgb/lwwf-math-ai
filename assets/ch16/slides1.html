@@ -126,20 +126,56 @@
 <script>
 const PREFIX = 'slides1', TOTAL = 15, CHAPTER = 16, DECK_KEY = 'slides1';
 
-// Ch16 Part 1: 認識 cm³ + 用立方塊量度體積（Minecraft 風）— LO #1+#2
+// 🚨 v5 SLIDE_QUESTIONS — 嚴格按 NLM JPG 內容（OCR 對齊）
+// Ch16 Part 1: 認識 cm³ + 量度體積 — Minecraft 史蒂夫主角
+// 結構：p1 標題 / p2-4 教學 / p5+7+9+11+13 Q頁 / p6+8+10+12+14 A頁 / p15 總結 + voice
 const SLIDE_QUESTIONS = [
-  // p3: 1 cm³ 定義
-  { afterPage:3, type:'mc', q:'簡報練習：1 cm³ 係指乜嘢？', options:['邊長 1 厘米嘅正方體（數粒）','長方形 1 cm × 2 cm','邊長 1 米嘅嘢','重量 1 公斤'], correct:0, hint:'1 cm³ = 邊長 1 厘米嘅小正方體（數粒）。Minecraft 一個方塊就係 1 cm³ 嘅完美 visualization。' },
-  // p5: 量度立體
-  { afterPage:5, type:'mc', q:'簡報練習：一個立體用 8 粒數粒砌成，體積係幾多？', options:['8 cm³','8 cm','8 m³','8 g'], correct:0, hint:'數粒總數 = 體積，單位係 cm³（讀作「立方厘米」）。8 粒 → 8 cm³。' },
-  // p7: 比較體積
-  { afterPage:7, type:'mc', q:'簡報練習：立體 P 用 12 粒，立體 Q 用 8 粒，邊個體積大？', options:['立體 P','立體 Q','一樣','要量度'], correct:0, hint:'數粒越多 = 體積越大。立體 P (12 cm³) > 立體 Q (8 cm³)。' },
-  // p10: 數粒砌嘢
-  { afterPage:10, type:'fill', q:'簡報練習：用 1 cm³ 數粒砌個 2×2×2 立方體，共幾多 cm³？', accept:['8','8 cm³','8cm³','8立方厘米'], hint:'2 × 2 × 2 = 8 個方塊。每個 1 cm³ → 8 cm³。' },
-  // p12: 長方體
-  { afterPage:12, type:'mc', q:'📊 評估題：3 cm × 2 cm × 1 cm 長方體嘅體積？', options:['6 cm³','5 cm³','3 cm³','12 cm³'], correct:0, hint:'數粒：3 × 2 × 1 = 6 粒 → 6 cm³。' },
-  // p14: LO 整合
-  { afterPage:14, type:'mc', q:'📊 綜合評估：邊一個**唔啱**？', options:['1 cm³ = 邊長 1 cm 立方體','數粒越多體積越大','體積單位係 cm³','體積用「斤」計'], correct:3, hint:'「斤」係重量單位，唔係體積。體積要用 cm³ 或 m³。' }
+  // p5 任務一：量度立體 P 與 Q（高瘦 vs 扁平）邊個體積大？
+  { afterPage:5, type:'mc', q:'任務一：立體 P（高瘦）vs 立體 Q（扁平）邊個體積大？',
+    options:['立體 P 大','立體 Q 大','一樣大','睇唔到要量度'], correct:2,
+    hint:'唔好被外表騙！拆解後兩個都係 12 個數粒 = 12 cm³，所以一樣大！法則：數粒總數一樣，體積就一樣。' },
+  { afterPage:5, type:'mc', q:'🔥 火眼金睛：點解外表 P 高瘦、Q 扁平，但體積仲可以一樣？',
+    options:['因為佢哋都用同一種方塊砌成','因為唔同形狀有唔同單位','因為高度比較重要','其實唔可以一樣'], correct:0,
+    hint:'量度體積睇嘅係「總共幾多個 1 cm³ 數粒」，唔係外表！' },
+
+  // p7 Lv.1 新手村試煉：簡單立體 8 個 1 cm³ 數粒
+  { afterPage:7, type:'mc', q:'Lv.1 新手村：立體由 1 cm³ 數粒組成，請數總數，體積係多少？（圖示 4+4=8 個方塊）',
+    options:['6 cm³','7 cm³','8 cm³','12 cm³'], correct:2,
+    hint:'直接點數方塊，共 8 個，每個 1 cm³ → 8 cm³。' },
+  { afterPage:7, type:'fill', q:'⚒️ 數粒練習：3×2×2 嘅長方體，體積 = ___ cm³',
+    accept:['12','12 cm³','12cm³'],
+    hint:'3 × 2 × 2 = 12 個方塊 → 12 cm³。' },
+
+  // p9 Lv.2 視線死角：雙層立體（隱藏方塊都要算）
+  { afterPage:9, type:'mc', q:'Lv.2 視線死角：雙層立體，每層 9 個 × 2 層（包括隱藏支撐方塊），體積？',
+    options:['9 cm³','12 cm³','18 cm³','27 cm³'], correct:2,
+    hint:'透視術發動！每層 9 個 × 2 層 = 18 個數粒 = 18 cm³。睇唔見嘅底層方塊都要算入去！' },
+  { afterPage:9, type:'mc', q:'🔥 估算挑戰：點解只數見到嘅方塊會算錯？',
+    options:['因為下層支撐方塊被擋住','因為上層方塊太細','因為單位錯','因為形狀唔規則'], correct:0,
+    hint:'底層方塊撐起上層，所以實體存在。要用「分層計算」攻略：每層 × 層數！' },
+
+  // p11 Lv.3 不規則建築 L 型 — 解法係「分割術」
+  { afterPage:11, type:'mc', q:'Lv.3 不規則建築：高低不平嘅 L 型，最有效計算方法？',
+    options:['直接點數可見方塊','把它分割成 2 個簡單長方體再加總','無法計算'], correct:1,
+    hint:'解鎖技能 — 分割術 (Splitting Method)！化繁為簡，分開部份 A + 部份 B。' },
+  { afterPage:11, type:'mc', q:'🔥 進階：分割術點解 work？',
+    options:['因為兩個簡單長方體加總 = 原本不規則體積','因為 L 型有特殊公式','因為唔可以唔分割','因為睇唔清楚'], correct:0,
+    hint:'兩個分開計嘅體積加埋 = 原本嘅體積（無遺漏）。' },
+
+  // p13 Lv.MAX 苦力怕破壞：殘缺長方體 — 解法係「填補術」
+  { afterPage:13, type:'mc', q:'Lv.MAX 苦力怕破壞：完美長方體被炸出大洞，剩下體積點計？',
+    options:['用分割術切細粒','放棄唔計','用填補術（補成完整 - 缺洞虛擬體積）'], correct:2,
+    hint:'終極奧義 — 填補術 (Filling Method)！想像補成完整長方體 - 減去虛擬補咗嘅部分。' },
+  { afterPage:13, type:'mc', q:'🔥 終極：分割術 vs 填補術 點揀？',
+    options:['L 型分割、殘缺型填補','永遠用分割術','永遠用填補術','睇心情'], correct:0,
+    hint:'凸出多塊用分割（化繁為簡），凹咗洞用填補（逆向思考）！' },
+
+  // p15 🎤 Voice question (v5 P.5 — Feynman 教學法)
+  { afterPage:15, type:'voice',
+    q:'🎤 史蒂夫挑戰：用 Feynman 方法，假設你係老師，教同學點計 3×2×2 個方塊砌成嘅長方體體積。講 20-30 秒。',
+    concept:'量體積 = 數方塊（長×闊×高），單位 cm³',
+    rubric:'講出：3×2×2=12、12 個方塊、單位 cm³（讀立方厘米）',
+    hint:'講到答案 12 cm³ + 任何一個原理就合格啦！例如「3×2×2=12 個方塊，每個 1 cm³ 所以 12 cm³」就好好（~80 分）。再加埋「隱藏方塊都要算」會更高分 💪' }
 ];
 
 let idx = 0;
@@ -209,11 +245,18 @@ function showQuiz(pageNum) {
     const key = pageNum + '_' + i;
     const done = slideQuizAnswered[key];
     const type = pq.type || 'mc';
-    const badge = type === 'fill' ? '<span class="type-badge fill">填充題</span>' : '<span class="type-badge mc">選擇題</span>';
+    const badge = type === 'fill' ? '<span class="type-badge fill">填充題</span>'
+                : type === 'voice' ? '<span class="type-badge" style="background:#E91E63;">🎤 解釋題</span>'
+                : '<span class="type-badge mc">選擇題</span>';
     html += `<div id="qb${i}" class="quiz-block${done?' done':''}">`;
     html += `<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;
     if (done) {
       html += `<div class="hint-msg correct">✅ 已答啱</div>`;
+    } else if (type === 'voice') {
+      html += `<div style="background:#FCE4EC;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;color:#880E4F;">💡 ${pq.hint || '用自己嘅話解釋俾同學知。'}</div>`;
+      html += `<textarea id="vt${i}" placeholder="✏️ 用你嘅話解釋（最少 20 字）..." style="width:100%;min-height:80px;padding:10px;border:2px solid #E91E63;border-radius:8px;font-size:0.95rem;font-family:inherit;outline:none;resize:vertical;"></textarea>`;
+      html += `<button class="fill-btn" style="background:linear-gradient(135deg,#E91E63,#AD1457);margin-top:6px;" onclick="checkVoice(${i},${pageNum})">🤖 提交俾 AI 評分</button>`;
+      html += `<div class="hint-msg" id="hm${i}"></div>`;
     } else if (type === 'fill') {
       html += `<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;
       html += `<div class="hint-msg" id="hm${i}"></div>`;
@@ -294,6 +337,62 @@ function checkFill(qIdx, pageNum) {
     hint.innerHTML = `❌ 再試！💡 ${q.hint}`;
     registerWrong(pageNum);
     setTimeout(()=> input.classList.remove('wrong'), 500);
+  }
+}
+
+// 🎤 Voice question (打字代替錄音 — § 3.9 dual mode)
+async function checkVoice(qIdx, pageNum) {
+  const q = SLIDE_QUESTIONS.filter(x => x.afterPage === pageNum)[qIdx];
+  const key = pageNum + '_' + qIdx;
+  const ta = document.getElementById('vt'+qIdx);
+  const hint = document.getElementById('hm'+qIdx);
+  const block = document.getElementById('qb'+qIdx);
+  const text = (ta.value || '').trim();
+  if (text.length < 20) {
+    hint.className = 'hint-msg wrong';
+    hint.innerHTML = '⚠️ 至少寫 20 字（試吓多寫幾句解釋）';
+    return;
+  }
+  hint.className = 'hint-msg';
+  hint.style.cssText = 'background:#FFF3E0;color:#E65100;padding:8px;border-radius:6px;display:block;';
+  hint.innerHTML = '🤖 史蒂夫評分中...';
+  const prompt = `學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept || ''}\n評分要點：${q.rubric || ''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；冇關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;
+  try {
+    const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({messages:[{role:'user', content: prompt}]})
+    });
+    const data = await res.json();
+    let parsed;
+    try { parsed = JSON.parse(data.reply); }
+    catch { parsed = { score: 70, feedback: data.reply || '已收到答案 ✓' }; }
+    const passed = parsed.score >= 60;
+    hint.className = 'hint-msg ' + (passed ? 'correct' : 'wrong');
+    hint.style.cssText = '';
+    hint.innerHTML = `${passed?'✅':'⚠️'} 史蒂夫得分：<b>${parsed.score}/100</b><br>${parsed.feedback}`;
+    if (passed) {
+      slideQuizAnswered[key] = true;
+      block.classList.add('done');
+      ta.disabled = true;
+      // Save voice score to progress data
+      try {
+        const k = (()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();
+        const p = JSON.parse(localStorage.getItem(k) || '{}');
+        const oldVoice = (p[DECK_KEY] && p[DECK_KEY].voice) || {};
+        p[DECK_KEY] = Object.assign(p[DECK_KEY] || {}, {
+          done: true, ts: Date.now(),
+          voice: Object.assign(oldVoice, { score: parsed.score, text: text.slice(0,200) })
+        });
+        localStorage.setItem(k, JSON.stringify(p));
+      } catch(e) {}
+      autoAdvance(pageNum);
+    } else {
+      registerWrong(pageNum);
+    }
+  } catch(e) {
+    hint.className = 'hint-msg wrong';
+    hint.style.cssText = '';
+    hint.innerHTML = '❌ AI 評分失敗，再試？(' + (e.message||'') + ')';
   }
 }
 
