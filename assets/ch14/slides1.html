@@ -194,6 +194,7 @@ function render(){
     if (!SLIDE_QUESTIONS.some((q,i) => !slideQuizAnswered[q.afterPage + '_' + SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)])) {
       doneBanner.classList.add('show');
       markDone();
+      setTimeout(() => doneBanner.scrollIntoView({ behavior:'smooth', block:'center' }), 150);
     }
   }
 }
@@ -351,6 +352,7 @@ function next(){
     // Already at last page and all answered
     doneBanner.classList.add('show');
     markDone();
+    setTimeout(() => doneBanner.scrollIntoView({ behavior:'smooth', block:'center' }), 150);
   }
 }
 function prev(){
