@@ -4,234 +4,197 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>第13課 西遊記數學大冒險 — 一位小數 × 整數</title>
+<title>第13課 · 遊戲 1 — 小數點迷宮（西天取經路）</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#000}
 body{
-  background:
-    linear-gradient(to bottom,rgba(20,5,0,0.6),rgba(60,20,0,0.8)),
-    url('images/battle_bg.png') center/cover no-repeat;
-  color:#fff5e6;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
+  background:linear-gradient(to bottom,rgba(20,5,40,0.7),rgba(60,20,80,0.85)),
+    url('images/bg_mountain.png') center/cover no-repeat;
+  color:#fff5e6;min-height:100vh;display:flex;flex-direction:column;
 }
 
-/* ====== Screens ====== */
-.screen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;overflow-y:auto}
-#endScreen{justify-content:flex-start;padding-top:20px;padding-bottom:24px}
+.screen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:14px;text-align:center;overflow-y:auto}
 .screen.active{display:flex}
 
-/* ====== Start screen ====== */
+/* ===== START SCREEN ===== */
 #startScreen h1{
-  font-family:'Noto Serif TC',serif;font-size:clamp(28px,6vw,56px);color:#FFD700;
-  text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:10px;font-weight:900;
+  font-family:'Noto Serif TC',serif;font-size:clamp(26px,6vw,52px);color:#FFD700;
+  text-shadow:0 0 25px rgba(255,215,0,0.7);margin-bottom:8px;font-weight:900;
 }
-#startScreen h2{font-size:clamp(16px,3vw,24px);color:#f5c76a;margin-bottom:24px}
-#startScreen .hero{
-  width:min(320px,60vw);height:auto;margin:20px 0;
-  filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6));
-  animation:float 3s ease-in-out infinite;
-}
+#startScreen h2{font-size:clamp(15px,3vw,22px);color:#f5c76a;margin-bottom:18px}
+#startScreen .hero{width:min(280px,55vw);height:auto;margin:14px 0;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6));animation:float 3s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-#startScreen p{
-  max-width:480px;font-size:clamp(13px,2.5vw,16px);line-height:1.7;
-  background:rgba(0,0,0,0.5);padding:16px 20px;border-radius:12px;
-  border:1px solid rgba(255,215,0,0.3);margin-bottom:20px;
+#startScreen .intro{
+  max-width:460px;font-size:clamp(13px,2.5vw,15px);line-height:1.7;
+  background:rgba(0,0,0,0.55);padding:14px 18px;border-radius:14px;
+  border:1px solid rgba(255,215,0,0.35);margin-bottom:16px;
 }
 .btn-start{
-  font-size:clamp(18px,3.5vw,24px);padding:14px 36px;font-weight:700;
+  font-size:clamp(17px,3.5vw,22px);padding:13px 32px;font-weight:700;
   background:linear-gradient(135deg,#FFD700,#FF8C00);color:#2a1400;
-  border:none;border-radius:30px;cursor:pointer;
-  box-shadow:0 6px 20px rgba(255,140,0,0.5);
-  transition:all 0.2s;
+  border:none;border-radius:28px;cursor:pointer;
+  box-shadow:0 6px 18px rgba(255,140,0,0.5);transition:all 0.2s;
 }
-.btn-start:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,140,0,0.7)}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(255,140,0,0.7)}
 .btn-start:active{transform:translateY(0)}
 
-/* ====== Battle screen ====== */
-#battleScreen{justify-content:flex-start;padding:8px}
+/* ===== MAZE SCREEN ===== */
+#mazeScreen{justify-content:flex-start;padding:8px}
+.hud{display:flex;justify-content:space-between;align-items:center;width:100%;
+  max-width:680px;background:rgba(0,0,0,0.55);padding:8px 14px;border-radius:12px;
+  border:1px solid rgba(255,215,0,0.3);margin-bottom:10px;font-weight:700;flex-wrap:wrap;gap:8px}
+.hud .item{display:flex;flex-direction:column;align-items:center;font-size:11px;color:#f5c76a}
+.hud .v{font-size:18px;color:#FFD700;font-weight:900;line-height:1}
+.lives{display:flex;gap:3px}
+.lives .lamp{font-size:18px;filter:drop-shadow(0 0 4px gold)}
+.lives .lamp.lost{filter:grayscale(1) opacity(0.3)}
 
-.hud{
-  width:100%;max-width:900px;
-  display:flex;justify-content:space-between;align-items:center;
-  background:rgba(0,0,0,0.65);padding:10px 16px;border-radius:12px;
-  border:1px solid rgba(255,215,0,0.3);margin-bottom:10px;flex-wrap:wrap;gap:8px;
-}
-.hp-bar{flex:1;min-width:180px;max-width:280px}
-.hp-label{font-size:12px;color:#FFD700;margin-bottom:4px;display:flex;justify-content:space-between}
-.hp-track{height:14px;background:rgba(255,255,255,0.1);border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
-.hp-fill{height:100%;background:linear-gradient(90deg,#ff4040,#ffaa00,#40ff40);transition:width 0.5s ease;border-radius:7px}
-.score-block{text-align:center}
-.score-big{font-size:clamp(24px,5vw,36px);font-weight:900;color:#FFD700}
-.progress-text{font-size:13px;color:#f5c76a}
+/* Maze map */
+.map-strip{display:flex;align-items:center;justify-content:center;gap:3px;
+  width:100%;max-width:680px;margin-bottom:8px;flex-wrap:wrap}
+.map-strip .cell{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid rgba(255,255,255,0.2)}
+.map-strip .cell.done{background:linear-gradient(135deg,#43A047,#2E7D32);border-color:#1B5E20}
+.map-strip .cell.current{background:linear-gradient(135deg,#FFD700,#FF8C00);
+  border-color:#fff;animation:pulse 1.2s infinite;box-shadow:0 0 12px gold}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.map-strip .cell.locked{opacity:0.45}
+.map-strip .arrow{color:#FFD700;font-size:14px;align-self:center}
 
-/* Fighters */
-.arena{
-  width:100%;max-width:900px;height:min(260px,32vh);
-  display:flex;justify-content:space-around;align-items:flex-end;
-  position:relative;padding:0 20px;margin-bottom:12px;
-}
-.fighter{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
-.fighter-img{
-  width:clamp(140px,24vw,220px);height:auto;
-  filter:drop-shadow(0 8px 16px rgba(0,0,0,0.7));
-  transition:transform 0.3s;
-}
-.fighter.attack .fighter-img{animation:heroAttack 0.5s}
-.fighter.hit .fighter-img{animation:shake 0.4s}
-.fighter.win .fighter-img{animation:winPose 1s}
-@keyframes heroAttack{0%,100%{transform:translateX(0)}30%{transform:translateX(60px) scale(1.1)}}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-@keyframes winPose{0%,100%{transform:scale(1)}50%{transform:scale(1.2) rotate(-5deg)}}
-.fighter-name{font-size:13px;color:#FFD700;font-weight:700;text-shadow:1px 1px 2px rgba(0,0,0,0.8)}
+/* Room scene */
+.room{position:relative;width:100%;max-width:680px;
+  background:linear-gradient(135deg,rgba(0,0,0,0.6),rgba(40,20,80,0.7));
+  border:2px solid rgba(255,215,0,0.4);border-radius:16px;padding:14px;
+  margin-bottom:10px;box-shadow:0 8px 24px rgba(0,0,0,0.6);min-height:120px}
+.room-bg{position:absolute;inset:0;border-radius:14px;opacity:0.25;pointer-events:none;
+  background-size:cover;background-position:center}
+.room-content{position:relative;z-index:2}
+.room-title{font-size:clamp(13px,2.5vw,16px);color:#FFD700;font-weight:900;margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;justify-content:center}
+.room-title .room-emoji{font-size:22px}
+.room-character{display:flex;align-items:center;justify-content:center;margin:6px 0}
+.room-character img{width:min(75px,14vw);height:auto;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5))}
+.q-text{font-size:clamp(16px,3.5vw,22px);font-weight:900;color:#fff;margin:8px 0 4px;
+  background:rgba(0,0,0,0.5);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,215,0,0.3)}
+.hint-msg{font-size:13px;color:#FFD54F;font-style:italic;min-height:18px;margin-top:6px}
 
-/* VS indicator */
-.vs{
-  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  font-size:clamp(32px,7vw,52px);font-weight:900;color:#FF4500;
-  text-shadow:0 0 20px rgba(255,69,0,0.8);font-family:'Noto Serif TC',serif;
-}
+/* Doorway choices */
+.doors{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;
+  max-width:680px;margin-bottom:10px}
+@media(min-width:480px){.doors{grid-template-columns:repeat(4,1fr)}}
+.door{padding:13px 8px;background:linear-gradient(135deg,#673AB7,#4A148C);
+  border:2px solid rgba(255,215,0,0.5);border-radius:14px;cursor:pointer;
+  transition:all 0.2s;font-weight:700;color:#fff;text-align:center;font-size:clamp(13px,2.5vw,16px)}
+.door:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 16px rgba(255,215,0,0.4);
+  background:linear-gradient(135deg,#7E57C2,#5E35B1)}
+.door:active{transform:translateY(0)}
+.door .arrow-icon{font-size:24px;display:block;margin-bottom:4px;color:#FFD700}
+.door .ans-val{font-size:clamp(15px,3vw,18px);font-weight:900;color:#FFD700}
+.door:disabled{cursor:not-allowed;opacity:0.55}
+.door.right{background:linear-gradient(135deg,#43A047,#2E7D32);animation:doorOpen 0.6s}
+.door.wrong{background:linear-gradient(135deg,#F44336,#C62828);animation:doorShake 0.4s}
+@keyframes doorOpen{0%{transform:scale(1)}50%{transform:scale(1.15);box-shadow:0 0 30px gold}100%{transform:scale(1)}}
+@keyframes doorShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 
-/* Question panel */
-.qpanel{
-  width:100%;max-width:900px;
-  background:rgba(20,10,0,0.92);border:2px solid #8B6914;border-radius:16px;
-  padding:16px 20px;flex:1;display:flex;flex-direction:column;gap:12px;overflow-y:auto;
-  overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);
-}
-.q-category{
-  display:inline-block;font-size:12px;padding:3px 12px;
-  background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);
-  border-radius:12px;color:#FFD700;align-self:flex-start;
-}
-.q-text{
-  font-size:clamp(20px,4vw,30px);font-weight:700;color:#fff5e6;
-  line-height:1.5;text-align:center;padding:12px 0;min-height:60px;
-}
-.answers{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-}
-@media(max-width:520px){.answers{grid-template-columns:1fr}}
-.ans-btn{
-  padding:14px 18px;font-size:clamp(16px,3vw,20px);font-weight:600;
-  background:rgba(60,30,0,0.6);color:#fff5e6;
-  border:2px solid rgba(139,105,20,0.6);border-radius:12px;
-  cursor:pointer;transition:all 0.2s;text-align:center;
-  font-family:'Noto Sans TC',sans-serif;
-}
-.ans-btn:hover:not(:disabled){border-color:#FFD700;background:rgba(139,105,20,0.3);transform:translateY(-2px)}
-.ans-btn:disabled{cursor:default;opacity:0.75}
-.ans-btn.correct{border-color:#40ff40;background:rgba(0,180,0,0.3);color:#80ff80;animation:pulse 0.4s}
-.ans-btn.wrong{border-color:#ff4040;background:rgba(180,0,0,0.3);color:#ff8080;animation:shake 0.4s}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-
-.explanation{
-  background:rgba(255,215,0,0.1);border-left:4px solid #FFD700;
-  padding:12px 14px;border-radius:0 10px 10px 0;font-size:14px;line-height:1.6;
-  color:#fff5d0;display:none;
-}
+.explanation{display:none;font-size:13px;line-height:1.55;background:rgba(255,215,0,0.18);
+  padding:10px 14px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);color:#FFD54F;
+  margin-bottom:10px;width:100%;max-width:680px;text-align:left}
 .explanation.show{display:block;animation:fadeIn 0.4s}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 
-.next-btn{
-  padding:12px 28px;font-size:clamp(15px,3vw,18px);font-weight:700;
-  background:linear-gradient(135deg,#FF8C00,#DC3545);color:#fff;
-  border:none;border-radius:24px;cursor:pointer;display:none;
-  align-self:center;box-shadow:0 4px 12px rgba(255,140,0,0.4);
-}
-.next-btn.show{display:block;animation:fadeIn 0.4s}
-.next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,140,0,0.6)}
+.next-btn{display:none;font-size:16px;padding:11px 26px;font-weight:700;
+  background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;
+  border-radius:24px;cursor:pointer;box-shadow:0 4px 12px rgba(67,160,71,0.5)}
+.next-btn.show{display:inline-block;animation:popIn 0.4s}
+@keyframes popIn{0%{transform:scale(0.7);opacity:0}100%{transform:scale(1);opacity:1}}
 
-/* End screen */
-#endScreen .end-title{
-  font-family:'Noto Serif TC',serif;font-size:clamp(28px,5.5vw,48px);
-  color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6);margin-bottom:8px;font-weight:900;
-}
-#endScreen .end-character{width:min(220px,45vw);margin:8px 0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
-.coins-row{display:flex;gap:12px;justify-content:center;margin:10px 0}
-.coin-img{width:clamp(40px,8vw,60px);height:clamp(40px,8vw,60px);opacity:0.3;transition:all 0.6s}
-.coin-img.earned{opacity:1;filter:drop-shadow(0 0 16px #FFD700);animation:coinPop 0.6s ease}
-@keyframes coinPop{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
-.stats{
-  background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;
-  border:1px solid rgba(255,215,0,0.3);margin:10px 0;
-  font-size:clamp(13px,2.5vw,15px);line-height:1.6;color:#fff5e6;
-}
-.end-buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+/* ===== END SCREEN ===== */
+#endScreen{justify-content:flex-start;padding-top:14px}
+.end-title{font-family:'Noto Serif TC',serif;font-size:clamp(28px,6vw,44px);color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,0.6);margin-bottom:10px;font-weight:900}
+.end-character{width:min(180px,40vw);margin:10px 0;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.5))}
+.coins-row{display:flex;justify-content:center;gap:14px;margin:14px 0}
+.coins-row .coin-img{width:50px;height:50px;filter:drop-shadow(0 0 12px gold);
+  animation:coinFlip 1s ease-out;opacity:0}
+.coins-row .coin-img.show{opacity:1}
+.coins-row .coin-img.bw{filter:grayscale(1) opacity(0.35)}
+@keyframes coinFlip{0%{transform:rotateY(0deg) scale(0.3)}100%{transform:rotateY(720deg) scale(1)}}
+.stats{font-size:15px;line-height:1.8;background:rgba(0,0,0,0.5);padding:12px 18px;
+  border-radius:12px;border:1px solid rgba(255,215,0,0.3);margin-bottom:14px}
+.stats b{color:#FFD700}
+.end-buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 
-/* Mute button */
-.mute-btn{
-  position:fixed;top:12px;right:12px;z-index:100;
-  background:rgba(0,0,0,0.6);border:1px solid rgba(255,215,0,0.4);
-  color:#fff;font-size:22px;width:42px;height:42px;border-radius:50%;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-}
+/* Header backlink */
+.back-link{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.5);
+  color:#FFD700;padding:5px 12px;border-radius:8px;font-size:13px;text-decoration:none;
+  border:1px solid rgba(255,215,0,0.3);z-index:100}
 </style>
 </head>
 <body>
 
-<button class="mute-btn" id="muteBtn" title="音樂開關">🔊</button>
+<a href="index.html" class="back-link">← 返回</a>
 
 <!-- ===== START SCREEN ===== -->
 <div id="startScreen" class="screen active">
-  <h1>西遊記大冒險</h1>
-  <h2>第13課 ── 一位小數 × 整數</h2>
-  <img src="images/monkey_battle.png" alt="悟空" class="hero">
-  <p>
-    悟空取經途中遇到妖怪攔路！<br>
-    答對 = <b style="color:#40ff80">⚔️ 攻擊妖怪</b>｜答錯 = <b style="color:#ff8080">💔 被攻擊</b><br>
-    10 題全力以赴，爭取 <b style="color:#FFD700">3 枚金幣</b>！
-  </p>
-  <button class="btn-start" onclick="startGame()">開始冒險 ⚔️</button>
-  <div style="margin-top:14px"><a href="index.html" style="color:#FFD700;text-decoration:underline;font-size:14px;">← 返回第 13 課入口</a></div>
+  <h1>🌀 小數點迷宮</h1>
+  <h2>西天取經路 · 一位小數 × 整數</h2>
+  <img src="images/monkey_think.png" class="hero" alt="悟空">
+  <div class="intro">
+    🚪 唐僧迷失喺一個有 10 間密室嘅迷宮入面！每間房有 4 道門 — 揀啱嘅算式答案，先打得開正確嘅門出去。
+    <br><br>
+    ❤️ <b>3 條命</b>：揀錯 3 次要由頭再嚟過。
+    <br>
+    🏆 行到最後一間房就到達 <b>西天</b>！
+  </div>
+  <button class="btn-start" onclick="startGame()">出發 🚶‍♂️</button>
 </div>
 
-<!-- ===== BATTLE SCREEN ===== -->
-<div id="battleScreen" class="screen">
+<!-- ===== MAZE SCREEN ===== -->
+<div id="mazeScreen" class="screen">
   <!-- HUD -->
   <div class="hud">
-    <div class="hp-bar">
-      <div class="hp-label"><span>悟空 HP</span><span id="heroHpText">100/100</span></div>
-      <div class="hp-track"><div class="hp-fill" id="heroHp" style="width:100%"></div></div>
-    </div>
-    <div class="score-block">
-      <div class="score-big" id="score">0 分</div>
-      <div class="progress-text" id="progress">第 1 / 10 題</div>
-    </div>
-    <div class="hp-bar">
-      <div class="hp-label"><span id="monsterName">妖怪 HP</span><span id="monsterHpText">100/100</span></div>
-      <div class="hp-track"><div class="hp-fill" id="monsterHp" style="width:100%;background:linear-gradient(90deg,#ff4040,#aa0000)"></div></div>
+    <div class="item"><span>進度</span><span class="v" id="progressTxt">1 / 10</span></div>
+    <div class="item"><span>得分</span><span class="v" id="scoreTxt">0</span></div>
+    <div class="item">
+      <span>命</span>
+      <div class="lives" id="livesBox">
+        <span class="lamp">🕯️</span><span class="lamp">🕯️</span><span class="lamp">🕯️</span>
+      </div>
     </div>
   </div>
 
-  <!-- Arena -->
-  <div class="arena">
-    <div class="fighter" id="heroFighter">
-      <img src="images/monkey_battle.png" alt="悟空" class="fighter-img" id="heroImg">
-      <div class="fighter-name">齊天大聖</div>
-    </div>
-    <div class="vs">VS</div>
-    <div class="fighter" id="monsterFighter">
-      <img src="images/boss_demon_ox.png" alt="妖怪" class="fighter-img" id="monsterImg">
-      <div class="fighter-name" id="monsterNameLabel">小妖怪</div>
+  <!-- Map strip -->
+  <div class="map-strip" id="mapStrip"></div>
+
+  <!-- Current room -->
+  <div class="room">
+    <div class="room-bg" id="roomBg"></div>
+    <div class="room-content">
+      <div class="room-title">
+        <span class="room-emoji" id="roomEmoji">🏔️</span>
+        <span id="roomName">第 1 房 · 山道密室</span>
+      </div>
+      <div class="room-character">
+        <img id="roomChar" src="images/monkey_a.png" alt="角色">
+      </div>
+      <div class="q-text" id="qText">準備中...</div>
+      <div class="hint-msg" id="hintMsg"></div>
     </div>
   </div>
 
-  <!-- Question -->
-  <div class="qpanel">
-    <div class="q-category" id="qCategory">乘法</div>
-    <div class="q-text" id="qText">準備中...</div>
-    <div class="answers" id="answers"></div>
-    <div class="explanation" id="explanation"></div>
-    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">下一關 ➜</button>
-  </div>
+  <!-- Doors -->
+  <div class="doors" id="doors"></div>
+
+  <!-- Explanation + Next -->
+  <div class="explanation" id="explanation"></div>
+  <button class="next-btn" id="nextBtn" onclick="advanceRoom()">推門前進 ➜</button>
 </div>
 
 <!-- ===== END SCREEN ===== -->
 <div id="endScreen" class="screen">
-  <div class="end-title" id="endTitle">勝利！</div>
+  <div class="end-title" id="endTitle">到達西天！</div>
   <img id="endChar" src="images/monkey_win.png" class="end-character" alt="結果">
   <div class="coins-row">
     <img src="images/coin_new.png" class="coin-img" id="coin1">
@@ -241,264 +204,248 @@ body{
   <div class="stats" id="stats"></div>
   <div class="end-buttons">
     <button class="btn-start" onclick="restartGame()">再玩一次 🔄</button>
-    <a href="index.html" class="btn-start" style="text-decoration:none;display:inline-block;background:linear-gradient(135deg,#6a5acd,#483d8b);color:white;">🏠 返回第13課</a>
+    <a href="index.html" class="btn-start" style="text-decoration:none;display:inline-block;background:linear-gradient(135deg,#6a5acd,#483d8b);color:white">🏠 返回第13課</a>
   </div>
 </div>
 
-<!-- BGM Audio -->
-<audio id="bgmIntro" src="../common/audio/game/bgm_intro.mp3" loop preload="auto"></audio>
-<audio id="bgmBattle" src="../common/audio/game/bgm_battle.mp3" loop preload="auto"></audio>
-<audio id="bgmVictory" src="../common/audio/game/bgm_victory.mp3" preload="auto"></audio>
-<audio id="bgmDefeat" src="../common/audio/game/bgm_defeat.mp3" preload="auto"></audio>
+<!-- Wrong tracker -->
+<script src="../common/wrong-tracker.js"></script>
 
 <script>
 // ============================================================
-// QUESTION DATA  (10 questions for ch12 有趣的乘法)
+// QUESTION DATA — 10 rooms for 一位小數 × 整數 (Ch13 LO)
 // ============================================================
-const QUESTIONS = [
-  {category:'一位小數 × 整數', text:'0.3 × 4 = ?', options:['0.12','1.2','12','4.3'],correct:1,
-   explain:'3 × 4 = 12，一位小數 → 1.2',
-   monster:'demon_ox',name:'牛魔王'},
-  {category:'一位小數 × 整數', text:'0.5 × 6 = ?', options:['30','3.0','3','0.3'],correct:2,
-   explain:'5 × 6 = 30，一位小數 → 3.0 = 3',
-   monster:'demon_bone',name:'白骨精'},
-  {category:'一位小數 × 整數', text:'1.2 × 3 = ?', options:['3.6','0.36','36','3.06'],correct:0,
-   explain:'12 × 3 = 36，一位小數 → 3.6',
-   monster:'demon_ox',name:'牛魔王'},
-  {category:'一位小數 × 整數', text:'0.7 × 8 = ?', options:['56','5.6','0.56','4.8'],correct:1,
-   explain:'7 × 8 = 56，一位小數 → 5.6',
-   monster:'demon_bone',name:'白骨精'},
-  {category:'一位小數 × 整數', text:'2.5 × 4 = ?', options:['10','1','100','2.54'],correct:0,
-   explain:'25 × 4 = 100，一位小數 → 10.0 = 10',
-   monster:'demon_ox',name:'牛魔王'},
-  {category:'一位小數 × 整數', text:'0.9 × 5 = ?', options:['45','4.5','0.45','5.9'],correct:1,
-   explain:'9 × 5 = 45，一位小數 → 4.5',
-   monster:'demon_bone',name:'白骨精'},
-  {category:'一位小數 × 整數', text:'3.4 × 2 = ?', options:['6.8','0.68','68','3.42'],correct:0,
-   explain:'34 × 2 = 68，一位小數 → 6.8',
-   monster:'demon_ox',name:'牛魔王'},
-  {category:'應用題', text:'每條士多啤梨 0.8 元，買 7 條要幾多錢？', options:['$5.6','$0.56','$56','$7.8'],correct:0,
-   explain:'0.8 × 7 = 5.6（元）',
-   monster:'demon_bone',name:'白骨精'},
-  {category:'應用題', text:'一條繩子長 4.2 米，買 5 條總長度？', options:['$21','21米','2.1米','210米'],correct:1,
-   explain:'4.2 × 5 = 21.0 = 21 米',
-   monster:'demon_ox',name:'牛魔王'},
-  {category:'終極挑戰', text:'0.6 × 9 = ?', options:['5.4','0.54','54','6.9'],correct:0,
-   explain:'6 × 9 = 54，一位小數 → 5.4',
-   monster:'demon_bone',name:'牛魔王（最終 BOSS）'},
+const ROOMS = [
+  { emoji:'🏔️', name:'山道密室', char:'monkey_a',
+    q:'0.3 × 4 = ?', options:['0.12','1.2','12','4.3'], correct:1,
+    explain:'3 × 4 = 12，一位小數所以答案 = 1.2' },
+  { emoji:'🌲', name:'森林岔路', char:'tang_monk',
+    q:'0.5 × 6 = ?', options:['30','3.0','0.3','60'], correct:1,
+    explain:'5 × 6 = 30，一位小數 → 3.0（即 3）' },
+  { emoji:'🪨', name:'石窟暗道', char:'pigsy',
+    q:'1.2 × 3 = ?', options:['3.6','0.36','36','3.06'], correct:0,
+    explain:'12 × 3 = 36，一位小數所以答案 = 3.6' },
+  { emoji:'🌊', name:'流沙河岸', char:'sandy',
+    q:'0.7 × 8 = ?', options:['56','5.6','0.56','4.8'], correct:1,
+    explain:'7 × 8 = 56，一位小數 → 5.6' },
+  { emoji:'🔥', name:'火焰山口', char:'monkey_casting',
+    q:'2.5 × 4 = ?', options:['10','1','100','2.54'], correct:0,
+    explain:'25 × 4 = 100，一位小數 → 10.0 = 10（整數時可省去 .0）' },
+  { emoji:'🌙', name:'月光神殿', char:'tang_monk_praying',
+    q:'0.9 × 5 = ?', options:['45','4.5','0.45','5.9'], correct:1,
+    explain:'9 × 5 = 45，一位小數 → 4.5' },
+  { emoji:'⚡', name:'雷電靈洞', char:'monkey_battle',
+    q:'3.4 × 2 = ?', options:['6.8','0.68','68','3.42'], correct:0,
+    explain:'34 × 2 = 68，一位小數 → 6.8' },
+  { emoji:'🍓', name:'士多啤梨園', char:'pigsy',
+    q:'每條士多啤梨 0.8 元，買 7 條要幾多錢？', options:['$5.6','$0.56','$56','$7.8'], correct:0,
+    explain:'0.8 × 7 = 5.6（元），一位小數' },
+  { emoji:'🎋', name:'青竹繩橋', char:'sandy',
+    q:'一條繩子長 4.2 米，5 條總長度？', options:['$21','21米','2.1米','210米'], correct:1,
+    explain:'4.2 × 5 = 21.0 = 21 米' },
+  { emoji:'🏯', name:'西天靈山', char:'monkey_win',
+    q:'最後一關：0.6 × 9 = ?', options:['5.4','0.54','54','6.9'], correct:0,
+    explain:'6 × 9 = 54，一位小數 → 5.4 ✨ 你已到達西天！' },
 ];
 
 // ============================================================
 // STATE
 // ============================================================
-let state = {currentQ:0, score:0, hp:100, correct:0, startTime:0, answered:false};
+let state = { currentRoom: 0, score: 0, lives: 3, mistakes: 0, startTime: 0, answered: false };
+
+const ARROWS = ['⬆️', '⬇️', '⬅️', '➡️'];
+const BG_IMAGES = ['battle_bg.png', 'bg_mountain.png'];
 
 // ============================================================
-// SCREEN
+// SCREEN MGMT
 // ============================================================
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
 // ============================================================
-// START + RESTART
+// START / RESTART
 // ============================================================
-function startGame(){
-  state = {currentQ:0, score:0, hp:100, correct:0, startTime:Date.now(), answered:false};
-  showScreen('battleScreen');
-  bgMusic.start();
-  loadQuestion();
+function startGame() {
+  state = { currentRoom: 0, score: 0, lives: 3, mistakes: 0, startTime: Date.now(), answered: false };
+  showScreen('mazeScreen');
+  loadRoom();
 }
 
-function restartGame(){
+function restartGame() {
   showScreen('startScreen');
 }
 
 // ============================================================
-// LOAD QUESTION
+// LOAD ROOM (current cell)
 // ============================================================
-function loadQuestion(){
-  const q = QUESTIONS[state.currentQ];
-  if(!q){ endGame(); return; }
+function loadRoom() {
+  const room = ROOMS[state.currentRoom];
+  if (!room) { endGame(true); return; }
   state.answered = false;
 
   // HUD
-  document.getElementById('score').textContent = state.score + ' 分';
-  document.getElementById('progress').textContent = '第 ' + (state.currentQ+1) + ' / ' + QUESTIONS.length + ' 題';
-  document.getElementById('heroHp').style.width = state.hp + '%';
-  document.getElementById('heroHpText').textContent = state.hp + '/100';
-  document.getElementById('monsterHp').style.width = '100%';
-  document.getElementById('monsterHpText').textContent = '100/100';
-  document.getElementById('monsterName').textContent = q.name + ' HP';
-  document.getElementById('monsterNameLabel').textContent = q.name;
-  document.getElementById('monsterImg').src = 'images/' + q.monster + '.png';
+  document.getElementById('progressTxt').textContent = (state.currentRoom + 1) + ' / ' + ROOMS.length;
+  document.getElementById('scoreTxt').textContent = state.score;
+  const lampsHtml = [0,1,2].map(i => `<span class="lamp${i >= state.lives ? ' lost' : ''}">🕯️</span>`).join('');
+  document.getElementById('livesBox').innerHTML = lampsHtml;
 
-  // Question
-  document.getElementById('qCategory').textContent = q.category;
-  document.getElementById('qText').textContent = q.text;
+  // Map strip
+  let mapHtml = '';
+  for (let i = 0; i < ROOMS.length; i++) {
+    let cls = 'cell';
+    if (i < state.currentRoom) cls += ' done';
+    else if (i === state.currentRoom) cls += ' current';
+    else cls += ' locked';
+    mapHtml += `<div class="${cls}">${i < state.currentRoom ? '✓' : (i === state.currentRoom ? ROOMS[i].emoji : '🔒')}</div>`;
+    if (i < ROOMS.length - 1) mapHtml += `<span class="arrow">→</span>`;
+  }
+  document.getElementById('mapStrip').innerHTML = mapHtml;
 
-  // Answers
-  const grid = document.getElementById('answers');
-  grid.innerHTML = '';
-  const labels = ['A','B','C','D'];
-  q.options.forEach((opt,i)=>{
-    const btn = document.createElement('button');
-    btn.className = 'ans-btn';
-    btn.innerHTML = '<b>'+labels[i]+'.</b> '+opt;
-    btn.onclick = () => answer(i);
-    grid.appendChild(btn);
+  // Room
+  document.getElementById('roomEmoji').textContent = room.emoji;
+  document.getElementById('roomName').textContent = `第 ${state.currentRoom + 1} 房 · ${room.name}`;
+  document.getElementById('roomChar').src = `images/${room.char}.png`;
+  document.getElementById('roomChar').onerror = function(){ this.style.display = 'none'; };
+  document.getElementById('qText').textContent = room.q;
+  document.getElementById('hintMsg').textContent = '';
+  document.getElementById('roomBg').style.backgroundImage = `url('images/${BG_IMAGES[state.currentRoom % BG_IMAGES.length]}')`;
+
+  // Doors
+  const doors = document.getElementById('doors');
+  doors.innerHTML = '';
+  room.options.forEach((opt, i) => {
+    const door = document.createElement('button');
+    door.className = 'door';
+    door.innerHTML = `<span class="arrow-icon">${ARROWS[i]}</span><span class="ans-val">${opt}</span>`;
+    door.onclick = () => chooseDoor(i);
+    doors.appendChild(door);
   });
 
-  // Reset explanation + next
+  // Reset explanation + next btn
   document.getElementById('explanation').classList.remove('show');
   document.getElementById('nextBtn').classList.remove('show');
-
-  // Hero back to default pose
-  document.getElementById('heroImg').src = 'images/monkey_battle.png';
-  document.getElementById('heroFighter').className = 'fighter';
-  document.getElementById('monsterFighter').className = 'fighter';
 }
 
 // ============================================================
-// ANSWER
+// CHOOSE DOOR
 // ============================================================
-function answer(idx){
-  if(state.answered) return;
+function chooseDoor(idx) {
+  if (state.answered) return;
   state.answered = true;
-  const q = QUESTIONS[state.currentQ];
-  const correct = idx === q.correct;
-  const btns = document.querySelectorAll('.ans-btn');
-  btns.forEach(b => b.disabled = true);
-
-  btns[idx].classList.add(correct ? 'correct' : 'wrong');
-  if(!correct) btns[q.correct].classList.add('correct');
-
-  if(correct){
-    state.score += 10;
-    state.correct += 1;
-    document.getElementById('heroImg').src = 'images/monkey_win.png';
-    document.getElementById('heroFighter').className = 'fighter attack';
-    document.getElementById('monsterFighter').className = 'fighter hit';
-    document.getElementById('monsterHp').style.width = '0%';
-    playTone(880, 0.3);
-    setTimeout(()=>playTone(1320, 0.4), 150);
-  } else {
-    state.hp = Math.max(0, state.hp - 20);
-    document.getElementById('heroImg').src = 'images/monkey_casting.png';
-    document.getElementById('heroFighter').className = 'fighter hit';
-    document.getElementById('monsterFighter').className = 'fighter attack';
-    document.getElementById('heroHp').style.width = state.hp + '%';
-    document.getElementById('heroHpText').textContent = state.hp + '/100';
-    playTone(220, 0.4);
-  }
-
-  // Explanation
-  const exp = document.getElementById('explanation');
-  exp.textContent = (correct ? '✅ 答啱！' : '❌ 答錯咗 ') + q.explain;
-  exp.classList.add('show');
-
-  // Next
-  const nb = document.getElementById('nextBtn');
-  nb.classList.add('show');
-  setTimeout(() => nb.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
-}
-
-function nextQuestion(){
-  state.currentQ += 1;
-  if(state.hp <= 0 || state.currentQ >= QUESTIONS.length){
-    endGame();
-    return;
-  }
-  loadQuestion();
-}
-
-// ============================================================
-// END
-// ============================================================
-function endGame(){
-  bgMusic.stop();
-  const elapsed = Math.floor((Date.now()-state.startTime)/1000);
-  const won = state.hp > 0 && state.correct >= 6;
-  bgMusic.play(won ? 'victory' : 'defeat');
-  document.getElementById('endTitle').textContent = won ? '🎉 取經成功！' : '💔 戰敗了...';
-  document.getElementById('endChar').src = won ? 'images/monkey_win.png' : 'images/monkey_casting.png';
-
-  // Coins: 1 coin per 3 correct answers, cap 3
-  const coins = Math.min(3, Math.floor(state.correct/3));
-  ['coin1','coin2','coin3'].forEach((id,i)=>{
-    const el = document.getElementById(id);
-    if(i < coins){ setTimeout(()=>el.classList.add('earned'), 300 + i*200); }
-    else el.classList.remove('earned');
+  const room = ROOMS[state.currentRoom];
+  const doors = document.querySelectorAll('.door');
+  doors.forEach((d, i) => {
+    d.disabled = true;
+    if (i === idx) d.classList.add(idx === room.correct ? 'right' : 'wrong');
+    if (idx !== room.correct && i === room.correct) d.classList.add('right');
   });
 
-  document.getElementById('stats').innerHTML =
-    '✅ 答啱：<b>'+state.correct+' / '+QUESTIONS.length+'</b> 題<br>' +
-    '💯 分數：<b>'+state.score+' 分</b><br>' +
-    '⏱️ 時間：<b>'+Math.floor(elapsed/60)+' 分 '+(elapsed%60)+' 秒</b><br>' +
-    '🪙 金幣：<b>'+coins+' / 3 枚</b>';
+  if (idx === room.correct) {
+    state.score += 10;
+    document.getElementById('hintMsg').textContent = '🚪 門打開咗！';
+    document.getElementById('explanation').innerHTML = `✅ 正確！<br>${room.explain}`;
+    document.getElementById('explanation').classList.add('show');
+    document.getElementById('nextBtn').classList.add('show');
+  } else {
+    state.mistakes++;
+    state.lives--;
+    // Update lives display immediately (UX)
+    const lampsHtml = [0,1,2].map(i => `<span class="lamp${i >= state.lives ? ' lost' : ''}">🕯️</span>`).join('');
+    document.getElementById('livesBox').innerHTML = lampsHtml;
+    document.getElementById('hintMsg').textContent = '❌ 揀錯門！再睇清楚算式';
 
-  // Report to parent (index.html)
-  try {
-    window.parent.postMessage({type:'gameScore',game:'game1',score:state.score,correct:state.correct,total:QUESTIONS.length,coins:coins}, '*');
-  } catch(e){}
-  // Save Ch13 progress to localStorage for ch13/index.html badge
-  try {
-    const _u=JSON.parse(localStorage.getItem('lwwf_auth_user')||'null');const key=_u?`progress_ch13_${_u.class}_${_u.number}`:'progress_ch13';
-    const p = JSON.parse(localStorage.getItem(key) || '{}');
-    p.game1 = { done: true, score: state.score, correct: state.correct, total: QUESTIONS.length, coins, ts: Date.now() };
-    localStorage.setItem(key, JSON.stringify(p));
-  } catch(e){}
+    // Track wrong (Supabase)
+    if (window.LWWFWrong) {
+      window.LWWFWrong.record({
+        chapter: 13,
+        question: room.q,
+        correct_answer: room.options[room.correct],
+        student_answer: room.options[idx],
+        source: 'game1',
+      }).catch(() => null);
+    }
 
-  showScreen('endScreen');
+    document.getElementById('explanation').innerHTML = `❌ 揀錯咗！正確答案：<b>${room.options[room.correct]}</b><br>${room.explain}<br>💡 用呢個提示再衝下一關`;
+    document.getElementById('explanation').classList.add('show');
+
+    if (state.lives <= 0) {
+      // Game over
+      setTimeout(() => endGame(false), 1500);
+    } else {
+      document.getElementById('nextBtn').classList.add('show');
+      document.getElementById('nextBtn').textContent = '繼續前進（已扣 1 命）➜';
+    }
+  }
 }
 
 // ============================================================
-// BG MUSIC (MP3 files)
+// ADVANCE
 // ============================================================
-const bgMusic = (() => {
-  const tracks = {};
-  let current = null, muted = false;
-
-  function init(){
-    tracks.intro  = document.getElementById('bgmIntro');
-    tracks.battle = document.getElementById('bgmBattle');
-    tracks.victory= document.getElementById('bgmVictory');
-    tracks.defeat = document.getElementById('bgmDefeat');
-    Object.values(tracks).forEach(t => { if(t) t.volume = 0.4; });
+function advanceRoom() {
+  state.currentRoom++;
+  document.getElementById('nextBtn').textContent = '推門前進 ➜';
+  if (state.currentRoom >= ROOMS.length) {
+    endGame(true);
+  } else {
+    loadRoom();
   }
+}
 
-  return {
-    start(){ init(); this.play('battle'); },
-    play(name){
-      if(current){ current.pause(); current.currentTime=0; }
-      current = tracks[name];
-      if(current && !muted) current.play().catch(()=>{});
-    },
-    stop(){ if(current){ current.pause(); current.currentTime=0; current=null; } },
-    toggle(){
-      muted = !muted;
-      if(current){ if(muted) current.pause(); else current.play().catch(()=>{}); }
-      document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
-    }
-  };
-})();
+// ============================================================
+// END GAME
+// ============================================================
+function endGame(victory) {
+  showScreen('endScreen');
 
-document.getElementById('muteBtn').onclick = () => bgMusic.toggle();
+  const elapsed = Math.round((Date.now() - state.startTime) / 1000);
+  const correct = ROOMS.length - state.mistakes;
+  const correctRate = Math.round((correct / ROOMS.length) * 100);
 
-function playTone(freq, dur){
+  // Coins: 3 if 0 mistakes, 2 if 1, 1 if 2, 0 if 3
+  let coins = 0;
+  if (victory) {
+    if (state.mistakes === 0) coins = 3;
+    else if (state.mistakes === 1) coins = 2;
+    else coins = 1;
+  }
+  // Show coins
+  ['coin1','coin2','coin3'].forEach((id, i) => {
+    const c = document.getElementById(id);
+    c.classList.toggle('show', true);
+    c.classList.toggle('bw', i >= coins);
+  });
+
+  document.getElementById('endTitle').textContent = victory ? '🏆 到達西天！' : '😢 迷宮迷失了';
+  document.getElementById('endChar').src = `images/${victory ? 'monkey_win' : 'monkey_think'}.png`;
+  document.getElementById('endChar').onerror = function(){ this.style.display = 'none'; };
+
+  document.getElementById('stats').innerHTML = `
+    <div><b>得分：</b>${state.score} 分</div>
+    <div><b>正確：</b>${correct} / ${ROOMS.length} (${correctRate}%)</div>
+    <div><b>失誤：</b>${state.mistakes} 次</div>
+    <div><b>用時：</b>${elapsed} 秒</div>
+    <div><b>金幣：</b>${coins} / 3</div>
+  `;
+
+  // Save progress
   try {
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const o = ctx.createOscillator(); const g = ctx.createGain();
-    o.frequency.value = freq; o.type='triangle';
-    g.gain.setValueAtTime(0.15, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+dur);
-    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+dur);
-    setTimeout(()=>ctx.close(), (dur+0.1)*1000);
-  } catch(e){}
+    const k = (() => {
+      try {
+        const u = JSON.parse(localStorage.getItem('lwwf_auth_user') || 'null');
+        if (u && u.class && u.number) return `progress_ch13_${u.class}_${u.number}`;
+      } catch (e) {}
+      return 'progress_ch13';
+    })();
+    const p = JSON.parse(localStorage.getItem(k) || '{}');
+    p.game1 = Object.assign(p.game1 || {}, {
+      done: victory, ts: Date.now(), score: state.score,
+      coins, correct, total: ROOMS.length, mistakes: state.mistakes,
+    });
+    localStorage.setItem(k, JSON.stringify(p));
+  } catch (e) {}
 }
 </script>
-<script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js" data-current-ch="13"></script>
 </body>
 </html>
