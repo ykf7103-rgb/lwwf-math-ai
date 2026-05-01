@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第17課 · 遊戲 2 — 體積估計極速賽</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#FF6F00 0%,#E65100 50%,#BF360C 100%);min-height:100vh;color:#222;overflow-x:hidden}
+  header{background:linear-gradient(135deg,#BF360C,#3E2723);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:680px;margin:0 auto;padding:14px 12px}
+  .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.82rem;color:#666}
+  .stats .val{font-size:1.4rem;color:#E65100;font-weight:900;line-height:1}
+  .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px;text-align:center}
+  .timer-bar{height:18px;background:#FFEBEE;border-radius:9px;overflow:hidden;margin-bottom:14px;position:relative;border:2px solid #C62828}
+  .timer-fill{height:100%;background:linear-gradient(90deg,#43A047,#FFEB3B 50%,#C62828 90%);transition:width 0.1s linear;width:100%}
+  .timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;text-shadow:0 0 4px rgba(0,0,0,0.7);font-size:0.9rem}
+  .start-screen{padding:40px 20px;text-align:center}
+  .start-screen h2{color:#BF360C;font-size:2rem;margin:0 0 10px}
+  .start-screen p{color:#666;line-height:1.6;font-size:1rem;margin:0 0 14px}
+  .start-screen .start-btn{padding:18px 32px;font-size:1.3rem;background:linear-gradient(135deg,#FF6F00,#E65100);color:white;border:none;border-radius:14px;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(230,81,0,0.4)}
+  .play-screen{display:none}
+  .play-screen.active{display:block}
+  .object-zoom{font-size:7rem;line-height:1;margin:14px 0;animation:objBounce 0.8s ease}
+  @keyframes objBounce{0%{transform:scale(0.5);opacity:0}50%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+  .obj-name{font-size:1.4rem;font-weight:900;color:#BF360C;margin-bottom:6px}
+  .obj-prompt{font-size:1.05rem;color:#666;margin-bottom:14px}
+  .ranges{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .range-btn{padding:18px 10px;background:white;border:3px solid;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;font-family:inherit;transition:all 0.15s;line-height:1.3}
+  .range-btn:nth-child(1){border-color:#1976D2;color:#0D47A1}
+  .range-btn:nth-child(2){border-color:#388E3C;color:#1B5E20}
+  .range-btn:nth-child(3){border-color:#F57C00;color:#BF360C}
+  .range-btn:nth-child(4){border-color:#7B1FA2;color:#4A148C}
+  .range-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
+  .range-btn:disabled{cursor:not-allowed;opacity:0.5}
+  .range-btn.correct{background:#C8E6C9;border-color:#2E7D32;color:#2E7D32;animation:pulse .6s}
+  .range-btn.wrong{background:#FFCDD2;border-color:#C62828;color:#C62828;animation:shake .4s}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{margin-top:10px;padding:10px;border-radius:10px;font-weight:700;line-height:1.5;display:none;font-size:0.95rem}
+  .feedback.show{display:block;animation:fadeIn .3s}
+  .feedback.right{background:#E8F5E9;color:#2E7D32}
+  .feedback.wrong{background:#FFEBEE;color:#C62828}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .end-screen{display:none;padding:30px 20px;text-align:center}
+  .end-screen.active{display:block}
+  .end-screen h2{font-size:1.6rem;color:#BF360C;margin:0 0 14px}
+  .end-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .end-stat{background:#FFF3E0;padding:14px;border-radius:12px}
+  .end-stat .l{font-size:0.85rem;color:#666}
+  .end-stat .v{font-size:1.6rem;font-weight:900;color:#E65100}
+  .coin-row{font-size:2.5rem;letter-spacing:6px;margin:14px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚡ 第17課 · 遊戲 2 — 體積估計極速賽</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="stats">
+    <div class="item"><div class="val" id="qNum">0/12</div><div>關卡</div></div>
+    <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
+    <div class="item"><div class="val" id="streak">0</div><div>連對</div></div>
+    <div class="item"><div class="val" id="timeLeft">5.0</div><div>秒</div></div>
+  </div>
+  <div class="scene">
+    <div class="start-screen" id="startScreen">
+      <h2>⚡ 極速估計挑戰</h2>
+      <p>每件物件 <b>5 秒</b>內揀啱範圍！<br>連對 +bonus，慢手或答錯就扣血。<br>連錯 5 次要重頭來過！</p>
+      <button class="start-btn" onclick="startGame()">🏁 開始挑戰</button>
+    </div>
+    <div class="play-screen" id="playScreen">
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div><div class="timer-text" id="timerText">5.0 秒</div></div>
+      <div class="object-zoom" id="objE">📦</div>
+      <div class="obj-name" id="objN">物件</div>
+      <div class="obj-prompt" id="objP">呢件物件嘅體積大約幾多？</div>
+      <div class="ranges" id="rangesEl"></div>
+      <div class="feedback" id="fb"></div>
+    </div>
+    <div class="end-screen" id="endScreen">
+      <h2 id="endTitle">🎉 完成！</h2>
+      <div class="end-stats">
+        <div class="end-stat"><div class="l">得分</div><div class="v" id="finalScore">0</div></div>
+        <div class="end-stat"><div class="l">最高連對</div><div class="v" id="finalStreak">0</div></div>
+      </div>
+      <div class="coin-row" id="finalCoins"></div>
+      <a href="index.html" style="display:inline-block;margin-top:10px;padding:12px 24px;background:#7B1FA2;color:white;border-radius:10px;font-weight:900;text-decoration:none">回課題</a>
+    </div>
+  </div>
+</div>
+<script>
+const CHAPTER = 17, GAME_KEY = 'game2';
+
+const QUESTIONS = [
+  // emoji, name, correct range index (0-3), ranges, hint
+  { e:'🎲', n:'骰仔', cor:0, ranges:['1-5 cm³','50-100 cm³','500-1000 cm³','1-5 m³'], h:'骰仔約 1 cm 邊長 → ~1 cm³' },
+  { e:'🍎', n:'蘋果', cor:1, ranges:['1-5 cm³','100-300 cm³','1-5 m³','1000-2000 m³'], h:'蘋果約 8 cm 直徑 → 約 200 cm³' },
+  { e:'📱', n:'手機', cor:0, ranges:['50-100 cm³','1-5 m³','1000-5000 m³','100-500 km³'], h:'手機 ~80 cm³（小盒大細）' },
+  { e:'⚽', n:'足球', cor:2, ranges:['100-500 cm³','500-1000 cm³','3000-8000 cm³','1-5 m³'], h:'足球直徑約 22 cm → 約 5,500 cm³' },
+  { e:'🚗', n:'私家車', cor:1, ranges:['100-500 m³','7-20 m³','100-500 cm³','1-5 cm³'], h:'車約 4.5×1.8×1.5 米 → 約 12 m³' },
+  { e:'🥤', n:'罐裝飲品', cor:0, ranges:['200-400 cm³','5-10 m³','100-500 m³','1-5 km³'], h:'330 mL = 330 cm³' },
+  { e:'🏊', n:'游泳池', cor:1, ranges:['100-500 cm³','30-100 m³','1-5 m³','100-500 km³'], h:'泳池約 5×4×2.5 米 ≈ 50 m³' },
+  { e:'🚢', n:'40尺貨櫃', cor:1, ranges:['10-30 m³','50-100 m³','100-500 m³','1000-5000 m³'], h:'40尺貨櫃 ~67 m³' },
+  { e:'💎', n:'戒指鑽石', cor:0, ranges:['0.01-0.1 cm³','1-10 cm³','100-500 cm³','1-5 m³'], h:'鑽石細到極 ~0.05 cm³' },
+  { e:'🏠', n:'5層唐樓單位', cor:1, ranges:['10-30 m³','100-300 m³','1000-3000 m³','1-5 km³'], h:'單位 8×6×4 米 ≈ 192 m³' },
+  { e:'📺', n:'55吋電視', cor:1, ranges:['1-5 cm³','30000-80000 cm³','100-500 m³','1-5 km³'], h:'1.2×0.7×0.06 米 ≈ 50,000 cm³' },
+  { e:'🚀', n:'國際太空站', cor:2, ranges:['1-10 m³','50-100 m³','500-1500 m³','1000-5000 km³'], h:'國際太空站 ~916 m³' }
+];
+
+const TIME_PER_Q = 5;  // seconds
+let qIdx = 0, score = 0, streak = 0, maxStreak = 0, wrongs = 0, coins = 0;
+let timerInterval, timeLeft = TIME_PER_Q;
+
+const els = {};
+['qNum','score','streak','timeLeft','startScreen','playScreen','endScreen','timerFill','timerText','objE','objN','objP','rangesEl','fb','endTitle','finalScore','finalStreak','finalCoins'].forEach(id => els[id] = document.getElementById(id));
+
+function startGame() {
+  qIdx = 0; score = 0; streak = 0; maxStreak = 0; wrongs = 0; coins = 0;
+  els.startScreen.style.display = 'none';
+  els.playScreen.classList.add('active');
+  els.endScreen.classList.remove('active');
+  renderQ();
+}
+
+function renderQ() {
+  const q = QUESTIONS[qIdx];
+  els.qNum.textContent = `${qIdx+1}/${QUESTIONS.length}`;
+  els.score.textContent = score;
+  els.streak.textContent = streak;
+  els.objE.textContent = q.e;
+  els.objE.style.animation = 'none'; void els.objE.offsetWidth; els.objE.style.animation = 'objBounce 0.8s ease';
+  els.objN.textContent = q.n;
+  els.fb.classList.remove('show');
+  els.rangesEl.innerHTML = '';
+  q.ranges.forEach((r, i) => {
+    const b = document.createElement('button');
+    b.className = 'range-btn';
+    b.textContent = r;
+    b.onclick = () => answer(i);
+    els.rangesEl.appendChild(b);
+  });
+  startTimer();
+}
+
+function startTimer() {
+  timeLeft = TIME_PER_Q;
+  els.timerFill.style.width = '100%';
+  els.timerText.textContent = `${TIME_PER_Q.toFixed(1)} 秒`;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft -= 0.1;
+    if (timeLeft <= 0) { timeLeft = 0; clearInterval(timerInterval); timeUp(); }
+    els.timerFill.style.width = (timeLeft / TIME_PER_Q * 100) + '%';
+    els.timerText.textContent = `${timeLeft.toFixed(1)} 秒`;
+    els.timeLeft.textContent = timeLeft.toFixed(1);
+  }, 100);
+}
+
+function answer(idx) {
+  clearInterval(timerInterval);
+  const q = QUESTIONS[qIdx];
+  const buttons = els.rangesEl.querySelectorAll('.range-btn');
+  buttons.forEach(b => b.disabled = true);
+  if (idx === q.cor) {
+    buttons[idx].classList.add('correct');
+    streak++;
+    maxStreak = Math.max(maxStreak, streak);
+    const speedBonus = Math.floor(timeLeft);
+    const streakBonus = Math.min(streak * 2, 20);
+    const gained = 10 + speedBonus + streakBonus;
+    score += gained;
+    els.fb.className = 'feedback right show';
+    els.fb.innerHTML = `✅ 啱晒！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
+  } else {
+    buttons[idx].classList.add('wrong');
+    buttons[q.cor].classList.add('correct');
+    streak = 0;
+    wrongs++;
+    els.fb.className = 'feedback wrong show';
+    els.fb.innerHTML = `❌ 錯啦！正確：<b>${q.ranges[q.cor]}</b><br>💡 ${q.h}`;
+    if (wrongs >= 5) { setTimeout(() => endGame('lock'), 1500); return; }
+  }
+  els.score.textContent = score;
+  els.streak.textContent = streak;
+  setTimeout(nextQ, 1800);
+}
+
+function timeUp() {
+  const q = QUESTIONS[qIdx];
+  const buttons = els.rangesEl.querySelectorAll('.range-btn');
+  buttons.forEach(b => b.disabled = true);
+  buttons[q.cor].classList.add('correct');
+  streak = 0;
+  wrongs++;
+  els.fb.className = 'feedback wrong show';
+  els.fb.innerHTML = `⏰ 時間到！正確：<b>${q.ranges[q.cor]}</b><br>💡 ${q.h}`;
+  if (wrongs >= 5) { setTimeout(() => endGame('lock'), 1500); return; }
+  setTimeout(nextQ, 1800);
+}
+
+function nextQ() {
+  qIdx++;
+  if (qIdx >= QUESTIONS.length) endGame('done');
+  else renderQ();
+}
+
+function endGame(reason) {
+  clearInterval(timerInterval);
+  els.playScreen.classList.remove('active');
+  els.endScreen.classList.add('active');
+  if (reason === 'lock') {
+    els.endTitle.textContent = '🔒 連錯 5 次！由頭再嚟？';
+  } else {
+    els.endTitle.textContent = '🏆 完成挑戰！';
+  }
+  if (score >= 200) coins = 3; else if (score >= 130) coins = 2; else if (score >= 70) coins = 1;
+  els.finalScore.textContent = score;
+  els.finalStreak.textContent = maxStreak;
+  els.finalCoins.textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
+  saveScore();
+}
+
+function saveScore() {
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, maxStreak, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+}
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="17"></script>
+</body></html>
