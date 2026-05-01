@@ -103,6 +103,9 @@
       <div class="hud-item"><div class="label">時間</div><div class="val" id="timeCount">0 秒</div></div>
       <div class="hud-item"><div class="label">配對錯</div><div class="val bad" id="wrongCount">0</div></div>
     </div>
+    <div style="display:flex;justify-content:center;margin:8px 0">
+      <button id="peekBtn" onclick="peekAllCards()" style="background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;border:none;padding:10px 22px;border-radius:24px;font-weight:900;font-size:0.95rem;cursor:pointer;box-shadow:0 4px 12px rgba(255,143,0,0.4);transition:all 0.2s">👀 預覽 5 秒（剩 <span id="peekRemain">2</span> 次）</button>
+    </div>
     <div class="hint-bar" id="hintBar">翻兩張卡睇下啱唔啱配對！</div>
     <div class="board" id="board"></div>
 
@@ -152,7 +155,66 @@ PAIRS.forEach((p, i) => {
   SLOTS.push({ id: `a${i}`, kind: 'ans',  text: p.ans,  pairId: i });
 });
 
-let state = { flipped: [], matched: 0, moves: 0, wrongs: 0, startTime: 0, tick: null, locked: false };
+let state = { flipped: [], matched: 0, moves: 0, wrongs: 0, startTime: 0, tick: null, locked: false, peeksLeft: 2, peekActive: false };
+
+// ======== Peek 5-second preview button ========
+function peekAllCards() {
+  if (state.peekActive) return;
+  if (state.peeksLeft <= 0) return;
+  if (state.locked) return;
+  state.peeksLeft--;
+  state.peekActive = true;
+  state.locked = true;
+  const btn = document.getElementById('peekBtn');
+  const remain = document.getElementById('peekRemain');
+  btn.disabled = true;
+  btn.style.opacity = '0.55';
+  btn.style.cursor = 'not-allowed';
+  if (remain) remain.textContent = state.peeksLeft;
+
+  // Flip all unmatched cards face-up
+  const peeked = [];
+  document.querySelectorAll('.card').forEach(c => {
+    if (!c.classList.contains('matched') && !c.classList.contains('flipped')) {
+      c.classList.add('flipped', 'peek');
+      peeked.push(c);
+    }
+  });
+
+  const hint = document.getElementById('hintBar');
+  const oldHintCls = hint.className;
+  const oldHintTxt = hint.textContent;
+  hint.className = 'hint-bar';
+  hint.style.background = '#FFF3E0';
+  hint.style.color = '#E65100';
+
+  // Countdown
+  let sec = 5;
+  hint.textContent = `👀 記住卡嘅位置！剩 ${sec} 秒...`;
+  const countdown = setInterval(() => {
+    sec--;
+    if (sec > 0) hint.textContent = `👀 記住卡嘅位置！剩 ${sec} 秒...`;
+  }, 1000);
+
+  // After 5s, flip back
+  setTimeout(() => {
+    clearInterval(countdown);
+    peeked.forEach(c => c.classList.remove('flipped', 'peek'));
+    state.peekActive = false;
+    state.locked = false;
+    hint.className = oldHintCls;
+    hint.style.background = '';
+    hint.style.color = '';
+    hint.textContent = oldHintTxt;
+    if (state.peeksLeft > 0) {
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = 'pointer';
+    } else {
+      btn.textContent = '👀 已用完 2 次預覽';
+    }
+  }, 5000);
+}
 
 function shuffle(arr) {
   const a = [...arr];
