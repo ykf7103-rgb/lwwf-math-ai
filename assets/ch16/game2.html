@@ -6,7 +6,9 @@
 <title>第16課 · 遊戲 2 — 體積估計極速賽</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#FF6F00 0%,#E65100 50%,#BF360C 100%);min-height:100vh;color:#222;overflow-x:hidden}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#01579B 0%,#0277BD 50%,#039BE5 100%);min-height:100vh;color:#222;overflow-x:hidden;position:relative}
+  body::before{content:'';position:fixed;inset:0;background-image:url('images/bg_minecraft.png');background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0.18;z-index:-1;pointer-events:none}
+  .character{position:fixed;bottom:14px;right:14px;width:min(110px,16vw);z-index:50;pointer-events:none;filter:drop-shadow(2px 4px 6px rgba(0,0,0,0.4))}
   header{background:linear-gradient(135deg,#BF360C,#3E2723);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
   header h1{margin:0;font-size:1.05rem;font-weight:800}
   header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
@@ -60,6 +62,7 @@
   <h1>⚡ 第16課 · 遊戲 2 — 體積估計極速賽</h1>
   <a href="index.html" class="back">← 返回</a>
 </header>
+<img src="images/steve.png" alt="Steve" class="character" onerror="this.style.display='none'">
 <div class="wrap">
   <div class="stats">
     <div class="item"><div class="val" id="qNum">0/12</div><div>關卡</div></div>

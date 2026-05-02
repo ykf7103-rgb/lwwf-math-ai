@@ -48,8 +48,8 @@
 </header>
 <div class="wrap">
   <div class="stage" id="s1" data-locked="false">
-    <div class="stage-head">📊 第 1 區：三態都有體積</div>
-    <img src="images/info1.png" alt="三態都有體積" class="info-img">
+    <div class="stage-head">📊 第 1 區：長方體體積公式 V = 長 × 闊 × 高</div>
+    <img src="images/info1.png" alt="長方體體積公式" class="info-img">
     <div class="quiz-box">
       <div class="q-text" id="q1text">睇完上面，邊個正確？</div>
       <div class="opts" id="q1opts"></div>
@@ -58,8 +58,8 @@
     <div class="lock-overlay">🔒 答啱上一區先解鎖</div>
   </div>
   <div class="stage" id="s2" data-locked="true">
-    <div class="stage-head">📊 第 2 區：直觀比較秘訣</div>
-    <img src="images/info1.png" alt="直觀比較秘訣 (用 info1)" class="info-img">
+    <div class="stage-head">📊 第 2 區：求邊長（反求未知數）</div>
+    <img src="images/info2.png" alt="反求未知邊長" class="info-img">
     <div class="quiz-box">
       <div class="q-text" id="q2text"></div>
       <div class="opts" id="q2opts"></div>
@@ -68,8 +68,8 @@
     <div class="lock-overlay">🔒 答啱第 1 區先解鎖</div>
   </div>
   <div class="stage" id="s3" data-locked="true">
-    <div class="stage-head">📊 第 3 區：快速自測</div>
-    <img src="images/info3.png" alt="快速自測" class="info-img">
+    <div class="stage-head">📊 第 3 區：正方體體積 V = 邊³ + 切割熔鑄</div>
+    <img src="images/info3.png" alt="正方體體積公式 + 切割" class="info-img">
     <div class="quiz-box">
       <div class="q-text" id="q3text"></div>
       <div class="opts" id="q3opts"></div>
@@ -89,9 +89,9 @@
 </div>
 <script>
 const QS = [
-  { text:'三態都有體積：邊一個**唔啱**？', opts:['影子有體積','固體有體積','液體有體積','氣體有體積'], correct:0, hint:'影子冇體積！只係光被擋住嘅暗區。固/液/氣 3 種狀態先有體積。' },
-  { text:'兩個一樣嘅瓶仔，葡萄汁水位高過橙汁。邊個體積大？', opts:['葡萄汁','橙汁','一樣','睇唔到'], correct:0, hint:'瓶仔一樣 → 水位高 = 液體佔嘅空間多 → 葡萄汁體積大。直觀觀察就得，唔需要單位。' },
-  { text:'唔同距離拍嘅相，可唔可以直接比體積？', opts:['不可以','可以','要看光線','要量度'], correct:0, hint:'拍攝距離影響相片入面物件嘅大細表現 → 唔可以直接比。第17課重點！' }
+  { text:'路飛量到一個寶箱：長 4 cm、闊 3 cm、高 2 cm。寶箱嘅體積係幾多？', opts:['24 cm³','12 cm³','9 cm³','14 cm³'], correct:0, hint:'長方體體積 V = 長 × 闊 × 高 = 4 × 3 × 2 = 24 cm³。記住三個邊都要乘埋一齊！' },
+  { text:'索隆嘅刀箱體積 60 cm³，已知長 5 cm、闊 4 cm，求高度係幾多？', opts:['3 cm','5 cm','12 cm','60 cm'], correct:0, hint:'高 = 體積 ÷ (長 × 闊) = 60 ÷ (5 × 4) = 60 ÷ 20 = 3 cm。反求未知邊用除法！' },
+  { text:'娜美嘅正方體寶石邊長 6 cm，體積係幾多？', opts:['216 cm³','36 cm³','18 cm³','12 cm³'], correct:0, hint:'正方體體積 V = 邊 × 邊 × 邊 = 6 × 6 × 6 = 6³ = 216 cm³。三邊都一樣長！' }
 ];
 let wrongTotal = 0;
 QS.forEach((q, i) => {
