@@ -25,6 +25,8 @@
     { id: '14', title: 'Ch.14 小數乘法（二）', emoji: '🥟', href: '../ch14/index.html' },
     { id: '15', title: 'Ch.15 體積的認識', emoji: '📦', href: '../ch15/index.html' },
     { id: '16', title: 'Ch.16 體積的量度', emoji: '🎯', href: '../ch16/index.html' },
+    { id: '17', title: 'Ch.17 長方體和正方體的體積', emoji: '🏴‍☠️', href: '../ch17/index.html' },
+    { id: '18', title: 'Ch.18 立體圖形的體積', emoji: '⚡', href: '../ch18/index.html' },
   ];
 
   function buildHref(targetCh) {
