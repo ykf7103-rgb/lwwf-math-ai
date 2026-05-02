@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第18課 · 學習卡 — 立體圖形的體積</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;
+  background:linear-gradient(135deg,#FFF3E0,#FFE0B2);min-height:100vh;color:#333}
+header{background:linear-gradient(135deg,#FB8C00,#E65100);color:white;padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+header h1{margin:0;font-size:1.15rem;font-weight:900}
+header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;
+  border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:700}
+.wrap{max-width:680px;margin:0 auto;padding:18px 14px}
+.intro{background:white;padding:14px 18px;border-radius:14px;margin-bottom:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);font-size:0.95rem;line-height:1.7;color:#555}
+.intro b{color:#E65100}
+.progress{display:flex;justify-content:space-between;background:white;padding:10px 16px;
+  border-radius:12px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
+.progress .v{color:#E65100;font-size:1.2rem}
+.card{background:white;border:3px solid #FFB74D;border-radius:18px;padding:30px 24px;
+  min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.12);cursor:pointer;
+  transition:transform 0.5s;font-size:1.1rem;line-height:1.6;margin-bottom:14px}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,0.18)}
+.card.flipped{background:linear-gradient(135deg,#E1F5FE,#B3E5FC);border-color:#0288D1}
+.card-label{font-size:0.85rem;color:#999;margin-bottom:14px;font-weight:700;text-transform:uppercase}
+.card.flipped .card-label{color:#01579B}
+.card-content{font-size:1.15rem;color:#333;font-weight:600}
+.card.flipped .card-content{color:#01579B}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{padding:12px 24px;background:linear-gradient(135deg,#FB8C00,#E65100);color:white;
+  border:none;border-radius:24px;font-weight:900;cursor:pointer;font-size:0.95rem;font-family:inherit}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(230,81,0,0.35)}
+.btn.flip{background:linear-gradient(135deg,#0288D1,#01579B)}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.hint{text-align:center;color:#888;font-size:0.85rem;margin-top:10px;font-style:italic}
+</style>
+</head>
+<body>
+<header>
+  <h1>📇 第18課 · 學習卡</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="intro">
+    <b>📚 學習卡使用方法：</b><br>
+    1. 細閱問題（卡正面）<br>
+    2. 點一下卡來揭曉答案（卡背面）<br>
+    3. 用 ◀ ▶ 按鈕轉換卡片<br>
+    <b>共 <span id="totalCards">0</span> 張學習卡</b>
+  </div>
+  <div class="progress">
+    <span>進度</span>
+    <span class="v" id="progressTxt">1 / 1</span>
+  </div>
+  <div class="card" id="card" onclick="flipCard()">
+    <div class="card-label" id="cardLabel">問題</div>
+    <div class="card-content" id="cardContent">載入中...</div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="prevBtn" onclick="prev()">◀ 上一張</button>
+    <button class="btn flip" onclick="flipCard()">🔄 翻轉</button>
+    <button class="btn" id="nextBtn" onclick="next()">下一張 ▶</button>
+  </div>
+  <div class="hint">💡 點擊卡片或按「翻轉」即可揭曉答案</div>
+</div>
+
+<script id="flashcardsData" type="application/json">
+{
+  "title": "Volume Flashcards",
+  "cards": [
+    {
+      "front": "What three states of matter possess the concept of volume?",
+      "back": "Solids, liquids, and gases."
+    },
+    {
+      "front": "Standard Unit: Cubic Centimeter",
+      "back": "The unit of volume denoted as $cm^3$, used for measuring smaller objects like erasers or dice."
+    },
+    {
+      "front": "Standard Unit: Cubic Meter",
+      "back": "The unit of volume denoted as $m^3$, used for measuring large spaces or quantities like swimming pools or containers."
+    },
+    {
+      "front": "What is the formula for calculating the volume of a cuboid?",
+      "back": "$Length \\times Width \\times Height$"
+    },
+    {
+      "front": "What is the formula for calculating the volume of a cube?",
+      "back": "$Side \\times Side \\times Side$"
+    },
+    {
+      "front": "In the context of volume, what does the 'Splitting Method' (分割法) involve?",
+      "back": "Dividing an irregular solid into two or more regular cuboids or cubes and adding their volumes together."
+    },
+    {
+      "front": "In the context of volume, what does the 'Filling Method' (填補法) involve?",
+      "back": "Adding a virtual part to an irregular solid to form a larger regular cuboid, then subtracting the volume of the added part."
+    },
+    {
+      "front": "How can you find the height of a cuboid if you know its volume, length, and width?",
+      "back": "$Height = Volume \\div (Length \\times Width)$"
+    },
+    {
+      "front": "Which unit of volume is most appropriate for recording the capacity of a water reservoir?",
+      "back": "Cubic meter ($m^3$)"
+    },
+    {
+      "front": "Which unit of volume is most appropriate for measuring a box of biscuits?",
+      "back": "Cubic centimeter ($cm^3$)"
+    },
+    {
+      "front": "A cuboid has a length of $10\\text{ cm}$, a width of $6\\text{ cm}$, and a height of $4\\text{ cm}$. Calculate its volume.",
+      "back": "$240\\text{ cm}^3$"
+    },
+    {
+      "front": "A cube has a side length of $4\\text{ cm}$. What is its volume?",
+      "back": "$64\\text{ cm}^3$"
+    },
+    {
+      "front": "If a solid is composed of a cube (side $4\\text{ cm}$) placed on top of a cuboid ($10 \\times 6 \\times 4\\text{ cm}$), what is the total volume?",
+      "back": "$304\\text{ cm}^3$"
+    },
+    {
+      "front": "The volume of a solid formed by three identical cubes with side $8\\text{ cm}$ is calculated as _____.",
+      "back": "$512 \\times 3 = 1536\\text{ cm}^3$"
+    },
+    {
+      "front": "To use the Filling Method, one must calculate the difference between the _____ and the _____.",
+      "back": "Volume of the large filled cuboid; volume of the part that was added."
+    },
+    {
+      "front": "When recording the volume of an elevator, is it more appropriate to use $cm^3$ or $m^3$?",
+      "back": "Cubic meter ($m^3$)"
+    },
+    {
+      "front": "According to the handbook, what objects can be used to help students visualize the size of $1\\text{ m}^3$?",
+      "back": "A cubic frame with side lengths of $1\\text{ meter}$."
+    },
+    {
+      "front": "An irregular U-shaped solid is split horizontally into three parts: A, B, and C. If A and B are the top 'arms' and C is the base, how is the total volume found?",
+      "back": "$Volume A + Volume B + Volume C$"
+    },
+    {
+      "front": "A cube has a side of $5\\text{ m}$. Calculate its volume.",
+      "back": "$125\\text{ m}^3$"
+    },
+    {
+      "front": "A cuboid base has dimensions $14\\text{ m}$ (length), $5\\text{ m}$ (width), and its height is $6\\text{ m}$ (calculated from $11 - 5$). What is its volume?",
+      "back": "$420\\text{ m}^3$"
+    },
+    {
+      "front": "If an irregular solid is filled to form a large cuboid of $624\\text{ cm}^3$ by adding a small part of $128\\text{ cm}^3$, what is the actual volume?",
+      "back": "$496\\text{ cm}^3$"
+    },
+    {
+      "front": "Why is it recommended to use a step-by-step calculation method for the Filling Method?",
+      "back": "Because the calculation steps are more complex, and step-by-step methods help avoid operational errors."
+    },
+    {
+      "front": "Which volume unit is suitable for measuring a magic cube (Rubik's cube)?",
+      "back": "Cubic centimeter ($cm^3$)"
+    },
+    {
+      "front": "Is it possible for a solid's volume to be calculated using both the Splitting Method and the Filling Method?",
+      "back": "Yes, many irregular solids allow for both approaches."
+    },
+    {
+      "front": "What prerequisite knowledge is needed to calculate volume according to the guide?",
+      "back": "Integer multiplication and division operations."
+    },
+    {
+      "front": "The formula for the volume of a cube is $Side \\times Side \\times Side$. What is the shorthand notation for this unit?",
+      "back": "$s^3$ (or side cubed)."
+    },
+    {
+      "front": "If a large cuboid is $13\\text{ cm}$ long and we remove a section that is $9\\text{ cm}$ long, what is the length of the remaining part to be used in the Filling Method?",
+      "back": "$4\\text{ cm}$ ($13 - 9$)"
+    },
+    {
+      "front": "The Guide suggests students compare real-life objects like a bus or a schoolbag to a $1\\text{ meter}$ cubic frame to determine if their volume is greater or less than _____.",
+      "back": "$1\\text{ cubic meter}$ ($1\\text{ m}^3$)"
+    },
+    {
+      "front": "Concept: $1\\text{ m}^3$",
+      "back": "Definition: The volume of a cube with side lengths of $1\\text{ meter}$."
+    },
+    {
+      "front": "Concept: $1\\text{ cm}^3$",
+      "back": "Definition: The volume of a cube with side lengths of $1\\text{ centimeter}$."
+    },
+    {
+      "front": "How do you determine the volume of a solid formed by a net (folding diagram)?",
+      "back": "Identify the length, width, and height of the resulting cuboid/cube from the net and apply the volume formula."
+    },
+    {
+      "front": "In the Splitting Method, if you split a shape vertically, the total volume is the _____ of the volumes of the vertical sections.",
+      "back": "Sum"
+    },
+    {
+      "front": "What is the primary objective of Lesson 17 in the Unit 5 manual?",
+      "back": "To recognize and apply the volume formulas for cuboids and cubes."
+    },
+    {
+      "front": "True or False: $1\\text{ m}^3$ is equivalent to $1,000,000\\text{ cm}^3$.",
+      "back": "True (since $100\\text{ cm} \\times 100\\text{ cm} \\times 100\\text{ cm} = 1,000,000\\text{ cm}^3$)."
+    },
+    {
+      "front": "When a cuboid's length, width, and height are all equal, the cuboid is a _____.",
+      "back": "Cube"
+    },
+    {
+      "front": "If a cuboid's volume is $60\\text{ m}^3$, length is $5\\text{ m}$, and width is $4\\text{ m}$, calculate its height.",
+      "back": "$3\\text{ m}$ ($60 \\div 20$)"
+    },
+    {
+      "front": "What is a 'Step-by-step' method (分步法) in volume calculation?",
+      "back": "Calculating the volume of each component part separately before performing the final addition or subtraction."
+    },
+    {
+      "front": "In the Filling Method, what name is given to the 'missing' space being filled?",
+      "back": "The void or added part (often labeled as a specific letter like 'P' or 'Y' in diagrams)."
+    },
+    {
+      "front": "To find how many $1\\text{ cm}^3$ small cubes can fit into a larger cuboid, you calculate the _____ of the larger cuboid.",
+      "back": "Volume"
+    },
+    {
+      "front": "The total volume of a shape split into a cube of $5 \\times 5 \\times 5$ and two identical cuboids of $3 \\times 5 \\times 5$ is _____.",
+      "back": "$275\\text{ units}^3$ ($125 + 75 + 75$)."
+    },
+    {
+      "front": "When comparing volumes intuitively, what is the student looking for?",
+      "back": "Which object occupies more space."
+    },
+    {
+      "front": "What are the common units for recording the volume of a truck's cargo container?",
+      "back": "Cubic meters ($m^3$)."
+    },
+    {
+      "front": "If a solid has an L-shape, which method is usually easier: Splitting or Filling?",
+      "back": "Both are effective, but Splitting is often more direct for L-shapes."
+    },
+    {
+      "front": "A rectangular swimming pool is $25\\text{ m}$ long, $10\\text{ m}$ wide, and $2\\text{ m}$ deep. What is the volume of water it can hold?",
+      "back": "$500\\text{ m}^3$"
+    },
+    {
+      "front": "Unit Check: Eraser",
+      "back": "$cm^3$"
+    },
+    {
+      "front": "Unit Check: Freight Container",
+      "back": "$m^3$"
+    },
+    {
+      "front": "How many dimensions are multiplied to find volume?",
+      "back": "Three (Length, Width, and Height)."
+    },
+    {
+      "front": "What is the result of $8 \\times 8 \\times 8$?",
+      "back": "$512$"
+    },
+    {
+      "front": "A cuboid with length $l$, width $w$, and height $h$ has a base area $A$. How else can volume be expressed?",
+      "back": "$Volume = Base\\ Area \\times Height$ ($V = A \\times h$)."
+    },
+    {
+      "front": "In a $14 \\times 5 \\times 11\\text{ m}$ 'filled' cuboid where a $4 \\times 5 \\times 5\\text{ m}$ piece is missing, what is the final volume?",
+      "back": "$670\\text{ m}^3$ ($770 - 100$)."
+    },
+    {
+      "front": "Procedure: Splitting Method",
+      "back": "1. Divide solid. 2. Calculate volumes of parts. 3. Sum volumes."
+    },
+    {
+      "front": "Procedure: Filling Method",
+      "back": "1. Fill to make regular. 2. Calculate large volume. 3. Subtract volume of the fill."
+    },
+    {
+      "front": "When students are asked to 'imagine' the size of a plane, which unit should they associate with it?",
+      "back": "Cubic meter ($m^3$)."
+    },
+    {
+      "front": "Is 'volume' the same as 'capacity' according to the primary curriculum focus here?",
+      "back": "They are related (capacity is the volume a container can hold), but Lesson 17 focuses on the volume of the solid itself."
+    },
+    {
+      "front": "If the side of a cube is doubled, what happens to its volume?",
+      "back": "It increases by $8$ times ($2 \\times 2 \\times 2$)."
+    }
+  ]
+}
+</script>
+
+<script>
+const data = JSON.parse(document.getElementById('flashcardsData').textContent);
+const cards = data.cards || [];
+let idx = 0;
+let flipped = false;
+
+function render(){
+  const c = cards[idx];
+  if (!c) return;
+  document.getElementById('cardLabel').textContent = flipped ? '答案' : '問題';
+  document.getElementById('cardContent').textContent = flipped ? c.back : c.front;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+  document.getElementById('progressTxt').textContent = (idx+1) + ' / ' + cards.length;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === cards.length - 1;
+}
+function flipCard(){ flipped = !flipped; render(); }
+function prev(){ if (idx > 0){ idx--; flipped=false; render(); } }
+function next(){ if (idx < cards.length - 1){ idx++; flipped=false; render(); } }
+
+document.getElementById('totalCards').textContent = cards.length;
+render();
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="18"></script>
+</body>
+</html>

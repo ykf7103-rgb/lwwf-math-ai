@@ -1,3 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第16課 · 學習卡 — 體積的量度</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;
+  background:linear-gradient(135deg,#FFF3E0,#FFE0B2);min-height:100vh;color:#333}
+header{background:linear-gradient(135deg,#FB8C00,#E65100);color:white;padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+header h1{margin:0;font-size:1.15rem;font-weight:900}
+header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;
+  border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:700}
+.wrap{max-width:680px;margin:0 auto;padding:18px 14px}
+.intro{background:white;padding:14px 18px;border-radius:14px;margin-bottom:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);font-size:0.95rem;line-height:1.7;color:#555}
+.intro b{color:#E65100}
+.progress{display:flex;justify-content:space-between;background:white;padding:10px 16px;
+  border-radius:12px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
+.progress .v{color:#E65100;font-size:1.2rem}
+.card{background:white;border:3px solid #FFB74D;border-radius:18px;padding:30px 24px;
+  min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.12);cursor:pointer;
+  transition:transform 0.5s;font-size:1.1rem;line-height:1.6;margin-bottom:14px}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,0.18)}
+.card.flipped{background:linear-gradient(135deg,#E1F5FE,#B3E5FC);border-color:#0288D1}
+.card-label{font-size:0.85rem;color:#999;margin-bottom:14px;font-weight:700;text-transform:uppercase}
+.card.flipped .card-label{color:#01579B}
+.card-content{font-size:1.15rem;color:#333;font-weight:600}
+.card.flipped .card-content{color:#01579B}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{padding:12px 24px;background:linear-gradient(135deg,#FB8C00,#E65100);color:white;
+  border:none;border-radius:24px;font-weight:900;cursor:pointer;font-size:0.95rem;font-family:inherit}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(230,81,0,0.35)}
+.btn.flip{background:linear-gradient(135deg,#0288D1,#01579B)}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.hint{text-align:center;color:#888;font-size:0.85rem;margin-top:10px;font-style:italic}
+</style>
+</head>
+<body>
+<header>
+  <h1>📇 第16課 · 學習卡</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="intro">
+    <b>📚 學習卡使用方法：</b><br>
+    1. 細閱問題（卡正面）<br>
+    2. 點一下卡來揭曉答案（卡背面）<br>
+    3. 用 ◀ ▶ 按鈕轉換卡片<br>
+    <b>共 <span id="totalCards">0</span> 張學習卡</b>
+  </div>
+  <div class="progress">
+    <span>進度</span>
+    <span class="v" id="progressTxt">1 / 1</span>
+  </div>
+  <div class="card" id="card" onclick="flipCard()">
+    <div class="card-label" id="cardLabel">問題</div>
+    <div class="card-content" id="cardContent">載入中...</div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="prevBtn" onclick="prev()">◀ 上一張</button>
+    <button class="btn flip" onclick="flipCard()">🔄 翻轉</button>
+    <button class="btn" id="nextBtn" onclick="next()">下一張 ▶</button>
+  </div>
+  <div class="hint">💡 點擊卡片或按「翻轉」即可揭曉答案</div>
+</div>
+
+<script id="flashcardsData" type="application/json">
 {
   "title": "Math Flashcards",
   "cards": [
@@ -227,3 +298,32 @@
     }
   ]
 }
+</script>
+
+<script>
+const data = JSON.parse(document.getElementById('flashcardsData').textContent);
+const cards = data.cards || [];
+let idx = 0;
+let flipped = false;
+
+function render(){
+  const c = cards[idx];
+  if (!c) return;
+  document.getElementById('cardLabel').textContent = flipped ? '答案' : '問題';
+  document.getElementById('cardContent').textContent = flipped ? c.back : c.front;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+  document.getElementById('progressTxt').textContent = (idx+1) + ' / ' + cards.length;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === cards.length - 1;
+}
+function flipCard(){ flipped = !flipped; render(); }
+function prev(){ if (idx > 0){ idx--; flipped=false; render(); } }
+function next(){ if (idx < cards.length - 1){ idx++; flipped=false; render(); } }
+
+document.getElementById('totalCards').textContent = cards.length;
+render();
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="16"></script>
+</body>
+</html>
