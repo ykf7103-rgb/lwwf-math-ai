@@ -27,6 +27,7 @@
     { id: '16', title: 'Ch.16 體積的量度', emoji: '🎯', href: '../ch16/index.html' },
     { id: '17', title: 'Ch.17 長方體和正方體的體積', emoji: '🏴‍☠️', href: '../ch17/index.html' },
     { id: '18', title: 'Ch.18 立體圖形的體積', emoji: '⚡', href: '../ch18/index.html' },
+    { id: '19', title: 'Ch.19 簡易方程（一）', emoji: '🖍️', href: '../ch19/index.html' },
   ];
 
   function buildHref(targetCh) {
