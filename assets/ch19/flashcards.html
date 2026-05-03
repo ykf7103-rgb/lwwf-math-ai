@@ -70,227 +70,55 @@ header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;
 
 <script id="flashcardsData" type="application/json">
 {
-  "title": "Algebra Flashcards",
+  "deck_title": "第19課 學習卡 — 簡易方程（一）",
   "cards": [
     {
-      "front": "According to the source material, what are the two main stages of algebraic development?",
-      "back": "Early Algebra and Modern Algebra."
+      "front": "甚麼是「代數式」？",
+      "back": "含有代數符號（未知數）的算式，例如 w + 7、3T、y − 4，都稱為代數式。"
     },
     {
-      "front": "What was the primary focus of development in Early Algebra (approx. 1700 BC to 1700 AD)?",
-      "back": "Developing methods to solve problems related to quantities."
+      "front": "「家裏原有故事書 w 本，再買 7 本」可以怎樣用代數式表示？",
+      "back": "可以表示為 (w + 7) 本。"
     },
     {
-      "front": "What is the focus of Modern Algebra (from 1700 AD onwards)?",
-      "back": "Exploring abstract algebraic structures such as Fields, Groups, and Rings."
+      "front": "甚麼是「方程」？",
+      "back": "含有代數符號（未知數）的等式，稱為方程，例如 w + 7 = 28。"
     },
     {
-      "front": "Who was the 16th-century mathematician who systematically used letters to represent unknowns and coefficients?",
-      "back": "François Viète (Viete)."
+      "front": "方程「w + 7 = 28」中，等號的左邊和右邊有甚麼關係？",
+      "back": "等號的左邊與右邊的值相等。"
     },
     {
-      "front": "The Arabic term 'al-jabr', from which 'algebra' is derived, refers to which mathematical action?",
-      "back": "Restoration, restructuring, or reuniting (重組與重聚)."
+      "front": "甚麼是方程的「解」？",
+      "back": "把一個數代入方程的未知數，能令等號左右兩邊相等，這個數就是該方程的解。"
     },
     {
-      "front": "The Arabic term 'al-muqabalah' refers to which action in solving equations?",
-      "back": "Opposition or cancellation (對消)."
+      "front": "「解方程」是指甚麼過程？",
+      "back": "求出方程中未知數的值的過程，稱為解方程。"
     },
     {
-      "front": "Who first translated 'algebra' into the Chinese term '代數' in 1859?",
-      "back": "Li Shanlan (李善蘭)."
+      "front": "「天平兩邊重量相同便平衡」這個原理可以怎樣應用在解方程上？",
+      "back": "如同天平：在方程兩邊同時加上或減去相同的數，等號兩邊仍然保持相等，可借此把未知數獨立出來。"
     },
     {
-      "front": "How did Li Shanlan describe the concept of 'Algebra' (代數)?",
-      "back": "Any number can be replaced by a symbol (無論何數，皆可任以記號代之)."
+      "front": "解方程 h + 10 = 30 的步驟是怎樣的？",
+      "back": "兩邊同時減 10：h + 10 − 10 = 30 − 10，得出 h = 20。"
     },
     {
-      "front": "In the context of primary school mathematics, what does the equals sign ($=$) fundamentally signify in an equation?",
-      "back": "That the values on the left and right sides are equal."
+      "front": "解方程 e − 4 = 32 的步驟是怎樣的？",
+      "back": "兩邊同時加 4：e − 4 + 4 = 32 + 4，得出 e = 36。"
     },
     {
-      "front": "What is a common misconception students have regarding the function of the equals sign ($=$)?",
-      "back": "They often treat it as a prompt to 'calculate' (計數) rather than a symbol of equality."
+      "front": "解完方程後，怎樣作驗算？",
+      "back": "把所求得的未知數值代入原方程，計算左邊及右邊；若兩邊相等，答案便正確。"
     },
     {
-      "front": "Which physical model is commonly used to illustrate the principle of balancing an equation?",
-      "back": "The weighing scale or balance (天平)."
+      "front": "如果方程是 23 + k = 40，k 等於多少？",
+      "back": "兩邊同時減 23：k = 40 − 23 = 17。"
     },
     {
-      "front": "According to the 'Balance Principle', what must be done to maintain equality if a number is added to one side of an equation?",
-      "back": "The same number must be added to the other side."
-    },
-    {
-      "front": "To solve the equation $v - 20 = 50$, what operation is performed on both sides to isolate $v$?",
-      "back": "Addition of 20 ($+ 20$)."
-    },
-    {
-      "front": "To solve the equation $f \div 2 = 30$, what operation is performed on both sides to isolate $f$?",
-      "back": "Multiplication by 2 ($\times 2$)."
-    },
-    {
-      "front": "If an equation is written as $54 = r - 86$, how should the final solution be formally expressed?",
-      "back": "With the unknown on the left and the value on the right ($r = 140$)."
-    },
-    {
-      "front": "What is the primary purpose of 'Verification' (驗算) after solving an equation?",
-      "back": "To ensure the calculated value satisfies the original equation."
-    },
-    {
-      "front": "In the formal verification of $2y - 3 = 5$ where $y = 4$, how is the 'Left Side' ($LHS$) written?",
-      "back": "$LHS = 2 \times 4 - 3 = 5$."
-    },
-    {
-      "front": "When solving an equation involving both multiplication and addition (e.g., $3x + 6 = 18$), which part should generally be handled first?",
-      "back": "The addition or subtraction part."
-    },
-    {
-      "front": "Why is it considered a 'mechanized error' to divide by 3 first in the equation $3x + 6 = 18$?",
-      "back": "Because students often forget to divide the constant term (6) as well, leading to $x + 6 = 6$."
-    },
-    {
-      "front": "Cloze: In the equation $\frac{m}{4} - 5 = 7$, the first step to isolate the variable term is to _____ 5 on both sides.",
-      "back": "add"
-    },
-    {
-      "front": "If $w$ represents the original number of books and 7 more are bought to total 28, what is the corresponding equation?",
-      "back": "$w + 7 = 28$."
-    },
-    {
-      "front": "If $y$ represents total stickers and 4 are removed leaving 32, what is the corresponding equation?",
-      "back": "$y - 4 = 32$."
-    },
-    {
-      "front": "If $T$ represents pencils per box and 3 boxes total 90 pencils, what is the corresponding equation?",
-      "back": "$3T = 90$."
-    },
-    {
-      "front": "Concept: Equation (方程)",
-      "back": "Definition: A mathematical statement containing an equals sign and at least one unknown variable."
-    },
-    {
-      "front": "What is the first step in solving $m - 17 = 49$ using the balance method?",
-      "back": "$m - 17 + 17 = 49 + 17$."
-    },
-    {
-      "front": "When verifying a solution, if the 'Left Side' value does not equal the 'Right Side' value, what does this indicate?",
-      "back": "The calculated value for the unknown is incorrect."
-    },
-    {
-      "front": "According to the source, why are algebraic symbols important for mathematical communication?",
-      "back": "They give mathematics the characteristics of a language."
-    },
-    {
-      "front": "In the verification process, how is the 'Right Side' ($RHS$) handled if it is a constant (e.g., $2y - 3 = 5$)?",
-      "back": "It is stated directly as $RHS = 5$."
-    },
-    {
-      "front": "When solving $50 + d = 75$, what is the result of the first balancing step?",
-      "back": "$d = 75 - 50$ (or $50 + d - 50 = 75 - 50$)."
-    },
-    {
-      "front": "What algebraic action does the 'Moving Terms Method' (移項法) essentially represent?",
-      "back": "The practical application of the balance principle to move a term to the opposite side by changing its operation."
-    },
-    {
-      "front": "Why should teachers help students distinguish between an 'Algebraic Expression' and an 'Equation'?",
-      "back": "An expression represents a quantity, while an equation represents a relationship of equality."
-    },
-    {
-      "front": "In the example $x \div 4 = 12$, why might a student mistakenly think the answer is 3?",
-      "back": "They incorrectly associate '12' and '4' with the division operation $12 \div 4$ instead of multiplying."
-    },
-    {
-      "front": "True or False: In a primary school equation, the unknown must always be on the left side of the equals sign.",
-      "back": "False (it can appear on either side, though answers are usually formatted $x = ...$)."
-    },
-    {
-      "front": "What does 'al-jabr' specifically mean in the context of solving $3x - 2 = 10$?",
-      "back": "Restoring the equation by adding 2 to both sides to eliminate the subtraction."
-    },
-    {
-      "front": "Identify the error: In solving $3x + 6 = 18$, a student writes $x + 6 = 6$. What did they do wrong?",
-      "back": "They divided $3x$ and $18$ by 3 but failed to divide the term $+6$ by 3."
-    },
-    {
-      "front": "How does the 'Balance Principle' apply to the equation $x + 8 = 10$ if we assume $x = 2$?",
-      "back": "The left side ($2 + 8$) and the right side ($10$) result in equal values, maintaining equilibrium."
-    },
-    {
-      "front": "Formula: Solution to $x + a = b$",
-      "back": "$x = b - a$"
-    },
-    {
-      "front": "Formula: Solution to $x - a = b$",
-      "back": "$x = b + a$"
-    },
-    {
-      "front": "Formula: Solution to $ax = b$ ($a \ne 0$)",
-      "back": "$x = b \div a$ (or $x = \frac{b}{a}$)"
-    },
-    {
-      "front": "Formula: Solution to $x \div a = b$ ($a \ne 0$)",
-      "back": "$x = b \times a$"
-    },
-    {
-      "front": "What is the specific instruction for verifying word problems mentioned in the 'Remarks' (備註)?",
-      "back": "Check if the numerical result makes sense within the context of the original problem."
-    },
-    {
-      "front": "Which historical stage of algebra explores the 'Principle of algebraic operations'?",
-      "back": "Modern Algebra."
-    },
-    {
-      "front": "Cloze: The phrase '阿爾熱八達' was an early _____ transliteration of the word 'algebra'.",
-      "back": "phonetic"
-    },
-    {
-      "front": "In the activity involving number cards (1, 2, 3, 4, 5), what is the goal for the students?",
-      "back": "To use operators and an equals sign to create valid equalities (equations)."
-    },
-    {
-      "front": "When solving an equation like $v - 20 = 50$, what is the term $v$ called?",
-      "back": "The unknown (未知數)."
-    },
-    {
-      "front": "For the equation $5 = 4 + 3 - 2 \times 1$, is the equals sign functioning as a 'calculation result' or a 'state of equality'?",
-      "back": "A state of equality (showing both sides have a value of 5)."
-    },
-    {
-      "front": "What mathematical structure is mentioned as being introduced as early as the first grade in primary school?",
-      "back": "Real number operations (gradually leading to the concept of a 'Field')."
-    },
-    {
-      "front": "Why is $x \div a = b$ considered more 'abstract' for students than addition equations?",
-      "back": "It is harder to visualize and often requires inverse thinking that contradicts the visual order of numbers."
-    },
-    {
-      "front": "In the verification $LHS = RHS$, what does 'RHS' stand for?",
-      "back": "Right Hand Side (右邊)."
-    },
-    {
-      "front": "According to the source, what is the 'first method' of rigorous verification?",
-      "back": "Calculating the Left Side and showing it equals the Right Side ($LHS = ... = RHS$)."
-    },
-    {
-      "front": "What is the 'second method' of rigorous verification described in the manual?",
-      "back": "Calculating both sides separately and stating 'Since $LHS = RHS$, the solution is correct.'"
-    },
-    {
-      "front": "Why is the first verification method usually sufficient for primary students?",
-      "back": "Because the equations they solve usually only have an unknown on one side."
-    },
-    {
-      "front": "In solving $54 = r - 86$, what is the value of $r$?",
-      "back": "$140$."
-    },
-    {
-      "front": "What is the 'suggested time' (建議時數) for teaching 'Simple Equations (I)' in the 5A curriculum?",
-      "back": "8.5 out of 95 hours (approx. 8.9%)."
-    },
-    {
-      "front": "What is the suggested number of lessons (建議節數) for the unit 'Simple Equations (I)'?",
-      "back": "14 lessons."
+      "front": "如果方程是 54 = r − 86，r 等於多少？",
+      "back": "兩邊同時加 86：r = 54 + 86 = 140。"
     }
   ]
 }

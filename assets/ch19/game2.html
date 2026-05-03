@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第19課 · 遊戲 2 — 春日部購物速算挑戰（代數式表達）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;
+    background:linear-gradient(135deg,#FFAB91 0%,#FFCCBC 50%,#FFE0B2 100%);
+    min-height:100vh;color:#3E2723;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:
+    radial-gradient(circle at 20% 30%,rgba(255,255,255,0.4) 2px,transparent 2px),
+    radial-gradient(circle at 70% 70%,rgba(255,255,255,0.3) 3px,transparent 3px);
+    background-size:140px 140px,180px 180px;pointer-events:none;z-index:-1}
+  header{background:linear-gradient(135deg,#D84315,#BF360C);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.15)}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:680px;margin:0 auto;padding:14px 12px}
+  .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(216,67,21,0.15);font-weight:800}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.82rem;color:#5D4037}
+  .stats .val{font-size:1.4rem;color:#D84315;font-weight:900;line-height:1}
+  .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(216,67,21,0.15);margin-bottom:14px;text-align:center}
+  .timer-bar{height:18px;background:#FFEBEE;border-radius:9px;overflow:hidden;margin-bottom:14px;position:relative;border:2px solid #C62828}
+  .timer-fill{height:100%;background:linear-gradient(90deg,#43A047,#FFEB3B 50%,#C62828 90%);transition:width 0.1s linear;width:100%}
+  .timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;text-shadow:0 0 4px rgba(0,0,0,0.7);font-size:0.9rem}
+  .start-screen{padding:40px 20px;text-align:center}
+  .start-screen h2{color:#D84315;font-size:2rem;margin:0 0 10px;text-shadow:2px 2px 0 #fff}
+  .start-screen p{color:#3E2723;line-height:1.6;font-size:1rem;margin:0 0 14px;background:#FFF3E0;padding:12px 14px;border-radius:12px;border:2px solid #FFAB91}
+  .start-screen .start-btn{padding:18px 32px;font-size:1.3rem;background:linear-gradient(135deg,#FF7043,#D84315);color:#fff;border:none;border-radius:14px;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(216,67,21,0.45)}
+  .play-screen{display:none}
+  .play-screen.active{display:block}
+  .object-zoom{font-size:7rem;line-height:1;margin:14px 0;animation:objBounce 0.8s ease}
+  @keyframes objBounce{0%{transform:scale(0.5);opacity:0}50%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+  .obj-name{font-size:1.4rem;font-weight:900;color:#D84315;margin-bottom:6px}
+  .obj-prompt{font-size:1.05rem;color:#5D4037;margin-bottom:14px;line-height:1.5}
+  .ranges{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .range-btn{padding:18px 10px;background:white;border:3px solid;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;font-family:inherit;transition:all 0.15s;line-height:1.3}
+  .range-btn:nth-child(1){border-color:#1976D2;color:#0D47A1}
+  .range-btn:nth-child(2){border-color:#388E3C;color:#1B5E20}
+  .range-btn:nth-child(3){border-color:#F57C00;color:#E65100}
+  .range-btn:nth-child(4){border-color:#7B1FA2;color:#4A148C}
+  .range-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
+  .range-btn:disabled{cursor:not-allowed;opacity:0.5}
+  .range-btn.correct{background:#C8E6C9;border-color:#2E7D32;color:#2E7D32;animation:pulse .6s}
+  .range-btn.wrong{background:#FFCDD2;border-color:#C62828;color:#C62828;animation:shake .4s}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{margin-top:10px;padding:10px;border-radius:10px;font-weight:700;line-height:1.5;display:none;font-size:0.95rem}
+  .feedback.show{display:block;animation:fadeIn .3s}
+  .feedback.right{background:#E8F5E9;color:#2E7D32}
+  .feedback.wrong{background:#FFEBEE;color:#C62828}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .end-screen{display:none;padding:30px 20px;text-align:center}
+  .end-screen.active{display:block}
+  .end-screen h2{font-size:1.6rem;color:#D84315;margin:0 0 14px}
+  .end-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .end-stat{background:#FFF3E0;padding:14px;border-radius:12px}
+  .end-stat .l{font-size:0.85rem;color:#5D4037}
+  .end-stat .v{font-size:1.6rem;font-weight:900;color:#D84315}
+  .coin-row{font-size:2.5rem;letter-spacing:6px;margin:14px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛒 第19課 · 遊戲 2 — 春日部購物速算挑戰</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="stats">
+    <div class="item"><div class="val" id="qNum">0/12</div><div>關卡</div></div>
+    <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
+    <div class="item"><div class="val" id="streak">0</div><div>連對</div></div>
+    <div class="item"><div class="val" id="timeLeft">8.0</div><div>秒</div></div>
+  </div>
+  <div class="scene">
+    <div class="start-screen" id="startScreen">
+      <h2>🛒 美冴的購物代數挑戰</h2>
+      <p>🌸 美冴帶住小新去春日部超市買嘢！<br>每件物品有未知數量／價錢，揀啱<b>正確嘅代數式</b>。<br>每題 <b>8 秒</b>內答；連對 +bonus，連錯 5 次要重頭來過！</p>
+      <button class="start-btn" onclick="startGame()">🛍️ 開始購物</button>
+    </div>
+    <div class="play-screen" id="playScreen">
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div><div class="timer-text" id="timerText">8.0 秒</div></div>
+      <div class="object-zoom" id="objE">🛒</div>
+      <div class="obj-name" id="objN">物件</div>
+      <div class="obj-prompt" id="objP">用代數式表達情境</div>
+      <div class="ranges" id="rangesEl"></div>
+      <div class="feedback" id="fb"></div>
+    </div>
+    <div class="end-screen" id="endScreen">
+      <h2 id="endTitle">🎉 完成！</h2>
+      <div class="end-stats">
+        <div class="end-stat"><div class="l">得分</div><div class="v" id="finalScore">0</div></div>
+        <div class="end-stat"><div class="l">最高連對</div><div class="v" id="finalStreak">0</div></div>
+      </div>
+      <div class="coin-row" id="finalCoins"></div>
+      <a href="index.html" style="display:inline-block;margin-top:10px;padding:12px 24px;background:linear-gradient(135deg,#D84315,#BF360C);color:white;border-radius:10px;font-weight:900;text-decoration:none">回課題</a>
+    </div>
+  </div>
+</div>
+<script>
+const CHAPTER = 19, GAME_KEY = 'game2';
+
+// 12 關 — 每關用代數式 / 一步方程表達春日部購物情境（書面語）
+const QUESTIONS = [
+  { e:'🍫', n:'巧克比餅乾', cor:1,
+    ranges:['x − 5','x + 5 = 12','5x','x ÷ 5'],
+    p:'家裏原有 x 盒巧克比餅乾，美冴再買 5 盒，現在共有 12 盒。請選正確方程。',
+    h:'原本 x ＋ 新買 5 = 總數 12 → x + 5 = 12' },
+  { e:'🍩', n:'動感超人甜甜圈', cor:2,
+    ranges:['y + 3','y ÷ 3','3y = 24','y − 3 = 24'],
+    p:'妮妮買 3 個相同甜甜圈，每個 y 元，共付 24 元。請選正確方程。',
+    h:'每個 y 元 × 3 個 = 24 元 → 3y = 24' },
+  { e:'🍙', n:'御飯糰', cor:0,
+    ranges:['z ÷ 5 = 6','5z','z − 5','z + 6'],
+    p:'阿呆把 z 個御飯糰平均分給 5 個朋友，每人分得 6 個。請選正確方程。',
+    h:'總數 z ÷ 份數 5 = 每份 6 → z ÷ 5 = 6' },
+  { e:'🍡', n:'糰子', cor:3,
+    ranges:['a + 4','a × 7','a ÷ 4','a − 7 = 8'],
+    p:'風間原有 a 串糰子，吃掉 7 串後剩下 8 串。請選正確方程。',
+    h:'原本 a − 吃掉 7 = 剩下 8 → a − 7 = 8' },
+  { e:'🥛', n:'牛奶', cor:0,
+    ranges:['b + 4 = 10','b ÷ 4','b − 10','4b = 10'],
+    p:'家裏原有 b 盒牛奶，廣志再買 4 盒，現在共有 10 盒。請選正確方程。',
+    h:'原本 b ＋ 4 = 10 → b + 4 = 10' },
+  { e:'🍭', n:'棒棒糖', cor:1,
+    ranges:['c − 8','6c = 30','c ÷ 30','c + 6'],
+    p:'妮妮買 6 支同款棒棒糖，每支 c 元，共付 30 元。請選正確方程。',
+    h:'每支 c × 6 支 = 30 元 → 6c = 30' },
+  { e:'🍪', n:'餅乾', cor:2,
+    ranges:['d + 4 = 9','d × 9','d ÷ 4 = 9','d − 4'],
+    p:'正男把 d 塊餅乾平均分成 4 份，每份有 9 塊。請選正確方程。',
+    h:'總數 d ÷ 份數 4 = 每份 9 → d ÷ 4 = 9' },
+  { e:'🎁', n:'動感超人禮品', cor:3,
+    ranges:['e ÷ 12','e × 12','e + 12','e − 12 = 18'],
+    p:'小新原有 e 個動感超人徽章，送給朋友 12 個後剩下 18 個。請選正確方程。',
+    h:'原本 e − 送出 12 = 剩下 18 → e − 12 = 18' },
+  { e:'📚', n:'故事書', cor:0,
+    ranges:['f + 7 = 28','7f','f − 28','f ÷ 7'],
+    p:'家裏原有故事書 f 本，媽媽再買 7 本，家裏現有 28 本。請選正確方程。',
+    h:'原本 f ＋ 新買 7 = 總數 28 → f + 7 = 28' },
+  { e:'🥤', n:'果汁', cor:1,
+    ranges:['g + 3','g ÷ 3 = 5','3g','g − 5'],
+    p:'阿呆把 g 杯果汁平均分給 3 個小朋友，每人 5 杯。請選正確方程。',
+    h:'總數 g ÷ 份數 3 = 每人 5 → g ÷ 3 = 5' },
+  { e:'🐶', n:'狗餅乾', cor:2,
+    ranges:['h ÷ 5','h + 5','5 + h = 35','35 − h'],
+    p:'小白原本吃了 5 塊狗餅乾，小新又餵了 h 塊，小白共吃了 35 塊。請選正確方程。',
+    h:'原本 5 ＋ 新餵 h = 總數 35 → 5 + h = 35' },
+  { e:'🎨', n:'蠟筆', cor:3,
+    ranges:['i ÷ 4','i × 4','i + 4','4i = 48'],
+    p:'妮妮買 4 盒同款蠟筆，每盒 i 元，共付 48 元。請選正確方程。',
+    h:'每盒 i × 4 盒 = 48 → 4i = 48' }
+];
+
+const TIME_PER_Q = 8;  // seconds (longer than ch17 because 代數式 needs reading)
+let qIdx = 0, score = 0, streak = 0, maxStreak = 0, wrongs = 0, coins = 0;
+let timerInterval, timeLeft = TIME_PER_Q;
+
+const els = {};
+['qNum','score','streak','timeLeft','startScreen','playScreen','endScreen','timerFill','timerText','objE','objN','objP','rangesEl','fb','endTitle','finalScore','finalStreak','finalCoins'].forEach(id => els[id] = document.getElementById(id));
+
+function startGame() {
+  qIdx = 0; score = 0; streak = 0; maxStreak = 0; wrongs = 0; coins = 0;
+  els.startScreen.style.display = 'none';
+  els.playScreen.classList.add('active');
+  els.endScreen.classList.remove('active');
+  renderQ();
+}
+
+function renderQ() {
+  const q = QUESTIONS[qIdx];
+  els.qNum.textContent = `${qIdx+1}/${QUESTIONS.length}`;
+  els.score.textContent = score;
+  els.streak.textContent = streak;
+  els.objE.textContent = q.e;
+  els.objE.style.animation = 'none'; void els.objE.offsetWidth; els.objE.style.animation = 'objBounce 0.8s ease';
+  els.objN.textContent = q.n;
+  els.objP.textContent = q.p;
+  els.fb.classList.remove('show');
+  els.rangesEl.innerHTML = '';
+  q.ranges.forEach((r, i) => {
+    const b = document.createElement('button');
+    b.className = 'range-btn';
+    b.textContent = r;
+    b.onclick = () => answer(i);
+    els.rangesEl.appendChild(b);
+  });
+  startTimer();
+}
+
+function startTimer() {
+  timeLeft = TIME_PER_Q;
+  els.timerFill.style.width = '100%';
+  els.timerText.textContent = `${TIME_PER_Q.toFixed(1)} 秒`;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft -= 0.1;
+    if (timeLeft <= 0) { timeLeft = 0; clearInterval(timerInterval); timeUp(); }
+    els.timerFill.style.width = (timeLeft / TIME_PER_Q * 100) + '%';
+    els.timerText.textContent = `${timeLeft.toFixed(1)} 秒`;
+    els.timeLeft.textContent = timeLeft.toFixed(1);
+  }, 100);
+}
+
+function answer(idx) {
+  clearInterval(timerInterval);
+  const q = QUESTIONS[qIdx];
+  const buttons = els.rangesEl.querySelectorAll('.range-btn');
+  buttons.forEach(b => b.disabled = true);
+  if (idx === q.cor) {
+    buttons[idx].classList.add('correct');
+    streak++;
+    maxStreak = Math.max(maxStreak, streak);
+    const speedBonus = Math.floor(timeLeft);
+    const streakBonus = Math.min(streak * 2, 20);
+    const gained = 10 + speedBonus + streakBonus;
+    score += gained;
+    els.fb.className = 'feedback right show';
+    els.fb.innerHTML = `✅ 啱晒！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
+  } else {
+    buttons[idx].classList.add('wrong');
+    buttons[q.cor].classList.add('correct');
+    streak = 0;
+    wrongs++;
+    els.fb.className = 'feedback wrong show';
+    els.fb.innerHTML = `❌ 錯啦！正確：<b>${q.ranges[q.cor]}</b><br>💡 ${q.h}`;
+    if (window.LWWFWrong) {
+      window.LWWFWrong.record({
+        chapter: CHAPTER,
+        question: q.p,
+        correct_answer: q.ranges[q.cor],
+        student_answer: q.ranges[idx],
+        source: 'game2',
+      }).catch(() => null);
+    }
+    if (wrongs >= 5) { setTimeout(() => endGame('lock'), 1500); return; }
+  }
+  els.score.textContent = score;
+  els.streak.textContent = streak;
+  setTimeout(nextQ, 1800);
+}
+
+function timeUp() {
+  const q = QUESTIONS[qIdx];
+  const buttons = els.rangesEl.querySelectorAll('.range-btn');
+  buttons.forEach(b => b.disabled = true);
+  buttons[q.cor].classList.add('correct');
+  streak = 0;
+  wrongs++;
+  els.fb.className = 'feedback wrong show';
+  els.fb.innerHTML = `⏰ 時間到！正確：<b>${q.ranges[q.cor]}</b><br>💡 ${q.h}`;
+  if (wrongs >= 5) { setTimeout(() => endGame('lock'), 1500); return; }
+  setTimeout(nextQ, 1800);
+}
+
+function nextQ() {
+  qIdx++;
+  if (qIdx >= QUESTIONS.length) endGame('done');
+  else renderQ();
+}
+
+function endGame(reason) {
+  clearInterval(timerInterval);
+  els.playScreen.classList.remove('active');
+  els.endScreen.classList.add('active');
+  if (reason === 'lock') {
+    els.endTitle.textContent = '🔒 連錯 5 次！美冴叫你由頭嚟過！';
+  } else {
+    els.endTitle.textContent = '🛒 滿載而歸！完成購物！';
+  }
+  if (score >= 200) coins = 3; else if (score >= 130) coins = 2; else if (score >= 70) coins = 1;
+  els.finalScore.textContent = score;
+  els.finalStreak.textContent = maxStreak;
+  els.finalCoins.textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
+  saveScore();
+}
+
+function saveScore() {
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, maxStreak, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+}
+</script>
+<script src="../common/wrong-tracker.js"></script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="19"></script>
+</body></html>

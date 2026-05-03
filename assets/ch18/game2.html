@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第18課 · 遊戲 2 — 摺紙圖樣挑戰</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;
+    background:linear-gradient(135deg,#FFE082 0%,#FFB300 50%,#FB8C00 100%);
+    min-height:100vh;color:#222;overflow-x:hidden}
+  .character{position:fixed;bottom:14px;right:14px;width:min(110px,16vw);z-index:50;pointer-events:none;
+    filter:drop-shadow(2px 4px 6px rgba(0,0,0,0.4))}
+  @media(max-width:520px){.character{width:min(90px,14vw)}}
+  header{background:linear-gradient(135deg,#B71C1C,#E53935);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:680px;margin:0 auto;padding:14px 12px}
+  .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-weight:800}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.82rem;color:#666}
+  .stats .val{font-size:1.4rem;color:#B71C1C;font-weight:900;line-height:1}
+  .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px;text-align:center}
+  .timer-bar{height:18px;background:#FFEBEE;border-radius:9px;overflow:hidden;margin-bottom:14px;position:relative;border:2px solid #C62828}
+  .timer-fill{height:100%;background:linear-gradient(90deg,#43A047,#FFEB3B 50%,#C62828 90%);transition:width 0.1s linear;width:100%}
+  .timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;text-shadow:0 0 4px rgba(0,0,0,0.7);font-size:0.9rem}
+  .start-screen{padding:40px 20px;text-align:center}
+  .start-screen h2{color:#B71C1C;font-size:2rem;margin:0 0 10px;text-shadow:0 0 12px rgba(0,0,0,0.2)}
+  .start-screen p{color:#fff;line-height:1.6;font-size:1rem;margin:0 0 14px;background:rgba(33,33,33,0.85);padding:12px 14px;border-radius:12px;border:1px solid #FFD700}
+  .start-screen .start-btn{padding:18px 32px;font-size:1.3rem;background:linear-gradient(135deg,#E53935,#B71C1C);color:#fff;border:none;border-radius:14px;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(229,57,53,0.45)}
+  .play-screen{display:none}
+  .play-screen.active{display:block}
+  .net-display{font-family:monospace;font-size:1.1rem;line-height:1.4;background:#0D47A1;color:#FFD700;padding:18px;border-radius:12px;margin:14px 0;text-align:center;letter-spacing:0.2em;white-space:pre;display:inline-block;min-width:240px;border:2px solid #FFD700}
+  .obj-name{font-size:1.4rem;font-weight:900;color:#B71C1C;margin-bottom:6px}
+  .obj-prompt{font-size:1.05rem;color:#666;margin-bottom:14px;line-height:1.5}
+  .ranges{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .range-btn{padding:18px 10px;background:white;border:3px solid;border-radius:14px;font-weight:900;font-size:1.05rem;cursor:pointer;font-family:inherit;transition:all 0.15s;line-height:1.3}
+  .range-btn:nth-child(1){border-color:#1976D2;color:#0D47A1}
+  .range-btn:nth-child(2){border-color:#388E3C;color:#1B5E20}
+  .range-btn:nth-child(3){border-color:#F57C00;color:#E65100}
+  .range-btn:nth-child(4){border-color:#7B1FA2;color:#4A148C}
+  .range-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
+  .range-btn:disabled{cursor:not-allowed;opacity:0.5}
+  .range-btn.correct{background:#C8E6C9;border-color:#2E7D32;color:#2E7D32;animation:pulse .6s}
+  .range-btn.wrong{background:#FFCDD2;border-color:#C62828;color:#C62828;animation:shake .4s}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{margin-top:10px;padding:10px;border-radius:10px;font-weight:700;line-height:1.5;display:none;font-size:0.95rem}
+  .feedback.show{display:block;animation:fadeIn .3s}
+  .feedback.right{background:#E8F5E9;color:#2E7D32}
+  .feedback.wrong{background:#FFEBEE;color:#C62828}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .end-screen{display:none;padding:30px 20px;text-align:center}
+  .end-screen.active{display:block}
+  .end-screen h2{font-size:1.6rem;color:#B71C1C;margin:0 0 14px}
+  .end-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .end-stat{background:#FFF8E1;padding:14px;border-radius:12px}
+  .end-stat .l{font-size:0.85rem;color:#666}
+  .end-stat .v{font-size:1.6rem;font-weight:900;color:#B71C1C}
+  .coin-row{font-size:2.5rem;letter-spacing:6px;margin:14px 0}
+</style>
+</head>
+<body>
+<img src="images/pikachu.png" alt="皮卡丘" class="character" onerror="this.style.display='none'">
+<header>
+  <h1>⚡ 第18課 · 遊戲 2 — 摺紙圖樣挑戰</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="stats">
+    <div class="item"><div class="val" id="qNum">0/12</div><div>關卡</div></div>
+    <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
+    <div class="item"><div class="val" id="streak">0</div><div>連對</div></div>
+    <div class="item"><div class="val" id="timeLeft">8.0</div><div>秒</div></div>
+  </div>
+  <div class="scene">
+    <div class="start-screen" id="startScreen">
+      <h2>📐 摺紙圖樣（Net）大挑戰</h2>
+      <p>⚡ 跟皮卡丘一齊識別摺紙圖樣！每題顯示一個 net（展開圖）或立體尺寸，你要喺 <b>8 秒</b>內判斷可摺成的立體形狀、邊長或體積。<br>連對 +bonus，連錯 5 次要重頭再嚟！</p>
+      <button class="start-btn" onclick="startGame()">⚡ 開始挑戰</button>
+    </div>
+    <div class="play-screen" id="playScreen">
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div><div class="timer-text" id="timerText">8.0 秒</div></div>
+      <div id="netE" class="net-display">📦</div>
+      <div class="obj-name" id="objN">摺紙圖樣</div>
+      <div class="obj-prompt" id="objP">皮卡丘畫咗一張展開圖，你能識別嗎？</div>
+      <div class="ranges" id="rangesEl"></div>
+      <div class="feedback" id="fb"></div>
+    </div>
+    <div class="end-screen" id="endScreen">
+      <h2 id="endTitle">🎉 挑戰完成！</h2>
+      <div class="end-stats">
+        <div class="end-stat"><div class="l">得分</div><div class="v" id="finalScore">0</div></div>
+        <div class="end-stat"><div class="l">最高連對</div><div class="v" id="finalStreak">0</div></div>
+      </div>
+      <div class="coin-row" id="finalCoins"></div>
+      <a href="index.html" style="display:inline-block;margin-top:10px;padding:12px 24px;background:linear-gradient(135deg,#B71C1C,#E53935);color:white;border-radius:10px;font-weight:900;text-decoration:none">回課題</a>
+    </div>
+  </div>
+</div>
+<script>
+const CHAPTER = 18, GAME_KEY = 'game2';
+
+// 12 題：摺紙圖樣 + 立體識別 + 邊長 + 體積
+const QUESTIONS = [
+  // 1. 6 個正方形 net → 正方體
+  { e:'⬛⬛⬛⬛\n  ⬛\n  ⬛', n:'摺紙圖樣 — 6 個相同正方形', cor:0,
+    ranges:['正方體','長方體','三角錐','圓柱'],
+    h:'6 個相同正方形排列成十字 / T 字 → 摺成正方體。' },
+  // 2. T 形圖樣 6cm × 8cm → 邊長
+  { e:'    ⬛\n⬛⬛⬛⬛\n    ⬛', n:'諾言把摺紙圖樣摺成正方體', cor:0,
+    ranges:['邊長 = 2 cm','邊長 = 4 cm','邊長 = 6 cm','邊長 = 8 cm'],
+    h:'圖樣寬 8 cm 由 4 個正方形組成 → 每邊 = 8 ÷ 4 = 2 cm（高 6 cm 由 3 個 = 2 cm 一致）。' },
+  // 3. 邊長 2cm 正方體 → 體積
+  { e:'邊長 = 2 cm\n正方體', n:'正方體體積', cor:1,
+    ranges:['4 cm³','8 cm³','12 cm³','16 cm³'],
+    h:'V = 邊 × 邊 × 邊 = 2 × 2 × 2 = 8 cm³。' },
+  // 4. 長方體 net → 識別
+  { e:'2 × 14 + 4 個矩形\n  長方體展開圖', n:'識別這個摺紙圖樣可摺成的立體', cor:1,
+    ranges:['正方體','長方體','三角柱','圓錐'],
+    h:'有 2 個相對的小矩形（兩端） + 4 個矩形（側面）→ 長方體。' },
+  // 5. 長方體 net 14cm × 2cm × 2cm → 體積
+  { e:'長 14 cm\n寬 2 cm\n高 2 cm', n:'長方體體積', cor:2,
+    ranges:['16 cm³','28 cm³','56 cm³','112 cm³'],
+    h:'V = 長 × 寬 × 高 = 14 × 2 × 2 = 56 cm³。' },
+  // 6. 排疊：63cm 大正方體 / 7cm 小正方體 → 每邊個數
+  { e:'63 cm 大正方體\n÷ 7 cm 小正方體', n:'排疊計算 — 每邊放幾粒？', cor:2,
+    ranges:['7 粒','8 粒','9 粒','10 粒'],
+    h:'每邊 = 63 ÷ 7 = 9 粒（不可大除以小，要一邊一邊計算）。' },
+  // 7. 排疊：總個數
+  { e:'每邊 9 粒\n3D 立方體', n:'排疊計算 — 總個數', cor:3,
+    ranges:['81 粒','243 粒','512 粒','729 粒'],
+    h:'總個數 = 9 × 9 × 9 = 729 粒。' },
+  // 8. 長方體盒 14 × 2 × 2 cm 入面放 邊長 2 cm 正方體
+  { e:'盒 14×2×2 cm\n小正方體 2 cm', n:'盒內最多放幾粒小正方體', cor:2,
+    ranges:['4 粒','5 粒','6 粒','7 粒'],
+    h:'長邊 14÷2=7、寬 2÷2=1、高 2÷2=1 → 7 × 1 × 1 = 7 粒。' },
+  // 9. 摺紙圖樣 — 6cm × 8cm 摺成正方體 體積
+  { e:'摺成邊長 2 cm\n正方體', n:'摺成的正方體體積', cor:0,
+    ranges:['8 cm³','16 cm³','24 cm³','64 cm³'],
+    h:'邊長 = 2 cm → V = 2 × 2 × 2 = 8 cm³。' },
+  // 10. 1728 cm³ 正方體 → 邊長
+  { e:'V = 1728 cm³\n正方體', n:'求正方體邊長', cor:2,
+    ranges:['10 cm','11 cm','12 cm','13 cm'],
+    h:'12 × 12 × 12 = 1728 cm³。' },
+  // 11. 摺紙判斷
+  { e:'⬛⬛\n⬛⬛⬛⬛', n:'這個圖樣可否摺成正方體？', cor:1,
+    ranges:['可以','不可以','缺一個面','多一個面'],
+    h:'呢個圖樣只有 6 個正方形但排列錯誤,分成兩部分,唔可以摺成完整正方體。' },
+  // 12. 礙物挑戰：14 m 寬 U 型 lower 大長方體 C 區
+  { e:'U 型總寬 14 m\n總高 11 m\n左右柱高 5 m', n:'下方大長方體 C 的體積', cor:1,
+    ranges:['770 m³','420 m³','125 m³','75 m³'],
+    h:'底部 C = 寬 14 × 厚 5 × 高 6 = 420 m³（11 − 5 = 6 為底部高度）。' }
+];
+
+const TIME_PER_Q = 8;
+let qIdx = 0, score = 0, streak = 0, maxStreak = 0, wrongs = 0, coins = 0;
+let timerInterval, timeLeft = TIME_PER_Q;
+
+const els = {};
+['qNum','score','streak','timeLeft','startScreen','playScreen','endScreen','timerFill','timerText','netE','objN','objP','rangesEl','fb','endTitle','finalScore','finalStreak','finalCoins'].forEach(id => els[id] = document.getElementById(id));
+
+function startGame() {
+  qIdx = 0; score = 0; streak = 0; maxStreak = 0; wrongs = 0; coins = 0;
+  els.startScreen.style.display = 'none';
+  els.playScreen.classList.add('active');
+  els.endScreen.classList.remove('active');
+  renderQ();
+}
+
+function renderQ() {
+  const q = QUESTIONS[qIdx];
+  els.qNum.textContent = `${qIdx+1}/${QUESTIONS.length}`;
+  els.score.textContent = score;
+  els.streak.textContent = streak;
+  els.netE.textContent = q.e;
+  els.objN.textContent = q.n;
+  els.fb.classList.remove('show');
+  els.rangesEl.innerHTML = '';
+  q.ranges.forEach((r, i) => {
+    const b = document.createElement('button');
+    b.className = 'range-btn';
+    b.textContent = r;
+    b.onclick = () => answer(i);
+    els.rangesEl.appendChild(b);
+  });
+  startTimer();
+}
+
+function startTimer() {
+  timeLeft = TIME_PER_Q;
+  els.timerFill.style.width = '100%';
+  els.timerText.textContent = `${TIME_PER_Q.toFixed(1)} 秒`;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft -= 0.1;
+    if (timeLeft <= 0) { timeLeft = 0; clearInterval(timerInterval); timeUp(); }
+    els.timerFill.style.width = (timeLeft / TIME_PER_Q * 100) + '%';
+    els.timerText.textContent = `${timeLeft.toFixed(1)} 秒`;
+    els.timeLeft.textContent = timeLeft.toFixed(1);
+  }, 100);
+}
+
+function answer(idx) {
+  clearInterval(timerInterval);
+  const q = QUESTIONS[qIdx];
+  const buttons = els.rangesEl.querySelectorAll('.range-btn');
+  buttons.forEach(b => b.disabled = true);
+  if (idx === q.cor) {
+    buttons[idx].classList.add('correct');
+    streak++;
+    maxStreak = Math.max(maxStreak, streak);
+    const speedBonus = Math.floor(timeLeft);
+    const streakBonus = Math.min(streak * 2, 20);
+    const gained = 10 + speedBonus + streakBonus;
+    score += gained;
+    els.fb.className = 'feedback right show';
+    els.fb.innerHTML = `✅ 答啱！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
+  } else {
+    buttons[idx].classList.add('wrong');
+    buttons[q.cor].classList.add('correct');
+    streak = 0;
+    wrongs++;
+    els.fb.className = 'feedback wrong show';
+    els.fb.innerHTML = `❌ 答錯了！正確：<b>${q.ranges[q.cor]}</b><br>💡 ${q.h}`;
+    if (window.LWWFWrong) {
+      window.LWWFWrong.record({
+        chapter: CHAPTER,
+        question: `${q.n}`,
+        correct_answer: q.ranges[q.cor],
+        student_answer: q.ranges[idx],
+        source: 'game2',
+      }).catch(() => null);
+    }
+    if (wrongs >= 5) { setTimeout(() => endGame('lock'), 1500); return; }
+  }
+  els.score.textContent = score;
+  els.streak.textContent = streak;
+  setTimeout(nextQ, 1800);
+}
+
+function timeUp() {
+  const q = QUESTIONS[qIdx];
+  const buttons = els.rangesEl.querySelectorAll('.range-btn');
+  buttons.forEach(b => b.disabled = true);
+  buttons[q.cor].classList.add('correct');
+  streak = 0;
+  wrongs++;
+  els.fb.className = 'feedback wrong show';
+  els.fb.innerHTML = `⏰ 時間到！正確：<b>${q.ranges[q.cor]}</b><br>💡 ${q.h}`;
+  if (wrongs >= 5) { setTimeout(() => endGame('lock'), 1500); return; }
+  setTimeout(nextQ, 1800);
+}
+
+function nextQ() {
+  qIdx++;
+  if (qIdx >= QUESTIONS.length) endGame('done');
+  else renderQ();
+}
+
+function endGame(reason) {
+  clearInterval(timerInterval);
+  els.playScreen.classList.remove('active');
+  els.endScreen.classList.add('active');
+  if (reason === 'lock') {
+    els.endTitle.textContent = '🔒 連錯 5 次！皮卡丘叫你重頭再嚟！';
+  } else {
+    els.endTitle.textContent = '⚡ 道館徽章到手！完成挑戰！';
+  }
+  if (score >= 200) coins = 3; else if (score >= 130) coins = 2; else if (score >= 70) coins = 1;
+  els.finalScore.textContent = score;
+  els.finalStreak.textContent = maxStreak;
+  els.finalCoins.textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
+  saveScore();
+}
+
+function saveScore() {
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, maxStreak, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+}
+</script>
+<script src="../common/wrong-tracker.js"></script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="18"></script>
+</body></html>

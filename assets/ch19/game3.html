@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第19課 · 遊戲 3 — 妮妮天平原理挑戰（解一步方程＋驗算）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;
+    background:linear-gradient(135deg,#FFAB91 0%,#FFCCBC 50%,#FFE0B2 100%);
+    min-height:100vh;color:#3E2723;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:
+    radial-gradient(circle at 20% 30%,rgba(255,255,255,0.4) 2px,transparent 2px),
+    radial-gradient(circle at 70% 70%,rgba(255,255,255,0.3) 3px,transparent 3px);
+    background-size:140px 140px,180px 180px;pointer-events:none;z-index:-1}
+  header{background:linear-gradient(135deg,#D84315,#BF360C);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.15)}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:680px;margin:0 auto;padding:14px 12px}
+  .stats{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:14px;margin-bottom:14px;box-shadow:0 4px 12px rgba(216,67,21,0.15);font-weight:800}
+  .stats .item{display:flex;flex-direction:column;align-items:center;font-size:.82rem;color:#5D4037}
+  .stats .val{font-size:1.4rem;color:#D84315;font-weight:900;line-height:1}
+  .scene{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(216,67,21,0.15);margin-bottom:14px}
+  .speech{background:linear-gradient(135deg,#FFCCBC,#FFAB91);border:2px solid #D84315;padding:12px 14px;border-radius:12px;margin-bottom:14px;font-weight:700;color:#3E2723;font-size:0.92rem;line-height:1.55}
+  .speech::before{content:'⚖️ 妮妮的天平筆記：';display:block;font-weight:900;color:#D84315;margin-bottom:3px}
+
+  /* Balance scale display */
+  .scale-display{background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border:3px solid #D84315;border-radius:14px;padding:18px 14px;margin-bottom:14px;text-align:center}
+  .scale-eq{font-size:1.6rem;font-weight:900;color:#3E2723;margin:8px 0;background:white;padding:14px 18px;border-radius:12px;border:2px dashed #D84315;display:inline-block}
+  .scale-icon{font-size:3rem;margin:6px 0}
+  .scale-hint{font-size:0.9rem;color:#5D4037;margin-top:8px;font-weight:600}
+
+  /* Step input */
+  .step-q{background:linear-gradient(135deg,#FFF8E1,#FFE0B2);border:3px dashed #E65100;border-radius:14px;padding:14px;margin-bottom:14px}
+  .step-q-label{font-weight:900;color:#BF360C;font-size:1.05rem;margin-bottom:10px;line-height:1.5}
+  .step-row{background:white;padding:12px;border-radius:10px;border:2px solid #FFB74D;display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:10px}
+  .step-row .lab{font-size:0.9rem;color:#BF360C;font-weight:800}
+  .step-row .formula{font-size:0.85rem;color:#5D4037;line-height:1.5}
+  .step-row input{width:120px;padding:10px;border:2px solid #FFB74D;border-radius:6px;font-size:1.05rem;text-align:center;font-weight:900;font-family:inherit}
+  .step-row input:focus{outline:none;border-color:#D84315;background:#FFF3E0}
+  .step-row input.ok{background:#C8E6C9;border-color:#2E7D32}
+  .step-row input.bad{background:#FFCDD2;border-color:#C62828;animation:shake .3s}
+
+  .verify-row{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:3px solid #2E7D32;padding:14px;border-radius:14px;margin-top:14px}
+  .verify-row .lab{font-weight:900;color:#1B5E20;font-size:1rem;margin-bottom:8px;display:block}
+  .verify-row .body{color:#1B5E20;font-size:0.9rem;line-height:1.6}
+
+  .submit-btn{width:100%;margin-top:14px;padding:14px;background:linear-gradient(135deg,#D84315,#BF360C);color:white;border:none;border-radius:14px;cursor:pointer;font-weight:900;font-size:1.1rem;font-family:inherit}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .feedback{margin-top:12px;padding:12px;border-radius:10px;font-weight:700;display:none;line-height:1.55;font-size:0.95rem}
+  .feedback.show{display:block;animation:fadeIn .3s}
+  .feedback.right{background:#E8F5E9;color:#2E7D32;border:2px solid #4CAF50}
+  .feedback.wrong{background:#FFEBEE;color:#C62828;border:2px solid #F44336}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .next-btn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#43A047,#2E7D32);color:white;border:none;border-radius:14px;font-weight:900;font-size:1.1rem;cursor:pointer;margin-top:10px;font-family:inherit}
+  .next-btn.show{display:block;animation:pop .4s}
+  @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+  .progress-bar{height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;margin-bottom:14px}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#FF7043,#D84315);transition:width .4s;width:0}
+  .lock-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+  .lock-modal.show{display:flex}
+  .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center}
+  .lock-box .big{font-size:3.5rem}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px;font-family:inherit}
+  .done-banner{background:linear-gradient(135deg,#FFB74D,#FF7043);color:white;padding:18px;border-radius:14px;text-align:center;font-weight:900;display:none;font-size:1.05rem;line-height:1.55}
+  .done-banner.show{display:block;animation:pop .5s}
+  .coin-row{font-size:2.5rem;letter-spacing:6px;margin:10px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚖️ 第19課 · 遊戲 3 — 妮妮天平原理挑戰</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="stats">
+    <div class="item"><div class="val" id="qNum">1/6</div><div>關卡</div></div>
+    <div class="item"><div class="val" id="score">0</div><div>得分</div></div>
+    <div class="item"><div class="val" id="coins">🪙×0</div><div>金幣</div></div>
+    <div class="item"><div class="val" id="wrongs">0/5</div><div>錯誤</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+  <div class="scene">
+    <div class="speech">看天平方程 → 兩邊作相同運算（加／減／乘／除） → 求未知數值 → 代回原方程驗算。<br>📐 提示：「＋」用「－」對消；「－」用「＋」補回；「×」用「÷」對消；「÷」用「×」對消。</div>
+    <div class="scale-display">
+      <div class="scale-icon">⚖️</div>
+      <div class="scale-eq" id="eqDisplay">x + 5 = 12</div>
+      <div class="scale-hint" id="scaleHint">求 x 的值</div>
+    </div>
+    <div class="step-q">
+      <div class="step-q-label" id="qLabel">用天平原理一步解出未知數，並進行代入驗算：</div>
+      <div class="step-row">
+        <span class="lab">第 1 步：兩邊同時做的運算</span>
+        <span class="formula" id="step1Formula">在等號兩邊同時 ?</span>
+        <input type="number" id="step1Input" placeholder="運算結果">
+      </div>
+      <div class="step-row">
+        <span class="lab">第 2 步：未知數的值</span>
+        <span class="formula" id="step2Formula">未知數 = ?</span>
+        <input type="number" id="step2Input" placeholder="未知數值">
+      </div>
+      <div class="step-row">
+        <span class="lab">第 3 步：代入驗算（左邊計算結果）</span>
+        <span class="formula" id="step3Formula">左邊 = ?（應等於右邊）</span>
+        <input type="number" id="step3Input" placeholder="左邊驗算">
+      </div>
+    </div>
+    <div class="verify-row">
+      <span class="lab">📊 天平原理</span>
+      <div class="body" id="verifyBody">等號兩邊同時做相同運算，天平依然保持平衡。代入後若左邊 = 右邊，答案正確！</div>
+    </div>
+    <button class="submit-btn" onclick="submitAns()">✓ 提交答案</button>
+    <div class="feedback" id="fb"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">下一關 ▶</button>
+  </div>
+  <div class="done-banner" id="doneBanner">
+    🌸 妮妮天平挑戰通關！<br>
+    <span id="finalScore"></span><br>
+    <span class="coin-row" id="finalCoins"></span>
+    <a href="index.html" style="color:white;background:linear-gradient(135deg,#D84315,#BF360C);padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px">回課題</a>
+  </div>
+</div>
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box">
+    <div class="big">🔒</div>
+    <h2>妮妮話：要重新平衡天平！</h2>
+    <p>你已經錯咗 <b>5 次</b>。要由第 1 關重新挑戰天平。</p>
+    <button onclick="restart()">🔁 從頭再嚟</button>
+  </div>
+</div>
+<script>
+const CHAPTER = 19, GAME_KEY = 'game3';
+
+// 6 道：天平原理解一步方程 + 代入驗算
+// 每題：eq（顯示方程）、operation（兩邊運算）、unknownVal（未知數值）、leftVerify（左邊代入結果，等於右邊數）
+const QUESTIONS = [
+  {
+    title:'加法方程',
+    eq:'x + 5 = 12',
+    hint:'求 x 的值',
+    step1:'兩邊同時減 5，右邊得',
+    step1Ans:7,           // 12 - 5 = 7
+    step2:'未知數 x =',
+    step2Ans:7,
+    step3:'代入：左邊 = 7 + 5 =',
+    step3Ans:12,          // 應等於 12（右邊）
+    explain:'x + 5 = 12 → 兩邊減 5 → x = 7。代入：左邊 = 7 + 5 = 12 = 右邊，答案正確！'
+  },
+  {
+    title:'減法方程',
+    eq:'y − 8 = 14',
+    hint:'求 y 的值',
+    step1:'兩邊同時加 8，右邊得',
+    step1Ans:22,          // 14 + 8 = 22
+    step2:'未知數 y =',
+    step2Ans:22,
+    step3:'代入：左邊 = 22 − 8 =',
+    step3Ans:14,
+    explain:'y − 8 = 14 → 兩邊加 8 → y = 22。代入：左邊 = 22 − 8 = 14 = 右邊，答案正確！'
+  },
+  {
+    title:'乘法方程',
+    eq:'4z = 32',
+    hint:'求 z 的值',
+    step1:'兩邊同時除以 4，右邊得',
+    step1Ans:8,           // 32 ÷ 4 = 8
+    step2:'未知數 z =',
+    step2Ans:8,
+    step3:'代入：左邊 = 4 × 8 =',
+    step3Ans:32,
+    explain:'4z = 32 → 兩邊除以 4 → z = 8。代入：左邊 = 4 × 8 = 32 = 右邊，答案正確！'
+  },
+  {
+    title:'除法方程',
+    eq:'a ÷ 3 = 9',
+    hint:'求 a 的值',
+    step1:'兩邊同時乘以 3，右邊得',
+    step1Ans:27,          // 9 × 3 = 27
+    step2:'未知數 a =',
+    step2Ans:27,
+    step3:'代入：左邊 = 27 ÷ 3 =',
+    step3Ans:9,
+    explain:'a ÷ 3 = 9 → 兩邊乘 3 → a = 27。代入：左邊 = 27 ÷ 3 = 9 = 右邊，答案正確！'
+  },
+  {
+    title:'加法方程（較大值）',
+    eq:'b + 17 = 29',
+    hint:'求 b 的值（妮妮的茶杯）',
+    step1:'兩邊同時減 17，右邊得',
+    step1Ans:12,
+    step2:'未知數 b =',
+    step2Ans:12,
+    step3:'代入：左邊 = 12 + 17 =',
+    step3Ans:29,
+    explain:'b + 17 = 29 → 兩邊減 17 → b = 12。代入：左邊 = 12 + 17 = 29 = 右邊，答案正確！'
+  },
+  {
+    title:'減法方程（兔子布偶）',
+    eq:'c − 45 = 155',
+    hint:'求 c 的值（妮妮兔子布偶原本重量）',
+    step1:'兩邊同時加 45，右邊得',
+    step1Ans:200,         // 155 + 45 = 200
+    step2:'未知數 c =',
+    step2Ans:200,
+    step3:'代入：左邊 = 200 − 45 =',
+    step3Ans:155,
+    explain:'c − 45 = 155 → 兩邊加 45 → c = 200。代入：左邊 = 200 − 45 = 155 = 右邊，答案正確！'
+  }
+];
+
+let qIdx = 0, score = 0, wrongs = 0, coins = 0;
+const TOTAL = QUESTIONS.length;
+const els = {};
+['qNum','score','coins','wrongs','pfill','eqDisplay','scaleHint','qLabel','step1Formula','step2Formula','step3Formula','step1Input','step2Input','step3Input','verifyBody','fb','nextBtn','doneBanner','lockModal'].forEach(id => els[id] = document.getElementById(id));
+
+function render() {
+  const q = QUESTIONS[qIdx];
+  els.qNum.textContent = `${qIdx+1}/${TOTAL}`;
+  els.score.textContent = score;
+  els.coins.textContent = `🪙×${coins}`;
+  els.wrongs.textContent = `${wrongs}/5`;
+  els.pfill.style.width = ((qIdx)/TOTAL*100)+'%';
+  els.eqDisplay.textContent = q.eq;
+  els.scaleHint.textContent = q.hint;
+  els.qLabel.innerHTML = `<b>${q.title}</b>：用天平原理一步解 <code>${q.eq}</code>，並完成代入驗算：`;
+  els.step1Formula.textContent = q.step1;
+  els.step2Formula.textContent = q.step2;
+  els.step3Formula.textContent = q.step3;
+  els.verifyBody.textContent = '等號兩邊同時做相同運算，天平依然保持平衡。代入後若左邊 = 右邊，答案正確！';
+  ['step1Input','step2Input','step3Input'].forEach(k => {
+    els[k].value = '';
+    els[k].disabled = false;
+    els[k].classList.remove('ok','bad');
+  });
+  els.fb.classList.remove('show');
+  els.nextBtn.classList.remove('show');
+}
+
+function submitAns() {
+  const q = QUESTIONS[qIdx];
+  const v1 = parseInt(els.step1Input.value);
+  const v2 = parseInt(els.step2Input.value);
+  const v3 = parseInt(els.step3Input.value);
+  if (isNaN(v1) || isNaN(v2) || isNaN(v3)) { els.step1Input.focus(); return; }
+  const ok1 = v1 === q.step1Ans;
+  const ok2 = v2 === q.step2Ans;
+  const ok3 = v3 === q.step3Ans;
+  els.step1Input.classList.toggle('ok', ok1); els.step1Input.classList.toggle('bad', !ok1);
+  els.step2Input.classList.toggle('ok', ok2); els.step2Input.classList.toggle('bad', !ok2);
+  els.step3Input.classList.toggle('ok', ok3); els.step3Input.classList.toggle('bad', !ok3);
+  if (ok1 && ok2 && ok3) {
+    score += 15;
+    ['step1Input','step2Input','step3Input'].forEach(k => els[k].disabled = true);
+    els.fb.className = 'feedback right show';
+    els.fb.innerHTML = `✅ 完美解題！${q.explain}`;
+    els.nextBtn.classList.add('show');
+  } else {
+    wrongs++;
+    els.wrongs.textContent = `${wrongs}/5`;
+    els.fb.className = 'feedback wrong show';
+    let msg = '❌ ';
+    if (!ok1) msg += '第 1 步運算結果錯。';
+    if (!ok2) msg += '第 2 步未知數值錯。';
+    if (!ok3) msg += '第 3 步驗算結果錯。';
+    msg += `<br>💡 ${q.explain}`;
+    els.fb.innerHTML = msg;
+    if (window.LWWFWrong) {
+      window.LWWFWrong.record({
+        chapter: CHAPTER,
+        question: `解方程 ${q.eq}（含驗算）`,
+        correct_answer: `運算 ${q.step1Ans}；解 ${q.step2Ans}；驗算 ${q.step3Ans}`,
+        student_answer: `${v1} / ${v2} / ${v3}`,
+        source: 'game3',
+      }).catch(() => null);
+    }
+    if (wrongs >= 5) { setTimeout(triggerLock, 700); }
+  }
+  els.score.textContent = score;
+}
+
+function nextQ() { qIdx++; if (qIdx >= TOTAL) { finishGame(); return; } render(); }
+function finishGame() {
+  if (score >= 80) coins = 3; else if (score >= 60) coins = 2; else if (score >= 40) coins = 1;
+  saveScore();
+  document.querySelector('.scene').style.display = 'none';
+  document.getElementById('finalScore').textContent = `得分：${score} / 90`;
+  document.getElementById('finalCoins').textContent = '🪙'.repeat(coins) + '⚪'.repeat(3-coins);
+  els.doneBanner.classList.add('show');
+}
+function triggerLock(){els.lockModal.classList.add('show');}
+function restart(){qIdx=0;score=0;wrongs=0;coins=0;els.lockModal.classList.remove('show');render();}
+function saveScore() {
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+}
+render();
+</script>
+<script src="../common/wrong-tracker.js"></script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js" data-current-ch="19"></script>
+</body></html>

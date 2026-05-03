@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第19課 · 簡報 1 — 不規則立體（分割法+填補法）</title>
+<title>第19課 · 簡報 1 — 方程的解（代入檢驗）</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%); min-height: 100vh; color: #222; position: relative; overflow-x: hidden; }
@@ -80,7 +80,7 @@
 <body>
 
 <header>
-  <h1>📗 第19課 · 簡報 1 — 不規則立體（分割法+填補法）</h1>
+  <h1>📗 第19課 · 簡報 1 — 方程的解（代入檢驗）</h1>
   <a href="index.html" class="back">← 返回第19課</a>
 </header>
 
@@ -126,56 +126,56 @@
 <script>
 const PREFIX = 'slides1', TOTAL = 15, CHAPTER = 19, DECK_KEY = 'slides1';
 
-// 🚨 v5 SLIDE_QUESTIONS — 嚴格按 NLM JPG 內容（OCR 對齊）
-// Ch16 Part 1: 認識 cm³ + 量度體積 — 蠟筆小新 小新主角
+// 🚨 v6 SLIDE_QUESTIONS — 嚴格按 NLM JPG 內容（OCR 對齊 ch19 Part 2）
+// Ch19 Part 2: 方程的解（代入檢驗）— 蠟筆小新主題（小新／風間／妮妮／正男／阿呆）
 // 結構：p1 標題 / p2-4 教學 / p5+7+9+11+13 Q頁 / p6+8+10+12+14 A頁 / p15 總結 + voice
 const SLIDE_QUESTIONS = [
-  // p5 任務一：量度立體 P 與 Q（高瘦 vs 扁平）邊個體積大？
-  { afterPage:5, type:'mc', q:'任務一：立體 P（高瘦）vs 立體 Q（扁平）邊個體積大？',
-    options:['立體 P 大','立體 Q 大','一樣大','睇唔到要量度'], correct:2,
-    hint:'唔好被外表騙！拆解後兩個都係 12 個數粒 = 12 cm³，所以一樣大！法則：數粒總數一樣，體積就一樣。' },
-  { afterPage:5, type:'mc', q:'🔥 火眼金睛：點解外表 P 高瘦、Q 扁平，但體積仲可以一樣？',
-    options:['因為佢哋都用同一種方塊砌成','因為唔同形狀有唔同單位','因為高度比較重要','其實唔可以一樣'], correct:0,
-    hint:'量度體積睇嘅係「總共幾多個 1 cm³ 數粒」，唔係外表！' },
+  // p5 關卡一：妮妮解方程 m+8=30，算出 m=22。請用代入檢驗判斷
+  { afterPage:5, type:'mc', q:'關卡一：妮妮解方程 m + 8 = 30，她算出 m = 22。請判斷 m = 22 是否方程的解？',
+    options:['是，因為 22 + 8 = 30','否，因為左邊不等於右邊','無法判斷','要看其他條件'], correct:0,
+    hint:'代入檢驗：當 m = 22 時，左邊 = 22 + 8 = 30 = 右邊。左邊 = 右邊，所以 m = 22 是方程的解！' },
+  { afterPage:5, type:'fill', q:'🔥 寫出代入檢驗：當 m = 22 時，左邊 = 22 + 8 = ___（填數值）',
+    accept:['30'],
+    hint:'計算 22 + 8 = 30，與右邊 30 相等。' },
 
-  // p7 Lv.1 新手村試煉：簡單立體 8 個 1 cm³ 數粒
-  { afterPage:7, type:'mc', q:'Lv.1 新手村：立體由 1 cm³ 數粒組成，請數總數，體積係多少？（圖示 4+4=8 個方塊）',
-    options:['6 cm³','7 cm³','8 cm³','12 cm³'], correct:2,
-    hint:'直接點數方塊，共 8 個，每個 1 cm³ → 8 cm³。' },
-  { afterPage:7, type:'fill', q:'⚒️ 數粒練習：3×2×2 嘅長方體，體積 = ___ cm³',
-    accept:['12','12 cm³','12cm³'],
-    hint:'3 × 2 × 2 = 12 個方塊 → 12 cm³。' },
+  // p7 關卡二：阿呆解方程 e/3 = 12，得到 e = 4（錯誤）。請用代入檢驗找出錯處
+  { afterPage:7, type:'mc', q:'關卡二：阿呆解方程 e ÷ 3 = 12，他直接看到 12 和 3 就相除，得 e = 4。請用代入檢驗判斷他算對了嗎？',
+    options:['對的，e = 4 是正確的解','錯誤，因為左邊 4 ÷ 3 ≠ 12','對的，與右邊吻合','無法判斷'], correct:1,
+    hint:'代入檢驗：當 e = 4 時，左邊 = 4 ÷ 3 ≈ 1.33，不等於右邊 12。所以 e = 4 不是方程的解！正確解應為 e = 36。' },
+  { afterPage:7, type:'mc', q:'🔥 阿呆的正確解應該是多少？',
+    options:['e = 4','e = 9','e = 15','e = 36'], correct:3,
+    hint:'e ÷ 3 = 12 → 兩邊乘以 3 → e = 12 × 3 = 36。代入：36 ÷ 3 = 12 ✓' },
 
-  // p9 Lv.2 視線死角：雙層立體（隱藏方塊都要算）
-  { afterPage:9, type:'mc', q:'Lv.2 視線死角：雙層立體，每層 9 個 × 2 層（包括隱藏支撐方塊），體積？',
-    options:['9 cm³','12 cm³','18 cm³','27 cm³'], correct:2,
-    hint:'透視術發動！每層 9 個 × 2 層 = 18 個數粒 = 18 cm³。睇唔見嘅底層方塊都要算入去！' },
-  { afterPage:9, type:'mc', q:'🔥 估算挑戰：點解只數見到嘅方塊會算錯？',
-    options:['因為下層支撐方塊被擋住','因為上層方塊太細','因為單位錯','因為形狀唔規則'], correct:0,
-    hint:'底層方塊撐起上層，所以實體存在。要用「分層計算」攻略：每層 × 層數！' },
+  // p9 關卡三：正男 (u=7) vs 小新 (u=24) 的天平對決，方程 4u = 28
+  { afterPage:9, type:'mc', q:'關卡三：4u = 28。正男答 u = 7，小新答 u = 24。誰的解才是對的？',
+    options:['正男（u = 7）','小新（u = 24）','兩個都對','兩個都錯'], correct:0,
+    hint:'代入檢驗正男：左邊 = 4 × 7 = 28 = 右邊 ✓。代入檢驗小新：左邊 = 4 × 24 = 96 ≠ 28 ✗。所以正男的解才是對的！' },
+  { afterPage:9, type:'fill', q:'🔥 代入正男答案 u = 7：左邊 = 4 × 7 = ___（填數值，與右邊 28 比較）',
+    accept:['28'],
+    hint:'4 × 7 = 28，剛好等於右邊 28，所以 u = 7 正確。' },
 
-  // p11 Lv.3 不規則建築 L 型 — 解法係「分割術」
-  { afterPage:11, type:'mc', q:'Lv.3 不規則建築：高低不平嘅 L 型，最有效計算方法？',
-    options:['直接點數可見方塊','把它分割成 2 個簡單長方體再加總','無法計算'], correct:1,
-    hint:'解鎖技能 — 分割術 (Splitting Method)！化繁為簡，分開部份 A + 部份 B。' },
-  { afterPage:11, type:'mc', q:'🔥 進階：分割術點解 work？',
-    options:['因為兩個簡單長方體加總 = 原本不規則體積','因為 L 型有特殊公式','因為唔可以唔分割','因為睇唔清楚'], correct:0,
-    hint:'兩個分開計嘅體積加埋 = 原本嘅體積（無遺漏）。' },
+  // p11 關卡四：解方程 m/4 - 5 = 7，得 m = 33（錯誤示範運算順序）。請驗算找出 m=33 為什麼錯
+  { afterPage:11, type:'mc', q:'關卡四：解方程 m ÷ 4 − 5 = 7，有人得出 m = 33。請用代入檢驗判斷此解是否正確？',
+    options:['正確，m = 33','錯誤，因為左邊 ≠ 右邊','正確，因為運算順序合理','無法判斷'], correct:1,
+    hint:'代入檢驗：當 m = 33 時，左邊 = 33 ÷ 4 − 5 = 8.25 − 5 = 3.25，不等於右邊 7。所以 m = 33 是錯的！正確解為 m = 48。' },
+  { afterPage:11, type:'mc', q:'🔥 為什麼要用代入檢驗？',
+    options:['可以抓出運算順序錯誤的陷阱','只是浪費時間','只用於加法方程','看心情用'], correct:0,
+    hint:'驗算是抓出「運算順序錯誤」的最強武器！只要左邊 = 右邊就證明解是對的。' },
 
-  // p13 Lv.MAX 苦力怕破壞：殘缺長方體 — 解法係「填補術」
-  { afterPage:13, type:'mc', q:'Lv.MAX 苦力怕破壞：完美長方體被炸出大洞，剩下體積點計？',
-    options:['用分割術切細粒','放棄唔計','用填補術（補成完整 - 缺洞虛擬體積）'], correct:2,
-    hint:'終極奧義 — 填補術 (Filling Method)！想像補成完整長方體 - 減去虛擬補咗嘅部分。' },
-  { afterPage:13, type:'mc', q:'🔥 終極：分割術 vs 填補術 點揀？',
-    options:['L 型分割、殘缺型填補','永遠用分割術','永遠用填補術','睇心情'], correct:0,
-    hint:'凸出多塊用分割（化繁為簡），凹咗洞用填補（逆向思考）！' },
+  // p13 關卡五：糖果應用題 u/5 = 10，求 u（一包糖果有 u 粒，平均分成 5 份每份 10 粒）
+  { afterPage:13, type:'mc', q:'關卡五：一包糖果有 u 粒，平均分成 5 份，每份有 10 粒。小新列出方程 u ÷ 5 = 10，解出 u = 50。除了代入檢驗，還要怎樣才完整？',
+    options:['只代入方程就夠','要把答案放回原文字題重讀一次','只看數字不需檢查','直接相信小新'], correct:1,
+    hint:'解應用題還必須「依題意驗算」！把 u = 50 放回原題：50 粒糖果平均分成 5 份，每份 50 ÷ 5 = 10 粒。完全符合題目資訊！' },
+  { afterPage:13, type:'fill', q:'🔥 把 u = 50 代入原方程：左邊 = 50 ÷ 5 = ___（與右邊 10 比較）',
+    accept:['10'],
+    hint:'50 ÷ 5 = 10，等於右邊 10，所以 u = 50 是正確的解。' },
 
-  // p15 🎤 Voice question (v5 P.5 — Feynman 教學法)
+  // p15 🎤 Voice question (Feynman 教學法 — 解釋代入檢驗的原理)
   { afterPage:15, type:'voice',
-    q:'🎤 小新挑戰：用 Feynman 方法，假設你係老師，教同學點計 3×2×2 個方塊砌成嘅長方體體積。講 20-30 秒。',
-    concept:'量體積 = 數方塊（長×闊×高），單位 cm³',
-    rubric:'講出：3×2×2=12、12 個方塊、單位 cm³（讀立方厘米）',
-    hint:'講到答案 12 cm³ + 任何一個原理就合格啦！例如「3×2×2=12 個方塊，每個 1 cm³ 所以 12 cm³」就好好（~80 分）。再加埋「隱藏方塊都要算」會更高分 💪' }
+    q:'🎤 小新挑戰：用 Feynman 方法，假設你係老師，向同學解釋「為什麼解方程後要做代入檢驗？」 講 20-30 秒。',
+    concept:'代入檢驗 = 把求出的未知數值代回原方程，計左邊看是否等於右邊',
+    rubric:'講出：把答案代回原方程、左邊計算、與右邊比較、若相等則答案正確',
+    hint:'講到「代入檢驗就是把答案放回原方程，看左邊是否等於右邊」就 80 分啦！再加埋「可以抓出計算錯誤」會更高分 💪' }
 ];
 
 let idx = 0;
@@ -301,7 +301,7 @@ function checkMC(qIdx, selected, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答啱！小新都讚你叻！';
     autoAdvance(pageNum);
   } else {
     btns[selected].classList.add('wrong');
@@ -329,7 +329,7 @@ function checkFill(qIdx, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答啱！小新都讚你叻！';
     autoAdvance(pageNum);
   } else {
     input.classList.remove('wrong'); void input.offsetWidth; input.classList.add('wrong');

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第19課 · 簡報 3 — 排疊盛載 + 切割題</title>
+<title>第19課 · 簡報 3 — 代數式與方程概念（小新塗鴉筆記）</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%); min-height: 100vh; color: #222; position: relative; overflow-x: hidden; }
@@ -66,7 +66,7 @@
 </head>
 <body>
 <header>
-  <h1>📙 第19課 · 簡報 3 — 排疊盛載 + 切割題</h1>
+  <h1>📙 第19課 · 簡報 3 — 代數式與方程概念（小新塗鴉筆記）</h1>
   <a href="index.html" class="back">← 返回第19課</a>
 </header>
 <div class="wrap">
@@ -99,56 +99,56 @@
 </div>
 <script>
 const PREFIX = 'slides3', TOTAL = 15, CHAPTER = 19, DECK_KEY = 'slides3';
-// 🚨 v5 SLIDE_QUESTIONS — OCR 對齊 NLM JPG
-// Ch16 Part 3: 選擇合適單位 + 換算應用 — 蠟筆小新 苦力怕 + 鍊金術士主角
-// 結構：p1 標題 / p2-4 教學 / p5,7,9,11,13 Q頁（換算+情境分類+Boss 綜合）/ p15 總結 + voice
+// 🚨 v6 SLIDE_QUESTIONS — OCR 對齊 NLM JPG ch19 Part 1
+// Ch19 Part 1: 代數式與方程概念 — 小新塗鴉筆記本（盲盒漫畫情境）
+// 結構：p1 標題 / p2-4 教學 / p5,7,9,11,13 Q頁 / p15 總結 + voice
 const SLIDE_QUESTIONS = [
-  // p5 終極合成公式：1 m³ = 1,000,000 cm³
-  { afterPage:5, type:'fill', q:'⚒️ 終極合成公式：1 個巨大嘅立方米方塊 = ___ 個微小嘅立方厘米方塊？',
-    accept:['1000000','1,000,000','100萬','一百萬'],
-    hint:'1 m³ = 100 cm × 100 cm × 100 cm = 1,000,000 cm³！記住呢個魔法轉換公式。' },
-  { afterPage:5, type:'mc', q:'🔥 火眼金睛：5,000,000 cm³ = ? m³',
-    options:['0.5 m³','5 m³','50 m³','500 m³'], correct:1,
-    hint:'5,000,000 ÷ 1,000,000 = 5 m³。除以 100 萬就係 cm³ → m³ 嘅 reverse spell！' },
+  // p5 互動 Q1：找出方程式
+  { afterPage:5, type:'mc', q:'互動 Q1：小新的隨堂考！下面哪個才是真正的「方程式」？',
+    options:['(A) y − 4','(B) 10 + 5 = 15','(C) y − 4 = 32','(D) 30 ÷ 5'], correct:2,
+    hint:'方程必須同時具備兩個條件：1) 含有未知數（如 y），2) 是等式（有等號）。(A) 沒有等號 → 代數式。(B) 沒有未知數 → 純等式。(C) 同時具備 → 才是方程！' },
+  { afterPage:5, type:'mc', q:'🔥 為什麼 (A) y − 4 不是方程？',
+    options:['因為沒有等號','因為沒有未知數','因為數字太小','因為字母 y 不對'], correct:0,
+    hint:'(A) y − 4 只有未知數，沒有等號 → 只是代數式。要有等號才算方程！' },
 
-  // p7 裝備庫檢查：大型載具篇 — 雙層巴士 → m³
-  { afterPage:7, type:'mc', q:'裝備庫檢查：雙層巴士應該用咩單位記體積？',
-    options:['cm³','m³'], correct:1,
-    hint:'巴士遠遠大過 1 m³！如果用 cm³ 數字會爆表（幾千萬）。正確裝備：m³！' },
-  { afterPage:7, type:'mc', q:'🔥 量感：一架雙層巴士體積大約？',
-    options:['7 m³','70 m³','700 m³','7,000 m³'], correct:1,
-    hint:'雙層巴士約 12m × 2.5m × 2.5m ≈ 75 m³，最接近 70 m³！' },
+  // p7 互動 Q2：看圖列出方程
+  { afterPage:7, type:'mc', q:'互動 Q2：看圖列方程！小白原本吃了 5 塊狗餅乾，小新又餵了小白 E 塊，小白共吃了 35 塊。哪個方程正確？',
+    options:['5 + E = 35','5 − E = 35','E ÷ 5 = 35','E × 5 = 35'], correct:0,
+    hint:'原本 5 塊 ＋ 新加 E 塊 = 總共 35 塊 → 5 + E = 35。先把已知量和未知量分清楚！' },
+  { afterPage:7, type:'fill', q:'🔥 列方程練習：小新原有 w 本漫畫書，媽媽再買 7 本，現在共有 28 本。寫出方程：w + 7 = ___',
+    accept:['28'],
+    hint:'原有 w ＋ 新買 7 = 現在 28 → w + 7 = 28。' },
 
-  // p9 體積光譜：尋找單位的切換點（魔方/電話/書包 vs 巴士/貨櫃/水塘）
-  { afterPage:9, type:'mc', q:'體積光譜判斷：「展開雙臂嘅箱子」係 1 m³ 嘅切換點。下面邊個跨越咗呢個結界（用 m³）？',
-    options:['魔方','智能電話','書包','雙層巴士'], correct:3,
-    hint:'魔方/手機/書包都細過「展開雙臂嘅箱子」 → cm³ 領域。巴士遠大過 → m³ 領域！' },
-  { afterPage:9, type:'mc', q:'🔥 進階：邊個物體最接近 1 m³ 嘅 boundary？',
-    options:['細嬰兒嬰兒車','一支鉛筆','一架巴士','一座山'], correct:0,
-    hint:'1 m³ ≈ 4 個小朋友空間 ≈ 嬰兒車 size。鉛筆細好多用 cm³，巴士大好多用 m³。' },
+  // p9 互動 Q3：幫小新解方程 5+E=35
+  { afterPage:9, type:'mc', q:'互動 Q3：幫小新解方程 5 + E = 35。利用平衡法（左右兩邊同減同樣的數）找出 E 的值。E 等於多少？',
+    options:['E = 30','E = 40','E = 7','E = 175'], correct:0,
+    hint:'要把 E 一邊單獨留下，必須兩邊同時減 5：5 + E − 5 = 35 − 5 → E = 30。代入：左邊 = 5 + 30 = 35 = 右邊 ✓' },
+  { afterPage:9, type:'fill', q:'🔥 寫出平衡法步驟：5 + E = 35，兩邊同時減 ___（填數字）',
+    accept:['5'],
+    hint:'要消去左邊的「+ 5」，必須兩邊同時減 5。' },
 
-  // p11 估計挑戰 Lv.1 客廳尋寶（電視遙控器 → cm³, 三人沙發 → m³）
-  { afterPage:11, type:'mc', q:'估計挑戰：客廳尋寶 — 電視遙控器 vs 三人沙發，邊個全用 m³？',
-    options:['遙控器','三人沙發','兩個都用 m³','兩個都用 cm³'], correct:1,
-    hint:'遙控器細物 → cm³（約 200 cm³）。三人沙發大物（成個梳化） → m³（約 1.5 m³）。' },
-  { afterPage:11, type:'mc', q:'🔥 估算：三人沙發大約幾多 m³？',
-    options:['0.1 m³','1.5 m³','15 m³','150 m³'], correct:1,
-    hint:'三人沙發約 2m × 0.8m × 0.9m ≈ 1.4 m³，最接近 1.5 m³！比 1 m³ 大少少。' },
+  // p11 互動 Q4：動感超人挑戰 j+8=19
+  { afterPage:11, type:'mc', q:'互動 Q4：動感超人發出挑戰！解方程 j + 8 = 19，要把 j 單獨留下，兩邊應該同時減去多少？',
+    options:['減去 8','減去 19','減去 11','減去 1'], correct:0,
+    hint:'要消去左邊的「+ 8」，兩邊必須同時減 8：j + 8 − 8 = 19 − 8 → j = 11。' },
+  { afterPage:11, type:'fill', q:'🔥 解出 j：j + 8 = 19 → j = ___',
+    accept:['11','j=11','j = 11'],
+    hint:'兩邊同時減 8：j = 19 − 8 = 11。' },
 
-  // p13 終極綜合挑戰 Boss Battle（4 個物件配合單位：擦膠/巨型郵輪/魔方/課室）
-  { afterPage:13, type:'mc', q:'Boss Battle 終極綜合：邊一組全部**單位啱晒**？',
-    options:['擦膠 8 cm³ + 魔方 216 cm³ + 巨型郵輪 150,000 m³ + 課室 120 m³','擦膠 8 m³ + 魔方 216 m³','所有都用 cm³','所有都用 m³'], correct:0,
-    hint:'細物 (擦膠 8 cm³, 魔方 216 cm³) 用 cm³。大物 (郵輪 15 萬 m³, 課室 120 m³) 用 m³。揀啱單位令數字 reasonable！' },
-  { afterPage:13, type:'mc', q:'🔥 終極：8 cm³ 嘅擦膠 vs 8 m³ 嘅嘢，邊個大幾多倍？',
-    options:['一樣','m³ 嘅大 100 倍','m³ 嘅大 1,000 倍','m³ 嘅大 1,000,000 倍'], correct:3,
-    hint:'8 m³ = 8 × 1,000,000 cm³ = 8,000,000 cm³，比 8 cm³ 大成 100 萬倍！呢個就係單位選錯嘅後果。' },
+  // p13 互動 Q5：解完 j=11 後怎驗算？
+  { afterPage:13, type:'mc', q:'互動 Q5：小新算完 j = 11，但他怕被美冴罵算錯。要怎樣才能確定 11 就是正確答案？',
+    options:['把答案 j = 11 代入原方程檢查左邊是否等於右邊','重新再算一次','問風間','直接相信自己'], correct:0,
+    hint:'代入驗算！把 j = 11 放回 j + 8 = 19：左邊 = 11 + 8 = 19 = 右邊。左右相等就證明答案正確！' },
+  { afterPage:13, type:'fill', q:'🔥 代入驗算：當 j = 11 時，左邊 = 11 + 8 = ___（與右邊 19 比較）',
+    accept:['19'],
+    hint:'11 + 8 = 19，等於右邊 19，所以 j = 11 是正確的解。' },
 
-  // p15 🎤 Voice question (v5 P.5 — 終極整合 LO #5)
+  // p15 🎤 Voice question — Feynman 教學法解釋代數式 vs 方程的分別
   { afterPage:15, type:'voice',
-    q:'🎤 鍊金術士挑戰：用 Feynman 方法，教同學點樣揀啱「cm³」定「m³」做單位。講 20-30 秒。',
-    concept:'細物用 cm³（如手機、書包），大物用 m³（如巴士、課室）',
-    rubric:'講出：細物用 cm³、大物用 m³、舉例（任何一對：手機/巴士、擦膠/水塘等）',
-    hint:'講到「細用 cm³ 大用 m³」+ 舉一個例就合格啦！例如「手機用 cm³，巴士用 m³」就好好（~80 分）。再加埋「點解唔可以亂用」（數字會爆表）會更高分 💪' }
+    q:'🎤 小新挑戰：用 Feynman 方法，向同學解釋「代數式」和「方程式」的分別。講 20-30 秒。',
+    concept:'代數式 = 用字母代替不知道的數字（例：w + 7）；方程式 = 含有未知數的等式，左右兩邊一樣重（例：w + 7 = 28）',
+    rubric:'講出：代數式只有未知數沒等號、方程式既有未知數又有等號、舉例（w+7 vs w+7=28）',
+    hint:'講到「方程式有等號，代數式沒有等號」就 80 分啦！再舉一個例（如：w + 7 是代數式，w + 7 = 28 是方程式）會更高分 💪' }
 ];
 let idx = 0;
 const slideQuizAnswered = {}, slideQuizWrong = {};
