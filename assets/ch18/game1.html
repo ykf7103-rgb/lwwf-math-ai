@@ -138,7 +138,7 @@ body{
     <img src="images/pikachu.png" alt="皮卡丘">
   </div>
   <div class="intro">
-    ⚡ 你係小智！跟皮卡丘一齊征服 <b>10 個道館</b>，
+    ⚡ 你是小智！跟皮卡丘一起征服 <b>10 個道館</b>，
     每個道館都有一個不規則立體要計算體積。請使用<b>分割法</b>或<b>填補法</b>解難！
     <br><br>
     📐 分割法：將不規則立體切成幾個簡單長方體，分別計算後加總。<br>
@@ -305,7 +305,7 @@ function checkAnswer(){
     state.score += 10;
     inp.classList.add('correct');
     fb.className = 'feedback right show';
-    fb.innerHTML = `✅ 答啱！皮卡丘都讚你叻！${isl.explain}`;
+    fb.innerHTML = `✅ 答對！皮卡丘都讚你厲害！${isl.explain}`;
     document.getElementById('scoreTxt').textContent = state.score;
   } else {
     state.wrongs++;

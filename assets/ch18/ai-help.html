@@ -207,7 +207,7 @@
     <div class="header-avatar">&#129302;</div>
     <div class="header-info">
       <h1>數學小老師</h1>
-      <p>P5 第十七課 - 立體圖形的體積（寶可夢主題）</p>
+      <p>P5 第十八課 - 立體圖形的體積（寶可夢主題）</p>
     </div>
     <div class="header-right">
       <span class="badge" id="remainBadge" title="本次可問的問題數量"></span>
@@ -219,17 +219,17 @@
   <div class="chat-area" id="chatArea">
     <div class="welcome">
       <div class="emoji">&#129302;</div>
-      <h2>你好！我係數學小老師！</h2>
-      <p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>
+      <h2>你好！我是數學小老師！</h2>
+      <p>有任何數學問題都可以問我，<br>你也可以拍下功課再上傳給我看！<br>我不會直接給你答案，但會引導你找到答案 &#128170;</p>
     </div>
   </div>
 
   <!-- Quick question buttons -->
   <div class="quick-bar" id="quickBar">
-    <button class="quick-btn" data-q="長方體體積公式點計？例如 4×3×2 嘅長方體">&#128161; 長方體體積公式點計？</button>
-    <button class="quick-btn" data-q="正方體體積點解係邊乘邊乘邊？6cm 嘅正方體體積是多少？">&#129300; 正方體 6³ 點計？</button>
-    <button class="quick-btn" data-q="長方體體積 200 cm³，長 8、闊 5，求高？">&#128300; 已知體積，反求高度</button>
-    <button class="quick-btn" data-q="cm³ 同 m³ 點轉換？1 m³ 等於幾多 cm³？">&#128075; cm³ 同 m³ 換算</button>
+    <button class="quick-btn" data-q="為何不規則立體要用分割法？階梯立體應該怎樣切？">&#128161; 為何不規則立體要分割？</button>
+    <button class="quick-btn" data-q="填補法的核心是甚麼？為甚麼可以「先補後減」？">&#129300; 填補法是怎樣做？</button>
+    <button class="quick-btn" data-q="摺紙圖樣（net）有 6 個正方形，闊 8 cm。怎樣求邊長和正方體體積？">&#128300; 摺紙圖樣求體積</button>
+    <button class="quick-btn" data-q="63 cm 的正方體大盒裝邊長 7 cm 的小立方體，最多可放多少粒？">&#128075; 排疊盛載怎樣計？</button>
   </div>
 
   <!-- Image preview strip -->
@@ -260,34 +260,34 @@
 const MAX_QUESTIONS = 20;
 const MAX_HISTORY  = 10;
 
-const SYSTEM_PROMPT = `你是「數學小老師」，一位友善的小學五年級數學輔導老師。你正在幫助學生學習第十七課「立體圖形的體積」。寶可夢 (One Piece) 主題：小智、比卡超、火焰探險旅程示範體積計算。
+const SYSTEM_PROMPT = `你是「數學小老師」，一位友善的小學五年級數學輔導老師。你正在幫助學生學習第十八課「立體圖形的體積（不規則立體）」。寶可夢主題：小智、皮卡丘、卡比獸、妙蛙種子、水箭龜、大木博士示範分割法+填補法+排疊計算。
 
 重要規則：
 1. 絕對不要直接告訴學生答案
 2. 用引導式提問幫助學生思考
 3. 給予提示和暗示，讓學生自己找到答案
 4. 如果學生卡住了，給更多提示，但仍然不給答案
-5. 用鼓勵的語氣，例如「好嘅嘗試！」「你快揾到啦！」
-6. 用簡單易懂的繁體中文，適合 10-11 歲學生
+5. 用鼓勵的語氣，例如「不錯的嘗試！」「你快找到了！」
+6. 用簡單易懂的繁體中文書面語，適合 10-11 歲學生
 7. 如果學生上傳圖片，先描述你看到的題目，然後引導解題
-8. 可以用寶可夢角色／生活化例子幫助理解（例如小智嘅寶箱體積）
-9. 回答時可以用 emoji 讓對話更生動 🏴‍☠️⚓📦
+8. 可以用寶可夢角色／生活化例子幫助理解（例如小智的精靈球收納盒體積）
+9. 回答時可以用 emoji 讓對話更生動 ⚡🔥📦
 10. 每次回答最多 3-4 句，不要太長
-11. 在每次回答的最後必須加一行視覺化提示，格式：[視覺:英文簡短描述要畫嘅嘢]
-    例：[視覺:cartoon Luffy holding a rectangular treasure chest with dimensions 4cm 3cm 2cm = 24cm cubed, kawaii]
-    例：[視覺:Zoro deducing the missing height of a long-rect box V=200 L=8 W=5, anime style]
-    描述要簡單、卡通、適合小學生，目的係幫學生想像題目或概念。
+11. 在每次回答的最後必須加一行視覺化提示，格式：[視覺:英文簡短描述要畫的內容]
+    例：[視覺:cartoon Ash and Pikachu splitting a stair-shaped solid into 3 cubes 8x8x8, kawaii]
+    例：[視覺:Snorlax filling a missing notch with a phantom rectangle to compute volume by subtraction, anime style]
+    描述要簡單、卡通、適合小學生，目的是幫學生想像題目或概念。
 
 本課重點（4 個 LO，源自 NLM 5下B單元5備課手冊）：
-- LO1 長方體體積公式：V = 長 × 闊 × 高（例：4 × 3 × 2 = 24 cm³）
-- LO2 求長／闊／高（反求未知數）：高 = 體積 ÷ (長 × 闊)，例 200 ÷ (8 × 5) = 5 cm
-- LO3 正方體體積公式：V = 邊 × 邊 × 邊（例：6³ = 216 cm³）
-- LO4 綜合應用題：積木拼砌、切割剩餘（× 3/4）、熔掉重鑄（體積守恆）、稜長與體積轉換
-- 常見錯誤：混淆面積（cm²）與體積（cm³）、單位轉換錯、求邊長時忘記開立方根
-- 注意：所有題目用繁體中文書面語（用「多少」唔好用「幾多」、用「是」唔好用「係」）`;
+- LO1 分割法（Split Method）：把不規則立體切成幾個簡單長方體，分別計算後相加（凸出多塊型適用）
+- LO2 填補法（Fill Method）：把缺角立體先補成完整長方體，計算後減去缺口（凹了洞型適用）
+- LO3 摺紙圖樣（Net）摺立體：先求邊長，再用 V=邊×邊×邊（正方體）或 V=長×闊×高（長方體）求體積
+- LO4 排疊盛載：盒入面排放小立方體，必須一邊一邊計算（大邊÷小邊），不可用大體積÷小體積
+- 常見錯誤：分割法切錯位、填補法漏減缺口、排疊用大除小算錯、混淆 cm² 與 cm³
+- 注意：所有題目用繁體中文書面語（用「多少」不要用「幾多」、用「是」不要用「係」、用「為何」不要用「點解」）`;
 
 /* ===== config ===== */
-// 部署 Cloudflare Worker 之後，將你嘅 Worker URL 貼呢度（或用 ?worker= URL param 覆寫）
+// 部署 Cloudflare Worker 之後，將你的 Worker URL 貼到這裡（或用 ?worker= URL param 覆寫）
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
 
 /* ===== state ===== */
@@ -318,7 +318,7 @@ const errorOverlay = document.getElementById('errorOverlay');
   WORKER_ENDPOINT = params.get('worker') || WORKER_URL;
 
   if (!WORKER_ENDPOINT || WORKER_ENDPOINT.includes('YOUR-USERNAME')) {
-    showError('\u{2699}\u{FE0F}', 'AI 功能仲未設定好\n\n請通知老師部署 Cloudflare Worker。');
+    showError('\u{2699}\u{FE0F}', 'AI 功能尚未設定好\n\n請通知老師部署 Cloudflare Worker。');
     return;
   }
 
@@ -484,7 +484,7 @@ async function handleSend() {
   if (!text && !hasImage) return;
 
   if (questionsUsed >= MAX_QUESTIONS) {
-    addMessage('ai', '你今次已經問咗 ' + MAX_QUESTIONS + ' 條問題啦！如果仲有問題，可以按「重新開始」再問過 \u{1F60A}');
+    addMessage('ai', '你這次已經問了 ' + MAX_QUESTIONS + ' 條問題！如果還有問題，可以按「重新開始」再問 \u{1F60A}');
     return;
   }
 
@@ -518,7 +518,7 @@ async function handleSend() {
   updateRemain();
 
   try {
-    const reply = await sendToWorker(text || '請幫我睇下呢張圖', imgB64);
+    const reply = await sendToWorker(text || '請幫我看一下這張圖', imgB64);
 
     // Parse out [視覺:...] image prompt
     let displayText = reply;
@@ -580,7 +580,7 @@ function toggleRecording() {
   if (!recognition) {
     recognition = initSpeechRecognition();
     if (!recognition) {
-      alert('你個瀏覽器唔支援錄音辨識，請用 Chrome / Edge 打開 🙏');
+      alert('你的瀏覽器不支援錄音辨識，請使用 Chrome / Edge 打開 🙏');
       return;
     }
     recognition.onresult = (e) => {
@@ -620,7 +620,7 @@ function startRecording() {
   isRecording = true;
   btnMic.classList.add('recording');
   btnMic.title = '點擊停止錄音';
-  userInput.placeholder = '🎤 講嘢 ... 講完自動停';
+  userInput.placeholder = '🎤 請說話 ... 講完自動停';
 }
 
 function stopRecording() {
@@ -707,8 +707,8 @@ function resetConversation() {
   welcome.className = 'welcome';
   welcome.innerHTML =
     '<div class="emoji">&#129302;</div>' +
-    '<h2>你好！我係數學小老師！</h2>' +
-    '<p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>';
+    '<h2>你好！我是數學小老師！</h2>' +
+    '<p>有任何數學問題都可以問我，<br>你也可以拍下功課再上傳給我看！<br>我不會直接給你答案，但會引導你找到答案 &#128170;</p>';
   chatArea.appendChild(welcome);
 }
 

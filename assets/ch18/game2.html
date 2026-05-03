@@ -75,14 +75,14 @@
   <div class="scene">
     <div class="start-screen" id="startScreen">
       <h2>📐 摺紙圖樣（Net）大挑戰</h2>
-      <p>⚡ 跟皮卡丘一齊識別摺紙圖樣！每題顯示一個 net（展開圖）或立體尺寸，你要喺 <b>8 秒</b>內判斷可摺成的立體形狀、邊長或體積。<br>連對 +bonus，連錯 5 次要重頭再嚟！</p>
+      <p>⚡ 跟皮卡丘一起識別摺紙圖樣！每題顯示一個 net（展開圖）或立體尺寸，你要在 <b>8 秒</b>內判斷可摺成的立體形狀、邊長或體積。<br>連對 +bonus，連錯 5 次要從頭再來！</p>
       <button class="start-btn" onclick="startGame()">⚡ 開始挑戰</button>
     </div>
     <div class="play-screen" id="playScreen">
       <div class="timer-bar"><div class="timer-fill" id="timerFill"></div><div class="timer-text" id="timerText">8.0 秒</div></div>
       <div id="netE" class="net-display">📦</div>
       <div class="obj-name" id="objN">摺紙圖樣</div>
-      <div class="obj-prompt" id="objP">皮卡丘畫咗一張展開圖，你能識別嗎？</div>
+      <div class="obj-prompt" id="objP">皮卡丘畫了一張展開圖，你能識別嗎？</div>
       <div class="ranges" id="rangesEl"></div>
       <div class="feedback" id="fb"></div>
     </div>
@@ -145,7 +145,7 @@ const QUESTIONS = [
   // 11. 摺紙判斷
   { e:'⬛⬛\n⬛⬛⬛⬛', n:'這個圖樣可否摺成正方體？', cor:1,
     ranges:['可以','不可以','缺一個面','多一個面'],
-    h:'呢個圖樣只有 6 個正方形但排列錯誤,分成兩部分,唔可以摺成完整正方體。' },
+    h:'這個圖樣只有 6 個正方形但排列錯誤，分成兩部分，不可以摺成完整正方體。' },
   // 12. 礙物挑戰：14 m 寬 U 型 lower 大長方體 C 區
   { e:'U 型總寬 14 m\n總高 11 m\n左右柱高 5 m', n:'下方大長方體 C 的體積', cor:1,
     ranges:['770 m³','420 m³','125 m³','75 m³'],
@@ -214,7 +214,7 @@ function answer(idx) {
     const gained = 10 + speedBonus + streakBonus;
     score += gained;
     els.fb.className = 'feedback right show';
-    els.fb.innerHTML = `✅ 答啱！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
+    els.fb.innerHTML = `✅ 答對！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
   } else {
     buttons[idx].classList.add('wrong');
     buttons[q.cor].classList.add('correct');
@@ -262,7 +262,7 @@ function endGame(reason) {
   els.playScreen.classList.remove('active');
   els.endScreen.classList.add('active');
   if (reason === 'lock') {
-    els.endTitle.textContent = '🔒 連錯 5 次！皮卡丘叫你重頭再嚟！';
+    els.endTitle.textContent = '🔒 連錯 5 次！皮卡丘叫你從頭再來！';
   } else {
     els.endTitle.textContent = '⚡ 道館徽章到手！完成挑戰！';
   }

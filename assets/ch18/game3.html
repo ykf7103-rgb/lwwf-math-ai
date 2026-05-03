@@ -86,13 +86,13 @@
   </div>
   <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
   <div class="scene">
-    <div class="speech">學習排疊小立方體 + 切割長方體計算！每邊用 大邊 ÷ 小邊 求個數，唔可以「大體積 ÷ 小體積」（容器有可能放不滿）。</div>
+    <div class="speech">學習排疊小立方體 + 切割長方體計算！每邊用 大邊 ÷ 小邊 求個數，不可以「大體積 ÷ 小體積」（容器有可能放不滿）。</div>
     <div class="shape-display">
       <div class="shape-area" id="shapeArea"></div>
       <div class="shape-info" id="shapeInfo"></div>
     </div>
     <div class="decompose-q">
-      <div class="decompose-q-label" id="qLabel">將呢個立體分成 N 塊長方體計算每塊體積：</div>
+      <div class="decompose-q-label" id="qLabel">將這個立體分成 N 塊長方體計算每塊體積：</div>
       <div class="pieces-grid" id="piecesGrid"></div>
     </div>
     <div class="total-row">
@@ -115,8 +115,8 @@
   <div class="lock-box">
     <div class="big">🔒</div>
     <h2>大木博士話：要重新訓練！</h2>
-    <p>你已經錯咗 <b>5 次</b>。要由第 1 關重新挑戰。</p>
-    <button onclick="restart()">🔁 從頭再嚟</button>
+    <p>你已經錯了 <b>5 次</b>。要從第 1 關重新挑戰。</p>
+    <button onclick="restart()">🔁 從頭再來</button>
   </div>
 </div>
 <script>
@@ -289,16 +289,16 @@ function submit() {
     pieceInputs.forEach(i => i.disabled = true);
     els.totalInput.disabled = true;
     els.fb.className = 'feedback right show';
-    els.fb.innerHTML = `✅ 答啱！皮卡丘都讚你叻！${q.hint}`;
+    els.fb.innerHTML = `✅ 答對！皮卡丘都讚你厲害！${q.hint}`;
     els.nextBtn.classList.add('show');
   } else {
     wrongs++;
     els.wrongs.textContent = `${wrongs}/5`;
     els.fb.className = 'feedback wrong show';
     let msg = '❌ ';
-    if (!allPiecesOk && !totalOk) msg += '塊體積同總和都唔啱。';
+    if (!allPiecesOk && !totalOk) msg += '塊體積與總和都不正確。';
     else if (!allPiecesOk) msg += '塊體積有錯。';
-    else msg += '總和唔啱（提示：把各塊相加）。';
+    else msg += '總和不正確（提示：把各塊相加）。';
     msg += `<br>💡 ${q.hint}`;
     els.fb.innerHTML = msg;
     if (window.LWWFWrong) {

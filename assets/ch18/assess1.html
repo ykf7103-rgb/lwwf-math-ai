@@ -136,7 +136,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答完才能過 ▶</button>
       </div>
     </div>
   </div>
@@ -149,7 +149,7 @@
       <div class="stat"><div class="label">答對</div><div class="val" id="correctStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#2E7D32">0</div></div>
     </div>
     <div id="qList"></div>
-    <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先做晒全部 6 題</button>
+    <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先完成全部 6 題</button>
   </div>
 
   <div class="final-screen" id="finalScreen">
@@ -160,7 +160,7 @@
     <div>
       <button class="btn" onclick="location.reload()">🔁 再做一次</button>
       <a href="game1.html" class="btn">🎮 玩遊戲 1</a>
-      <a href="index.html" class="btn">🏠 返入口</a>
+      <a href="index.html" class="btn">🏠 返回入口</a>
     </div>
   </div>
 </div>
@@ -169,7 +169,7 @@
   <div class="lock-box">
     <div class="big">🔒</div>
     <h2 style="margin:4px 0 10px;">錯得多，要重做！</h2>
-    <p>連錯 5 次，評估重新開始，睇清楚圖再答 💪</p>
+    <p>連錯 5 次，評估重新開始，看清楚圖再答 💪</p>
     <button onclick="resetSlides()">🔁 由第 1 題重新開始</button>
   </div>
 </div>
@@ -243,7 +243,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！小智都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！小智都讚你厲害！' : `❌ 你選擇了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>小智筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -255,20 +255,20 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答完才能過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
-    nb.textContent = '睇答案 ✓';
+    nb.textContent = '看答案 ✓';
   } else if (slideIdx === Q.length - 1) {
     nb.disabled = false;
     nb.className = 'slide-btn done-btn';
-    nb.textContent = '🎉 睇結果';
+    nb.textContent = '🎉 查看結果';
   } else {
     nb.disabled = false;
     nb.textContent = '下一題 ▶';
   }
 
-  document.getElementById('wrongsNote').textContent = slideWrongs >= 3 ? `⚠️ 已連錯 ${slideWrongs} 次（錯 5 次要由頭做）` : '';
+  document.getElementById('wrongsNote').textContent = slideWrongs >= 3 ? `⚠️ 已連錯 ${slideWrongs} 次（錯 5 次要從頭做起）` : '';
 }
 
 function slidePick(i) {
@@ -350,7 +350,7 @@ function updateListStats() {
   document.getElementById('answeredStat').textContent = ans;
   const btn = document.getElementById('submitBtn');
   if (ans === Q.length) { btn.disabled = false; btn.textContent = '✓ 提交答案 (檢查成績)'; }
-  else { btn.disabled = true; btn.textContent = `仲有 ${Q.length - ans} 題未做`; }
+  else { btn.disabled = true; btn.textContent = `還有 ${Q.length - ans} 題未做`; }
 }
 
 function submitAll() {
@@ -383,10 +383,10 @@ function showFinal(correct) {
   f.classList.add('show');
   document.getElementById('finalScore').textContent = correct;
   let m, t;
-  if (correct === Q.length) { m = '🌟 滿分！麥塊建造大師完美 cm³ 量度！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  if (correct === Q.length) { m = '🌟 滿分！寶可夢冠軍級立體體積大師！小智都讚你厲害！'; t = '🏆'; }
+  else if (correct >= 5) { m = '💪 很厲害！再溫習錯題就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得查看錯題的提示'; t = '🥈'; }
+  else { m = '📖 多溫習簡報 1，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

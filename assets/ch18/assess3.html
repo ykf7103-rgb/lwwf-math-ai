@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第18課 · 評估 3 — 選擇單位</title>
+<title>第18課 · 評估 3 — 不規則立體（分割法+填補法綜合）</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%); min-height: 100vh; color: #222; position: relative; }
@@ -96,7 +96,7 @@
 </head>
 <body>
 <header>
-  <h1>✏️ 第18課 · 評估 3 — 選擇單位</h1>
+  <h1>✏️ 第18課 · 評估 3 — 不規則立體（分割法+填補法綜合）</h1>
   <a href="index.html" class="back">← 返回第18課</a>
 </header>
 
@@ -136,7 +136,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答完才能過 ▶</button>
       </div>
     </div>
   </div>
@@ -149,7 +149,7 @@
       <div class="stat"><div class="label">答對</div><div class="val" id="correctStat" style="text-align:center;font-size:1.3rem;font-weight:900;color:#2E7D32">0</div></div>
     </div>
     <div id="qList"></div>
-    <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先做晒全部 6 題</button>
+    <button class="btn-submit-all" id="submitBtn" onclick="submitAll()" disabled>先完成全部 6 題</button>
   </div>
 
   <div class="final-screen" id="finalScreen">
@@ -160,7 +160,7 @@
     <div>
       <button class="btn" onclick="location.reload()">🔁 再做一次</button>
       <a href="game1.html" class="btn">🎮 玩遊戲 1</a>
-      <a href="index.html" class="btn">🏠 返入口</a>
+      <a href="index.html" class="btn">🏠 返回入口</a>
     </div>
   </div>
 </div>
@@ -169,7 +169,7 @@
   <div class="lock-box">
     <div class="big">🔒</div>
     <h2 style="margin:4px 0 10px;">錯得多，要重做！</h2>
-    <p>連錯 5 次，評估重新開始，睇清楚圖再答 💪</p>
+    <p>連錯 5 次，評估重新開始，看清楚圖再答 💪</p>
     <button onclick="resetSlides()">🔁 由第 1 題重新開始</button>
   </div>
 </div>
@@ -177,33 +177,32 @@
 <script>
 const CHAPTER = 18, DECK_KEY = 'assess3', IMG_PREFIX = 'assess3';
 
-// Ch18 評估 3 · 排疊盛載 + 切割題（寶可夢 Pokemon 立體圖形挑戰）
-// LO Slide 3：盒入面排疊小立方體、切割大立體成小塊嘅計算
-// 全部題幹採用繁體中文書面語（rule #18），題目對應 ch18 Slide 3 LO
+// Ch18 評估 3 · 不規則立體 分割法 + 填補法綜合（寶可夢 Pokemon 立體圖形挑戰）
+// p01-p12 = 6 對 Q-A，Q array 嚴格 OCR 對齊 NLM JPG（2026-05-03 Run 4 修正）
 const Q = [
-  { q: 'Q1 排疊基本：精靈球收納盒（長 6 cm × 闊 4 cm × 高 5 cm）內裝邊長 2 cm 的小立方體，最多可裝多少個？',
-    opts: ['10 個','15 個','20 個','30 個'], a: 1,
-    hint: '盒體積 = 6 × 4 × 5 = 120 cm³；每個小立方體 = 2 × 2 × 2 = 8 cm³；總個數 = 120 ÷ 8 = 15 個。',
+  { q: '挑戰一：野生寶可夢發起幾何挑戰！立體分為上下兩部分 — 上方為邊長 4 cm 的正方體，下方為長 10 cm、闊 6 cm、高 4 cm 的長方體。請以分割法計算總體積。',
+    opts: ['240 cm³','64 cm³','304 cm³','250 cm³'], a: 2,
+    hint: '分割法：上方正方體 = 4 × 4 × 4 = 64；下方長方體 = 10 × 6 × 4 = 240；總體積 = 64 + 240 = 304 cm³（C）。',
+    pageQ: 1, pageA: 2 },
+  { q: '挑戰二：格鬥家的三連擊！階梯立體（總長 16 cm，高 16 cm，深 8 cm）可完美分割為 3 個大小相同的正方體。請計算總體積。',
+    opts: ['512 cm³','1024 cm³','1536 cm³','2048 cm³'], a: 2,
+    hint: '邊長 = 16 ÷ 2 = 8 cm；單一正方體體積 = 8 × 8 × 8 = 512 cm³；3 個合計 = 512 + 512 + 512 = 1536 cm³（C）。',
     pageQ: 3, pageA: 4 },
-  { q: 'Q2 排疊單位 1：皮卡丘的道具盒（長 12 cm × 闊 8 cm × 高 6 cm）裝滿邊長 1 cm 的小方塊，可裝多少個？',
-    opts: ['288 個','432 個','576 個','720 個'], a: 2,
-    hint: '邊長 1 cm 的小方塊體積 = 1 cm³；盒體積 = 12 × 8 × 6 = 576 cm³，故可裝 576 個。',
+  { q: '挑戰三：卡比獸的巨大路障！U 型立體（總高 11 m、總寬 14 m、厚度 5 m，左右兩柱頂端高 3 m）。若橫切分成左、右兩柱及下方大長方體 C，請計算大長方體 C 的體積。',
+    opts: ['770 m³','420 m³','125 m³','75 m³'], a: 1,
+    hint: '長方體 C 的高 = 總高 11 − 缺口高 5 = 6 m；體積 = 14 (長) × 5 (寬) × 6 (高) = 420 m³（B）。',
     pageQ: 5, pageA: 6 },
-  { q: 'Q3 切割正方體：卡比獸的方蘋果為邊長 9 cm 的正方體，切割成邊長 3 cm 的小方塊，總共得多少個？',
-    opts: ['9 個','18 個','27 個','36 個'], a: 2,
-    hint: '大正方體體積 = 9³ = 729 cm³；小立方體體積 = 3³ = 27 cm³；總數 = 729 ÷ 27 = 27 個。',
+  { q: '挑戰四：召喚幻影方塊！缺角立體（總寬 8 m、高 7 m、厚 4 m，缺口位於底部中央，左壁 2 m、右壁 1 m）。請以填補法計算用來補滿缺口的虛擬長方體 Z 的體積。',
+    opts: ['144 m³','224 m³','80 m³','100 m³'], a: 2,
+    hint: '長方體 Z 的長 = 總長 8 − 左壁 2 − 右壁 1 = 5 m；體積 = 5 × 4 × 4 = 80 m³（C）。',
     pageQ: 7, pageA: 8 },
-  { q: 'Q4 切割長方體：妙蛙花將長 24 cm × 闊 18 cm × 高 12 cm 的木材切成邊長 6 cm 的正方體，可得多少個？',
-    opts: ['12 個','18 個','24 個','36 個'], a: 2,
-    hint: '長能切 24÷6=4 個；闊能切 18÷6=3 個；高能切 12÷6=2 個；故 4 × 3 × 2 = 24 個。',
+  { q: '挑戰五：超能力的逆向思維！已知幻影方塊 Z 的體積為 80 m³，要求出原本不規則圖形的真實體積，正確的逆向思維算式是哪一個？',
+    opts: ['大長方體 (224) + Z 體積 (80) = 304 m³','大長方體 (224) − Z 體積 (80) = 144 m³','直接 8 × 7 × 4 = 224 m³','大長方體 (144) − Z 體積 (80) = 64 m³'], a: 1,
+    hint: '填補法的核心：先補後減。補滿後的大長方體 = 8 × 7 × 4 = 224 m³；實際圖形體積 = 224 − 80 = 144 m³（B）。',
     pageQ: 9, pageA: 10 },
-  { q: 'Q5 部分剩餘：水箭龜的水缸（長 10 cm × 闊 10 cm × 高 5 cm）內水滿。倒去四分之一的水後，剩下水的體積為多少？',
-    opts: ['125 cm³','250 cm³','375 cm³','500 cm³'], a: 2,
-    hint: '原體積 = 10 × 10 × 5 = 500 cm³；倒去 1/4 後剩 3/4，即 500 × 3/4 = 375 cm³。',
-    pageQ: 11, pageA: 12 },
-  { q: 'Q6 排疊綜合：火龍的蛋盒分 6 列 × 4 行 × 3 層，每隻蛋為邊長 2.5 cm 的正方體。所有蛋的總體積為多少 cm³？',
-    opts: ['225 cm³','562.5 cm³','1125 cm³','2250 cm³'], a: 2,
-    hint: '蛋的總個數 = 6 × 4 × 3 = 72 隻；每隻蛋體積 = 2.5³ = 15.625 cm³；總體積 = 72 × 15.625 = 1125 cm³。',
+  { q: '挑戰六：大師的抉擇！面對長 25 cm、闊 18 cm、高 5 cm 的階梯立體，若想以「最少計算步驟（最不易算錯）」求出總體積，身為大師應推薦哪一種戰術？',
+    opts: ['填補法：只需補一個缺口，算兩次再相減','分割法：切成三塊長方體加起來比較簡單','答案會不同，只能填補','此圖無法填補'], a: 0,
+    hint: '填補法只需 1 次減法（大長方體 − 小缺口）；分割法要先推算未知邊長再加 1 次加法。填補法步驟最少最不易算錯（A）。',
     pageQ: 11, pageA: 12 }
 ];
 
@@ -262,7 +261,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！小智都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！小智都讚你厲害！' : `❌ 你選擇了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>小智筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -274,20 +273,20 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答完才能過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
-    nb.textContent = '睇答案 ✓';
+    nb.textContent = '看答案 ✓';
   } else if (slideIdx === Q.length - 1) {
     nb.disabled = false;
     nb.className = 'slide-btn done-btn';
-    nb.textContent = '🎉 睇結果';
+    nb.textContent = '🎉 查看結果';
   } else {
     nb.disabled = false;
     nb.textContent = '下一題 ▶';
   }
 
-  document.getElementById('wrongsNote').textContent = slideWrongs >= 3 ? `⚠️ 已連錯 ${slideWrongs} 次（錯 5 次要由頭做）` : '';
+  document.getElementById('wrongsNote').textContent = slideWrongs >= 3 ? `⚠️ 已連錯 ${slideWrongs} 次（錯 5 次要從頭做起）` : '';
 }
 
 function slidePick(i) {
@@ -369,7 +368,7 @@ function updateListStats() {
   document.getElementById('answeredStat').textContent = ans;
   const btn = document.getElementById('submitBtn');
   if (ans === Q.length) { btn.disabled = false; btn.textContent = '✓ 提交答案 (檢查成績)'; }
-  else { btn.disabled = true; btn.textContent = `仲有 ${Q.length - ans} 題未做`; }
+  else { btn.disabled = true; btn.textContent = `還有 ${Q.length - ans} 題未做`; }
 }
 
 function submitAll() {
@@ -402,10 +401,10 @@ function showFinal(correct) {
   f.classList.add('show');
   document.getElementById('finalScore').textContent = correct;
   let m, t;
-  if (correct === Q.length) { m = '🌟 滿分！你完全掌握 cm³/m³ 單位選擇 + 換算！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 3，再嚟挑戰'; t = '📚'; }
+  if (correct === Q.length) { m = '🌟 滿分！寶可夢冠軍級立體體積大師！分割法+填補法完全掌握！'; t = '🏆'; }
+  else if (correct >= 5) { m = '💪 很厲害！再溫習錯題就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得查看錯題的提示'; t = '🥈'; }
+  else { m = '📖 多溫習簡報 3，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});
