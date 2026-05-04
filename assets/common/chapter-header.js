@@ -12,9 +12,11 @@
 
   // Auto-load shared progress sync module (Supabase ↔ localStorage hybrid).
   // 一加一個 <script> 就搞掂全網所有 sub-page 嘅進度同步。
+  // 2026-05-03: 保留 chapter-header.js 嘅 ?v=YYYYMMDD cache-bust query string
+  // 自動套用到 progress.js URL（避免瀏覽器 cache 舊版 progress.js）
   if (!window.LWWFProgress && scriptEl && scriptEl.src) {
     const ps = document.createElement('script');
-    ps.src = scriptEl.src.replace(/chapter-header\.js(\?.*)?$/, 'progress.js');
+    ps.src = scriptEl.src.replace('chapter-header.js', 'progress.js');
     ps.async = false;
     document.head.appendChild(ps);
   }
