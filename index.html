@@ -1753,6 +1753,49 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-03 (大整理)</span>
+            <ul>
+                <li>💰 <b>修正金幣跨頁顯示不一致</b>（學生反映：第 1 頁 13、ch16 22）：
+                    <ul style="margin-top:4px">
+                        <li>統一 ch12 計算 logic（quiz1 cap 至 max 2 coins，唔再用 raw score 過量）</li>
+                        <li>單一 source of truth：`LWWFProgress.getTotalCoinsAllChapters()`</li>
+                        <li>所有頁面（root index、ch12-19）顯示相同金幣 — 邊玩邊賺即時累積</li>
+                    </ul>
+                </li>
+                <li>🚀 <b>自動清舊 cache</b>（學生唔需要 Ctrl+Shift+R）：
+                    <ul style="margin-top:4px">
+                        <li>102 個頁面加版本號 cache-bust，瀏覽器自動 fetch 新版 JS</li>
+                        <li>學生下次開頁面即時見到 fix，無需任何操作</li>
+                    </ul>
+                </li>
+                <li>📚 <b>學習卡全面繁體中文書面語</b>（第 15-19 課，共 60 張）：
+                    <ul style="margin-top:4px">
+                        <li>ch15 體積概念 / ch16 體積量度 / ch17 長正方體 / ch18 立體圖形 / ch19 簡易方程</li>
+                        <li>內容對應本課 LO（之前 ch15/16 仲係小數乘法內容）</li>
+                    </ul>
+                </li>
+                <li>📝 <b>簡報 + 評估題目全面書面語化</b>（rule #18 升級）：
+                    <ul style="margin-top:4px">
+                        <li>ch15 slides 1/2/3 共 18 條題目對齊 NLM JPG（縮小燈/水池/空氣砲/影子+回憶/房間氣體）</li>
+                        <li>ch17/18/19 slides+assess 共 51+ 條題目改為書面語（「邊個」→「哪一個」、「點解」→「為何」）</li>
+                        <li>ch18 assess3 + ch19 assess2/3 對齊本課 LO（不規則立體切割 / 認識方程 / 平衡法）</li>
+                    </ul>
+                </li>
+                <li>🎮 <b>第 18 + 19 課遊戲全新建立</b>（之前完全冇）：
+                    <ul style="margin-top:4px">
+                        <li>第 18 課：寶可夢主題 ×3 遊戲（不規則立體分割／填補／排疊）</li>
+                        <li>第 19 課：蠟筆小新主題 ×3 遊戲（動感超人試煉／春日部購物／天平平衡法）</li>
+                    </ul>
+                </li>
+                <li>🎵 <b>Suno 粵語溫習歌新增 10 首</b>（第 15-19 課各 2 首 v5.5 final）：
+                    <ul style="margin-top:4px">
+                        <li>哆啦A夢立方 / 第十六課體積歌 / 正方體三次方 / 皮卡丘體積歌 / 簡易方程雪糕歌</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-04-28 (v5 大整修)</span>
             <ul>
                 <li>🔄 <b>進度同步系統升級</b>（Supabase + 跨裝置）</li>
