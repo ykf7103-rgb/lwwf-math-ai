@@ -1753,6 +1753,20 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-03 (b · 我的成績 fix)</span>
+            <ul>
+                <li>💰 <b>修正「我的成績」tab 累計金幣顯示不一致</b>（學生反映：頂欄 22、我的成績 15）：
+                    <ul style="margin-top:4px">
+                        <li>「累計金幣」+「剩餘可換」改用同 topbar 一樣嘅 unified logic（含全部課題）</li>
+                        <li>「本課進度」分母 /39 對應 ch12 only，分子改用 computeCh12Coins（補返漏 ch12_game2 嘅 bug）</li>
+                        <li>教師詳細成績 modal 同步用 computeCh12Coins（補返漏 ch12_game2）</li>
+                    </ul>
+                </li>
+                <li>📌 <b>底層機制</b>：登入畫面 update log 由今日起每次更新都自動加 entry，學生＋家長透明見到變動</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-03 (大整理)</span>
             <ul>
                 <li>💰 <b>修正金幣跨頁顯示不一致</b>（學生反映：第 1 頁 13、ch16 22）：
@@ -3453,7 +3467,18 @@ function renderScores() {
 
     const key = `scores_${currentUser.class}_${currentUser.number}`;
     const scores = JSON.parse(localStorage.getItem(key) || '{}');
-    const earnedCoins = computeEarnedCoins(scores);
+    // 2026-05-03 fix（李沇銒 5A15 case：topbar 22 vs 我的成績 15 mismatch）
+    // 「累計金幣 / 剩餘可換」用 unified cross-chapter total（rule #19 single source of truth）
+    let earnedCoins;
+    if (window.LWWFProgress && typeof window.LWWFProgress.getTotalCoinsAllChapters === 'function') {
+        earnedCoins = window.LWWFProgress.getTotalCoinsAllChapters(currentUser);
+    } else {
+        earnedCoins = computeEarnedCoins(scores);  // legacy fallback
+    }
+    // 「本課進度」分母 39 = ch12 max → 分子用 ch12-only computeCh12Coins（修返漏 ch12_game2 嘅 bug）
+    const ch12Coins = (window.LWWFProgress && typeof window.LWWFProgress.computeCh12Coins === 'function')
+        ? window.LWWFProgress.computeCh12Coins(scores)
+        : computeEarnedCoins(scores);
     const edxHistory = window.currentEdxHistory || [];
     const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
     const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
@@ -3489,7 +3514,7 @@ function renderScores() {
                 <div class="score-stat-label">已換取 EDX</div>
             </div>
             <div class="score-stat">
-                <div class="score-stat-value">${earnedCoins}/39</div>
+                <div class="score-stat-value">${ch12Coins}/39</div>
                 <div class="score-stat-label">本課進度</div>
             </div>
         </div>
@@ -4200,7 +4225,11 @@ async function showStudentDetail(cls, num, name) {
     const edxHistory = await cloudStore.loadEdxHistory(cls, num);
     const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
     const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
-    const earnedCoins = computeEarnedCoins(scores);
+    // 2026-05-03 fix：教師 view ch12 詳細成績用 computeCh12Coins（補返漏 ch12_game2 嘅 bug）
+    // 注：分母 39 = ch12 max，所以呢度用 ch12-only logic（rule #19 + computeCh12Coins）
+    const earnedCoins = (window.LWWFProgress && typeof window.LWWFProgress.computeCh12Coins === 'function')
+        ? window.LWWFProgress.computeCh12Coins(scores)
+        : computeEarnedCoins(scores);
     const spendable = Math.max(0, earnedCoins - totalSpent);
 
     document.getElementById('teacherDetailTitle').textContent = `${cls} ${num} ${name} 的詳細成績`;
