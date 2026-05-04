@@ -253,6 +253,30 @@
     return total;
   }
 
+  // Ch12 coin computation — UNIFIED single source of truth (rule #19, 2026-05-03 fix)
+  // 取代之前 root index 嘅 computeEarnedCoins（hardcoded list 漏 ch12_game2）
+  // 同 getTotalCoinsAllChapters 之前 raw `coins||score`（quiz1 score=10 變 10 coins overdose）
+  // Logic:
+  //   - 任何 entry 有 coins 字段（含 ch12_game2 等 unusual key）→ 計入 v.coins
+  //   - quiz1 / quiz4 冇 coins 但有 score/total → 用 Math.min(2, round(score/total*2)) derivation
+  //   - 其他冇 coins 嘅 entry → 唔計（避免 raw score 過大）
+  function computeCh12Coins(scores) {
+    if (!scores || typeof scores !== 'object') return 0;
+    let total = 0;
+    Object.entries(scores).forEach(([k, v]) => {
+      if (!v || typeof v !== 'object') return;
+      if (typeof v.coins === 'number') {
+        total += v.coins;
+        return;
+      }
+      if ((k === 'quiz1' || k === 'quiz4') && typeof v.score === 'number'
+          && typeof v.total === 'number' && v.total > 0) {
+        total += Math.min(2, Math.round((v.score / v.total) * 2));
+      }
+    });
+    return total;
+  }
+
   // Total coins across all chapters (12-21) for a user.
   // Reads from localStorage; assumes refreshFromCloud(ch) was called for any chapter
   // we want fresh data on. (chapter-header.js re-reads on lwwf-progress-changed.)
@@ -260,15 +284,10 @@
     user = user || getUser();
     if (!user) return 0;
     let total = 0;
-    // Ch12 stores under scores_{cls}_{num}
+    // Ch12 stores under scores_{cls}_{num} — use unified computeCh12Coins
     try {
       const ch12 = JSON.parse(localStorage.getItem(`scores_${user.class}_${user.number}`) || '{}');
-      Object.values(ch12).forEach(s => {
-        if (typeof s === 'object' && s !== null) {
-          if (typeof s.coins === 'number') total += s.coins;
-          else if (typeof s.score === 'number') total += s.score;
-        }
-      });
+      total += computeCh12Coins(ch12);
     } catch {}
     // Ch13-21 stored under progress_ch{N}_{cls}_{num}
     for (let ch = 13; ch <= 21; ch++) {
@@ -331,6 +350,7 @@
     refreshFromCloud,
     syncToCloud,
     computeCoins,
+    computeCh12Coins,                    // NEW 2026-05-03: unified ch12 coin logic
     getTotalCoinsAllChapters,
     flushPending,
     mergeBest,                           // exposed for testing

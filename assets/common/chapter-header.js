@@ -44,6 +44,23 @@
     } catch(e) { return null; }
   }
 
+  // Internal helper — MUST mirror LWWFProgress.computeCh12Coins() in progress.js
+  // 2026-05-03 fix：李祉瑩 5A18 case — root index 顯示 13 vs ch16 顯示 22，因 ch12 logic 唔一致
+  // 統一 logic：任何 entry 有 v.coins → 計入；quiz1/quiz4 冇 coins 用 score/total derivation；其他唔計
+  function computeCh12CoinsLocal(scores) {
+    if (!scores || typeof scores !== 'object') return 0;
+    let total = 0;
+    Object.entries(scores).forEach(([k, v]) => {
+      if (!v || typeof v !== 'object') return;
+      if (typeof v.coins === 'number') { total += v.coins; return; }
+      if ((k === 'quiz1' || k === 'quiz4') && typeof v.score === 'number'
+          && typeof v.total === 'number' && v.total > 0) {
+        total += Math.min(2, Math.round((v.score / v.total) * 2));
+      }
+    });
+    return total;
+  }
+
   // Internal helper — MUST stay in sync with LWWFProgress.computeCoins() in progress.js
   // rule #19 / § M.5：default coin rules（game*=3, slides/prelearn/assess=2, etc.）
   // 之前 bug：fallback path 只計 s.coins 已存在，冇 default → 學生完成步驟（無明確 coins 字段）唔計入
@@ -78,18 +95,13 @@
     if (window.LWWFProgress && typeof window.LWWFProgress.getTotalCoinsAllChapters === 'function') {
       try { return window.LWWFProgress.getTotalCoinsAllChapters(user); } catch(e) {}
     }
-    // Fallback: inline computation — MUST match progress.js computeCoins() default rules
+    // Fallback: inline computation — MUST match progress.js logic
     let total = 0;
     try {
-      // 1) Ch12 scores_{cls}_{num}
+      // 1) Ch12 scores_{cls}_{num} — use unified computeCh12CoinsLocal
       const scoresKey = `scores_${user.class}_${user.number}`;
       const scores = JSON.parse(localStorage.getItem(scoresKey) || '{}');
-      Object.values(scores).forEach(s => {
-        if (typeof s === 'object' && s !== null) {
-          if (typeof s.coins === 'number') total += s.coins;
-          else if (typeof s.score === 'number') total += s.score;
-        }
-      });
+      total += computeCh12CoinsLocal(scores);
       // 2) Ch13+ progress_ch{N}_{cls}_{num}  (per-user) — apply default coin rules
       for (let ch = 13; ch <= 21; ch++) {
         const perUserKey = `progress_ch${ch}_${user.class}_${user.number}`;

@@ -2983,15 +2983,22 @@ function updateCoinDisplay() {
     if (!currentUser) return;
     const key = `scores_${currentUser.class}_${currentUser.number}`;
     const scores = JSON.parse(localStorage.getItem(key) || '{}');
-    let earnedCoins = computeEarnedCoins(scores);
-    // Add Ch13+ coins from unified LWWFProgress (cross-chapter total)
-    if (window.LWWFProgress && typeof window.LWWFProgress.computeCoins === 'function') {
-        for (let ch = 13; ch <= 21; ch++) {
-            try {
-                const pk = `progress_ch${ch}_${currentUser.class}_${currentUser.number}`;
-                const p = JSON.parse(localStorage.getItem(pk) || '{}');
-                earnedCoins += window.LWWFProgress.computeCoins(p);
-            } catch(e) {}
+    // 2026-05-03 fix（李祉瑩 case）：使用 LWWFProgress.getTotalCoinsAllChapters
+    // 作為 single source of truth（rule #19）— 確保第一頁同 ch13-21 任何頁顯示相同金幣
+    let earnedCoins;
+    if (window.LWWFProgress && typeof window.LWWFProgress.getTotalCoinsAllChapters === 'function') {
+        earnedCoins = window.LWWFProgress.getTotalCoinsAllChapters(currentUser);
+    } else {
+        // Fallback：legacy logic（only when LWWFProgress not loaded）
+        earnedCoins = computeEarnedCoins(scores);
+        if (window.LWWFProgress && typeof window.LWWFProgress.computeCoins === 'function') {
+            for (let ch = 13; ch <= 21; ch++) {
+                try {
+                    const pk = `progress_ch${ch}_${currentUser.class}_${currentUser.number}`;
+                    const p = JSON.parse(localStorage.getItem(pk) || '{}');
+                    earnedCoins += window.LWWFProgress.computeCoins(p);
+                } catch(e) {}
+            }
         }
     }
     const edxHistory = window.currentEdxHistory || [];
