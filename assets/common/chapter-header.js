@@ -44,12 +44,41 @@
     } catch(e) { return null; }
   }
 
+  // Internal helper — MUST stay in sync with LWWFProgress.computeCoins() in progress.js
+  // rule #19 / § M.5：default coin rules（game*=3, slides/prelearn/assess=2, etc.）
+  // 之前 bug：fallback path 只計 s.coins 已存在，冇 default → 學生完成步驟（無明確 coins 字段）唔計入
+  // → 第一頁（root index 直接用 progress.js）vs ch13-18 fallback path 計算 mismatch（2026-05-03 學生投訴）
+  function computeCoinsLocal(progress) {
+    if (!progress || typeof progress !== 'object') return 0;
+    let total = 0;
+    Object.entries(progress).forEach(([stepId, val]) => {
+      if (!val || !val.done) return;
+      if (typeof val.coins === 'number') { total += val.coins; return; }
+      if (/^game\d*$/.test(stepId)) total += 3;
+      else if (/^(slides|prelearn|assess)\d*$/.test(stepId)) total += 2;
+      else if (stepId === 'infographic' || stepId === 'flashcards' || stepId === 'bonus' || stepId === 'bonus-quiz') total += 2;
+      else if (stepId === 'extras') {
+        if (typeof val.extras_coins === 'number') total += val.extras_coins;
+        else if (val.items && typeof val.items === 'object') {
+          const n = Object.keys(val.items).length;
+          if (n >= 2) total += Math.min(5, n + 2);
+        }
+      }
+    });
+    return total;
+  }
+
   // Coin total across ALL chapters from ALL possible keys:
   //   Ch12 main index:  scores_{cls}_{num}           → { activityKey: { coins:N, ... } }
   //   Ch13/14 per-user: progress_ch{N}_{cls}_{num}   → { stepKey: { coins:N, done:true, ... } }
   //   Ch13/14 shared (legacy): progress_ch{N}        → same structure but全機共享（應該停用）
   function getTotalCoins(user) {
     if (!user) return 0;
+    // Prefer LWWFProgress.getTotalCoinsAllChapters — single source of truth (rule #19)
+    if (window.LWWFProgress && typeof window.LWWFProgress.getTotalCoinsAllChapters === 'function') {
+      try { return window.LWWFProgress.getTotalCoinsAllChapters(user); } catch(e) {}
+    }
+    // Fallback: inline computation — MUST match progress.js computeCoins() default rules
     let total = 0;
     try {
       // 1) Ch12 scores_{cls}_{num}
@@ -61,24 +90,19 @@
           else if (typeof s.score === 'number') total += s.score;
         }
       });
-      // 2) Ch13+ progress_ch{N}_{cls}_{num}  (per-user)
+      // 2) Ch13+ progress_ch{N}_{cls}_{num}  (per-user) — apply default coin rules
       for (let ch = 13; ch <= 21; ch++) {
         const perUserKey = `progress_ch${ch}_${user.class}_${user.number}`;
         const perUser = JSON.parse(localStorage.getItem(perUserKey) || '{}');
-        Object.values(perUser).forEach(s => {
-          if (typeof s === 'object' && s !== null && typeof s.coins === 'number') total += s.coins;
-        });
+        total += computeCoinsLocal(perUser);
       }
       // 3) Ch13+ legacy shared progress_ch{N} — only if no per-user key found (avoid double-count)
       for (let ch = 13; ch <= 21; ch++) {
         const perUserKey = `progress_ch${ch}_${user.class}_${user.number}`;
         const sharedKey = `progress_ch${ch}`;
-        // skip shared if per-user exists
         if (localStorage.getItem(perUserKey)) continue;
         const shared = JSON.parse(localStorage.getItem(sharedKey) || '{}');
-        Object.values(shared).forEach(s => {
-          if (typeof s === 'object' && s !== null && typeof s.coins === 'number') total += s.coins;
-        });
+        total += computeCoinsLocal(shared);
       }
     } catch(e) {}
     return total;
