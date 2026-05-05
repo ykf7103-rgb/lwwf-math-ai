@@ -1691,7 +1691,7 @@ body::before {
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/common/progress.js?v=20260503b"></script>
+    <script src="assets/common/progress.js?v=20260505"></script>
 </head>
 <body>
 
@@ -1758,7 +1758,7 @@ body::before {
                 <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
                         <li>15 個遊戲 file 加返 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
-                        <li>玩完即時寫 localStorage → progress.js v4 hijack 自動 Supabase upsert → 跨頁同步</li>
+                        <li>玩完即時寫 localStorage → progress.js?v=20260505 v4 hijack 自動 Supabase upsert → 跨頁同步</li>
                     </ul>
                 </li>
                 <li>🎲 <b>評估題目選項位置每次隨機（21 個 assess）</b>：
@@ -1778,7 +1778,7 @@ body::before {
                 <li>🛡️ <b>學生先前進度永久保留</b>（重要保證）：
                     <ul style="margin-top:4px">
                         <li>即使更新題目，學生之前完成嘅 step 仍然顯示 ✓ 同保留金幣</li>
-                        <li>progress.js mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
+                        <li>progress.js?v=20260505 mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
                         <li>學生唔會因為我哋改題目而被扣金幣</li>
                     </ul>
                 </li>
@@ -3562,7 +3562,7 @@ async function saveQuizScore() {
 // ch12 = 39 (legacy hardcoded with iq_quiz/quiz1/etc.)
 // ch13-19 = 12 steps（3 prelearn×2 + 3 slides×2 + 3 assess×2 + 3 game×3 = 6+6+6+9 = 27）
 const CHAPTER_MAX_COINS = { 12: 39, 13: 27, 14: 27, 15: 27, 16: 27, 17: 27, 18: 27, 19: 27 };
-const AVAILABLE_CHAPTERS = [12, 13, 14, 15, 16, 17, 18, 19];
+// Note: 用 existing 全局 AVAILABLE_CHAPTERS（line ~3870 已 declared）— 唔再 redeclare（syntax error）
 
 // Compute earned coins for a single chapter (uses unified LWWFProgress logic)
 function getChapterCoins(ch) {
@@ -3602,7 +3602,8 @@ function renderScores() {
     const spendable = Math.max(0, earnedCoins - totalSpent);
     const coinImg = `${ASSET_BASE}/images/coin_new.png`;
     // Per-chapter progress cards (NEW 2026-05-03 — 用戶要求每課顯示完成進度)
-    const chapterCardsHtml = AVAILABLE_CHAPTERS.map(ch => {
+    // 注：用 inline chapter list 避免同 existing AVAILABLE_CHAPTERS（line 3870 array of objects）衝突
+    const chapterCardsHtml = [12, 13, 14, 15, 16, 17, 18, 19].map(ch => {
         const earned = getChapterCoins(ch);
         const max = CHAPTER_MAX_COINS[ch] || 27;
         const pct = Math.min(100, Math.round(earned / max * 100));
