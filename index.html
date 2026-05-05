@@ -1753,6 +1753,39 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-03 (f · 5 大 bug 全面修補)</span>
+            <ul>
+                <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
+                    <ul style="margin-top:4px">
+                        <li>15 個遊戲 file 加返 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
+                        <li>玩完即時寫 localStorage → progress.js v4 hijack 自動 Supabase upsert → 跨頁同步</li>
+                    </ul>
+                </li>
+                <li>🎲 <b>評估題目選項位置每次隨機（21 個 assess）</b>：
+                    <ul style="margin-top:4px">
+                        <li>之前 ch14/ch15 全部答案永遠係 A，學生猜 A 100% 中 → 失去評估價值</li>
+                        <li>render 時 Fisher-Yates shuffle 選項，但記住正確答案 text，學生點正確選項就判 correct</li>
+                        <li>每次 reload 順序唔同，學生唔可以背位置</li>
+                    </ul>
+                </li>
+                <li>🗂️ <b>「我的成績」加每課完成進度卡</b>（用戶要求）：
+                    <ul style="margin-top:4px">
+                        <li>顯示 ch12-19 各課 X/Y 金幣 + 進度條 + % 完成</li>
+                        <li>進度條顏色：100% 綠／≥50% 橙／＜50% 藍</li>
+                        <li>完成步驟即時 sync 跨頁 — 「我的成績」tab 自動 re-render（lwwf-progress-changed listener）</li>
+                    </ul>
+                </li>
+                <li>🛡️ <b>學生先前進度永久保留</b>（重要保證）：
+                    <ul style="margin-top:4px">
+                        <li>即使更新題目，學生之前完成嘅 step 仍然顯示 ✓ 同保留金幣</li>
+                        <li>progress.js mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
+                        <li>學生唔會因為我哋改題目而被扣金幣</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-03 (e · 課前預習題全面還原)</span>
             <ul>
                 <li>📖 <b>還原 ch13-17 課前預習題系統</b>（每課 3 個預習，每個 1 資訊圖 + 2 MC + 1 錄音）：
@@ -3129,7 +3162,13 @@ function updateCoinDisplay() {
 
 // Live re-render Ch12 coin badge on cloud sync, cross-tab updates, or local writes
 window.addEventListener('lwwf-progress-changed', () => {
-    if (currentUser) updateCoinDisplay();
+    if (!currentUser) return;
+    updateCoinDisplay();
+    // 2026-05-03: 跨頁 sync — re-render 我的成績 tab if visible
+    const scoresTab = document.querySelector('.tab-panel[data-tab="scores"]');
+    if (scoresTab && scoresTab.classList.contains('active') && currentUser.role === 'student') {
+        renderScores();
+    }
 });
 
 async function exchangeEdx(rateIdx) {
@@ -3519,6 +3558,27 @@ async function saveQuizScore() {
 // ============================================================
 // SCORES PAGE
 // ============================================================
+// 每課最大金幣（根據 STEP_KEYS × default coin rules）
+// ch12 = 39 (legacy hardcoded with iq_quiz/quiz1/etc.)
+// ch13-19 = 12 steps（3 prelearn×2 + 3 slides×2 + 3 assess×2 + 3 game×3 = 6+6+6+9 = 27）
+const CHAPTER_MAX_COINS = { 12: 39, 13: 27, 14: 27, 15: 27, 16: 27, 17: 27, 18: 27, 19: 27 };
+const AVAILABLE_CHAPTERS = [12, 13, 14, 15, 16, 17, 18, 19];
+
+// Compute earned coins for a single chapter (uses unified LWWFProgress logic)
+function getChapterCoins(ch) {
+    if (!currentUser) return 0;
+    if (ch === 12) {
+        const scores = JSON.parse(localStorage.getItem(`scores_${currentUser.class}_${currentUser.number}`) || '{}');
+        return (window.LWWFProgress && window.LWWFProgress.computeCh12Coins)
+            ? window.LWWFProgress.computeCh12Coins(scores)
+            : computeEarnedCoins(scores);
+    }
+    const p = JSON.parse(localStorage.getItem(`progress_ch${ch}_${currentUser.class}_${currentUser.number}`) || '{}');
+    return (window.LWWFProgress && window.LWWFProgress.computeCoins)
+        ? window.LWWFProgress.computeCoins(p)
+        : 0;
+}
+
 function renderScores() {
     if (!currentUser || currentUser.role !== 'student') return;
 
@@ -3541,6 +3601,27 @@ function renderScores() {
     const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
     const spendable = Math.max(0, earnedCoins - totalSpent);
     const coinImg = `${ASSET_BASE}/images/coin_new.png`;
+    // Per-chapter progress cards (NEW 2026-05-03 — 用戶要求每課顯示完成進度)
+    const chapterCardsHtml = AVAILABLE_CHAPTERS.map(ch => {
+        const earned = getChapterCoins(ch);
+        const max = CHAPTER_MAX_COINS[ch] || 27;
+        const pct = Math.min(100, Math.round(earned / max * 100));
+        const titleMap = { 12:'有趣的乘法', 13:'小數乘法（一）', 14:'小數乘法（二）', 15:'體積概念認識', 16:'體積的量度', 17:'長正方體體積', 18:'立體圖形體積', 19:'簡易方程（一）' };
+        const emojiMap = { 12:'📚', 13:'📘', 14:'🥟', 15:'📦', 16:'🎯', 17:'🏴‍☠️', 18:'⚡', 19:'🖍️' };
+        const barColor = pct >= 100 ? '#4CAF50' : (pct >= 50 ? '#FF9800' : '#90CAF9');
+        return `
+        <div style="background:white;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-left:4px solid ${barColor};">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+                <div style="font-weight:800;font-size:0.95rem;color:#333;">${emojiMap[ch]} 第${ch}課</div>
+                <div style="font-weight:900;font-size:1rem;color:${barColor};"><img src="${coinImg}" style="width:16px;height:16px;vertical-align:middle;"> ${earned}/${max}</div>
+            </div>
+            <div style="font-size:0.78rem;color:#777;margin-bottom:8px;">${titleMap[ch]}</div>
+            <div style="height:6px;background:#E0E0E0;border-radius:3px;overflow:hidden;">
+                <div style="height:100%;background:${barColor};width:${pct}%;transition:width 0.4s;"></div>
+            </div>
+            <div style="text-align:right;font-size:0.72rem;color:#999;margin-top:4px;">${pct}% 完成</div>
+        </div>`;
+    }).join('');
 
     const container = document.getElementById('scoresContent');
 
@@ -3573,6 +3654,14 @@ function renderScores() {
             <div class="score-stat">
                 <div class="score-stat-value">${ch12Coins}/39</div>
                 <div class="score-stat-label">本課進度</div>
+            </div>
+        </div>
+
+        <!-- 每課完成進度卡（2026-05-03 用戶要求）-->
+        <div style="margin:18px 0;">
+            <h3 style="margin:0 0 12px;color:#333;font-size:1rem;">🗂️ 各課完成進度</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+                ${chapterCardsHtml}
             </div>
         </div>
 

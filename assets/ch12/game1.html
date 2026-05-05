@@ -436,6 +436,14 @@ function endGame(){
     '⏱️ 時間：<b>'+Math.floor(elapsed/60)+' 分 '+(elapsed%60)+' 秒</b><br>' +
     '🪙 金幣：<b>'+coins+' / 3 枚</b>';
 
+  // Save progress to localStorage (triggers progress.js v4 hijack -> Supabase upsert)
+  try {
+    const k = (()=>{try{const u=JSON.parse(localStorage.getItem('lwwf_auth_user')||'null');if(u&&u.class&&u.number)return`progress_ch12_${u.class}_${u.number}`;}catch(e){}return'progress_ch12';})();
+    const p = JSON.parse(localStorage.getItem(k)||'{}');
+    p.game1 = { done: won, score: state.score, correct: state.correct, total: QUESTIONS.length, coins, ts: Date.now() };
+    localStorage.setItem(k, JSON.stringify(p));
+  } catch(e){}
+
   // Report to parent (index.html)
   try {
     window.parent.postMessage({type:'gameScore',game:'game1',score:state.score,correct:state.correct,total:QUESTIONS.length,coins:coins}, '*');

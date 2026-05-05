@@ -189,6 +189,22 @@ const Q = [
   { q: 'Q6 終極挑戰：哆啦A夢用縮小電筒射向大雄，大雄的體積會如何變化？', opts: ['變小','變大','保持不變','完全消失'], a: 0, hint: '縮小電筒使物件的體積（所佔的空間）變小。雖然是漫畫情節，但同樣展示體積這個概念。', pageQ: 11, pageA: 12 }
 ];
 
+// 2026-05-04 fix: 答案隨機化 — 每次 render 將 opts 位置 shuffle，但 logic 仍記住正確答案 text
+// 用戶 critical bug: ch14/ch15 全部 a:0 → 學生猜 A 必中。改用 render-time Fisher-Yates。
+function shuffleQuestion(q) {
+  if (!q.opts || q.opts.length < 2) return q;
+  const correctText = q.opts[q.a];           // STEP 1: remember correct text BEFORE shuffle
+  const shuffled = [...q.opts];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const newA = shuffled.indexOf(correctText);  // STEP 2: find new index of correct text
+  return { ...q, opts: shuffled, a: newA };    // STEP 3: keep all other fields (hint, pageQ, pageA)
+}
+const Q_SHUFFLED = Q.map(shuffleQuestion);     // shuffle ONCE per page session (idempotent)
+
+
 function pad2(n){ return String(n).padStart(2,'0'); }
 function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
 
@@ -197,17 +213,17 @@ let slideIdx = 0;                           // current question (0-5)
 let slidePhase = 'question';                // 'question' or 'answer'
 let slideCorrect = 0;
 let slideWrongs = 0;
-const slideAnswered = new Array(Q.length).fill(null);  // stores chosen idx
+const slideAnswered = new Array(Q_SHUFFLED.length).fill(null);  // stores chosen idx
 
 function renderSlide() {
-  const q = Q[slideIdx];
+  const q = Q_SHUFFLED[slideIdx];
   const pageNum = slidePhase === 'question' ? q.pageQ : q.pageA;
   document.getElementById('slideImg').src = `pages/${IMG_PREFIX}_p${pad2(pageNum)}.jpg`;
-  document.getElementById('slideQNum').textContent = `${slideIdx+1} / ${Q.length}`;
+  document.getElementById('slideQNum').textContent = `${slideIdx+1} / ${Q_SHUFFLED.length}`;
   document.getElementById('slideQLabel').textContent = `第 ${slideIdx+1} 題`;
   document.getElementById('slideCorrect').textContent = slideCorrect;
   document.getElementById('slideWrongs').textContent = slideWrongs;
-  document.getElementById('slidePfill').style.width = Math.round((slideIdx + (slidePhase==='answer'?0.5:0) + 0.5) / Q.length * 100) + '%';
+  document.getElementById('slidePfill').style.width = Math.round((slideIdx + (slidePhase==='answer'?0.5:0) + 0.5) / Q_SHUFFLED.length * 100) + '%';
 
   // Phase badge
   const badge = document.getElementById('phaseBadge');
@@ -260,7 +276,7 @@ function renderSlide() {
   } else if (slidePhase === 'question') {
     nb.disabled = false;
     nb.textContent = '睇答案 ✓';
-  } else if (slideIdx === Q.length - 1) {
+  } else if (slideIdx === Q_SHUFFLED.length - 1) {
     nb.disabled = false;
     nb.className = 'slide-btn done-btn';
     nb.textContent = '🎉 睇結果';
@@ -274,7 +290,7 @@ function renderSlide() {
 
 function slidePick(i) {
   if (slideAnswered[slideIdx] !== null) return;
-  const q = Q[slideIdx];
+  const q = Q_SHUFFLED[slideIdx];
   slideAnswered[slideIdx] = i;
   if (i === q.a) { slideCorrect++; slideWrongs = 0; }
   else { slideWrongs++; }
@@ -299,7 +315,7 @@ function slideNext() {
     slidePhase = 'answer';
     renderSlide();
     window.scrollTo({top:0, behavior:'smooth'});
-  } else if (slideIdx < Q.length - 1) {
+  } else if (slideIdx < Q_SHUFFLED.length - 1) {
     slideIdx++;
     slidePhase = 'question';
     renderSlide();
@@ -319,13 +335,13 @@ function resetSlides() {
 
 // ==== Mode B: List ====
 let listRendered = false;
-const selected = new Array(Q.length).fill(-1);
+const selected = new Array(Q_SHUFFLED.length).fill(-1);
 let listSubmitted = false;
 
 function renderList() {
   const list = document.getElementById('qList');
   list.innerHTML = '';
-  Q.forEach((q, i) => {
+  Q_SHUFFLED.forEach((q, i) => {
     const card = document.createElement('div');
     card.className = 'q-card';
     let html = `<div class="q-num">第 ${i+1} 題</div><div class="q-text">${q.q}</div><div class="opts${q.opts.length===3?' three-cols':''}" id="opts${i}">`;
@@ -350,14 +366,14 @@ function updateListStats() {
   const ans = selected.filter(s => s !== -1).length;
   document.getElementById('answeredStat').textContent = ans;
   const btn = document.getElementById('submitBtn');
-  if (ans === Q.length) { btn.disabled = false; btn.textContent = '✓ 提交答案 (檢查成績)'; }
-  else { btn.disabled = true; btn.textContent = `仲有 ${Q.length - ans} 題未做`; }
+  if (ans === Q_SHUFFLED.length) { btn.disabled = false; btn.textContent = '✓ 提交答案 (檢查成績)'; }
+  else { btn.disabled = true; btn.textContent = `仲有 ${Q_SHUFFLED.length - ans} 題未做`; }
 }
 
 function submitAll() {
   listSubmitted = true;
   let correct = 0;
-  Q.forEach((q, i) => {
+  Q_SHUFFLED.forEach((q, i) => {
     const card = document.getElementById('qList').children[i];
     const btns = card.querySelectorAll('.opt');
     btns.forEach((b, oi) => {
@@ -384,7 +400,7 @@ function showFinal(correct) {
   f.classList.add('show');
   document.getElementById('finalScore').textContent = correct;
   let m, t;
-  if (correct === Q.length) { m = '🌟 滿分！你完全掌握一位小數乘整數！'; t = '🏆'; }
+  if (correct === Q_SHUFFLED.length) { m = '🌟 滿分！你完全掌握一位小數乘整數！'; t = '🏆'; }
   else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
   else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
   else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
@@ -394,10 +410,10 @@ function showFinal(correct) {
   try {
     const k = (()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();
     const p = JSON.parse(localStorage.getItem(k) || '{}');
-    p[DECK_KEY] = { done: true, score: correct, total: Q.length, ts: Date.now() };
+    p[DECK_KEY] = { done: true, score: correct, total: Q_SHUFFLED.length, ts: Date.now() };
     localStorage.setItem(k, JSON.stringify(p));
   } catch(e) {}
-  try { window.parent.postMessage({ type:'assessScore', deck: DECK_KEY, correct, total: Q.length }, '*'); } catch(e) {}
+  try { window.parent.postMessage({ type:'assessScore', deck: DECK_KEY, correct, total: Q_SHUFFLED.length }, '*'); } catch(e) {}
 }
 
 renderSlide();

@@ -756,6 +756,14 @@ function endGame(){
   // Build detail list
   buildDetailList();
 
+  // Save progress to localStorage (triggers progress.js v4 hijack -> Supabase upsert)
+  try {
+    const k = (()=>{try{const u=JSON.parse(localStorage.getItem('lwwf_auth_user')||'null');if(u&&u.class&&u.number)return`progress_ch12_${u.class}_${u.number}`;}catch(e){}return'progress_ch12';})();
+    const p = JSON.parse(localStorage.getItem(k)||'{}');
+    p.game2 = { done: true, score: state.score, correct: state.correct, total: state.answered, coins, maxCombo: state.maxCombo, ts: Date.now() };
+    localStorage.setItem(k, JSON.stringify(p));
+  } catch(e){}
+
   // Send score to parent
   try{
     window.parent.postMessage({

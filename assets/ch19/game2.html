@@ -277,7 +277,7 @@ function endGame(reason) {
 }
 
 function saveScore() {
-  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, maxStreak, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { done: true, score, coins, maxStreak, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
 }
 </script>
 <script src="../common/wrong-tracker.js"></script>

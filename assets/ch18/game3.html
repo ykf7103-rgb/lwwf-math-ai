@@ -327,7 +327,7 @@ function finishGame() {
 function triggerLock(){els.lockModal.classList.add('show');}
 function restart(){qIdx=0;score=0;wrongs=0;coins=0;els.lockModal.classList.remove('show');render();}
 function saveScore() {
-  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { score, coins, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
+  try { const key = (() => { try { const u = JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); if (u && u.class && u.number) return `progress_ch${CHAPTER}_${u.class}_${u.number}`; } catch(e){} return `progress_ch${CHAPTER}`; })(); const p = JSON.parse(localStorage.getItem(key)||'{}'); p[GAME_KEY] = { done: true, score, coins, ts: Date.now() }; localStorage.setItem(key, JSON.stringify(p)); } catch(e){}
 }
 render();
 </script>
