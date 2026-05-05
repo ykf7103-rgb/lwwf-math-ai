@@ -1754,6 +1754,15 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (n · 課程總結入口統一)</span>
+            <ul>
+                <li>📋 <b>第 12-16 課全部新增「課程總結」入口卡</b>：區域 2 開頭新增綠色課程總結 card，學生一 click 直接到 summary.html（資訊圖 + 粵語錄音 + AI 評分）</li>
+                <li>🪙 <b>STEP_KEYS 加 summary 第 10 步</b>：第 13-16 課進度條由 9 步擴展至 10 步，學生 prior 9 步金幣 100% 保留（mergeBest）</li>
+                <li>🎤 <b>下一步：12 個評估文件加錄音題</b>：每份 assess 最後加 1 條粵語錄音解題思路題目（製作中）</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (m · 修簡報睇唔到 + 刪預習)</span>
             <ul>
                 <li>👀 <b>修復「簡報睇唔到」bug</b>：開簡報／評估時自動隱藏 3 區域 cards（之前 cards 遮住 viewer）+ 自動 scroll 至頂</li>
@@ -2379,8 +2388,16 @@ body::before {
 
             <!-- ======== 區域 2 · 總結區 ======== -->
             <div class="region-section" style="margin:24px 0;">
-                <div class="region-title" style="background:linear-gradient(135deg,#2E7D32,#1B5E20);color:white;padding:14px 18px;border-radius:12px;font-weight:800;margin-bottom:14px;font-size:1.05rem;box-shadow:0 4px 12px rgba(46,125,50,0.25);">📋 區域 2：總結區（資訊圖小總結 + 學習卡）</div>
+                <div class="region-title" style="background:linear-gradient(135deg,#2E7D32,#1B5E20);color:white;padding:14px 18px;border-radius:12px;font-weight:800;margin-bottom:14px;font-size:1.05rem;box-shadow:0 4px 12px rgba(46,125,50,0.25);">📋 區域 2：總結區（課程總結 + 學習卡 + 資訊圖）</div>
                 <div class="cards-grid">
+                    <a href="assets/ch12/summary.html" class="card" style="position:relative;cursor:pointer;text-decoration:none;color:inherit;display:block;">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
+                        <div class="card-header">
+                            <div class="card-icon green">📋</div>
+                            <div><div class="card-title">課程總結</div><div class="card-subtitle">資訊圖總覽 + 錄音 AI 評分</div></div>
+                        </div>
+                        <div class="card-body">睇一張總覽資訊圖，再用粵語錄音講解你嘅理解，AI 即時評分送金幣！</div>
+                    </a>
                     <div class="card" onclick="document.getElementById('flashcardsContainer').scrollIntoView({behavior:'smooth',block:'center'})" style="position:relative;cursor:pointer;">
                         <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+2 🪙</div>
                         <div class="card-header">
