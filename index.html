@@ -1753,6 +1753,19 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (d · 修復金幣圖標)</span>
+            <ul>
+                <li>🪙 <b>修復金幣圖標不見 bug</b>（學生反映）：
+                    <ul style="margin-top:4px">
+                        <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js 載入時 broken</li>
+                        <li>Fix：複製 coin_new.png 到 5 個課題 images/ 文件夾</li>
+                        <li>學生喺所有 sub-page 都見到金幣圖標 + 數字</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (c · ch13-16 三區域 layout)</span>
             <ul>
                 <li>🗂️ <b>第 13/14/15/16 課版面全面重構</b>（用戶要求）：
