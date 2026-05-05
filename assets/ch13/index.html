@@ -61,196 +61,83 @@
 
   .back { display: none; }
 
-  /* ==== Tab Bar (Premium) ==== */
-  .tab-bar {
-    background: white; border-radius: 18px; padding: 8px;
-    display: flex; gap: 6px; overflow-x: auto;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    scrollbar-width: thin;
-    position: sticky; top: 70px; z-index: 40;
-    backdrop-filter: blur(10px);
+  /* ==== Region Section (3 區域 layout) ==== */
+  .region-section { margin: 18px 0 22px; }
+  .region-title {
+    color: white; padding: 14px 18px; border-radius: 12px;
+    font-weight: 800; margin-bottom: 14px; font-size: 1.05rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    display: flex; align-items: center; gap: 8px;
   }
-  .tab-btn {
-    flex: 1; min-width: 92px; padding: 12px 10px;
-    border: none; border-radius: 12px;
-    background: transparent; color: #666;
-    font-weight: 800; cursor: pointer; font-size: 0.9rem;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    transition: all 0.2s cubic-bezier(0.4,0,0.2,1); white-space: nowrap;
-    font-family: inherit; position: relative;
-  }
-  .tab-btn:hover:not(.active) { background: linear-gradient(135deg,#FFF3E0,#FFE0B2); color: #E65100; transform: translateY(-2px); }
-  .tab-btn.active {
-    background: linear-gradient(135deg, #E65100 0%, #F57C00 100%);
-    color: white; box-shadow: 0 6px 14px rgba(230,81,0,0.4);
-    transform: translateY(-2px);
-  }
-  .tab-btn.active::after {
-    content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-    border: 6px solid transparent; border-top-color: #E65100;
-  }
-  .tab-btn .tab-emoji { font-size: 1.5rem; }
-  .tab-btn .tab-label { font-size: 0.8rem; }
-  @media (max-width: 500px) {
-    .tab-btn .tab-label { font-size: 0.72rem; }
-    .tab-btn { padding: 10px 6px; min-width: 76px; }
-    .tab-btn .tab-emoji { font-size: 1.25rem; }
+  .region-title.r1 { background: linear-gradient(135deg, #1565C0, #0D47A1); }
+  .region-title.r2 { background: linear-gradient(135deg, #2E7D32, #1B5E20); }
+  .region-title.r3 { background: linear-gradient(135deg, #E65100, #BF360C); }
+  .region-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .region-content.r2-grid { grid-template-columns: repeat(2, 1fr); }
+  .region-content.r3-grid { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px) {
+    .region-content,
+    .region-content.r2-grid,
+    .region-content.r3-grid { grid-template-columns: 1fr; }
   }
 
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; animation: fadeIn 0.3s; }
-  @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
+  .subgroup-label {
+    grid-column: 1 / -1;
+    font-weight: 800; color: #1565C0; font-size: 0.92rem;
+    padding: 6px 10px; background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border-radius: 8px; margin-top: 4px;
+  }
+  .subgroup-label.assess-label { color: #E65100; background: linear-gradient(135deg, #FFF3E0, #FFE0B2); }
 
-  /* ==== Study tab: LO box (upgraded) ==== */
-  .lo-box {
-    background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-    border-left: 6px solid #1565C0;
-    padding: 18px 22px; border-radius: 16px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 14px rgba(21,101,192,0.15);
-    position: relative; overflow: hidden;
-  }
-  .lo-box::after {
-    content: '🎯'; position: absolute; top: 50%; right: 14px;
-    transform: translateY(-50%); font-size: 4rem; opacity: 0.14;
-  }
-  .lo-box h3 { margin: 0 0 10px; color: #0D47A1; font-size: 1.2rem; font-weight: 900; }
-  .lo-box ul { margin: 4px 0; padding-left: 22px; line-height: 1.8; font-size: 0.92rem; }
-  .lo-box ul li b { color: #1565C0; }
-
-  /* ==== Study tab: sections (premium) ==== */
-  .section {
-    background: white; border-radius: 20px;
-    padding: 18px 18px; margin-bottom: 22px;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.08);
-    border: 2px solid #E0E7EE;
-    transition: box-shadow 0.2s;
-  }
-  .section:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.12); }
-  .section-title {
-    font-size: 1.15rem; font-weight: 900;
-    padding: 12px 18px; border-radius: 12px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 10px;
-    letter-spacing: 0.3px;
-  }
-  .section-title .num {
-    background: white; color: #333;
-    width: 34px; height: 34px; border-radius: 50%;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 1.15rem; font-weight: 900;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  }
-  .section.s1 { border-color: #BBDEFB; }
-  .section.s1 .section-title { background: linear-gradient(135deg, #1565C0, #0D47A1); color: white; }
-  .section.s1 .section-title .num { color: #0D47A1; }
-  .section.s2 { border-color: #E1BEE7; }
-  .section.s2 .section-title { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: white; }
-  .section.s2 .section-title .num { color: #4A148C; }
-  .section.s3 { border-color: #FFCDD2; }
-  .section.s3 .section-title { background: linear-gradient(135deg, #D32F2F, #B71C1C); color: white; }
-  .section.s3 .section-title .num { color: #B71C1C; }
-
-  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  /* v5 layout: 遊戲區 top shelf + flow-2 (簡報→評估) */
-  .game-shelf { background: linear-gradient(135deg,#FFF3E0,#FFE0B2); border:3px solid #FF8F00; border-radius:16px; padding:14px; margin-bottom:18px; }
-  .game-shelf-title { font-weight:900; color:#E65100; margin-bottom:10px; font-size:1.05rem; display:flex; align-items:center; gap:6px; }
-  .game-shelf-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-  @media (max-width:600px) { .game-shelf-cards { grid-template-columns:1fr; } }
-  .game-card { background:white; border-radius:12px; padding:14px 10px; text-align:center; text-decoration:none; color:#333; position:relative; border:2px solid #FFB74D; transition:all 0.2s; display:flex; flex-direction:column; gap:6px; }
-  .game-card:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(255,143,0,0.3); }
-  .game-card.done { background:linear-gradient(135deg,#C8E6C9 0%,#F1F8E9 100%); border-color:#4CAF50; }
-  .game-card .done-badge { position:absolute; top:6px; right:6px; background:linear-gradient(135deg,#66BB6A,#388E3C); color:white; font-size:0.65rem; padding:2px 7px; border-radius:8px; font-weight:900; display:none; }
-  .game-card.done .done-badge { display:inline-block; }
-  .game-card .ge { font-size:2rem; }
-  .game-card .gt { font-weight:900; color:#E65100; font-size:0.95rem; line-height:1.25; }
-  .game-card .gd { font-size:0.78rem; color:#666; line-height:1.3; }
-  .game-card .gc { display:inline-flex; align-items:center; gap:4px; background:#FFF8E1; padding:2px 8px; border-radius:10px; font-weight:800; color:#F57F17; font-size:0.82rem; align-self:center; }
-  .flow.flow-2 { grid-template-columns:1fr 1fr; gap:10px; align-items:stretch; }
-  .flow.flow-3 { grid-template-columns:repeat(3,1fr); gap:10px; align-items:stretch; }
-  @media (max-width:520px) { .flow.flow-2 { grid-template-columns:1fr; } .flow.flow-3 { grid-template-columns:1fr; } }
-
+  /* ==== Card ==== */
   .card {
     background: white; border: 2px solid #E0E7EE; border-radius: 16px;
-    padding: 18px 10px; text-decoration: none; color: #333;
+    padding: 18px 12px; text-decoration: none; color: #333;
     transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
     display: flex; flex-direction: column; gap: 6px; text-align: center;
-    min-height: 140px; position: relative; justify-content: center;
+    min-height: 150px; position: relative; justify-content: center;
     box-shadow: 0 3px 10px rgba(0,0,0,0.06);
   }
   .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 12px 28px rgba(0,0,0,0.15); }
-  .card .step { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg,#f5f5f5,#eee); color: #888; font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 8px; letter-spacing: 0.5px; }
-  .card .arrow {
-    position: absolute; top: 50%; right: -14px; transform: translateY(-50%);
-    color: #E65100; font-size: 1.6rem; z-index: 2; pointer-events: none;
-    filter: drop-shadow(0 2px 3px rgba(230,81,0,0.3));
-    animation: flowPulse 2s ease-in-out infinite;
+  .coin-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: linear-gradient(135deg, #FFD54F, #FF8F00);
+    color: white; padding: 3px 10px; border-radius: 14px;
+    font-size: 0.78rem; font-weight: 900;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   }
-  @keyframes flowPulse { 0%,100% { transform: translateY(-50%) translateX(0); opacity: 0.6; } 50% { transform: translateY(-50%) translateX(3px); opacity: 1; } }
-  .card:last-child .arrow { display: none; }
+  .card .arrow {
+    position: absolute; bottom: 8px; right: 10px;
+    color: #E65100; font-size: 1.2rem; pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(230,81,0,0.3));
+  }
   .card-emoji { font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-  .card-title { font-size: 0.95rem; font-weight: 900; line-height: 1.3; letter-spacing: 0.3px; }
-  .card-desc { font-size: 0.74rem; color: #666; line-height: 1.4; }
+  .card-title { font-size: 1rem; font-weight: 900; line-height: 1.3; letter-spacing: 0.3px; }
+  .card-desc { font-size: 0.78rem; color: #666; line-height: 1.4; padding: 0 4px; }
   .card.slides { border-color: #BBDEFB; background: linear-gradient(135deg, #ffffff 0%, #E3F2FD 100%); }
   .card.slides .card-title { color: #1565C0; }
-  .card.prelearn { border-color: #E1BEE7; background: linear-gradient(135deg, #ffffff 0%, #F3E5F5 100%); }
-  .card.prelearn .card-title { color: #7B1FA2; }
   .card.assess { border-color: #FFE0B2; background: linear-gradient(135deg, #ffffff 0%, #FFF3E0 100%); }
   .card.assess .card-title { color: #E65100; }
-  .card.game { border-color: #C8E6C9; background: linear-gradient(135deg, #ffffff 0%, #E8F5E9 100%); }
-  .card.game .card-title { color: #00897B; }
-  .card .done-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg,#66BB6A,#388E3C); color: white; font-size: 0.68rem; padding: 3px 8px; border-radius: 10px; font-weight: 900; display: none; box-shadow: 0 2px 6px rgba(56,142,60,0.4); }
+  .card.summary { border-color: #C8E6C9; background: linear-gradient(135deg, #ffffff 0%, #E8F5E9 100%); }
+  .card.summary .card-title { color: #2E7D32; }
+  .card.fun { border-color: #FFCCBC; background: linear-gradient(135deg, #ffffff 0%, #FFE0B2 100%); }
+  .card.fun .card-title { color: #BF360C; }
+  .card .done-badge {
+    position: absolute; top: 8px; left: 8px;
+    background: linear-gradient(135deg, #66BB6A, #388E3C);
+    color: white; font-size: 0.68rem; padding: 3px 8px;
+    border-radius: 10px; font-weight: 900; display: none;
+    box-shadow: 0 2px 6px rgba(56,142,60,0.4);
+  }
   .card.done .done-badge { display: inline-block; }
   .card.done { background: linear-gradient(135deg, #C8E6C9 0%, #F1F8E9 100%); border-color: #4CAF50; }
 
-  /* ==== Quiz / Game tab grids ==== */
-  .big-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .big-card {
-    background: white; border: 2px solid #E0E7EE; border-radius: 16px;
-    padding: 20px 16px; text-decoration: none; color: #333;
-    transition: all 0.2s; position: relative; cursor: pointer;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .big-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
-  .big-card .big-emoji { font-size: 3rem; text-align: center; }
-  .big-card .big-title { font-size: 1.1rem; font-weight: 900; color: #E65100; text-align: center; }
-  .big-card .big-sub { font-size: 0.8rem; color: #666; text-align: center; }
-  .big-card .big-desc { font-size: 0.85rem; color: #555; line-height: 1.5; padding: 8px 10px; background: #FFF8E1; border-radius: 8px; border-left: 3px solid #FFB300; }
-  .big-card.assess-c .big-title { color: #E65100; }
-  .big-card.game-c .big-title { color: #00897B; }
-  .big-card .big-done-badge { position: absolute; top: 10px; right: 10px; background: #4CAF50; color: white; font-size: 0.72rem; padding: 3px 8px; border-radius: 10px; font-weight: 800; display: none; }
-  .big-card.done .big-done-badge { display: inline-block; }
-
-  /* ==== AI tab ==== */
-  .ai-panel { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border: 2px solid #FFB300; border-radius: 18px; padding: 26px; text-align: center; }
-  .ai-panel h3 { color: #E65100; font-size: 1.3rem; margin-bottom: 10px; }
-  .ai-panel p { color: #666; font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
-  .ai-big-btn { display: inline-block; background: linear-gradient(135deg, #E65100, #F57C00); color: white; padding: 14px 36px; border-radius: 14px; text-decoration: none; font-weight: 900; font-size: 1.1rem; box-shadow: 0 6px 16px rgba(230,81,0,0.3); }
-  .ai-big-btn:hover { transform: translateY(-2px); }
-
-  /* ==== Scores tab ==== */
-  .scores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-  .score-cell { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #BDBDBD; }
-  .score-cell.done { border-left-color: #4CAF50; background: linear-gradient(135deg, #F1F8E9, white); }
-  .score-cell .sc-name { font-size: 0.9rem; font-weight: 800; color: #333; margin-bottom: 4px; }
-  .score-cell .sc-val { font-size: 1.2rem; font-weight: 900; color: #E65100; }
-  .score-cell .sc-sub { font-size: 0.75rem; color: #999; margin-top: 4px; }
-  .scores-summary { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 16px; }
-  .scores-summary .summary-big { font-size: 2.5rem; font-weight: 900; color: #0D47A1; }
-
-  .reset-btn { display: block; margin: 24px auto 0; background: transparent; color: #999; border: 1px dashed #BBB; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-family: inherit; }
-  .reset-btn:hover { color: #E65100; border-color: #E65100; }
-
   @media (max-width: 700px) {
     h1 { font-size: 1.35rem; }
-    .flow { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .card { padding: 10px 6px; min-height: 100px; }
-    .card .arrow { display: none !important; }
-    .card-emoji { font-size: 1.5rem; }
-    .card-title { font-size: 0.82rem; }
-    .card-desc { font-size: 0.68rem; }
-    .big-grid { grid-template-columns: 1fr; }
+    .card { padding: 12px 8px; min-height: 120px; }
+    .card-emoji { font-size: 1.6rem; }
+    .card-title { font-size: 0.88rem; }
+    .card-desc { font-size: 0.72rem; }
   }
 </style>
 </head>
@@ -272,278 +159,109 @@
     </div>
   </div>
 
-  <!-- ======== Tab Bar ======== -->
-  <div class="tab-bar" role="tablist">
-    <button class="tab-btn active" data-tab="study" onclick="switchTab('study')">
-      <span class="tab-emoji">📚</span><span class="tab-label">自學區</span>
-    </button>
-    <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')">
-      <span class="tab-emoji">📝</span><span class="tab-label">測驗區</span>
-    </button>
-    <button class="tab-btn" data-tab="games" onclick="switchTab('games')">
-      <span class="tab-emoji">🎮</span><span class="tab-label">遊戲區</span>
-    </button>
-    <button class="tab-btn" data-tab="tool" onclick="switchTab('tool')">
-      <span class="tab-emoji">🔢</span><span class="tab-label">小數工具</span>
-    </button>
-    <button class="tab-btn" data-tab="ai" onclick="switchTab('ai')">
-      <span class="tab-emoji">🤖</span><span class="tab-label">AI問功課</span>
-    </button>
-    <button class="tab-btn" data-tab="scores" onclick="switchTab('scores')">
-      <span class="tab-emoji">🏆</span><span class="tab-label">我的成績</span>
-    </button>
-  </div>
-
-  <!-- ======== Tab: 自學區 ======== -->
-  <div class="tab-panel active" data-tab="study">
-    <div class="lo-box">
-      <h3>🎯 本課學習目標</h3>
-      <ul>
-        <li><b>LO 1</b>：進行<b>一位小數 × 整數</b>的乘法運算及以直式計算，並估計計算結果（例：2.3 × 5 = 11.5）</li>
-        <li><b>LO 2</b>：進行<b>兩位小數 × 整數</b>的乘法運算及以直式計算，並估計計算結果（例：2.45 × 3 = 7.35）</li>
-        <li>共同重點：學會用<b>估算</b>（將小數約成最近整數）快速判斷答案合理範圍 + catch 小數點位置錯誤</li>
-      </ul>
-      <div style="margin-top:10px;padding:8px 12px;background:#FFF8E1;border-left:4px solid #FFB300;border-radius:6px;font-size:0.88rem;color:#555;">
-        💰 <b>完成所有區域，最多可賺 32 枚金幣</b><br>
-        <span style="font-size:0.82rem;color:#888;">簡報 2×3=6 · 預習 2×3=6 · 評估 2×3=6 · 遊戲 3×3=9 · 額外 +5（補充教材）</span>
-      </div>
-    </div>
-
-    <!-- Section 1 -->
-    
-  <!-- 🎮 遊戲區（v5 — top shelf 隨時可玩） -->
-  <div class="game-shelf">
-    <div class="game-shelf-title">🎮 遊戲區（隨時可入去玩，賺金幣）</div>
-    <div class="game-shelf-cards">
-      <a href="game1.html" class="game-card" data-key="game1"><span class="done-badge">✓</span><div class="ge">🌀</div><div class="gt">遊戲 1：小數點迷宮</div><div class="gd">10 房密室 · 揀啱算式門口 ·</div><div class="gc"><img src="images/coin_new.png" style="width:14px;height:14px;">3</div></a>
-      <a href="game2.html" class="game-card" data-key="game2"><span class="done-badge">✓</span><div class="ge">⚡</div><div class="gt">遊戲 2：兩位小數閃電戰</div><div class="gd">60 秒連環挑戰 · 兩位小數 × 整數 ·</div><div class="gc"><img src="images/coin_new.png" style="width:14px;height:14px;">3</div></a>
-      <a href="game3.html" class="game-card" data-key="game3"><span class="done-badge">✓</span><div class="ge">🛡️</div><div class="gt">遊戲 3：唐僧護城戰</div><div class="gd">10 波妖怪 · 小數 × 小數 + 估算 ·</div><div class="gc"><img src="images/coin_new.png" style="width:14px;height:14px;">3</div></a>
-    </div>
-  </div>
-
-    <div class="section s1">
-      <div class="section-title"><span class="num">1</span>第一節 · 一位小數 × 整數</div>
-      <div class="flow flow-3">
-        <a href="prelearn1.html" class="card prelearn" data-key="prelearn1"><span class="done-badge">✓</span><div class="card-emoji">📖</div><div class="card-title">預習 1</div><div class="card-desc">資訊圖 + 2 MC + 1 錄音 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="slides1.html" class="card slides" data-key="slides1"><span class="done-badge">✓</span><div class="card-emoji">📗</div><div class="card-title">簡報 1</div><div class="card-desc">內嵌 8 題 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">最多 2 金幣</div><span class="arrow">▶</span></a>
-                <a href="assess1.html" class="card assess" data-key="assess1"><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 1</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">最多 2 金幣</div><span class="arrow">▶</span></a>
-            </div>
-    </div>
-
-    <!-- Section 2 -->
-    <div class="section s2">
-      <div class="section-title"><span class="num">2</span>第二節 · 兩位小數 × 整數</div>
-      <div class="flow flow-3">
-        <a href="prelearn2.html" class="card prelearn" data-key="prelearn2"><span class="done-badge">✓</span><div class="card-emoji">📖</div><div class="card-title">預習 2</div><div class="card-desc">資訊圖 + 2 MC + 1 錄音 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="slides2.html" class="card slides" data-key="slides2"><span class="done-badge">✓</span><div class="card-emoji">📘</div><div class="card-title">簡報 2</div><div class="card-desc">內嵌 8 題 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">最多 2 金幣</div><span class="arrow">▶</span></a>
-                <a href="assess2.html" class="card assess" data-key="assess2"><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 2</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">最多 2 金幣</div><span class="arrow">▶</span></a>
-            </div>
-    </div>
-
-    <!-- Section 3 -->
-    <div class="section s3">
-      <div class="section-title"><span class="num">3</span>第三節 · 小數 × 小數 + 估算</div>
-      <div class="flow flow-3">
-        <a href="prelearn3.html" class="card prelearn" data-key="prelearn3"><span class="done-badge">✓</span><div class="card-emoji">📖</div><div class="card-title">預習 3</div><div class="card-desc">資訊圖 + 2 MC + 1 錄音 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">2</div><span class="arrow">▶</span></a>
-        <a href="slides3.html" class="card slides" data-key="slides3"><span class="done-badge">✓</span><div class="card-emoji">📙</div><div class="card-title">簡報 3</div><div class="card-desc">內嵌 8 題 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">最多 2 金幣</div><span class="arrow">▶</span></a>
-                <a href="assess3.html" class="card assess" data-key="assess3"><span class="done-badge">✓</span><div class="card-emoji">✏️</div><div class="card-title">評估 3</div><div class="card-desc">6 題 · 題+答 · <img src="images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;">最多 2 金幣</div><span class="arrow">▶</span></a>
-            </div>
-    </div>
-
-    <!-- 🎁 額外教材（原「補充教材」併入自學區）-->
-    <div class="section" style="border-color:#C8E6C9;margin-top:20px;">
-      <div class="section-title" style="background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;"><span class="num" style="color:#2E7D32;">🎁</span>額外教材（完成可賺 <img src="images/coin_new.png" style="width:16px;height:16px;vertical-align:middle;"> 5 金幣）</div>
-      <p style="color:#555;font-size:0.88rem;margin:-6px 0 12px;padding:0 6px;">教學影片 · 語音摘要 · Suno 廣東話歌 · 學習卡 · 學習指南 · Bonus 測驗</p>
-
-      <!-- 教學影片 -->
-      <div class="big-card" style="margin-bottom:12px;">
-        <div class="big-emoji">🎬</div>
-        <div class="big-title" style="color:#C62828;">教學影片 · 西遊記風格</div>
-        <div class="big-sub">8-10 分鐘 · NLM 生成</div>
-        <video controls preload="metadata" style="width:100%;border-radius:12px;background:#000;margin-top:8px;" onplay="markExtra('video')">
-          <source src="video/teaching.mp4" type="video/mp4">
-          您的瀏覽器唔支援影片播放。
-        </video>
-      </div>
-
-      <!-- 語音摘要 -->
-      <div class="big-card" style="margin-bottom:12px;">
-        <div class="big-emoji">🎙️</div>
-        <div class="big-title" style="color:#6A1B9A;">語音摘要 · Deep Dive</div>
-        <div class="big-sub">兩位主持傾全課重點 · 約 10 分鐘</div>
-        <audio controls preload="metadata" style="width:100%;margin-top:8px;" onplay="markExtra('audio')">
-          <source src="audio/summary.mp4" type="audio/mp4">
-          您的瀏覽器唔支援音頻播放。
-        </audio>
-      </div>
-
-      <!-- Suno 歌 -->
-      <div class="big-card" style="margin-bottom:12px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
-        <div class="big-emoji">🎵</div>
-        <div class="big-title" style="color:#E65100;">Suno 廣東話溫習歌 × 2</div>
-        <div class="big-sub">Suno v5.5 Pro · 粵語 · 乾淨歌詞 · 邊聽邊記口訣</div>
-
-        <div style="margin-top:12px;background:rgba(255,255,255,0.85);border-radius:10px;padding:12px;">
-          <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎵 歌 1：《小數點位》一位/兩位小數 × 整數</div>
-          <div style="font-size:0.82rem;color:#666;margin-bottom:8px;">口訣：當係整數嚟乘 → 最後數點位 → 因數有幾多位小數，答案就有幾多位</div>
-          <audio controls preload="metadata" style="width:100%;" onplay="markExtra('suno1')">
-            <source src="audio/song1_v1.mp3" type="audio/mpeg">
-          </audio>
-          <details style="margin-top:6px;font-size:0.8rem;">
-            <summary style="cursor:pointer;color:#888;">🔀 版本 2（另一個風格）</summary>
-            <audio controls preload="metadata" style="width:100%;margin-top:6px;">
-              <source src="audio/song1_v2.mp3" type="audio/mpeg">
-            </audio>
-          </details>
-        </div>
-
-        <div style="margin-top:10px;background:rgba(255,255,255,0.85);border-radius:10px;padding:12px;">
-          <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎵 歌 2：《悟空十乘二十》估算技巧 + 整合應用</div>
-          <div style="font-size:0.82rem;color:#666;margin-bottom:8px;">口訣：先估約成整數 → 列直式計乘 → 點返小數點 check 合理性</div>
-          <!-- Ch13 Song 2 有 video version — 細小播放器 max 320px，唔佔晒空間 -->
-          <video controls preload="metadata"
-            style="display:block;max-width:320px;width:100%;height:auto;border-radius:8px;background:#000;margin:0 auto;"
-            onplay="markExtra('suno2')">
-            <source src="audio/song2_v1.mp4" type="video/mp4">
-          </video>
-          <details style="margin-top:6px;font-size:0.8rem;">
-            <summary style="cursor:pointer;color:#888;">🔀 版本 1（音頻）· 版本 2（另一風格）</summary>
-            <div style="margin-top:6px;">
-              <div style="font-size:0.78rem;color:#888;margin-bottom:4px;">版本 1（純音頻）：</div>
-              <audio controls preload="metadata" style="width:100%;">
-                <source src="audio/song2_v1.mp3" type="audio/mpeg">
-              </audio>
-              <div style="font-size:0.78rem;color:#888;margin:8px 0 4px;">版本 2：</div>
-              <audio controls preload="metadata" style="width:100%;">
-                <source src="audio/song2_v2.mp3" type="audio/mpeg">
-              </audio>
-            </div>
-          </details>
-        </div>
-      </div>
-
-      <!-- 學習卡 + 學習指南 + Bonus 測驗 -->
-      <div class="big-grid">
-        <a href="flashcards.html" target="_blank" class="big-card" style="border-color:#BBDEFB;">
-          <div class="big-emoji">🃏</div>
-          <div class="big-title" style="color:#1565C0;">學習卡</div>
-          <div class="big-sub">點擊翻牌記重點</div>
-          <div class="big-desc">NLM 自動生成嘅 flashcards，包括概念、例題、口訣。</div>
-        </a>
-        <a href="study-guide.md" target="_blank" class="big-card" style="border-color:#FFE0B2;">
-          <div class="big-emoji">📋</div>
-          <div class="big-title" style="color:#E65100;">學習指南</div>
-          <div class="big-sub">濃縮版本課筆記</div>
-          <div class="big-desc">全課精華一頁看盡，考前快速溫習用。</div>
-        </a>
-        <a href="bonus-quiz.html" target="_blank" class="big-card" style="border-color:#C8E6C9;">
-          <div class="big-emoji">🎯</div>
-          <div class="big-title" style="color:#00897B;">額外測驗</div>
-          <div class="big-sub">NLM 生成 · 10 題</div>
-          <div class="big-desc">Bonus 挑戰題，由 NLM 自動出題，測試更全面。</div>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- ======== Tab: 測驗區 ======== -->
-  <div class="tab-panel" data-tab="quiz">
-    <div style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #FF9800;">
-      <h3 style="margin:0 0 4px;color:#E65100;">📝 測驗區 · 評估簡報</h3>
-      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">每個評估有 <b>2 個模式</b>：<br>
-      📊 <b>簡報評估</b>（一題一頁 + 答案頁核對 · Ch12 style）<br>
-      ⚡ <b>快速 MC</b>（6 題一次過做）</p>
-    </div>
-    <div class="big-grid">
-      <a href="assess1.html" class="big-card assess-c" data-key="assess1">
-        <span class="big-done-badge">✓</span>
-        <div class="big-emoji">✏️</div>
-        <div class="big-title">評估 1</div>
-        <div class="big-sub">一位小數 × 整數</div>
-        <div class="big-desc">6 題故事化 MC · 悟空 / 八戒 / 沙僧 / 唐僧過關 · 有答案解釋頁</div>
+  <!-- ======== 區域 1 · 自學區 ======== -->
+  <div class="region-section">
+    <div class="region-title r1">📚 區域 1：自學區（簡報 + 評估）</div>
+    <div class="subgroup-label">🎯 簡報部分（3 個簡報）</div>
+    <div class="region-content">
+      <a href="slides1.html" class="card slides" data-key="slides1">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📖</div>
+        <div class="card-title">簡報 1</div>
+        <div class="card-desc">一位小數 × 整數</div>
+        <span class="arrow">▶</span>
       </a>
-      <a href="assess2.html" class="big-card assess-c" data-key="assess2">
-        <span class="big-done-badge">✓</span>
-        <div class="big-emoji">✏️</div>
-        <div class="big-title">評估 2</div>
-        <div class="big-sub">兩位小數 × 整數</div>
-        <div class="big-desc">6 題仙丹 / 法寶 / 布料 / 客棧情境 · 估算 + 精確計算</div>
+      <a href="slides2.html" class="card slides" data-key="slides2">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📖</div>
+        <div class="card-title">簡報 2</div>
+        <div class="card-desc">兩位小數 × 整數</div>
+        <span class="arrow">▶</span>
       </a>
-      <a href="assess3.html" class="big-card assess-c" data-key="assess3">
-        <span class="big-done-badge">✓</span>
-        <div class="big-emoji">✏️</div>
-        <div class="big-title">評估 3</div>
-        <div class="big-sub">估算技巧 + 整合應用</div>
-        <div class="big-desc">6 題葫蘆 / 仙丹 / 白龍馬 / 金箍棒挑戰 · 估算打擊妖怪陷阱</div>
+      <a href="slides3.html" class="card slides" data-key="slides3">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📖</div>
+        <div class="card-title">簡報 3</div>
+        <div class="card-desc">小數 × 小數 + 估算</div>
+        <span class="arrow">▶</span>
+      </a>
+    </div>
+    <div class="subgroup-label assess-label" style="margin-top:14px;">✏️ 評估部分（3 個評估）</div>
+    <div class="region-content">
+      <a href="assess1.html" class="card assess" data-key="assess1">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📊</div>
+        <div class="card-title">評估 1</div>
+        <div class="card-desc">6 題 · 一位小數 × 整數</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="assess2.html" class="card assess" data-key="assess2">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📊</div>
+        <div class="card-title">評估 2</div>
+        <div class="card-desc">6 題 · 兩位小數 × 整數</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="assess3.html" class="card assess" data-key="assess3">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📊</div>
+        <div class="card-title">評估 3</div>
+        <div class="card-desc">6 題 · 估算 + 整合應用</div>
+        <span class="arrow">▶</span>
       </a>
     </div>
   </div>
 
-  <!-- ======== Tab: 遊戲區 ======== -->
-  <div class="tab-panel" data-tab="games">
-    <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #4CAF50;">
-      <h3 style="margin:0 0 4px;color:#2E7D32;">🎮 遊戲區 · 西遊記數學大冒險</h3>
-      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">3 款玩法完全唔同，對應 3 個小節嘅學習目標。每場最多得 <b>3 枚金幣</b> <img src="images/coin_new.png" style="width:16px;height:16px;vertical-align:middle;"></p>
-    </div>
-    <div class="big-grid">
-      <a href="game1.html" class="big-card game-c" data-key="game1">
-        <span class="big-done-badge">✓</span>
-        <div class="big-emoji">🌀</div>
-        <div class="big-title">遊戲 1 · 小數點迷宮</div>
-        <div class="big-sub">一位小數 × 整數 · 10 房密室</div>
-        <div class="big-desc">唐僧迷失迷宮！每房 4 道門、揀啱算式答案先打得開 · 3 條命 · 西天取經路</div>
+  <!-- ======== 區域 2 · 總結區 ======== -->
+  <div class="region-section">
+    <div class="region-title r2">📋 區域 2：總結區（資訊圖小總結 + 學習卡）</div>
+    <div class="region-content r2-grid">
+      <a href="prelearn1.html" class="card summary" data-key="prelearn1">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🖼️</div>
+        <div class="card-title">資訊圖小總結</div>
+        <div class="card-desc">小數乘法總覽 · 一頁睇晒重點</div>
+        <span class="arrow">▶</span>
       </a>
-      <a href="game2.html" class="big-card game-c" data-key="game2">
-        <span class="big-done-badge">✓</span>
-        <div class="big-emoji">⏱️</div>
-        <div class="big-title">遊戲 2 · 限時搶答</div>
-        <div class="big-sub">兩位小數 × 整數 · 15 題</div>
-        <div class="big-desc">60 秒計時器 · 每題 4 秒 · 連擊火焰越多分越高</div>
-      </a>
-      <a href="game3.html" class="big-card game-c" data-key="game3">
-        <span class="big-done-badge">✓</span>
-        <div class="big-emoji">🛡️</div>
-        <div class="big-title">遊戲 3 · 取經塔防</div>
-        <div class="big-sub">估算技巧 + 整合應用 · 20 隻妖怪</div>
-        <div class="big-desc">10 波妖怪進攻 · 每隻帶一題 · 悟空塔射殺 · 保護唐僧 HP</div>
+      <a href="flashcards.html" class="card summary" data-key="flashcards">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📚</div>
+        <div class="card-title">學習卡</div>
+        <div class="card-desc">小數乘法學習卡 · 翻牌記重點</div>
+        <span class="arrow">▶</span>
       </a>
     </div>
   </div>
 
-  <!-- ======== Tab: 小數工具 (Ch13 = 直式乘法輸入) ======== -->
-  <div class="tab-panel" data-tab="tool">
-    <div style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);padding:14px 18px;border-radius:12px;margin-bottom:18px;border-left:5px solid #7B1FA2;">
-      <h3 style="margin:0 0 4px;color:#4A148C;">🔢 直式乘法輸入工具</h3>
-      <p style="margin:4px 0;color:#555;font-size:0.9rem;line-height:1.5;">本課專用工具！按下空白格 → 用鍵盤輸入數字 → 全條直式正確先過關。4 個難度（初/中/高/超難）每級 3 題。</p>
-      <p style="margin:4px 0;color:#888;font-size:0.82rem;">💡 亦可以試吓舊工具：<a href="../../tools/decimal-shift.html" target="_blank" style="color:#7B1FA2;">小數點移動</a></p>
+  <!-- ======== 區域 3 · 趣味區 ======== -->
+  <div class="region-section">
+    <div class="region-title r3">🎮 區域 3：趣味區(廣東話歌 + 遊戲）</div>
+    <div class="region-content r3-grid">
+      <a href="song.html" class="card fun" data-key="song">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎵</div>
+        <div class="card-title">廣東話溫習歌</div>
+        <div class="card-desc">Suno 粵語 · 邊聽邊記口訣</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="game1.html" class="card fun" data-key="game1">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎮</div>
+        <div class="card-title">西遊戰鬥 RPG</div>
+        <div class="card-desc">10 房密室 · 揀啱算式門口</div>
+        <span class="arrow">▶</span>
+      </a>
     </div>
-    <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-      <iframe src="../../tools/vertical-math.html" style="width:100%;height:82vh;min-height:640px;border:none;display:block;" title="直式乘法輸入工具"></iframe>
-    </div>
-    <p style="text-align:center;margin-top:10px;">
-      <a href="../../tools/vertical-math.html" target="_blank" style="color:#7B1FA2;font-weight:700;text-decoration:none;">🔗 新窗口開工具</a>
-    </p>
-  </div>
-
-  <!-- ======== Tab: AI 問功課 ======== -->
-  <div class="tab-panel" data-tab="ai">
-    <div class="ai-panel">
-      <div style="font-size:4rem;margin-bottom:8px;">🤖</div>
-      <h3>AI 數學小老師</h3>
-      <p>唔識做功課？可以拍低題目上傳 / 打字問 / 錄音問 AI！<br>AI 唔會直接畀答案，會引導你一步步諗出嚟 💪</p>
-      <a href="ai-help.html" class="ai-big-btn">💬 開 AI 助教</a>
-    </div>
-  </div>
-
-  <!-- ======== Tab: 我的成績 ======== -->
-  <div class="tab-panel" data-tab="scores">
-    <div class="scores-summary">
-      <div>完成度</div>
-      <div class="summary-big"><span id="summaryDone">0</span> / 12</div>
-      <div id="summaryDesc" style="color:#555;font-size:0.9rem;margin-top:4px;">（簡報 3 + 預習 3 + 評估 3 + 遊戲 3）</div>
-    </div>
-    <div class="scores-grid" id="scoresGrid"></div>
-    <button class="reset-btn" onclick="resetProgress()">🗑 重設本課進度</button>
   </div>
 
 </div>
@@ -558,6 +276,7 @@
     return 'progress_ch13';  // legacy fallback for non-logged-in
   }
 
+  // STEP_KEYS preserved for progress sync — 學生已賺嘅金幣會保留
   const STEP_KEYS = [
     { k: 'prelearn1', n: '預習 1', emoji: '📖' },
     { k: 'slides1', n: '簡報 1', emoji: '📗' },
@@ -569,14 +288,6 @@
     { k: 'slides3', n: '簡報 3', emoji: '📙' },
     { k: 'assess3', n: '評估 3', emoji: '✏️' }, { k: 'game3', n: '遊戲 3', emoji: '🛡️' },
   ];
-
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.tab === tab));
-    if (tab === 'scores') renderScores();
-    // Remember last tab in URL hash for reload persistence
-    try { history.replaceState(null, '', '#' + tab); } catch(e) {}
-  }
 
   function renderProgress() {
     try {
@@ -598,58 +309,10 @@
     } catch(e) {}
   }
 
-  function renderScores() {
-    try {
-      const p = JSON.parse(localStorage.getItem(_ch13Key()) || '{}');
-      let doneCount = 0;
-      let html = '';
-      STEP_KEYS.forEach(s => {
-        const data = p[s.k];
-        if (data?.done) doneCount++;
-        const val = data?.done
-          ? (data.score !== undefined ? `${data.score}/${data.total || '—'}` : '✓ 完成')
-          : '未做';
-        const sub = data?.done && data.ts ? new Date(data.ts).toLocaleDateString('zh-TW') : '';
-        html += `<div class="score-cell${data?.done?' done':''}">
-          <div class="sc-name">${s.emoji} ${s.n}</div>
-          <div class="sc-val" style="${data?.done?'':'color:#999;font-size:0.95rem;'}">${val}</div>
-          ${sub ? `<div class="sc-sub">${sub}</div>` : ''}
-        </div>`;
-      });
-      document.getElementById('summaryDone').textContent = doneCount;
-      document.getElementById('scoresGrid').innerHTML = html;
-    } catch(e) {}
-  }
-
-  function resetProgress() {
-    if (!confirm('確定要清除第 13 課嘅學習進度？')) return;
-    localStorage.removeItem(_ch13Key());
-    location.reload();
-  }
-
-  // Mark extras (video/audio) as viewed + count coins
-  function markExtra(type) {
-    try {
-      const k = _ch13Key();
-      const p = JSON.parse(localStorage.getItem(k) || '{}');
-      p.extras = p.extras || { done: false, items: {} };
-      p.extras.items[type] = true;
-      const n = Object.keys(p.extras.items).length;
-      if (n >= 2) { p.extras.done = true; p.extras.coins = Math.min(5, n + 2); }
-      localStorage.setItem(k, JSON.stringify(p));
-    } catch(e) {}
-  }
-
-  // Init: handle tab from URL hash
-  const initialTab = (location.hash || '').replace('#', '') || 'study';
-  if (['study','quiz','games','tool','extras','ai','scores'].includes(initialTab)) switchTab(initialTab);
   renderProgress();
 
   // Live re-render on cloud sync, cross-tab updates, or local writes (LWWFProgress)
-  window.addEventListener('lwwf-progress-changed', () => {
-    renderProgress();
-    if (document.querySelector('#scoresGrid')) renderScores();
-  });
+  window.addEventListener('lwwf-progress-changed', renderProgress);
 </script>
 <script src="../common/feedback.js"></script>
 <script src="../common/chapter-header.js?v=20260505b" data-current-ch="13"></script>
