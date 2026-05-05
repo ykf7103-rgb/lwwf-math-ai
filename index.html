@@ -1753,6 +1753,19 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (a · 緊急修復登入)</span>
+            <ul>
+                <li>🚨 <b>緊急修復「學號不能選」bug</b>（學生反映）：
+                    <ul style="margin-top:4px">
+                        <li>之前更新引入重複 const AVAILABLE_CHAPTERS → JavaScript 全 page error → 揀班別後學號 dropdown 永遠 disabled</li>
+                        <li>已移除重複，登入即時恢復正常</li>
+                        <li>108 個頁面 cache-bust 確保學生瀏覽器立即抓 fresh JS（無需 Ctrl+Shift+R）</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-03 (f · 5 大 bug 全面修補)</span>
             <ul>
                 <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
