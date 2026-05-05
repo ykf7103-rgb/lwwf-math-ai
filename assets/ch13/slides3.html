@@ -69,7 +69,8 @@
   <h1>📙 第13課 · 簡報 3 — 估算技巧深化 + 整合應用</h1>
   <a href="index.html" class="back">← 返回第13課</a>
 </header>
-<button id="muteBtn" onclick="toggleMute()" title="開／關廣東話講解" style="position:fixed;top:64px;right:14px;z-index:99;background:white;border:2px solid #1565C0;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🔊</button>
+<button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
@@ -164,54 +165,61 @@ const PAGE_NARRATION = {
   15: '第十三課完成！恭喜你掌握咗小數乘法同估算技巧。'
 };
 
-let isMuted = false;
-let _yueVoice = null;
-
-function pickYueVoice() {
-  if (!window.speechSynthesis) return null;
-  const voices = speechSynthesis.getVoices();
-  return voices.find(v => v.lang === 'yue-HK')
-      || voices.find(v => v.lang === 'zh-HK')
-      || voices.find(v => v.lang && v.lang.startsWith('zh-'))
-      || null;
+// ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====
+// 用戶反映：自動播放擾人 + 兩把聲音重複。Fix：
+// 1. 預設 OFF（學生 opt-in）
+// 2. 嚴格 cancel previous utterance（避免重複）
+// 3. 每頁有「🔊 廣東話講解」button 學生可手動 trigger
+let __ttsEnabled = false;  // OFF by default
+let __ttsCurrentUtter = null;
+function __ttsCancel() {
+  if (window.speechSynthesis) {
+    try { speechSynthesis.cancel(); } catch(e) {}
+  }
+  __ttsCurrentUtter = null;
 }
-
-if (window.speechSynthesis) {
-  speechSynthesis.onvoiceschanged = () => { _yueVoice = pickYueVoice(); };
-  setTimeout(() => { if (!_yueVoice) _yueVoice = pickYueVoice(); }, 500);
-}
-
 function speakPage(pageNum) {
-  if (isMuted || !window.speechSynthesis) return;
-  speechSynthesis.cancel();
-  const text = PAGE_NARRATION[pageNum];
+  // ALWAYS cancel previous (avoid duplicate voices) — even if user disabled, ensure clean state
+  __ttsCancel();
+  if (!__ttsEnabled || !window.speechSynthesis) return;
+  const text = (typeof PAGE_NARRATION !== 'undefined' && PAGE_NARRATION[pageNum]) || '';
   if (!text) return;
-  try {
+  // Wait briefly for cancel to take effect (avoid overlap)
+  setTimeout(() => {
+    if (!__ttsEnabled) return;  // double-check (user may have disabled during wait)
     const u = new SpeechSynthesisUtterance(text);
-    if (!_yueVoice) _yueVoice = pickYueVoice();
-    if (_yueVoice) u.voice = _yueVoice;
+    const voices = speechSynthesis.getVoices();
+    const yueVoice = voices.find(v => v.lang === 'yue-HK' || v.lang === 'zh-HK')
+                  || voices.find(v => v.lang.startsWith('zh-')) || null;
+    if (yueVoice) u.voice = yueVoice;
     u.lang = 'zh-HK';
     u.rate = 1.0;
     u.pitch = 1.0;
+    __ttsCurrentUtter = u;
     speechSynthesis.speak(u);
-  } catch(e) { /* ignore TTS errors */ }
+  }, 80);
+}
+function toggleTTS() {
+  __ttsEnabled = !__ttsEnabled;
+  const btn = document.getElementById('ttsToggleBtn');
+  if (btn) {
+    btn.textContent = __ttsEnabled ? '🔊 自動講解：開' : '🔇 自動講解：關';
+    btn.style.background = __ttsEnabled ? 'linear-gradient(135deg,#FFB300,#FF8F00)' : 'white';
+    btn.style.color = __ttsEnabled ? 'white' : '#FF8F00';
+  }
+  if (!__ttsEnabled) __ttsCancel();
+  else { try { speakPage(parseInt(document.getElementById('ind')?.textContent) || 1); } catch(e) {} }
+}
+function speakCurrentPage() {
+  // Manual one-time trigger (學生 click 即時聽 1 次)
+  __ttsCancel();
+  const wasEnabled = __ttsEnabled;
+  __ttsEnabled = true;
+  setTimeout(() => speakPage(parseInt(document.getElementById('ind')?.textContent) || 1), 50);
+  __ttsEnabled = wasEnabled;  // 還原 user 設定
 }
 
-function toggleMute() {
-  isMuted = !isMuted;
-  const btn = document.getElementById('muteBtn');
-  if (btn) btn.textContent = isMuted ? '\ud83d\udd07' : '\ud83d\udd0a';
-  if (isMuted) speechSynthesis.cancel();
-  else speakPage(idx + 1);
-}
-// === End TTS ===
 
-buildThumbs();render();
-
-// Initial speak retry once voices are loaded
-if (window.speechSynthesis) {
-  setTimeout(() => { if (!isMuted) speakPage(idx + 1); }, 800);
-}
 </script>
 <script src="../common/feedback.js"></script>
 <script src="../common/chapter-header.js?v=20260505i" data-current-ch="13"></script>
