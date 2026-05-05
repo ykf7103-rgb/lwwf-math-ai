@@ -1691,7 +1691,7 @@ body::before {
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/common/progress.js?v=20260505"></script>
+    <script src="assets/common/progress.js?v=20260505b"></script>
 </head>
 <body>
 
@@ -1753,6 +1753,26 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (b · 全站 sticky 按鈕)</span>
+            <ul>
+                <li>🔘 <b>主頁 + 所有課題子頁面加長期顯示按鈕</b>：
+                    <ul style="margin-top:4px">
+                        <li>🤖 <b>AI 問功課</b>（紫色）— 任何頁面右上角 1 click 即跳 Gemini Gem</li>
+                        <li>🏆 <b>我的成績</b>（橙色）— 任何頁面 1 click 跳返主頁成績 tab</li>
+                        <li>無論喺簡報、評估、遊戲、預習任何 sub-page 都見到</li>
+                    </ul>
+                </li>
+                <li>🛡️ <b>承諾：學生已賺金幣永遠唔會減少</b>
+                    <ul style="margin-top:4px">
+                        <li>即將進行嘅大規模 UI 重構（區域 1 自學區／區域 2 總結區／區域 3 趣味區）</li>
+                        <li>所有更新都用 mergeBest 保護機制 — 學生 prior 完成嘅步驟同金幣 100% 保留</li>
+                        <li>新題目／新評估出嚟之後，學生可以 optional 重做賺更多金幣</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (a · 緊急修復登入)</span>
             <ul>
                 <li>🚨 <b>緊急修復「學號不能選」bug</b>（學生反映）：
@@ -1771,7 +1791,7 @@ body::before {
                 <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
                         <li>15 個遊戲 file 加返 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
-                        <li>玩完即時寫 localStorage → progress.js?v=20260505 v4 hijack 自動 Supabase upsert → 跨頁同步</li>
+                        <li>玩完即時寫 localStorage → progress.js?v=20260505b v4 hijack 自動 Supabase upsert → 跨頁同步</li>
                     </ul>
                 </li>
                 <li>🎲 <b>評估題目選項位置每次隨機（21 個 assess）</b>：
@@ -1791,7 +1811,7 @@ body::before {
                 <li>🛡️ <b>學生先前進度永久保留</b>（重要保證）：
                     <ul style="margin-top:4px">
                         <li>即使更新題目，學生之前完成嘅 step 仍然顯示 ✓ 同保留金幣</li>
-                        <li>progress.js?v=20260505 mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
+                        <li>progress.js?v=20260505b mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
                         <li>學生唔會因為我哋改題目而被扣金幣</li>
                     </ul>
                 </li>
@@ -2020,6 +2040,9 @@ body::before {
             </button>
         </div>
         <div class="topbar-right">
+            <!-- 2026-05-05 用戶要求：long-term sticky buttons -->
+            <button class="topbar-action-btn" onclick="window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k','_blank')" title="AI 問功課" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;">🤖 AI問功課</button>
+            <button class="topbar-action-btn" onclick="switchTab('scores')" title="我的成績" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.3);white-space:nowrap;">🏆 我的成績</button>
             <div id="coinDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFE082);padding:4px 12px;border-radius:20px;font-weight:700;color:#F57F17;font-size:0.9rem;box-shadow:0 2px 8px rgba(255,193,7,0.3);" title="金幣（可換 EDX）">
                 <img src="assets/ch12/images/coin_new.png" style="width:20px;height:20px;"><span id="coinCount">0</span>
             </div>
