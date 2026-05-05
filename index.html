@@ -1691,7 +1691,7 @@ body::before {
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/common/progress.js?v=20260505h"></script>
+    <script src="assets/common/progress.js?v=20260505i"></script>
 </head>
 <body>
 
@@ -1753,6 +1753,21 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (i · 第12課簡報自動廣東話講解)</span>
+            <ul>
+                <li>🎤 <b>第 12 課簡報加自動廣東話 AI 講解</b>（與第 13-16 課一致）：
+                    <ul style="margin-top:4px">
+                        <li>3 個簡報 × 14 頁 = 42 條完整粵語講解（孫悟空角色聲線）</li>
+                        <li>翻頁時自動朗讀，無需手動 click 按鈕</li>
+                        <li>新加 「🔊 自動講解：開／關」 toggle 按鈕（學生可隨時關掉）</li>
+                        <li>保留原有手動「🔊 悟空講解這一頁」button</li>
+                    </ul>
+                </li>
+                <li>✅ <b>全 ch12-16 課簡報 TTS 一致體驗</b>：學生睇任何課簡報都自動聽到老師／角色廣東話講解</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (h · POE NANO BANANA AI 生圖)</span>
             <ul>
                 <li>🎨 <b>遊戲角色 + 關鍵素材用 POE NANO BANANA 生成</b>（共 12 張新 PNG）：
@@ -1798,7 +1813,7 @@ body::before {
             <ul>
                 <li>🪙 <b>修復金幣圖標不見 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
-                        <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js?v=20260505h 載入時 broken</li>
+                        <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js?v=20260505i 載入時 broken</li>
                         <li>Fix：複製 coin_new.png 到 5 個課題 images/ 文件夾</li>
                         <li>學生喺所有 sub-page 都見到金幣圖標 + 數字</li>
                     </ul>
@@ -1863,7 +1878,7 @@ body::before {
                 <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
                         <li>15 個遊戲 file 加返 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
-                        <li>玩完即時寫 localStorage → progress.js?v=20260505h v4 hijack 自動 Supabase upsert → 跨頁同步</li>
+                        <li>玩完即時寫 localStorage → progress.js?v=20260505i v4 hijack 自動 Supabase upsert → 跨頁同步</li>
                     </ul>
                 </li>
                 <li>🎲 <b>評估題目選項位置每次隨機（21 個 assess）</b>：
@@ -1883,7 +1898,7 @@ body::before {
                 <li>🛡️ <b>學生先前進度永久保留</b>（重要保證）：
                     <ul style="margin-top:4px">
                         <li>即使更新題目，學生之前完成嘅 step 仍然顯示 ✓ 同保留金幣</li>
-                        <li>progress.js?v=20260505h mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
+                        <li>progress.js?v=20260505i mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
                         <li>學生唔會因為我哋改題目而被扣金幣</li>
                     </ul>
                 </li>
@@ -2157,6 +2172,7 @@ body::before {
                     <!-- Slide Quiz Overlay -->
                     <!-- Lecture/TTS Button -->
                     <div style="text-align:center; margin-top:12px;">
+                        <button class="btn btn-outline" id="autoLectureBtn" onclick="toggleAutoLecture()" style="background:linear-gradient(135deg,#FFF3E0,#FFE082);border:2px solid #FF9800;color:#E65100;font-weight:700;margin-right:8px;">🔊 自動講解：開</button>
                         <button class="btn btn-outline" id="lectureBtn" onclick="playSlideLecture()" style="background:linear-gradient(135deg,#E8EAF6,#C5CAE9);border:2px solid #3F51B5;color:#283593;font-weight:700;">
                             🔊 <span id="lectureBtnCharacter">悟空</span>講解這一頁
                         </button>
@@ -4862,6 +4878,14 @@ const SLIDE_EXPLANATIONS = {
 // ===== TTS Lecture System =====
 let currentUtterance = null;
 let currentLectureSlide = null;
+// 2026-05-05 用戶要求：每課簡報自動廣東話講解（同 ch13-16 一致）
+let autoLectureEnabled = true;
+function toggleAutoLecture() {
+    autoLectureEnabled = !autoLectureEnabled;
+    const btn = document.getElementById('autoLectureBtn');
+    if (btn) btn.textContent = autoLectureEnabled ? '🔊 自動講解：開' : '🔇 自動講解：關';
+    if (!autoLectureEnabled) stopSlideLecture();
+}
 
 // Current chapter theme — update when multi-chapter support is added
 const CURRENT_CHAPTER_THEME = '西遊記';
@@ -5142,6 +5166,10 @@ function updateSlideView() {
     document.querySelectorAll('#slideDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
     // Show complete button on last slide
     document.getElementById('slideCompleteBtn').style.display = (idx === step.total - 1) ? '' : 'none';
+    // 2026-05-05 用戶要求：自動廣東話講解（page change 後 fire）
+    if (autoLectureEnabled && window.speechSynthesis) {
+        setTimeout(() => { try { playSlideLecture(); } catch(e) {} }, 350);
+    }
 }
 function prevSlide() {
     if (currentSlideIndex > 0) {
