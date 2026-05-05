@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-<title>第13課 · 預習 3 — 小數 × 小數 + 估算</title>
+<title>第17課 · 預習 3 — 正方體體積與綜合應用</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFFEF7 0%, #FFF8DC 50%, #FFF0E0 100%); min-height: 100vh; color: #222; position: relative; }
+  body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9F0 0%, #FFEFE0 40%, #FFE5D0 100%); min-height: 100vh; color: #222; position: relative; }
   body::before { content: ''; position: fixed; inset: 0; background: url('../common/images/school_bg.jpg') center/cover no-repeat; opacity: 0.08; z-index: -1; pointer-events: none; }
-  header { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+  header { background: linear-gradient(135deg, #E65100, #BF360C); color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
   header h1 { margin: 0; font-size: 1.05rem; font-weight: 800; }
   header .back { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); }
   .wrap { max-width: 860px; margin: 0 auto; padding: 14px; }
-  .intro { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); border-left: 5px solid #7B1FA2; padding: 14px 18px; border-radius: 12px; margin-bottom: 16px; }
-  .intro h2 { margin: 0 0 6px; color: #4A148C; font-size: 1.1rem; }
+  .intro { background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-left: 5px solid #E65100; padding: 14px 18px; border-radius: 12px; margin-bottom: 16px; }
+  .intro h2 { margin: 0 0 6px; color: #BF360C; font-size: 1.1rem; }
   .intro p { margin: 4px 0; font-size: 0.9rem; line-height: 1.6; color: #555; }
   .info-card { background: white; border-radius: 16px; padding: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 16px; }
-  .info-card h3 { margin: 4px 0 10px; color: #7B1FA2; font-size: 1.05rem; border-bottom: 2px dashed #E1BEE7; padding-bottom: 8px; }
+  .info-card h3 { margin: 4px 0 10px; color: #E65100; font-size: 1.05rem; border-bottom: 2px dashed #FFCC80; padding-bottom: 8px; }
   .info-card img { width: 100%; height: auto; display: block; border-radius: 10px; background: #fafafa; cursor: zoom-in; }
   .q-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-left: 5px solid #FFB300; }
   .q-card.done { border-left-color: #4CAF50; background: #F1F8E9; }
@@ -28,6 +28,7 @@
   .mc-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .mc-opt { padding: 12px 10px; background: white; border: 2px solid #FFB74D; border-radius: 10px; font-weight: 700; cursor: pointer; color: #333; text-align: left; font-size: 0.95rem; }
   .mc-opt:hover:not(:disabled) { background: #FFF3E0; }
+  .mc-opt.selected { background: #FFF3E0; border-color: #F57C00; }
   .mc-opt.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; }
   .mc-opt.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; animation: shake 0.4s; }
   .fill-box { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -48,6 +49,7 @@
   .voice-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
   .rec-status { font-size: 0.9rem; margin: 8px 0; min-height: 1.5em; }
   .transcript { background: #F5F5F5; border-radius: 8px; padding: 10px; margin: 8px 0; font-size: 0.9rem; color: #333; min-height: 2em; line-height: 1.5; }
+  .grade-result { margin-top: 10px; }
   .voice-hint { font-size: 0.85rem; color: #555; background: #FFF8E1; padding: 8px 10px; border-radius: 8px; margin: 8px 0; line-height: 1.5; }
   .zoom-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 200; cursor: zoom-out; padding: 20px; }
   .zoom-overlay.show { display: flex; }
@@ -56,35 +58,38 @@
   .done-banner { background: linear-gradient(135deg, #4CAF50, #388E3C); color: white; padding: 16px 20px; border-radius: 12px; text-align: center; font-weight: 800; margin: 20px 0 10px; display: none; }
   .done-banner.show { display: block; animation: pop 0.4s; }
   @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
-  @media (max-width: 600px) { header h1 { font-size: 0.9rem; } .mc-opts { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) {
+    header h1 { font-size: 0.9rem; }
+    .mc-opts { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>📝 第13課 · 預習 3 — 小數 × 小數 + 估算</h1>
-  <a href="index.html" class="back">← 返回第13課</a>
+  <h1>📝 第17課 · 預習 3 — 正方體 + 綜合應用</h1>
+  <a href="index.html" class="back">← 返回第17課</a>
 </header>
 <div class="wrap">
   <div class="intro">
-    <h2>🎯 預習 3</h2>
-    <p>先睇資訊圖，再做 3 條題目（選擇 + 填充 + 🎤 錄音講解）。做啱先算完成預習。</p>
+    <h2>🎯 預習 3 · 喬巴的醫療包</h2>
+    <p>喬巴要將藥粉裝入一個正方體醫療盒，需要計算盒嘅體積！先睇資訊圖，再做 3 條題目（選擇 + 填充 + 🎤 錄音講解）。做啱先算完成預習。</p>
   </div>
   <div class="info-card">
-    <h3>📕 資訊圖 3：小數 × 小數 + 估算</h3>
-    <img src="images/infographic3.jpg" alt="資訊圖 3" onclick="zoom(this.src)" />
+    <h3>📒 資訊圖 3：正方體體積 V = 邊長 × 邊長 × 邊長</h3>
+    <img src="images/info3.png" alt="資訊圖 3：正方體體積公式" onclick="zoom(this.src)" />
   </div>
   <div class="q-card" id="qc0">
-    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>估算 6.8 × 3.2 大約等於…</h3>
+    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>喬巴有一個正方體醫療盒，邊長 5 cm。請問醫療盒的體積是多少立方厘米？</h3>
     <div class="mc-opts" id="mcOpts">
-      <button class="mc-opt" data-i="0" onclick="selectMC(0)">A. 9（6 + 3）</button>
-      <button class="mc-opt" data-i="1" onclick="selectMC(1)">B. 21（7 × 3）</button>
-      <button class="mc-opt" data-i="2" onclick="selectMC(2)">C. 200（68 × 3）</button>
-      <button class="mc-opt" data-i="3" onclick="selectMC(3)">D. 2.1</button>
+      <button class="mc-opt" data-i="0" onclick="selectMC(0)">A. 15</button>
+      <button class="mc-opt" data-i="1" onclick="selectMC(1)">B. 25</button>
+      <button class="mc-opt" data-i="2" onclick="selectMC(2)">C. 100</button>
+      <button class="mc-opt" data-i="3" onclick="selectMC(3)">D. 125</button>
     </div>
     <div class="hint-msg" id="mcHint"></div>
   </div>
   <div class="q-card" id="qc1">
-    <h3>第 2 題<span class="type-badge fill">填充題</span><br>填充：0.3 × 0.4 = ?（填數字）</h3>
+    <h3>第 2 題<span class="type-badge fill">填充題</span><br>路飛將原本邊長 2 cm 的正方體小盒，全部換成邊長 4 cm 的盒。新盒的體積是原本盒的多少倍（只填數字）？</h3>
     <div class="fill-box">
       <input type="text" class="fill-input" id="fillInput" placeholder="輸入答案..." />
       <button class="btn purple" onclick="checkFill()">提交</button>
@@ -92,8 +97,8 @@
     <div class="hint-msg" id="fillHint"></div>
   </div>
   <div class="q-card" id="qc2">
-    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：點樣估算 4.9 × 2.1？講 10-30 秒。</h3>
-    <div class="voice-hint">💡 提示：可以咁樣講 👉「估算時將 4.9 看成 5，將 2.1 看成 2，5 × 2 = 10。實際答案 10.29，估算 10 好接近」</div>
+    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 請以 20 至 30 秒向同學解釋：當正方體的邊長變成原來的 2 倍，體積會變成原來的多少倍？請說明答案 + 原理。</h3>
+    <div class="voice-hint">💡 提示：可以咁樣講 👉「邊長變 2 倍，體積變 8 倍。因為正方體體積 = 邊長 × 邊長 × 邊長，三條邊都變 2 倍，所以體積變 2 × 2 × 2 = 8 倍。」</div>
     <div class="voice-section">
       <div id="envWarn" style="display:none;background:#FFEBEE;border:2px solid #C62828;color:#C62828;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.9rem;"></div>
       <div class="voice-row">
@@ -103,9 +108,8 @@
         <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交俾 AI 評分</button>
       </div>
       <div class="rec-status" id="recStatus">按「開始錄音」試下（iPhone 要用 Safari；Android / 電腦用 Chrome）</div>
-      <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析。</span></div>
+      <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析你講咗乜。</span></div>
       <div class="grade-result" id="gradeResult"></div>
-
       <div style="text-align:center;margin:18px 0 10px;position:relative;">
         <div style="height:1px;background:#ddd;"></div>
         <div style="background:white;display:inline-block;padding:0 14px;position:relative;top:-11px;color:#999;font-weight:700;">或者打字代替錄音</div>
@@ -113,10 +117,9 @@
       <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
         <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案（同錄音一樣由 AI 評分）</div>
         <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">冇得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
-        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「估算時將 4.9 當成 5，2.1 當成 2，5 × 2 = 10。實際答案 10.29，估算 10 好接近。」"></textarea>
+        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「邊長變 2 倍，體積變 8 倍，因為三條邊都變 2 倍，所以 2×2×2 = 8。」"></textarea>
         <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
       </div>
-
       <details style="margin-top:10px;font-size:0.82rem;color:#666;">
         <summary style="cursor:pointer;color:#7B1FA2;font-weight:700;">🆘 錄音出錯？點睇解決方法</summary>
         <div style="padding:8px 12px;background:#FFF8E1;border-radius:6px;margin-top:6px;line-height:1.6;">
@@ -135,23 +138,25 @@
   <img id="zoomImg" alt="放大圖" />
 </div>
 <script>
-const CHAPTER = 13, PRELEARN_KEY = 'prelearn3';
+const CHAPTER = 17, PRELEARN_KEY = 'prelearn3';
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev/ask';
 const VOICE_Q = {
-  q: '請說明：如何估算 4.9 × 2.1？',
-  concept: '估算：將小數四捨五入成最接近整數，再乘',
-  rubric: '講出：答案大約 10 + 任何一個原理（例如：4.9 ≈ 5，2.1 ≈ 2，5 × 2 = 10；或四捨五入再乘；或實際答案 10.29 接近估算值）',
-  hint: '講到大約 10 + 講到四捨五入原理就合格（~80 分）'
+  q: '當正方體的邊長變成原來的 2 倍，體積會變成原來的多少倍？',
+  concept: '正方體體積 = 邊長 × 邊長 × 邊長。三條邊都變 2 倍，所以體積變 2 × 2 × 2 = 8 倍',
+  rubric: '講出：體積變 8 倍 + 任何一個原理（例如：三條邊都變 2 倍，所以 2×2×2 = 8；或正方體體積係邊長嘅三次方；或寫得出例子例如 2³ = 8 同 4³ = 64，64 ÷ 8 = 8）',
+  hint: '講到「8 倍」+ 任何一個原理就合格（~80 分）'
 };
-const MC_CORRECT = 1, MC_HINT = '6.8 ≈ 7，3.2 ≈ 3，7 × 3 = 21。實際 21.76，估算 21 好接近。';
-const FILL_ACCEPT = ['0.12','.12'], FILL_HINT = '3 × 4 = 12，合共 2 位小數 → 0.12';
+const MC_CORRECT = 3; // 125
+const MC_HINT = '正方體體積 = 邊長 × 邊長 × 邊長 = 5 × 5 × 5 = 125 立方厘米';
+const FILL_ACCEPT = ['8','8.0','8倍','八'];
+const FILL_HINT = '原盒體積 = 2³ = 8；新盒體積 = 4³ = 64；64 ÷ 8 = 8 倍';
 const answered = { mc:false, fill:false, voice:false };
 let mediaRecorder=null, audioChunks=[], recordStartTime=0, recordTimer=null, recordedBlob=null, voiceData=null;
 
 (function envCheck(){
   const warn = document.getElementById('envWarn'); const msgs = [];
   if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') msgs.push('⚠️ 必須用 HTTPS 網址先可以錄音。請用 <b>https://ykf7103-rgb.github.io/lwwf-math-ai/</b>');
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) msgs.push('⚠️ 你個瀏覽器唔支援錄音。iPhone 請用 Safari，Android / 電腦請用 Chrome。');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) msgs.push('⚠️ 你個瀏覽器唔支援錄音。iPhone 請用 Safari，Android / 電腦用 Chrome。');
   if (!window.MediaRecorder) msgs.push('⚠️ 你個瀏覽器太舊，冇 MediaRecorder。');
   if (msgs.length) { warn.innerHTML = msgs.join('<br>'); warn.style.display = 'block'; }
 })();
@@ -214,10 +219,10 @@ ${textVal}
     const result = extractJSON(reply);
     let score, feedback;
     if (!result) {
-      const has_answer = /10|十/.test(textVal);
-      const has_reason = textVal.length >= 20 && /(5|2|四捨五入|約|估|≈|大概|接近)/.test(textVal);
+      const has_answer = /8倍|八倍|2\^?3|2x2x2|2×2×2/.test(textVal);
+      const has_reason = textVal.length >= 20 && /(邊長|三次方|三條邊|因為|所以|乘|體積)/.test(textVal);
       score = !has_answer ? 30 : (has_reason ? 75 : 55);
-      feedback = has_reason ? '✅ 文字答案合格' : '⚠️ 只有答案，未解釋估算原理';
+      feedback = has_reason ? '✅ 文字答案合格' : '⚠️ 只有答案，未解釋原理';
     } else {
       score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
       feedback = cleanChineseOnly(result.feedback);
@@ -235,7 +240,7 @@ ${textVal}
 function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
 function checkFill(){if(answered.fill)return;const input=document.getElementById('fillInput');const hint=document.getElementById('fillHint');const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=FILL_ACCEPT.some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;answered.fill=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+FILL_HINT;checkAllDone();}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${FILL_HINT}`;setTimeout(()=>input.classList.remove('wrong'),500);}}
 document.getElementById('fillInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkFill();});
-async function startRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}document.getElementById('recStatus').innerHTML='<span style="color:#1565C0;">⌛ 正在請求麥克風存取，請允許權限...</span>';document.getElementById('recBtn').disabled=true;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioChunks=[];let options={mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:64000};if(!window.MediaRecorder||!MediaRecorder.isTypeSupported(options.mimeType))options={audioBitsPerSecond:64000};mediaRecorder=new MediaRecorder(stream,options);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const mimeType=audioChunks[0]?.type||'audio/webm';const blob=new Blob(audioChunks,{type:mimeType});const durationSec=(Date.now()-recordStartTime)/1000;clearInterval(recordTimer);document.getElementById('recBtn').disabled=false;document.getElementById('stopBtn').disabled=true;const tooShort=durationSec<3;const tooSmall=blob.size<8000;if(tooShort||tooSmall){const reason=tooShort?`錄音時間只有 ${durationSec.toFixed(1)} 秒`:`錄音太細（${Math.round(blob.size/1024)} KB）`;document.getElementById('recStatus').innerHTML=`<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。</span>`;document.getElementById('transcript').innerHTML='<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';document.getElementById('gradeBtn').disabled=true;recordedBlob=null;return;}recordedBlob=blob;document.getElementById('recStatus').innerHTML=`<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;document.getElementById('transcript').innerHTML='<span style="color:#999;">⬇️ 按「提交俾 AI 評分」分析</span>';document.getElementById('gradeBtn').disabled=false;};mediaRecorder.start();recordStartTime=Date.now();document.getElementById('recBtn').disabled=true;document.getElementById('stopBtn').disabled=false;document.getElementById('gradeBtn').disabled=true;document.getElementById('transcript').innerHTML='<span style="color:#666;">🎤 正在錄音中...</span>';if(recordTimer)clearInterval(recordTimer);recordTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recordStartTime)/1000);const color=sec>45?'#F44336':sec>30?'#F57F17':'#C62828';document.getElementById('recStatus').innerHTML=`<span style="color:${color};font-weight:700;">🔴 錄音中 ${sec} 秒</span>`+(sec>=30?' <span style="font-size:0.85rem;color:#666;">（建議 10-30 秒）</span>':'');if(sec>=60)stopRec();},250);}catch(err){const msg=err.name==='NotAllowedError'||err.name==='PermissionDeniedError'?'⚠️ 請允許麥克風權限':'❌ '+err.message;document.getElementById('recStatus').innerHTML=msg;document.getElementById('recBtn').disabled=false;}}
+async function startRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}document.getElementById('recStatus').innerHTML='<span style="color:#1565C0;">⌛ 正在請求麥克風存取，請允許權限...</span>';document.getElementById('recBtn').disabled=true;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioChunks=[];let options={mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:64000};if(!window.MediaRecorder||!MediaRecorder.isTypeSupported(options.mimeType))options={audioBitsPerSecond:64000};mediaRecorder=new MediaRecorder(stream,options);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const mimeType=audioChunks[0]?.type||'audio/webm';const blob=new Blob(audioChunks,{type:mimeType});const durationSec=(Date.now()-recordStartTime)/1000;clearInterval(recordTimer);document.getElementById('recBtn').disabled=false;document.getElementById('stopBtn').disabled=true;const tooShort=durationSec<3;const tooSmall=blob.size<8000;if(tooShort||tooSmall){const reason=tooShort?`錄音時間只有 ${durationSec.toFixed(1)} 秒`:`錄音太細（${Math.round(blob.size/1024)} KB）`;document.getElementById('recStatus').innerHTML=`<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。</span>`;document.getElementById('transcript').innerHTML='<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';document.getElementById('gradeBtn').disabled=true;recordedBlob=null;return;}recordedBlob=blob;document.getElementById('recStatus').innerHTML=`<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;document.getElementById('transcript').innerHTML='<span style="color:#999;">⬇️ 按「提交俾 AI 評分」分析</span>';document.getElementById('gradeBtn').disabled=false;};mediaRecorder.start();recordStartTime=Date.now();document.getElementById('recBtn').disabled=true;document.getElementById('stopBtn').disabled=false;document.getElementById('gradeBtn').disabled=true;document.getElementById('transcript').innerHTML='<span style="color:#666;">🎤 正在錄音中...</span>';if(recordTimer)clearInterval(recordTimer);recordTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recordStartTime)/1000);const color=sec>45?'#F44336':sec>30?'#F57F17':'#C62828';document.getElementById('recStatus').innerHTML=`<span style="color:${color};font-weight:700;">🔴 錄音中 ${sec} 秒</span>`+(sec>=30?' <span style="font-size:0.85rem;color:#666;">（建議 20-30 秒）</span>':'');if(sec>=60)stopRec();},250);}catch(err){const msg=err.name==='NotAllowedError'||err.name==='PermissionDeniedError'?'⚠️ 請允許麥克風權限':'❌ '+err.message;document.getElementById('recStatus').innerHTML=msg;document.getElementById('recBtn').disabled=false;}}
 function stopRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}}
 function blobToBase64(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=reject;r.readAsDataURL(blob);});}
 async function encodeToWav(blob){const AudioCtx=window.AudioContext||window.webkitAudioContext;const OfflineCtx=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!AudioCtx||!OfflineCtx)throw new Error('browser lacks AudioContext');const arrayBuffer=await blob.arrayBuffer();const decodeCtx=new AudioCtx();if(decodeCtx.state==='suspended'){try{await decodeCtx.resume();}catch(_){}}const audioBuffer=await new Promise((resolve,reject)=>{try{const p=decodeCtx.decodeAudioData(arrayBuffer.slice(0),resolve,reject);if(p&&typeof p.then==='function')p.then(resolve,reject);}catch(e){reject(e);}});try{decodeCtx.close();}catch(_){}const targetSR=22050;const length=Math.max(1,Math.floor(audioBuffer.duration*targetSR));const offline=new OfflineCtx(1,length,targetSR);const src=offline.createBufferSource();src.buffer=audioBuffer;src.connect(offline.destination);src.start(0);const rendered=await offline.startRendering();return audioBufferToWavBlob(rendered);}
@@ -248,7 +253,7 @@ async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}
 評分要點：${VOICE_Q.rubric}
 合格要求：${VOICE_Q.hint}
 
-⚠️ 重要：題目問「點解 / 教一教」，學生必須解釋原理。
+⚠️ 重要：題目問「會變成幾多倍」，學生必須俾出倍數 + 解釋原理。
 ⚠️ 請逐個對比 rubric 要點。
 
 請做兩件事：
@@ -263,7 +268,7 @@ function unzoom(){document.getElementById('zoomOv').classList.remove('show');}
 function checkAllDone(){if(answered.mc&&answered.fill&&answered.voice){document.getElementById('done').classList.add('show');try{const key=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(key)||'{}');p[PRELEARN_KEY]={done:true,score:voiceData?.score||0,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(_){}}}
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260503b" data-current-ch="13"></script>
+<script src="../common/chapter-header.js?v=20260503b" data-current-ch="17"></script>
 <script src="../common/stt.js"></script>
 </body>
 </html>
