@@ -436,7 +436,7 @@ function endGame(){
     '⏱️ 時間：<b>'+Math.floor(elapsed/60)+' 分 '+(elapsed%60)+' 秒</b><br>' +
     '🪙 金幣：<b>'+coins+' / 3 枚</b>';
 
-  // Save progress to localStorage (triggers progress.js?v=20260505k v4 hijack -> Supabase upsert)
+  // Save progress to localStorage (triggers progress.js?v=20260505m v4 hijack -> Supabase upsert)
   try {
     const k = (()=>{try{const u=JSON.parse(localStorage.getItem('lwwf_auth_user')||'null');if(u&&u.class&&u.number)return`progress_ch12_${u.class}_${u.number}`;}catch(e){}return'progress_ch12';})();
     const p = JSON.parse(localStorage.getItem(k)||'{}');

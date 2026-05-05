@@ -1691,7 +1691,7 @@ body::before {
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/common/progress.js?v=20260505k"></script>
+    <script src="assets/common/progress.js?v=20260505m"></script>
 </head>
 <body>
 
@@ -1823,7 +1823,7 @@ body::before {
             <ul>
                 <li>🪙 <b>修復金幣圖標不見 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
-                        <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js?v=20260505k 載入時 broken</li>
+                        <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js?v=20260505m 載入時 broken</li>
                         <li>Fix：複製 coin_new.png 到 5 個課題 images/ 文件夾</li>
                         <li>學生喺所有 sub-page 都見到金幣圖標 + 數字</li>
                     </ul>
@@ -1888,7 +1888,7 @@ body::before {
                 <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
                         <li>15 個遊戲 file 加返 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
-                        <li>玩完即時寫 localStorage → progress.js?v=20260505k v4 hijack 自動 Supabase upsert → 跨頁同步</li>
+                        <li>玩完即時寫 localStorage → progress.js?v=20260505m v4 hijack 自動 Supabase upsert → 跨頁同步</li>
                     </ul>
                 </li>
                 <li>🎲 <b>評估題目選項位置每次隨機（21 個 assess）</b>：
@@ -1908,7 +1908,7 @@ body::before {
                 <li>🛡️ <b>學生先前進度永久保留</b>（重要保證）：
                     <ul style="margin-top:4px">
                         <li>即使更新題目，學生之前完成嘅 step 仍然顯示 ✓ 同保留金幣</li>
-                        <li>progress.js?v=20260505k mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
+                        <li>progress.js?v=20260505m mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
                         <li>學生唔會因為我哋改題目而被扣金幣</li>
                     </ul>
                 </li>
@@ -5171,6 +5171,16 @@ function renderProgression() {
     document.getElementById('infographicQuiz').style.display = 'none';
 }
 
+// 2026-05-05 fix（學生反映：簡報睇唔到）
+// Helper: 隱藏／顯示 3 區域 cards（避免 viewer 顯示時 cards 仍佔位置）
+function __hideRegionsForViewer() {
+    document.querySelectorAll('.region-section').forEach(el => el.style.display = 'none');
+    try { window.scrollTo({top: 0, behavior: 'smooth'}); } catch(e) { window.scrollTo(0, 0); }
+}
+function __showRegionsAfterViewer() {
+    document.querySelectorAll('.region-section').forEach(el => el.style.display = '');
+}
+
 // --- Slide Viewer ---
 function openSlideViewer(stepIdx) {
     const step = PROGRESSION_STEPS[stepIdx];
@@ -5179,6 +5189,7 @@ function openSlideViewer(stepIdx) {
     currentSlideIndex = 0;
     document.getElementById('slideViewerTitle').textContent = step.title;
     document.getElementById('studyProgressionView').style.display = 'none';
+    __hideRegionsForViewer();  // 2026-05-05 fix
     document.getElementById('slideViewer').style.display = '';
     // Update lecture button character name based on current theme
     const cfg = getCurrentThemeVoiceConfig();
@@ -5494,6 +5505,7 @@ function exitSlideViewer() {
     stopSlideLecture();
     document.getElementById('slideViewer').style.display = 'none';
     document.getElementById('slideQuizOverlay').style.display = 'none';
+    __showRegionsAfterViewer();  // 2026-05-05 fix
     renderProgression();
 }
 
@@ -6084,6 +6096,7 @@ function openAssessViewer(num) {
     const titles = { 1: '評估1：基礎級', 2: '評估2：中階級', 3: '評估3：挑戰級' };
     document.getElementById('assessTitle').textContent = titles[num];
     document.getElementById('quizList').style.display = 'none';
+    __hideRegionsForViewer();  // 2026-05-05 fix
     document.getElementById('assessViewer').style.display = '';
     let dots = '';
     for (let i = 0; i < ASSESS_TOTAL; i++) dots += `<div class="slide-dot${i===0?' active':''}" onclick="goToAssessSlide(${i})"></div>`;
@@ -6248,6 +6261,7 @@ function goToAssessSlide(i) {
 function exitAssessViewer() {
     document.getElementById('assessViewer').style.display = 'none';
     document.getElementById('quizList').style.display = '';
+    __showRegionsAfterViewer();  // 2026-05-05 fix
 }
 
 // --- Slide Flip Helper ---
