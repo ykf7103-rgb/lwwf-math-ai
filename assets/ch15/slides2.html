@@ -69,6 +69,8 @@
   <h1>📘 第15課 · 簡報 2 — 直觀比較體積</h1>
   <a href="index.html" class="back">← 返回第15課</a>
 </header>
+<button id="muteBtn" onclick="toggleMute()" title="開／關廣東話講解" style="position:fixed;top:64px;right:14px;z-index:99;background:white;border:2px solid #1565C0;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🔊</button>
+
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
   <div class="viewer"><img id="slide" class="slide-img" src="pages/slides2_p01.jpg" alt="第 1 頁" /></div>
@@ -121,7 +123,8 @@ const img=document.getElementById('slide'),ind=document.getElementById('ind'),pr
 function pad(n){return String(n).padStart(2,'0');}
 function getUnansweredQ(pageNum){const qs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);for(let i=0;i<qs.length;i++){const key=pageNum+'_'+i;if(!slideQuizAnswered[key])return{q:qs[i],key,idx:i,pageNum};}return null;}
 function buildThumbs(){thumbsEl.innerHTML='';for(let i=0;i<TOTAL;i++){const t=document.createElement('div');t.className='thumb';t.style.backgroundImage=`url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;t.onclick=()=>goto(i);const num=document.createElement('div');num.className='thumb-num';num.textContent=i+1;t.appendChild(num);thumbsEl.appendChild(t);}}
-function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
+function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';
+  speakPage(idx + 1);[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
 function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答啱</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
 function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
 function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
@@ -137,9 +140,76 @@ document.addEventListener('keydown',e=>{if(lockModal.classList.contains('show'))
 let touchX=0,touchY=0;
 document.querySelector('.viewer').addEventListener('touchstart',e=>{touchX=e.changedTouches[0].screenX;touchY=e.changedTouches[0].screenY;},{passive:true});
 document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-touchX,dy=e.changedTouches[0].screenY-touchY;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){if(dx<0)next();else prev();}},{passive:true});
+
+// === Cantonese TTS Narration (zh-HK) ===
+const PAGE_NARRATION = {
+  1: '歡迎嚟到第十五課簡報二，今集學直觀比較體積。',
+  2: '直觀比較即係用眼睇就估到大細。',
+  3: '重點：將物件並排比較，先睇邊個明顯較大。',
+  4: '示範：兩個盒子放埋一齊，邊個體積大？',
+  5: '請揀體積較大嘅物件。記住睇整體唔係單面。',
+  6: '答啱！比較體積要睇長闊高三方面。',
+  7: '下一題：相同形狀但唔同大細嘅物件比較。',
+  8: '解釋：相似形狀嘅物件，體積按比例變化。',
+  9: '估算題：唔同形狀嘅物件點比較體積？',
+  10: '答案：可以將物件分成同樣單位嚟比較。',
+  11: '應用題：揀邊個盒裝得多嘢入面？',
+  12: '答啱！日常買嘢揀嘢都用到體積比較。',
+  13: '陷阱題！高嘅物件唔一定體積大，要全面睇。',
+  14: '重點：高、闊、深三方面都要睇齊。',
+  15: '簡報二完成！比較體積要綜合評估三個方向。'
+};
+
+let isMuted = false;
+let _yueVoice = null;
+
+function pickYueVoice() {
+  if (!window.speechSynthesis) return null;
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v => v.lang === 'yue-HK')
+      || voices.find(v => v.lang === 'zh-HK')
+      || voices.find(v => v.lang && v.lang.startsWith('zh-'))
+      || null;
+}
+
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = () => { _yueVoice = pickYueVoice(); };
+  setTimeout(() => { if (!_yueVoice) _yueVoice = pickYueVoice(); }, 500);
+}
+
+function speakPage(pageNum) {
+  if (isMuted || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const text = PAGE_NARRATION[pageNum];
+  if (!text) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    if (!_yueVoice) _yueVoice = pickYueVoice();
+    if (_yueVoice) u.voice = _yueVoice;
+    u.lang = 'zh-HK';
+    u.rate = 1.0;
+    u.pitch = 1.0;
+    speechSynthesis.speak(u);
+  } catch(e) { /* ignore TTS errors */ }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  const btn = document.getElementById('muteBtn');
+  if (btn) btn.textContent = isMuted ? '\ud83d\udd07' : '\ud83d\udd0a';
+  if (isMuted) speechSynthesis.cancel();
+  else speakPage(idx + 1);
+}
+// === End TTS ===
+
 buildThumbs();render();
+
+// Initial speak retry once voices are loaded
+if (window.speechSynthesis) {
+  setTimeout(() => { if (!isMuted) speakPage(idx + 1); }, 800);
+}
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505b" data-current-ch="15"></script>
+<script src="../common/chapter-header.js?v=20260505d" data-current-ch="15"></script>
 </body>
 </html>

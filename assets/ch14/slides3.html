@@ -69,6 +69,8 @@
   <h1>📙 第14課 · 簡報 3 — 兩位小數 × 兩位小數 + 應用題</h1>
   <a href="index.html" class="back">← 返回第14課</a>
 </header>
+<button id="muteBtn" onclick="toggleMute()" title="開／關廣東話講解" style="position:fixed;top:64px;right:14px;z-index:99;background:white;border:2px solid #1565C0;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🔊</button>
+
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
   <div class="viewer"><img id="slide" class="slide-img" src="pages/slides3_p01.jpg" alt="第 1 頁" /></div>
@@ -99,20 +101,25 @@
 </div>
 <script>
 const PREFIX = 'slides3', TOTAL = 14, CHAPTER = 14, DECK_KEY = 'slides3';
-// v4 Ch14 Part 3: LO3 兩位×兩位純運算 + LO5 應用題（14 頁，西遊後勤大作戰，應用題情境）
+// v5 Ch14 Part 3: 兩位×兩位 + 應用題（題目對齊 NLM JPG，書面語）
 const SLIDE_QUESTIONS = [
-  // p04 應用題① 容量（LO5）— 花生油 3.24 升 × 4 瓶
-  { afterPage:4, type:'fill', q:'簡報練習：每瓶花生油 3.24 升，八戒買咗 4 瓶，共需幾多升？', accept:['12.96','12.96升','12.96 升'], hint:'3.24 × 4 = 12.96 升（兩位小數 × 整數）' },
-  // p06 應用題② 面積（LO5）— 橫額 1.84 × 0.95
-  { afterPage:6, type:'mc', q:'簡報練習：招牌橫額長 1.84 米 × 闊 0.95 米 = ? 平方米', options:['1.748','17.48','0.1748','174.8'], correct:0, hint:'184 × 95 = 17480，2+2 = 4 位小數 → 1.7480 = 1.748 平方米' },
-  // p08 應用題③ 單價（LO5）— 肉丸 45.6 × 0.8
-  { afterPage:8, type:'fill', q:'簡報練習：每公斤肉丸 45.6 元，八戒買 0.8 公斤要付幾多元？', accept:['36.48','36.48元','$36.48','36.48 元'], hint:'45.6 × 0.8 = 36.48 元（1+1 = 2 位小數）' },
-  // p10 應用題④ 距離（LO5）— 緩跑徑 1.32 × 3.5
-  { afterPage:10, type:'mc', q:'簡報練習：緩跑徑一圈 1.32 公里，悟空跑咗 3.5 圈，共幾多公里？', options:['4.62','4.6','46.2','0.462'], correct:0, hint:'132 × 35 = 4620，2+1 = 3 位小數 → 4.620 = 4.62 公里' },
-  // p12 應用題⑤ 重量 + 單位轉換（LO5）— 杯子蛋糕 80g × 42
-  { afterPage:12, type:'fill', q:'簡報練習：每個杯子蛋糕 80 克，烤 42 個，共幾多公斤？（注意單位！）', accept:['3.36','3.36公斤','3.36kg','3.36 公斤','3.36 kg'], hint:'80 × 42 = 3360 克 → 1000 克 = 1 公斤 → 3.36 公斤' },
-  // p14 取近似值（LO4）— 36.48 ≈ 36.5
-  { afterPage:14, type:'mc', q:'📊 綜合評估：師父核帳，36.48 元取近似值至十分位 ≈ ?', options:['36.5 元','36.4 元','36 元','36.50 元'], correct:0, hint:'看百分位數字 8，8 ≥ 5 要進 1 → 36.5 元' }
+  // p03 嚴格直式：1.02 × 0.05（補零與化簡）
+  { afterPage:3, type:'mc', pageQ:2, pageA:3, q:'簡報原理：1.02 × 0.05 的積，必須是多少位小數？', options:['二位小數','三位小數','四位小數','五位小數'], correct:2, hint:'兩位小數加兩位小數，依小數位數的法則處理' },
+  { afterPage:3, type:'fill', pageQ:2, pageA:3, q:'簡報練習：1.02 × 0.05 的積經過補零後是 0.0510，化簡末尾零後等於多少？', accept:['0.051','.051'], hint:'刪去小數末尾的零' },
+  // p05 應用題① 容量：每瓶花生油 3.24 升，八戒買 4 瓶
+  { afterPage:5, type:'fill', pageQ:4, pageA:5, q:'簡報應用：每瓶花生油 3.24 升，八戒買了 4 瓶，共需花生油多少升？', accept:['12.96','12.96升','12.96 升'], hint:'兩位小數乘以整數，依小數位數規律落小數點' },
+  // p07 應用題② 面積：橫額長 1.84 米闊 0.95 米
+  { afterPage:7, type:'mc', pageQ:6, pageA:7, q:'簡報應用：悟淨製作的招牌橫額長 1.84 米，闊 0.95 米，面積是多少平方米？', options:['1.748','17.48','0.1748','174.8'], correct:0, hint:'長乘以闊；兩位小數乘兩位小數的積有幾位小數？依規律落小數點' },
+  // p09 應用題③ 單價：每公斤肉丸 45.6 元，買 0.8 公斤
+  { afterPage:9, type:'fill', pageQ:8, pageA:9, q:'簡報應用：每公斤肉丸售 45.6 元，八戒購入 0.8 公斤，需付多少元？', accept:['36.48','36.48元','$36.48','36.48 元'], hint:'一位小數乘一位小數的積有兩位小數，先把數字當作整數相乘' },
+  // p11 應用題④ 距離：緩跑徑一圈 1.32 公里，跑 3.5 圈
+  { afterPage:11, type:'mc', pageQ:10, pageA:11, q:'簡報應用：緩跑徑一圈長 1.32 公里，悟空跑了 3.5 圈，共跑了多少公里？', options:['46.2','0.462','4.6','4.62'], correct:3, hint:'兩位小數乘一位小數的積有三位小數；計算後別忘記化簡末尾的零' },
+  // p13 應用題⑤ 重量單位：每杯蛋糕 80 克，42 個
+  { afterPage:13, type:'fill', pageQ:12, pageA:13, q:'簡報應用：每個杯子蛋糕重 80 克，徒兒們烤了 42 個，共重多少公斤？（留意單位）', accept:['3.36','3.36公斤','3.36kg','3.36 公斤','3.36 kg'], hint:'先以整數計算公克數，再依 1 公斤 = 1000 克的關係換算' },
+  { afterPage:13, type:'mc', pageQ:12, pageA:13, q:'簡報原理：將 3360 克轉換成公斤，需把小數點向哪個方向移動多少位？', options:['不用移動','向右移 3 位','向左移 3 位','向右移 2 位'], correct:2, hint:'1 公斤 = 1000 克，由克換成公斤要除以 1000' },
+  // p14 取近似值（綜合評估）
+  { afterPage:14, type:'mc', pageQ:14, pageA:14, q:'📊 綜合評估題：師父核帳，36.48 元取近似值至十分位約等於多少？', options:['36 元','36.4 元','36.50 元','36.5 元'], correct:3, hint:'看百分位數字，依四捨五入法則判斷是進是捨' },
+  { afterPage:14, type:'fill', pageQ:14, pageA:14, q:'📊 綜合評估題：當答案要寫成「大約等於」時，應使用什麼數學符號？', accept:['≈','約等於','大約等於'], hint:'這個符號代表「大約等於」，現實中算錢常會用到' }
 ];
 let idx = 0;
 const slideQuizAnswered = {}, slideQuizWrong = {};
@@ -120,7 +127,8 @@ const img=document.getElementById('slide'),ind=document.getElementById('ind'),pr
 function pad(n){return String(n).padStart(2,'0');}
 function getUnansweredQ(pageNum){const qs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);for(let i=0;i<qs.length;i++){const key=pageNum+'_'+i;if(!slideQuizAnswered[key])return{q:qs[i],key,idx:i,pageNum};}return null;}
 function buildThumbs(){thumbsEl.innerHTML='';for(let i=0;i<TOTAL;i++){const t=document.createElement('div');t.className='thumb';t.style.backgroundImage=`url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;t.onclick=()=>goto(i);const num=document.createElement('div');num.className='thumb-num';num.textContent=i+1;t.appendChild(num);thumbsEl.appendChild(t);}}
-function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
+function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';
+  speakPage(idx + 1);[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
 function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答啱</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
 function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
 function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
@@ -136,9 +144,76 @@ document.addEventListener('keydown',e=>{if(lockModal.classList.contains('show'))
 let touchX=0,touchY=0;
 document.querySelector('.viewer').addEventListener('touchstart',e=>{touchX=e.changedTouches[0].screenX;touchY=e.changedTouches[0].screenY;},{passive:true});
 document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-touchX,dy=e.changedTouches[0].screenY-touchY;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){if(dx<0)next();else prev();}},{passive:true});
+
+// === Cantonese TTS Narration (zh-HK) ===
+const PAGE_NARRATION = {
+  1: '歡迎嚟到第十四課簡報三，今集學兩位小數乘以兩位小數加應用題。',
+  2: '兩位乘兩位，答案小數位數係四位。最易計錯就係呢類。',
+  3: '重點：先當整數做完先，最後一次過點返四位小數。',
+  4: '睇例題：0.12 乘 0.34。12 乘 34 等如 408，四位即 0.0408。',
+  5: '請揀啱答案。記住四位小數即係小數點後四個位。',
+  6: '答啱！呢類題答案會非常細，要好細心點小數點。',
+  7: '應用題一：面積計算用咗小數乘法。',
+  8: '答案解釋：邊長兩位小數，面積就係四位小數。',
+  9: '應用題二：金錢計算同物資購買都會出現。',
+  10: '估算技巧：兩個細數相乘，答案一定更細。',
+  11: '陷阱題：易俾零數搞亂，前面零唔可以省略。',
+  12: '答案核對：用估算 check 大細範圍合唔合理。',
+  13: '綜合應用題：解多步驟嘅問題要慢慢嚟。',
+  14: '重點總結：小數位數規律 = 兩數小數位之和。',
+  15: '第十四課完成！恭喜你完整掌握咗小數乘法。'
+};
+
+let isMuted = false;
+let _yueVoice = null;
+
+function pickYueVoice() {
+  if (!window.speechSynthesis) return null;
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v => v.lang === 'yue-HK')
+      || voices.find(v => v.lang === 'zh-HK')
+      || voices.find(v => v.lang && v.lang.startsWith('zh-'))
+      || null;
+}
+
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = () => { _yueVoice = pickYueVoice(); };
+  setTimeout(() => { if (!_yueVoice) _yueVoice = pickYueVoice(); }, 500);
+}
+
+function speakPage(pageNum) {
+  if (isMuted || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const text = PAGE_NARRATION[pageNum];
+  if (!text) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    if (!_yueVoice) _yueVoice = pickYueVoice();
+    if (_yueVoice) u.voice = _yueVoice;
+    u.lang = 'zh-HK';
+    u.rate = 1.0;
+    u.pitch = 1.0;
+    speechSynthesis.speak(u);
+  } catch(e) { /* ignore TTS errors */ }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  const btn = document.getElementById('muteBtn');
+  if (btn) btn.textContent = isMuted ? '\ud83d\udd07' : '\ud83d\udd0a';
+  if (isMuted) speechSynthesis.cancel();
+  else speakPage(idx + 1);
+}
+// === End TTS ===
+
 buildThumbs();render();
+
+// Initial speak retry once voices are loaded
+if (window.speechSynthesis) {
+  setTimeout(() => { if (!isMuted) speakPage(idx + 1); }, 800);
+}
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505b" data-current-ch="14"></script>
+<script src="../common/chapter-header.js?v=20260505d" data-current-ch="14"></script>
 </body>
 </html>

@@ -83,6 +83,8 @@
   <h1>📗 第15課 · 簡報 1 — 體積概念認識</h1>
   <a href="index.html" class="back">← 返回第15課</a>
 </header>
+<button id="muteBtn" onclick="toggleMute()" title="開／關廣東話講解" style="position:fixed;top:64px;right:14px;z-index:99;background:white;border:2px solid #1565C0;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🔊</button>
+
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
@@ -190,6 +192,8 @@ function render(){
   });
   const active = thumbsEl.querySelector('.thumb.active');
   if (active) active.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+
+  speakPage(idx + 1);
 
   // Hide quiz when rendering a new page
   quizOv.classList.remove('show');
@@ -406,10 +410,77 @@ document.querySelector('.viewer').addEventListener('touchend', e=>{
   }
 }, {passive:true});
 
+
+// === Cantonese TTS Narration (zh-HK) ===
+const PAGE_NARRATION = {
+  1: '歡迎嚟到第十五課簡報一，今集學體積概念認識。',
+  2: '體積即係物件佔幾多空間。物件越大，體積越大。',
+  3: '哆啦A夢拎出縮小燈，將大細變化展示體積概念。',
+  4: '重點：體積係三維嘅，有長闊高三個方向。',
+  5: '請睇清題目：邊個物件體積最大？比較大細。',
+  6: '答啱！體積大細要從整體睇，唔係淨係睇一個面。',
+  7: '下一題：認識日常生活中嘅體積例子。',
+  8: '解釋：杯水、書本、波都有自己嘅體積。',
+  9: '估算題：估下呢個盒子嘅體積有幾大。',
+  10: '答案：估算唔需要好精確，知道大概範圍就得。',
+  11: '應用題：擺嘢入箱要考慮體積。',
+  12: '答啱！體積概念幫我哋解決日常嘅空間問題。',
+  13: '陷阱題！體積唔係面積，唔可以混淆。',
+  14: '重點：面積係兩維，體積係三維，記住分清楚。',
+  15: '簡報一完成！繼續做預習鞏固體積概念。'
+};
+
+let isMuted = false;
+let _yueVoice = null;
+
+function pickYueVoice() {
+  if (!window.speechSynthesis) return null;
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v => v.lang === 'yue-HK')
+      || voices.find(v => v.lang === 'zh-HK')
+      || voices.find(v => v.lang && v.lang.startsWith('zh-'))
+      || null;
+}
+
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = () => { _yueVoice = pickYueVoice(); };
+  setTimeout(() => { if (!_yueVoice) _yueVoice = pickYueVoice(); }, 500);
+}
+
+function speakPage(pageNum) {
+  if (isMuted || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const text = PAGE_NARRATION[pageNum];
+  if (!text) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    if (!_yueVoice) _yueVoice = pickYueVoice();
+    if (_yueVoice) u.voice = _yueVoice;
+    u.lang = 'zh-HK';
+    u.rate = 1.0;
+    u.pitch = 1.0;
+    speechSynthesis.speak(u);
+  } catch(e) { /* ignore TTS errors */ }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  const btn = document.getElementById('muteBtn');
+  if (btn) btn.textContent = isMuted ? '\ud83d\udd07' : '\ud83d\udd0a';
+  if (isMuted) speechSynthesis.cancel();
+  else speakPage(idx + 1);
+}
+// === End TTS ===
+
 buildThumbs();
 render();
+
+// Initial speak retry once voices are loaded
+if (window.speechSynthesis) {
+  setTimeout(() => { if (!isMuted) speakPage(idx + 1); }, 800);
+}
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505b" data-current-ch="15"></script>
+<script src="../common/chapter-header.js?v=20260505d" data-current-ch="15"></script>
 </body>
 </html>

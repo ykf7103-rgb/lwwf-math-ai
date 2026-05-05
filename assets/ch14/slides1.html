@@ -83,6 +83,8 @@
   <h1>📗 第14課 · 簡報 1 — 一位小數 × 一位小數</h1>
   <a href="index.html" class="back">← 返回第14課</a>
 </header>
+<button id="muteBtn" onclick="toggleMute()" title="開／關廣東話講解" style="position:fixed;top:64px;right:14px;z-index:99;background:white;border:2px solid #1565C0;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🔊</button>
+
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
@@ -126,16 +128,28 @@
 <script>
 const PREFIX = 'slides1', TOTAL = 15, CHAPTER = 14, DECK_KEY = 'slides1';
 
-// v3 Ch14 Part 1: 一位小數 × 一位小數（15 頁 manga 風）
+// v4 Ch14 Part 1: 一位小數 × 一位小數（15 頁 manga 風；題目對齊 NLM JPG 內容）
 const SLIDE_QUESTIONS = [
-  // p06: 基本一位×一位
-  { afterPage:6, type:'mc', q:'簡報練習：0.3 × 0.4 = ?', options:['0.12','1.2','0.012','12'], correct:0, hint:'3 × 4 = 12，合共 2 位小數 → 0.12' },
-  { afterPage:6, type:'fill', q:'簡報練習：0.5 × 0.6 = ?', accept:['0.3','0.30','.3'], hint:'5 × 6 = 30，合共 2 位小數 → 0.30 = 0.3' },
-  // p10: 位數規律
-  { afterPage:10, type:'fill', q:'口訣：兩個一位小數相乘，積有___位小數（只填數字）', accept:['2','二','兩'], hint:'因數位數相加：1 + 1 = 2 位小數' },
-  // p12: 綜合評估
-  { afterPage:12, type:'mc', q:'📊 綜合評估題：0.8 × 0.5 = ?', options:['0.40（= 0.4）','4','0.04','40'], correct:0, hint:'8 × 5 = 40，合共 2 位小數 → 0.40 = 0.4' },
-  { afterPage:12, type:'fill', q:'📊 綜合評估題：0.7 × 0.9 = ?', accept:['0.63','.63'], hint:'7 × 9 = 63，合共 2 位小數 → 0.63' }
+  // p05 直式列算引入：題目來自 p02 一塊長方形毛巾（長 0.4 米，闊 0.2 米）
+  { afterPage:5, type:'mc', pageQ:2, pageA:4, q:'簡報練習：一塊長方形毛巾長 0.4 米，闊 0.2 米，面積是多少平方米？', options:['0.08','0.8','0.008','8'], correct:0, hint:'長乘以闊；先當作整數相乘，再依小數位數規律落下小數點' },
+  { afterPage:5, type:'fill', pageQ:2, pageA:4, q:'簡報估算：4 × 2 = ?（先把小數變整數計算）', accept:['8','八'], hint:'這是基本的整數乘法事實' },
+  // p06 Combo 1 直式靠右對齊
+  { afterPage:6, type:'mc', pageQ:6, pageA:8, q:'簡報練習：列直式 0.4 × 0.2 時，數字應如何排列？', options:['對齊小數點（如加減法般）','左對齊整數位最高位','右邊靠齊（無視小數點位置）','數字置中對齊'], correct:2, hint:'直式乘法的鐵則與直式加減法不同，看 Combo 1 的口訣' },
+  // p07 Combo 2 整數狂打
+  { afterPage:7, type:'fill', pageQ:7, pageA:8, q:'簡報練習：將 0.4 × 0.2 暫時當作整數計算，4 × 2 = ?', accept:['8'], hint:'這就是 Combo 2「整數狂打」的精神' },
+  // p08 Combo 3 結算位數規律
+  { afterPage:8, type:'mc', pageQ:8, pageA:8, q:'簡報口訣：兩個一位小數相乘，積會有多少位小數？', options:['一位小數','兩位小數','三位小數','沒有小數位'], correct:1, hint:'因數位數相加：1 + 1 = ?；參考 Combo 3 圖示' },
+  // p09 必殺技：空位補零
+  { afterPage:9, type:'mc', pageQ:9, pageA:9, q:'簡報必殺技：當 0.4 × 0.2 算出整數 8 後，需點下兩位小數，但只有一個數字 8，應如何處理？', options:['寫成 0.8','寫成 8.00','在左方補零，寫成 0.08','寫成 80'], correct:2, hint:'看簡報「精準點擊，空位補零」的口訣' },
+  // p10 八戒例題
+  { afterPage:10, type:'mc', pageQ:10, pageA:10, q:'簡報練習：八戒嘗試計算 28.1 × 0.7，根據一位小數加一位小數的規律，積應有多少位小數？', options:['沒有小數位','三位小數','一位小數','兩位小數'], correct:3, hint:'被乘數小數位數加上乘數小數位數' },
+  // p11-13 變異頭目：5.5 × 1.8（橫式尾零必須斬去）
+  { afterPage:13, type:'mc', pageQ:11, pageA:13, q:'簡報秘技：5.5 × 1.8 直式算出 9.90，在橫式答案中應寫成什麼？', options:['9.90','9.9','9','99'], correct:1, hint:'看「秘技：去零斬」——橫式答案的小數點末尾的零必須化簡' },
+  // p14 雙例綜合
+  { afterPage:14, type:'fill', pageQ:14, pageA:14, q:'簡報練習：12.5 × 6.4 直式算出 80.00，化簡後等於多少？', accept:['80','八十'], hint:'小數點後全為零時，可整體化簡為整數形式' },
+  // p15 三大鐵則總結（綜合評估）
+  { afterPage:15, type:'mc', pageQ:15, pageA:15, q:'📊 綜合評估題：小數乘法三大鐵則中，「位數相加」是指什麼？', options:['把兩個因數的整數位數相加','把兩個因數的所有位數相加','把答案的位數相加','把兩個因數的小數位數相加，得出積的小數位數'], correct:3, hint:'參考鐵則第 ② 條的圖示「1 + 1 = 2」' },
+  { afterPage:15, type:'fill', pageQ:15, pageA:15, q:'📊 綜合評估題：根據鐵則 ③「橫式尾零，無情斬去」，0.30 在橫式答案中應寫成？', accept:['0.3','.3'], hint:'保留有效數字，去除末尾的零' }
 ];
 
 let idx = 0;
@@ -185,6 +199,8 @@ function render(){
   });
   const active = thumbsEl.querySelector('.thumb.active');
   if (active) active.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+
+  speakPage(idx + 1);
 
   // Hide quiz when rendering a new page
   quizOv.classList.remove('show');
@@ -403,10 +419,77 @@ document.querySelector('.viewer').addEventListener('touchend', e=>{
   }
 }, {passive:true});
 
+
+// === Cantonese TTS Narration (zh-HK) ===
+const PAGE_NARRATION = {
+  1: '歡迎嚟到第十四課簡報一，今集學一位小數乘以一位小數。',
+  2: '兩個小數相乘，小數位數要相加。一位乘一位等如兩位小數。',
+  3: '重點：先當整數計，最後答案要點返兩位小數位。',
+  4: '睇例題：0.3 乘 0.4。3 乘 4 等如 12，兩位小數即係 0.12。',
+  5: '請揀啱答案。記得數埋兩個小數位。',
+  6: '答啱！0.3 乘 0.4 等如 0.12，唔係 0.012 或者 1.2。',
+  7: '下一題：兩個一位小數相乘，小心唔好搞亂位數。',
+  8: '答案核對：答案要係兩位小數，唔係一位。',
+  9: '填充題：自己列直式計，唔好心算錯。',
+  10: '估算技巧：兩個細過 1 嘅數相乘，答案會更細。',
+  11: '應用題：細路面積計算 0.5 米乘 0.8 米。',
+  12: '答案 0.4 平方米，5 乘 8 等如 40，兩位小數即 0.40。',
+  13: '陷阱題！小數位數加錯就會差十倍或一百倍。',
+  14: '用估算驗證：兩個細過 1 嘅數相乘，答案要細過兩個原數。',
+  15: '簡報一完成！記住：小數位數要相加先得啱答案。'
+};
+
+let isMuted = false;
+let _yueVoice = null;
+
+function pickYueVoice() {
+  if (!window.speechSynthesis) return null;
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v => v.lang === 'yue-HK')
+      || voices.find(v => v.lang === 'zh-HK')
+      || voices.find(v => v.lang && v.lang.startsWith('zh-'))
+      || null;
+}
+
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = () => { _yueVoice = pickYueVoice(); };
+  setTimeout(() => { if (!_yueVoice) _yueVoice = pickYueVoice(); }, 500);
+}
+
+function speakPage(pageNum) {
+  if (isMuted || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const text = PAGE_NARRATION[pageNum];
+  if (!text) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    if (!_yueVoice) _yueVoice = pickYueVoice();
+    if (_yueVoice) u.voice = _yueVoice;
+    u.lang = 'zh-HK';
+    u.rate = 1.0;
+    u.pitch = 1.0;
+    speechSynthesis.speak(u);
+  } catch(e) { /* ignore TTS errors */ }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  const btn = document.getElementById('muteBtn');
+  if (btn) btn.textContent = isMuted ? '\ud83d\udd07' : '\ud83d\udd0a';
+  if (isMuted) speechSynthesis.cancel();
+  else speakPage(idx + 1);
+}
+// === End TTS ===
+
 buildThumbs();
 render();
+
+// Initial speak retry once voices are loaded
+if (window.speechSynthesis) {
+  setTimeout(() => { if (!isMuted) speakPage(idx + 1); }, 800);
+}
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505b" data-current-ch="14"></script>
+<script src="../common/chapter-header.js?v=20260505d" data-current-ch="14"></script>
 </body>
 </html>
