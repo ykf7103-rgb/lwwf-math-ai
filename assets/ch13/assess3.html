@@ -125,6 +125,11 @@
       <div class="slide-q" id="slideQBox">
         <div class="slide-q-num" id="slideQLabel">第 1 題</div>
         <div class="slide-q-text" id="slideQText"></div>
+        <button id="speakBtn" onclick="speakCurrentQ()" title="廣東話讀題目（不講答案）"
+          style="background:linear-gradient(135deg,#FFB300,#FF8F00);color:white;border:none;
+           border-radius:18px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.85rem;margin:8px 0;font-family:inherit;">
+          🔊 讀題目
+        </button>
         <div class="slide-opts" id="slideOpts"></div>
         <div class="slide-explain" id="slideExplain" style="display:none;">
           <div class="title" id="slideExplainTitle"></div>
@@ -183,42 +188,42 @@ const Q = [
     q: '穿越火焰山前，悟空準備了 3 個大水葫蘆，每個葫蘆容量 1.25 升。總容量是多少？',
     opts: ['37.5 升', '3.75 升', '0.375 升'],
     a: 1,
-    hint: '1.25 × 3：125 × 3 = 375，兩位小數 → 3.75 升。',
+    hint: '悟空提示：1.25 × 3 — 125 × 3 = 375，兩位小數 → 3.75 升。',
     pageQ: 1, pageA: 2
   },
   {
     q: '八戒偷拿了 2 顆超輕量仙丹。每顆重 0.03 克。這兩顆仙丹總共多重？',
     opts: ['0.6 克', '0.006 克', '0.06 克'],
     a: 2,
-    hint: '0.03 × 2：3 × 2 = 6，兩位小數 → 0.06 克。',
+    hint: '悟空提示：0.03 × 2 — 3 × 2 = 6，兩位小數 → 0.06 克。',
     pageQ: 3, pageA: 4
   },
   {
     q: '白龍馬每小時可疾行 1.25 里。若連續奔跑 4 小時，牠前進了多遠？答案最「標準」的形式是？',
     opts: ['5.00 里', '50 里', '5 里'],
     a: 2,
-    hint: '1.25 × 4：125 × 4 = 500，兩位小數 → 5.00。末尾 0 去掉，標準形式為 5 里。',
+    hint: '悟空提示：1.25 × 4 — 125 × 4 = 500，兩位小數 → 5.00。末尾 0 去掉，標準形式為 5 里。',
     pageQ: 5, pageA: 6
   },
   {
     q: '金箍棒原本長 5 尺，悟空施法將其縮小為原來的 0.15 倍。現在金箍棒長多少尺？',
     opts: ['0.75 尺', '7.5 尺', '75 尺'],
     a: 0,
-    hint: '5 × 0.15：5 × 15 = 75，兩位小數 → 0.75 尺。乘以小於 1 的數，結果會變小。',
+    hint: '悟空提示：5 × 0.15 — 5 × 15 = 75，兩位小數 → 0.75 尺。乘以小於 1 的數，結果會變小。',
     pageQ: 7, pageA: 8
   },
   {
     q: '八戒點了 31 籠素包子，每籠 5.05 錢。掌櫃說總共 1565.5 錢。這筆帳合理嗎？',
     opts: ['合理，掌櫃算得很準', '不合理，答案應該接近 150 錢', '不合理，答案應該接近 1500 錢'],
     a: 1,
-    hint: '估算：31 ≈ 30，5.05 ≈ 5，30 × 5 = 150。實際 31 × 5.05 = 156.55，接近 150。掌櫃寫 1565.5 是小數點錯位，多了 10 倍。',
+    hint: '悟空提示：用估算 — 31 ≈ 30，5.05 ≈ 5，30 × 5 = 150。實際 31 × 5.05 = 156.55，接近 150。掌櫃寫 1565.5 是小數點錯位，多了 10 倍。',
     pageQ: 9, pageA: 10
   },
   {
     q: '妖怪假扮高僧，獻上一卷經文，上面寫著：「6 卷經書 × 每卷 7.32 兩黃金 = 439.2 兩」。請指出經文的破綻！',
     opts: ['經文無誤', '錯在估算：6 × 7 = 42，答案應接近 42', '錯在小數點：被乘數有兩位小數，積也應有兩位小數', 'B 和 C 皆是破綻'],
     a: 3,
-    hint: '估算：6 × 7.32 ≈ 6 × 7 = 42。實際：6 × 732 = 4392，兩位小數 → 43.92。妖怪寫 439.2 小數點位置錯。所以 B（估算錯）同 C（小數點錯）都係破綻，答案 D。',
+    hint: '悟空提示：用估算 — 6 × 7.32 ≈ 6 × 7 = 42。實際：6 × 732 = 4392，兩位小數 → 43.92。妖怪寫 439.2 小數點位置錯。所以兩個破綻都成立。',
     pageQ: 11, pageA: 12
   }
 ];
@@ -241,6 +246,24 @@ const Q_SHUFFLED = Q.map(shuffleQuestion);     // shuffle ONCE per page session 
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
+
+// 廣東話講解：只朗讀題幹（題目本身），絕不讀選項/答案/提示
+function speakCurrentQ() {
+  if (!window.speechSynthesis) { alert('此瀏覽器不支援語音朗讀'); return; }
+  speechSynthesis.cancel();
+  const q = Q_SHUFFLED[slideIdx];
+  if (!q) return;
+  const text = String(q.q || '').replace(/^Q\d+\s*/, '');
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const yueVoice = voices.find(v => v.lang === 'yue-HK' || v.lang === 'zh-HK')
+                || voices.find(v => v.lang && v.lang.startsWith('zh-')) || null;
+  if (yueVoice) u.voice = yueVoice;
+  u.lang = 'zh-HK';
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch(e){} }
 
 // ==== Mode A: Slide with Q→A phases ====
 let slideIdx = 0;                           // current question (0-5)
@@ -453,6 +476,6 @@ function showFinal(correct) {
 renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="13"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="13"></script>
 </body>
 </html>

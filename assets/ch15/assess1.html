@@ -125,6 +125,11 @@
       <div class="slide-q" id="slideQBox">
         <div class="slide-q-num" id="slideQLabel">第 1 題</div>
         <div class="slide-q-text" id="slideQText"></div>
+        <button id="speakBtn" onclick="speakCurrentQ()" title="廣東話讀題目（不講答案）"
+          style="background:linear-gradient(135deg,#FFB300,#FF8F00);color:white;border:none;
+           border-radius:18px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.85rem;margin:8px 0;font-family:inherit;">
+          🔊 讀題目
+        </button>
         <div class="slide-opts" id="slideOpts"></div>
         <div class="slide-explain" id="slideExplain" style="display:none;">
           <div class="title" id="slideExplainTitle"></div>
@@ -182,12 +187,12 @@ const CHAPTER = 15, DECK_KEY = 'assess1', IMG_PREFIX = 'assess1';
 // ⚠️ 嚴格按本課 LO：固/液/氣都有體積；不可有 cm³ / 計算 / 量度
 // 2026-05-03 polish：q 字段全部繁體中文書面語（rule #18）
 const Q = [
-  { q: 'Q1 哆啦A夢偵察題：以下哪一樣東西沒有體積？', opts: ['水','影子','空氣','書本'], a: 1, hint: '影子只是光線被擋住的暗區，本身不佔空間，所以沒有體積。', pageQ: 1, pageA: 2 },
-  { q: 'Q2 大雄問靜香：靜香杯內的水是否有體積？', opts: ['沒有，只有固體才有','需先量度','有，所有液體都有體積','需看溫度'], a: 2, hint: '水（液體）佔據了杯的空間，所以有體積。所有液體都有體積。', pageQ: 3, pageA: 4 },
-  { q: 'Q3 胖虎吹氣球：氣球內的空氣是否有體積？', opts: ['沒有，氣體看不見','需打開才知','需捏一捏','有，氣體都有體積'], a: 3, hint: '空氣（氣體）撐起氣球，佔據了空間，故有體積。所有氣體都有體積。', pageQ: 5, pageA: 6 },
-  { q: 'Q4 哆啦A夢搶答：以下哪一項**不是**體積的特性？', opts: ['佔空間','顏色','大小','形狀'], a: 1, hint: '體積是指物件所佔空間的大小，與顏色無關。紅色與綠色的物件同樣可以比較體積。', pageQ: 7, pageA: 8 },
-  { q: 'Q5 大雄考歷史：以下哪些物件有體積？', opts: ['只有火龍果','只有葡萄汁','火龍果、葡萄汁、氣球（三者皆有）','只有氣球'], a: 2, hint: '固體（火龍果）、液體（葡萄汁）、氣體（氣球內的空氣）三者皆佔空間，全部都有體積。', pageQ: 9, pageA: 10 },
-  { q: 'Q6 終極挑戰：哆啦A夢的四次元口袋可以裝多少東西？', opts: ['無限多（漫畫設定）','100 件','只裝小東西','視乎大小'], a: 0, hint: '四次元口袋是特殊空間，可裝無限體積的物件。但現實生活中所有真實容器都有體積限制。', pageQ: 11, pageA: 12 }
+  { q: 'Q1 哆啦A夢偵察題：以下哪一樣東西沒有體積？', opts: ['水','影子','空氣','書本'], a: 1, hint: '哆啦A夢提示：影子只是光線被擋住的暗區，本身不佔空間，所以沒有體積。', pageQ: 1, pageA: 2 },
+  { q: 'Q2 大雄問靜香：靜香杯內的水是否有體積？', opts: ['沒有，只有固體才有','需先量度','有，所有液體都有體積','需看溫度'], a: 2, hint: '哆啦A夢提示：水（液體）佔據了杯的空間，所以有體積。所有液體都有體積。', pageQ: 3, pageA: 4 },
+  { q: 'Q3 胖虎吹氣球：氣球內的空氣是否有體積？', opts: ['沒有，氣體看不見','需打開才知','需捏一捏','有，氣體都有體積'], a: 3, hint: '哆啦A夢提示：空氣（氣體）撐起氣球，佔據了空間，故有體積。所有氣體都有體積。', pageQ: 5, pageA: 6 },
+  { q: 'Q4 哆啦A夢搶答：以下哪一項**不是**體積的特性？', opts: ['佔空間','顏色','大小','形狀'], a: 1, hint: '哆啦A夢提示：體積是指物件所佔空間的大小，與顏色無關。紅色與綠色的物件同樣可以比較體積。', pageQ: 7, pageA: 8 },
+  { q: 'Q5 大雄考歷史：以下哪些物件有體積？', opts: ['只有火龍果','只有葡萄汁','火龍果、葡萄汁、氣球（三者皆有）','只有氣球'], a: 2, hint: '哆啦A夢提示：固體（火龍果）、液體（葡萄汁）、氣體（氣球內的空氣）三者皆佔空間，全部都有體積。', pageQ: 9, pageA: 10 },
+  { q: 'Q6 終極挑戰：哆啦A夢的四次元口袋可以裝多少東西？', opts: ['無限多（漫畫設定）','100 件','只裝小東西','視乎大小'], a: 0, hint: '哆啦A夢提示：四次元口袋是特殊空間，可裝無限體積的物件。但現實生活中所有真實容器都有體積限制。', pageQ: 11, pageA: 12 }
 ];
 
 // 2026-05-04 fix: 答案隨機化 — 每次 render 將 opts 位置 shuffle，但 logic 仍記住正確答案 text
@@ -208,6 +213,26 @@ const Q_SHUFFLED = Q.map(shuffleQuestion);     // shuffle ONCE per page session 
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
+
+// 廣東話講解：只朗讀題幹（題目本身），絕不讀選項/答案/提示
+function speakCurrentQ() {
+  if (!window.speechSynthesis) { alert('此瀏覽器不支援語音朗讀'); return; }
+  speechSynthesis.cancel();
+  const q = Q_SHUFFLED[slideIdx];
+  if (!q) return;
+  // 只讀題幹本身，去除 Q1/Q2 prefix；唔讀 opts、a、hint
+  const text = String(q.q || '').replace(/^Q\d+\s*[:：·]?\s*[^：:]*?[：:]\s*/, '').replace(/^Q\d+\s*/, '');
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const yueVoice = voices.find(v => v.lang === 'yue-HK' || v.lang === 'zh-HK')
+                || voices.find(v => v.lang && v.lang.startsWith('zh-')) || null;
+  if (yueVoice) u.voice = yueVoice;
+  u.lang = 'zh-HK';
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+// preload voices (some browsers need this)
+if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch(e){} }
 
 // ==== Mode A: Slide with Q→A phases ====
 let slideIdx = 0;                           // current question (0-5)
@@ -420,6 +445,6 @@ function showFinal(correct) {
 renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="15"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="15"></script>
 </body>
 </html>

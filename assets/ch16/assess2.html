@@ -125,6 +125,11 @@
       <div class="slide-q" id="slideQBox">
         <div class="slide-q-num" id="slideQLabel">第 1 題</div>
         <div class="slide-q-text" id="slideQText"></div>
+        <button id="speakBtn" onclick="speakCurrentQ()" title="廣東話讀題目（不講答案）"
+          style="background:linear-gradient(135deg,#FFB300,#FF8F00);color:white;border:none;
+           border-radius:18px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.85rem;margin:8px 0;font-family:inherit;">
+          🔊 讀題目
+        </button>
         <div class="slide-opts" id="slideOpts"></div>
         <div class="slide-explain" id="slideExplain" style="display:none;">
           <div class="title" id="slideExplainTitle"></div>
@@ -185,27 +190,27 @@ const CHAPTER = 16, DECK_KEY = 'assess2', IMG_PREFIX = 'assess2';
 const Q = [
   { q: 'Q2 烽火台挑戰：建造烽火台時，看不見的「隱藏方塊」也要算進去！上層放 1 個金方塊，底下一定要有方塊支撐。整個烽火台的體積是多少？',
     opts: ['4 cm³','5 cm³','6 cm³','7 cm³'], a: 2,
-    hint: '上層 1 個金方塊放穩，下層必有 5 個鐵方塊（十字形）支撐。1 + 5 = 6 cm³。隱藏方塊也要計算進去。',
+    hint: 'Steve 提示：上層 1 個金方塊放穩，下層必有 5 個鐵方塊（十字形）支撐。1 + 5 = 6 cm³。隱藏方塊也要計算進去。',
     pageQ: 3, pageA: 4 },
   { q: 'Q4 寶箱估算：以 1 支火把（約 10 cm³）作為基準，這個寶箱的空間大約可以塞入 4 至 5 支火把。請問寶箱的體積大約是多少？',
     opts: ['5 cm³','10 cm³','45 cm³','200 cm³'], a: 2,
-    hint: '基準物估算法：1 支火把 ≈ 10 cm³，寶箱可塞 4-5 支 → 10 × 4.5 = 45 cm³，是最合理的估算。',
+    hint: 'Steve 提示：基準物估算法 — 1 支火把 ≈ 10 cm³，寶箱可塞 4-5 支 → 10 × 4.5 = 45 cm³，是最合理的估算。',
     pageQ: 5, pageA: 6 },
   { q: 'Q6 鐵魔像難題：遇到形狀不規則的鐵魔像（頭部 + 身體 + 雙手與腳），應該如何估算它的總體積？',
     opts: ['只計算最高的那一疊方塊','把它拆解成長寬高的三個長方體再估算加總','無法估算'], a: 1,
-    hint: '分割與填補策略：將複雜形狀切分為簡單的長方體（頭部、身體、雙手與腳 3 個部分），分別計算後相加。',
+    hint: 'Steve 提示：用分割與填補策略 — 將複雜形狀切分為簡單的長方體（頭部、身體、雙手與腳 3 個部分），分別計算後相加。',
     pageQ: 7, pageA: 8 },
   { q: 'Q8 真實量感：一個 1 m³ 的空間（1 米 × 1 米 × 1 米），大約可以塞進多少個五年級小朋友？',
     opts: ['1 個','4 個','10 個','50 個'], a: 1,
-    hint: '真實體驗：4 個五年級學生大約可以填滿 1 m³ 的空間。記住這個量感，估算大空間就有依據。',
+    hint: 'Steve 提示：真實體驗 — 4 個五年級學生大約可以填滿 1 m³ 的空間。記住這個量感，估算大空間就有依據。',
     pageQ: 9, pageA: 10 },
   { q: 'Q10 單位選擇：若要記錄「飛機」或「終界飛龍」這類龐然大物的體積，應該使用哪一種單位？',
     opts: ['cm²','m²','cm³','m³'], a: 3,
-    hint: '平方 (²) 是面積單位、不是體積單位。cm³ 用來記錄龐然大物會變成天文數字。m³ 才是大型物體專屬的最佳單位！',
+    hint: 'Steve 提示：平方 (²) 是面積單位、不是體積單位。cm³ 用來記錄龐然大物會變成天文數字。m³ 才是大型物體專屬的最佳單位！',
     pageQ: 11, pageA: 12 },
   { q: 'Q12 終極估算：挖出一個長 10 m × 闊 5 m × 深 2 m 的長方形游泳池，需要挖走多少 m³ 的泥土？',
     opts: ['17 m³','50 m³','100 m³','100 cm³'], a: 2,
-    hint: '底層方塊：10 × 5 = 50 個（50 m³）。共 2 層深 → 50 × 2 = 100 m³。⚠️ 注意單位陷阱：是 m³ 不是 cm³！',
+    hint: 'Steve 提示：底層方塊 10 × 5 = 50 個（50 m³）。共 2 層深 → 50 × 2 = 100 m³。注意單位陷阱：是 m³ 不是 cm³！',
     pageQ: 13, pageA: 14 }
 ];
 
@@ -227,6 +232,24 @@ const Q_SHUFFLED = Q.map(shuffleQuestion);     // shuffle ONCE per page session 
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
+
+// 廣東話講解：只朗讀題幹（題目本身），絕不讀選項/答案/提示
+function speakCurrentQ() {
+  if (!window.speechSynthesis) { alert('此瀏覽器不支援語音朗讀'); return; }
+  speechSynthesis.cancel();
+  const q = Q_SHUFFLED[slideIdx];
+  if (!q) return;
+  const text = String(q.q || '').replace(/^Q\d+\s*[^：:]*[：:]\s*/, '').replace(/^Q\d+\s*/, '');
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const yueVoice = voices.find(v => v.lang === 'yue-HK' || v.lang === 'zh-HK')
+                || voices.find(v => v.lang && v.lang.startsWith('zh-')) || null;
+  if (yueVoice) u.voice = yueVoice;
+  u.lang = 'zh-HK';
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch(e){} }
 
 // ==== Mode A: Slide with Q→A phases ====
 let slideIdx = 0;                           // current question (0-5)
@@ -439,6 +462,6 @@ function showFinal(correct) {
 renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="16"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="16"></script>
 </body>
 </html>

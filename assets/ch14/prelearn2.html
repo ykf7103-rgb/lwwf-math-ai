@@ -263,7 +263,7 @@ function unzoom(){document.getElementById('zoomOv').classList.remove('show');}
 function checkAllDone(){if(answered.mc&&answered.fill&&answered.voice){document.getElementById('done').classList.add('show');try{const key=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(key)||'{}');p[PRELEARN_KEY]={done:true,score:voiceData?.score||0,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(_){}}}
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="14"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="14"></script>
 <script src="../common/stt.js"></script>
 </body>
 </html>

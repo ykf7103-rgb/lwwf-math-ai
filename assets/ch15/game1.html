@@ -21,6 +21,7 @@
   .speech::before{content:'💡 哆啦A夢偵探：';display:block;font-weight:900;color:#E65100;margin-bottom:4px}
   .item-display{text-align:center;margin:24px 0;padding:24px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:16px;border:3px dashed #1976D2}
   .item-emoji{font-size:5rem;line-height:1;margin-bottom:12px;display:block}
+  .item-img{width:160px;height:160px;object-fit:contain;margin:0 auto 12px;display:block;filter:drop-shadow(2px 4px 8px rgba(0,0,0,0.15))}
   .item-name{font-size:1.5rem;font-weight:900;color:#0D47A1}
   .item-question{font-size:1rem;color:#666;margin-top:8px}
   .options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:18px 0}
@@ -74,7 +75,8 @@
   <div class="scene">
     <div class="speech" id="hint">幫哆啦A夢偵察！睇下呢樣嘢嘅狀態係咩，揀「固體 / 液體 / 氣體 / 冇體積」。<br><b>記住：固/液/氣都有體積，但影子之類冇體積！</b></div>
     <div class="item-display">
-      <span class="item-emoji" id="itemEmoji">📦</span>
+      <img class="item-img" id="itemImg" src="" alt="" style="display:none">
+      <span class="item-emoji" id="itemEmoji" style="display:none">📦</span>
       <div class="item-name" id="itemName">物件</div>
       <div class="item-question">呢樣嘢屬咩狀態？</div>
     </div>
@@ -107,26 +109,36 @@ const CHAPTER = 15, GAME_KEY = 'game1';
 
 // 10 items 嚴格按本課 LO（固/液/氣 + 反例）
 const ITEMS = [
-  { emoji: '🍎', name: '蘋果', cat: 'solid', hint: '蘋果係固體，佔咗檯面空間 → 有體積（固體）' },
-  { emoji: '💧', name: '一杯水', cat: 'liquid', hint: '水係液體，佔咗杯嘅空間 → 有體積（液體）' },
-  { emoji: '🎈', name: '吹脹咗嘅氣球', cat: 'gas', hint: '氣球入面嘅空氣係氣體，佔咗氣球空間 → 有體積（氣體）' },
-  { emoji: '👤', name: '影子', cat: 'none', hint: '影子只係光被擋住嘅暗區，唔佔空間 → 冇體積' },
-  { emoji: '🍊', name: '一個橙', cat: 'solid', hint: '橙係固體，佔空間 → 有體積（固體）' },
-  { emoji: '🥤', name: '杯裝橙汁', cat: 'liquid', hint: '橙汁係液體，杯入面佔咗空間 → 有體積（液體）' },
-  { emoji: '☁️', name: '一朵雲（水蒸氣）', cat: 'gas', hint: '雲係水蒸氣（氣體），佔咗天空空間 → 有體積（氣體）' },
-  { emoji: '🌈', name: '彩虹', cat: 'none', hint: '彩虹係光線折射現象，唔係物件，唔佔空間 → 冇體積' },
-  { emoji: '🥛', name: '一杯牛奶', cat: 'liquid', hint: '牛奶係液體，佔杯嘅空間 → 有體積（液體）' },
-  { emoji: '💨', name: '哆啦A夢空氣砲射出嘅氣', cat: 'gas', hint: '空氣砲射出嘅都係氣體，會佔空間 → 有體積（氣體）' }
+  { img: 'images/apple.png',       emoji: '🍎', name: '蘋果', cat: 'solid', hint: '蘋果係固體，佔咗檯面空間 → 有體積（固體）' },
+  { img: 'images/water_glass.png', emoji: '💧', name: '一杯水', cat: 'liquid', hint: '水係液體，佔咗杯嘅空間 → 有體積（液體）' },
+  { img: 'images/balloon.png',     emoji: '🎈', name: '吹脹咗嘅氣球', cat: 'gas', hint: '氣球入面嘅空氣係氣體，佔咗氣球空間 → 有體積（氣體）' },
+  { img: 'images/shadow.png',      emoji: '👤', name: '影子', cat: 'none', hint: '影子只係光被擋住嘅暗區，唔佔空間 → 冇體積' },
+  { img: 'images/orange.png',      emoji: '🍊', name: '一個橙', cat: 'solid', hint: '橙係固體，佔空間 → 有體積（固體）' },
+  { img: 'images/juice_cup.png',   emoji: '🥤', name: '杯裝橙汁', cat: 'liquid', hint: '橙汁係液體，杯入面佔咗空間 → 有體積（液體）' },
+  { img: 'images/cloud.png',       emoji: '☁️', name: '一朵雲（水蒸氣）', cat: 'gas', hint: '雲係水蒸氣（氣體），佔咗天空空間 → 有體積（氣體）' },
+  { img: 'images/rainbow.png',     emoji: '🌈', name: '彩虹', cat: 'none', hint: '彩虹係光線折射現象，唔係物件，唔佔空間 → 冇體積' },
+  { img: 'images/milk_glass.png',  emoji: '🥛', name: '一杯牛奶', cat: 'liquid', hint: '牛奶係液體，佔杯嘅空間 → 有體積（液體）' },
+  { img: 'images/air_blast.png',   emoji: '💨', name: '哆啦A夢空氣砲射出嘅氣', cat: 'gas', hint: '空氣砲射出嘅都係氣體，會佔空間 → 有體積（氣體）' }
 ];
 
 let qIdx = 0, score = 0, wrongs = 0, coins = 0;
 const TOTAL = ITEMS.length;
 const qNumEl = document.getElementById('qNum'), scoreEl = document.getElementById('score'), coinsEl = document.getElementById('coins'), wrongsEl = document.getElementById('wrongs');
-const itemEmoji = document.getElementById('itemEmoji'), itemName = document.getElementById('itemName'), hint = document.getElementById('hint'), fb = document.getElementById('fb'), nextBtn = document.getElementById('nextBtn'), pfill = document.getElementById('pfill'), doneBanner = document.getElementById('doneBanner'), lockModal = document.getElementById('lockModal');
+const itemEmoji = document.getElementById('itemEmoji'), itemImg = document.getElementById('itemImg'), itemName = document.getElementById('itemName'), hint = document.getElementById('hint'), fb = document.getElementById('fb'), nextBtn = document.getElementById('nextBtn'), pfill = document.getElementById('pfill'), doneBanner = document.getElementById('doneBanner'), lockModal = document.getElementById('lockModal');
 
 function render() {
   const q = ITEMS[qIdx];
-  itemEmoji.textContent = q.emoji;
+  if (q.img) {
+    itemImg.src = q.img;
+    itemImg.alt = q.name;
+    itemImg.style.display = 'block';
+    itemEmoji.style.display = 'none';
+    itemImg.onerror = () => { itemImg.style.display = 'none'; itemEmoji.style.display = 'block'; itemEmoji.textContent = q.emoji; };
+  } else {
+    itemImg.style.display = 'none';
+    itemEmoji.style.display = 'block';
+    itemEmoji.textContent = q.emoji;
+  }
   itemName.textContent = q.name;
   qNumEl.textContent = `${qIdx+1}/${TOTAL}`;
   scoreEl.textContent = score;
@@ -192,5 +204,5 @@ function saveScore() {
 render();
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="15"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="15"></script>
 </body></html>

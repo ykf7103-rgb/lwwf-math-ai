@@ -125,6 +125,11 @@
       <div class="slide-q" id="slideQBox">
         <div class="slide-q-num" id="slideQLabel">第 1 題</div>
         <div class="slide-q-text" id="slideQText"></div>
+        <button id="speakBtn" onclick="speakCurrentQ()" title="廣東話讀題目（不講答案）"
+          style="background:linear-gradient(135deg,#FFB300,#FF8F00);color:white;border:none;
+           border-radius:18px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.85rem;margin:8px 0;font-family:inherit;">
+          🔊 讀題目
+        </button>
         <div class="slide-opts" id="slideOpts"></div>
         <div class="slide-explain" id="slideExplain" style="display:none;">
           <div class="title" id="slideExplainTitle"></div>
@@ -181,12 +186,12 @@ const CHAPTER = 14, DECK_KEY = 'assess3', IMG_PREFIX = 'assess3';
 // 結構：p01 封面 | p02 任務列表 | p03 Q1+Q2 · p04 A1+A2 | p05 Q3+Q4 · p06 A3+A4 |
 //       p07 Q5+Q6（雙重驗證法）· p08 A5+A6 | p09 終極（面積應用）· p10 A終 | p11 錯誤陷阱指南
 const Q = [
-  { q: '測驗任務 01 · Q1：5.5 × 1.8 = ? （末尾 0 要不要寫？）', opts: ['990','0.99','9.9（= 9.90 末尾 0 可刪）','99'], a: 2, hint: '55 × 18 = 990，1+1 = 2 位小數 → 9.90。橫式答案末尾 0 可以刪 → 9.9', pageQ: 3, pageA: 4 },
-  { q: '測驗任務 01 · Q2：0.2 × 0.8 = ? （位數忘記補 0 是常見錯誤！）', opts: ['0.16','1.6','0.016','0.8'], a: 0, hint: '2 × 8 = 16，1+1 = 2 位小數，位數不足要補 0 → 0.16（不是 0.6！）', pageQ: 3, pageA: 4 },
-  { q: '測驗任務 02 · Q3：31.4 × 1.5 = ?', opts: ['4.71','47.1','471','47.10'], a: 1, hint: '314 × 15 = 4710，1+1 = 2 位小數 → 47.10 = 47.1', pageQ: 5, pageA: 6 },
-  { q: '測驗任務 02 · Q4：12.5 × 6.4 = ?', opts: ['8','800','80（= 80.00 整數偽裝）','80.4'], a: 2, hint: '125 × 64 = 8000，1+1 = 2 位小數 → 80.00 = 80（整數偽裝！）', pageQ: 5, pageA: 6 },
-  { q: '測驗任務 03 · Q5（雙重驗證法）：9.7 × 5.2 = ? （先估算 10×5=50，再準確計算）', opts: ['5.044','504.4','50.44','50.4'], a: 2, hint: '估算 10 × 5 = 50，實際 97 × 52 = 5044，1+1 = 2 位小數 → 50.44', pageQ: 7, pageA: 8 },
-  { q: '終極任務 · 面積應用：長方形毛巾長 0.4 米，闊 0.2 米，面積 = ? 平方米', opts: ['0.8 平方米','0.08 平方米','0.6 平方米','0.008 平方米'], a: 1, hint: '0.4 × 0.2：4 × 2 = 8，1+1 = 2 位小數 → 0.08 平方米（位數不夠要補 0）', pageQ: 9, pageA: 10 }
+  { q: '測驗任務 01 · Q1：5.5 × 1.8 = ? （末尾 0 要不要寫？）', opts: ['990','0.99','9.9（= 9.90 末尾 0 可刪）','99'], a: 2, hint: '八戒提示：55 × 18 = 990，1+1 = 2 位小數 → 9.90。橫式答案末尾 0 可以刪 → 9.9', pageQ: 3, pageA: 4 },
+  { q: '測驗任務 01 · Q2：0.2 × 0.8 = ? （位數忘記補 0 是常見錯誤！）', opts: ['0.16','1.6','0.016','0.8'], a: 0, hint: '八戒提示：2 × 8 = 16，1+1 = 2 位小數，位數不足要補 0 → 0.16（不是 0.6！）', pageQ: 3, pageA: 4 },
+  { q: '測驗任務 02 · Q3：31.4 × 1.5 = ?', opts: ['4.71','47.1','471','47.10'], a: 1, hint: '八戒提示：314 × 15 = 4710，1+1 = 2 位小數 → 47.10 = 47.1', pageQ: 5, pageA: 6 },
+  { q: '測驗任務 02 · Q4：12.5 × 6.4 = ?', opts: ['8','800','80（= 80.00 整數偽裝）','80.4'], a: 2, hint: '八戒提示：125 × 64 = 8000，1+1 = 2 位小數 → 80.00 = 80（整數偽裝！）', pageQ: 5, pageA: 6 },
+  { q: '測驗任務 03 · Q5（雙重驗證法）：9.7 × 5.2 = ? （先估算 10×5=50，再準確計算）', opts: ['5.044','504.4','50.44','50.4'], a: 2, hint: '八戒提示：估算 10 × 5 = 50，實際 97 × 52 = 5044，1+1 = 2 位小數 → 50.44', pageQ: 7, pageA: 8 },
+  { q: '終極任務 · 面積應用：長方形毛巾長 0.4 米，闊 0.2 米，面積 = ? 平方米', opts: ['0.8 平方米','0.08 平方米','0.6 平方米','0.008 平方米'], a: 1, hint: '八戒提示：0.4 × 0.2 — 4 × 2 = 8，1+1 = 2 位小數 → 0.08 平方米（位數不夠要補 0）', pageQ: 9, pageA: 10 }
 ];
 
 // 2026-05-04 fix: 答案隨機化 — 每次 render 將 opts 位置 shuffle，但 logic 仍記住正確答案 text
@@ -207,6 +212,24 @@ const Q_SHUFFLED = Q.map(shuffleQuestion);     // shuffle ONCE per page session 
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
+
+// 廣東話講解：只朗讀題幹（題目本身），絕不讀選項/答案/提示
+function speakCurrentQ() {
+  if (!window.speechSynthesis) { alert('此瀏覽器不支援語音朗讀'); return; }
+  speechSynthesis.cancel();
+  const q = Q_SHUFFLED[slideIdx];
+  if (!q) return;
+  const text = String(q.q || '').replace(/^Q\d+\s*/, '');
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const yueVoice = voices.find(v => v.lang === 'yue-HK' || v.lang === 'zh-HK')
+                || voices.find(v => v.lang && v.lang.startsWith('zh-')) || null;
+  if (yueVoice) u.voice = yueVoice;
+  u.lang = 'zh-HK';
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch(e){} }
 
 // ==== Mode A: Slide with Q→A phases ====
 let slideIdx = 0;                           // current question (0-5)
@@ -419,6 +442,6 @@ function showFinal(correct) {
 renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="14"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="14"></script>
 </body>
 </html>

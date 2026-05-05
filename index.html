@@ -1691,7 +1691,7 @@ body::before {
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/common/progress.js?v=20260505i"></script>
+    <script src="assets/common/progress.js?v=20260505j"></script>
 </head>
 <body>
 
@@ -1813,7 +1813,7 @@ body::before {
             <ul>
                 <li>🪙 <b>修復金幣圖標不見 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
-                        <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js?v=20260505i 載入時 broken</li>
+                        <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js?v=20260505j 載入時 broken</li>
                         <li>Fix：複製 coin_new.png 到 5 個課題 images/ 文件夾</li>
                         <li>學生喺所有 sub-page 都見到金幣圖標 + 數字</li>
                     </ul>
@@ -1878,7 +1878,7 @@ body::before {
                 <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
                         <li>15 個遊戲 file 加返 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
-                        <li>玩完即時寫 localStorage → progress.js?v=20260505i v4 hijack 自動 Supabase upsert → 跨頁同步</li>
+                        <li>玩完即時寫 localStorage → progress.js?v=20260505j v4 hijack 自動 Supabase upsert → 跨頁同步</li>
                     </ul>
                 </li>
                 <li>🎲 <b>評估題目選項位置每次隨機（21 個 assess）</b>：
@@ -1898,7 +1898,7 @@ body::before {
                 <li>🛡️ <b>學生先前進度永久保留</b>（重要保證）：
                     <ul style="margin-top:4px">
                         <li>即使更新題目，學生之前完成嘅 step 仍然顯示 ✓ 同保留金幣</li>
-                        <li>progress.js?v=20260505i mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
+                        <li>progress.js?v=20260505j mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
                         <li>學生唔會因為我哋改題目而被扣金幣</li>
                     </ul>
                 </li>
@@ -2230,10 +2230,60 @@ body::before {
 
             <!-- ======== 區域 1 · 自學區 ======== -->
             <div class="region-section" style="margin:24px 0;">
-                <div class="region-title" style="background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;padding:14px 18px;border-radius:12px;font-weight:800;margin-bottom:14px;font-size:1.05rem;box-shadow:0 4px 12px rgba(21,101,192,0.25);">📚 區域 1：自學區（簡報 + 評估 + 測驗）</div>
+                <div class="region-title" style="background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;padding:14px 18px;border-radius:12px;font-weight:800;margin-bottom:14px;font-size:1.05rem;box-shadow:0 4px 12px rgba(21,101,192,0.25);">📚 區域 1：自學區（3 簡報 + 3 評估）</div>
 
-                <!-- 簡報式評估 -->
-                <div style="font-size:0.92rem;font-weight:700;color:#1565C0;margin:8px 4px 10px;">📋 簡報式評估（題目+答案翻頁）</div>
+                <!-- 教學簡報（廣東話講解 + 答題 + 提示） -->
+                <div style="font-size:0.92rem;font-weight:700;color:#1565C0;margin:8px 4px 10px;">📚 教學簡報（廣東話講解 · 答題 · 提示）</div>
+                <div class="cards-grid">
+                    <div class="card quiz-card" id="slideCard1" onclick="openSlideViewer(0)" style="position:relative;">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+2 🪙</div>
+                        <div class="card-badge">14頁</div>
+                        <div class="card-header">
+                            <div class="card-icon blue">🐒</div>
+                            <div>
+                                <div class="card-title">簡報 1：悟空的放大法術</div>
+                                <div class="card-subtitle">×10 / ×100 / ×1000</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            跟悟空學小數點向右移嘅放大規律，配廣東話講解。
+                            <div style="margin-top:8px;" id="slideStatus1"><span class="progression-step-badge active">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                    <div class="card quiz-card" id="slideCard2" onclick="openSlideViewer(2)" style="position:relative;">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+2 🪙</div>
+                        <div class="card-badge">14頁</div>
+                        <div class="card-header">
+                            <div class="card-icon green">🧘</div>
+                            <div>
+                                <div class="card-title">簡報 2：唐僧的縮小心法</div>
+                                <div class="card-subtitle">×0.1 / ×0.01 / ×0.001</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            跟唐僧學小數點向左移嘅縮小心法，配廣東話講解。
+                            <div style="margin-top:8px;" id="slideStatus2"><span class="progression-step-badge active">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                    <div class="card quiz-card" id="slideCard3" onclick="openSlideViewer(4)" style="position:relative;">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+2 🪙</div>
+                        <div class="card-badge">14頁</div>
+                        <div class="card-header">
+                            <div class="card-icon purple">📏</div>
+                            <div>
+                                <div class="card-title">簡報 3：單位轉換大冒險</div>
+                                <div class="card-subtitle">公斤 ↔ 克 / 米 ↔ 厘米</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            日常生活單位換算 — 公斤、克、米、厘米全部搞掂。
+                            <div style="margin-top:8px;" id="slideStatus3"><span class="progression-step-badge active">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 評估簡報（6 MC + 1 voice + 答錯 5 次重睇） -->
+                <div style="font-size:0.92rem;font-weight:700;color:#1565C0;margin:18px 4px 10px;">📋 評估簡報（6 MC + 答錯重睇）</div>
                 <div class="cards-grid">
                     <div class="card quiz-card" id="assessCard1" onclick="openAssessViewer(1)" style="position:relative;">
                         <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
@@ -2241,8 +2291,8 @@ body::before {
                         <div class="card-header">
                             <div class="card-icon gold">⚔️</div>
                             <div>
-                                <div class="card-title">評估1：基礎級</div>
-                                <div class="card-subtitle">翻頁看題+答案 - 西遊記主題</div>
+                                <div class="card-title">評估 1：基礎級</div>
+                                <div class="card-subtitle">翻頁看題+答案 · 西遊記主題</div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -2256,12 +2306,12 @@ body::before {
                         <div class="card-header">
                             <div class="card-icon green">🔬</div>
                             <div>
-                                <div class="card-title">評估2：中階級</div>
-                                <div class="card-subtitle">翻頁看題+答案 - 多步驟計算</div>
+                                <div class="card-title">評估 2：中階級</div>
+                                <div class="card-subtitle">翻頁看題+答案 · 多步驟計算</div>
                             </div>
                         </div>
                         <div class="card-body">
-                            需要2-3步驟計算或比較分析，挑戰思維能力。
+                            需要 2-3 步驟計算或比較分析，挑戰思維能力。
                             <div style="margin-top:8px;" id="assessStatus2"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
                         </div>
                     </div>
@@ -2271,8 +2321,8 @@ body::before {
                         <div class="card-header">
                             <div class="card-icon purple">🏆</div>
                             <div>
-                                <div class="card-title">評估3：挑戰級</div>
-                                <div class="card-subtitle">翻頁看題+答案 - 綜合應用</div>
+                                <div class="card-title">評估 3：挑戰級</div>
+                                <div class="card-subtitle">翻頁看題+答案 · 綜合應用</div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -2282,42 +2332,7 @@ body::before {
                     </div>
                 </div>
 
-                <!-- MC 選擇題 -->
-                <div style="font-size:0.92rem;font-weight:700;color:#1565C0;margin:18px 4px 10px;">📝 MC 選擇題</div>
-                <div class="cards-grid">
-                    <div class="card quiz-card" onclick="startQuiz(1)" style="position:relative;">
-                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+2 🪙</div>
-                        <div class="card-badge">12題</div>
-                        <div class="card-header">
-                            <div class="card-icon blue">📝</div>
-                            <div>
-                                <div class="card-title">測驗一：基礎練習</div>
-                                <div class="card-subtitle">選擇題 - 小數乘法</div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            練習乘以10、100、1000及乘以0.1、0.01、0.001的計算。
-                            <div style="margin-top:8px;"><span class="progression-step-badge" style="background:#E3F2FD;color:#1565C0;">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
-                        </div>
-                    </div>
-                    <div class="card quiz-card" onclick="startQuiz(4)" style="position:relative;">
-                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+2 🪙</div>
-                        <div class="card-badge">12題</div>
-                        <div class="card-header">
-                            <div class="card-icon gold">⚡</div>
-                            <div>
-                                <div class="card-title">測驗二：進階練習</div>
-                                <div class="card-subtitle">選擇題 - 逆向思考+單位轉換</div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            求未知數、逆向推導、單位轉換等進階題目。
-                            <div style="margin-top:8px;"><span class="progression-step-badge" style="background:#E3F2FD;color:#1565C0;">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MC Quiz Area (machinery preserved · was inside tabQuiz) -->
+                <!-- MC Quiz Area (machinery preserved · MC card removed from dashboard but quiz handlers kept for prior progress / direct calls) -->
                 <div id="quizList" style="display:none;"></div>
                 <div id="quizArea" style="display:none;">
                     <button class="back-btn" onclick="exitQuiz()">← 返回測驗列表</button>
@@ -2366,49 +2381,52 @@ body::before {
 
             <!-- ======== 區域 3 · 趣味區 ======== -->
             <div class="region-section" style="margin:24px 0;">
-                <div class="region-title" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;padding:14px 18px;border-radius:12px;font-weight:800;margin-bottom:14px;font-size:1.05rem;box-shadow:0 4px 12px rgba(230,81,0,0.25);">🎮 區域 3：趣味區（遊戲 + 廣東話溫習歌）</div>
+                <div class="region-title" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;padding:14px 18px;border-radius:12px;font-weight:800;margin-bottom:14px;font-size:1.05rem;box-shadow:0 4px 12px rgba(230,81,0,0.25);">🎮 區域 3：趣味區（廣東話歌 + 1 個遊戲）</div>
 
-                <!-- Game selection screen (machinery preserved · was inside tabGames) -->
-                <div id="gameSelectScreen">
-                    <div style="text-align:center; margin-bottom:14px;">
-                        <h2 style="margin:0;font-size:1.15rem;color:#E65100;">🎮 西遊記：數學大冒險</h2>
-                        <p style="color:#666; margin:4px 0;font-size:0.88rem;">選擇一個遊戲開始挑戰！</p>
+                <div class="cards-grid">
+                    <!-- 廣東話 Suno 歌（用戶 framework 要求）-->
+                    <div class="card" style="position:relative;">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);z-index:2;">🎵</div>
+                        <div class="card-header">
+                            <div class="card-icon gold">🎶</div>
+                            <div><div class="card-title">廣東話溫習歌</div><div class="card-subtitle">Suno · 小數點跳跳跳</div></div>
+                        </div>
+                        <div class="card-body">
+                            跟住節奏記住小數點移位口訣，邊聽邊背最快上手。
+                            <video controls preload="none" style="width:100%;margin-top:10px;border-radius:8px;background:#000;">
+                                <source src="assets/ch12/video/song1_v1.mp4" type="video/mp4">
+                                <source src="assets/ch12/audio/song1_v1.mp3" type="audio/mpeg">
+                            </video>
+                        </div>
                     </div>
+
+                    <!-- 1 個遊戲（用戶要求 only 1 個 · 保留 RPG）-->
+                    <div class="card game-select-card" onclick="loadGame(1)" style="position:relative;cursor:pointer;">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);z-index:2;">+3 🪙</div>
+                        <div class="card-header">
+                            <div class="card-icon orange">⚔️</div>
+                            <div><div class="card-title">西遊記 RPG</div><div class="card-subtitle">悟空打妖怪 · 答題闖關</div></div>
+                        </div>
+                        <div class="card-body">
+                            扮演悟空打妖怪！答對攻擊，答錯受傷。打敗 10 隻妖怪通關！
+                            <div style="margin-top:8px;"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game selection screen (legacy multi-game UI · hidden but machinery preserved for prior-progress compatibility · loadGame 2/3/4 仍可由 progression / 直接呼叫) -->
+                <div id="gameSelectScreen" style="display:none;">
                     <div class="game-select-grid">
-                        <div class="game-select-card" onclick="loadGame(1)" style="position:relative;">
-                            <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);z-index:2;">+3 🪙</div>
-                            <div class="game-icon">⚔️</div>
-                            <div class="game-name">西遊記 RPG</div>
-                            <div class="game-desc">扮演悟空打妖怪！答對攻擊，答錯受傷。打敗10隻妖怪通關！</div>
-                            <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
-                        </div>
-                        <div class="game-select-card" onclick="loadGame(2)" style="position:relative;">
-                            <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);z-index:2;">+3 🪙</div>
-                            <div class="game-icon">⏱️</div>
-                            <div class="game-name">縮小心法限時挑戰</div>
-                            <div class="game-desc">60秒內答對最多 ×0.1 / ×0.01 / ×0.001 題！速度越快分數越高！</div>
-                            <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
-                        </div>
-                        <div class="game-select-card" onclick="loadGame(3)" style="position:relative;">
-                            <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);z-index:2;">+3 🪙</div>
-                            <div class="game-icon">✨</div>
-                            <div class="game-name">小數點金丹魔法</div>
-                            <div class="game-desc">拖動小數點，將數字變成目標值！悟空金箍棒出擊，擊敗小數妖怪！</div>
-                            <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
-                        </div>
-                        <div class="game-select-card" onclick="loadGame(4)" style="position:relative;">
-                            <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);z-index:2;">+3 🪙</div>
-                            <div class="game-icon">🛡️</div>
-                            <div class="game-name">取經路塔防戰</div>
-                            <div class="game-desc">妖怪向唐僧進攻！答啱單位轉換題，悟空即時射出金箍棒殲滅敵人！</div>
-                            <div style="margin-top:12px;"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
-                        </div>
+                        <div class="game-select-card" onclick="loadGame(1)" style="position:relative;"><div class="game-icon">⚔️</div><div class="game-name">西遊記 RPG</div></div>
+                        <div class="game-select-card" onclick="loadGame(2)" style="position:relative;"><div class="game-icon">⏱️</div><div class="game-name">縮小心法限時挑戰</div></div>
+                        <div class="game-select-card" onclick="loadGame(3)" style="position:relative;"><div class="game-icon">✨</div><div class="game-name">小數點金丹魔法</div></div>
+                        <div class="game-select-card" onclick="loadGame(4)" style="position:relative;"><div class="game-icon">🛡️</div><div class="game-name">取經路塔防戰</div></div>
                     </div>
                 </div>
 
                 <!-- Game iframe container (machinery preserved · was inside tabGames) -->
                 <div id="gameContainer" style="display:none;">
-                    <button class="back-btn" onclick="exitGame()">← 返回遊戲選擇</button>
+                    <button class="back-btn" onclick="exitGame()">← 返回趣味區</button>
                     <div style="width:100%; max-width:900px; margin:0 auto; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
                         <iframe id="gameFrame" src="" style="width:100%; height:600px; border:none;" allow="autoplay"></iframe>
                     </div>
@@ -4878,13 +4896,19 @@ const SLIDE_EXPLANATIONS = {
 // ===== TTS Lecture System =====
 let currentUtterance = null;
 let currentLectureSlide = null;
-// 2026-05-05 用戶要求：每課簡報自動廣東話講解（同 ch13-16 一致）
-let autoLectureEnabled = true;
+// 2026-05-05 fix（用戶反映：自動播放擾人 + 兩把聲音重複）
+// 改：預設 OFF（學生 opt-in），加 stopSlideLecture cancel before play
+let autoLectureEnabled = false;  // 預設 OFF，等學生 click 啟動
 function toggleAutoLecture() {
     autoLectureEnabled = !autoLectureEnabled;
     const btn = document.getElementById('autoLectureBtn');
-    if (btn) btn.textContent = autoLectureEnabled ? '🔊 自動講解：開' : '🔇 自動講解：關';
-    if (!autoLectureEnabled) stopSlideLecture();
+    if (btn) {
+        btn.textContent = autoLectureEnabled ? '🔊 自動講解：開' : '🔇 自動講解：關';
+        btn.style.background = autoLectureEnabled ? 'linear-gradient(135deg,#FFB300,#FF8F00)' : 'linear-gradient(135deg,#FFF3E0,#FFE082)';
+        btn.style.color = autoLectureEnabled ? 'white' : '#E65100';
+    }
+    stopSlideLecture();  // 停低之前嘅 utterance（避免重複聲）
+    if (autoLectureEnabled) setTimeout(() => playSlideLecture(), 100);
 }
 
 // Current chapter theme — update when multi-chapter support is added
@@ -5166,7 +5190,8 @@ function updateSlideView() {
     document.querySelectorAll('#slideDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
     // Show complete button on last slide
     document.getElementById('slideCompleteBtn').style.display = (idx === step.total - 1) ? '' : 'none';
-    // 2026-05-05 用戶要求：自動廣東話講解（page change 後 fire）
+    // 2026-05-05 fix：page change → cancel 之前嘅 utterance（避免重複聲）+ 預設 OFF
+    stopSlideLecture();
     if (autoLectureEnabled && window.speechSynthesis) {
         setTimeout(() => { try { playSlideLecture(); } catch(e) {} }, 350);
     }

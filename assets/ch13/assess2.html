@@ -125,6 +125,11 @@
       <div class="slide-q" id="slideQBox">
         <div class="slide-q-num" id="slideQLabel">第 1 題</div>
         <div class="slide-q-text" id="slideQText"></div>
+        <button id="speakBtn" onclick="speakCurrentQ()" title="廣東話讀題目（不講答案）"
+          style="background:linear-gradient(135deg,#FFB300,#FF8F00);color:white;border:none;
+           border-radius:18px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.85rem;margin:8px 0;font-family:inherit;">
+          🔊 讀題目
+        </button>
         <div class="slide-opts" id="slideOpts"></div>
         <div class="slide-explain" id="slideExplain" style="display:none;">
           <div class="title" id="slideExplainTitle"></div>
@@ -183,42 +188,42 @@ const Q = [
     q: '八戒話：「1000 顆仙丹 × 每顆 0.15 克，小數點向右移… 答案係 15 克！」找出八戒嘅錯誤，正確總重量係？',
     opts: ['1.5 克', '15 克', '150 克', '1500 克'],
     a: 2,
-    hint: '0.15 × 1000：15 × 1000 = 15000，兩位小數 → 150.00 = 150 克。八戒算漏了，正確是 150 克。',
+    hint: '悟空提示：0.15 × 1000 — 15 × 1000 = 15000，兩位小數 → 150.00 = 150 克。八戒算漏了，正確是 150 克。',
     pageQ: 1, pageA: 2
   },
   {
     q: '買 4 個法寶，每個 1.3 兩銀子。八戒說「1.3 × 3 = 3.9，所以 1.3 × 4 一定是 4.12 兩」。八戒誤用了整數規則，正確答案是？',
     opts: ['4.12 兩', '4.2 兩', '5.2 兩', '5.12 兩'],
     a: 2,
-    hint: '1.3 × 4：13 × 4 = 52，一位小數 → 5.2 兩。八戒將 1.3 × 3 = 3.9 直接 + 0.22 變成 4.12，呢個規律係錯。',
+    hint: '悟空提示：1.3 × 4 — 13 × 4 = 52，一位小數 → 5.2 兩。八戒將 1.3 × 3 = 3.9 直接 + 0.22 變成 4.12，呢個規律係錯。',
     pageQ: 3, pageA: 4
   },
   {
     q: '布料長 8.5 尺，每尺 0.9 錢。計算確切結果，用四捨五入法取近似值至「十分位」。大約值多少錢？',
     opts: ['≈ 7.6', '≈ 7.7', '≈ 8.0', '≈ 7.65'],
     a: 1,
-    hint: '8.5 × 0.9：85 × 9 = 765，合共 2 位小數 → 7.65。四捨五入到十分位（睇百分位嘅 5）→ 7.7 錢。',
+    hint: '悟空提示：8.5 × 0.9 — 85 × 9 = 765，合共 2 位小數 → 7.65。四捨五入到十分位（睇百分位嘅 5）→ 7.7 錢。',
     pageQ: 5, pageA: 6
   },
   {
     q: '靈石重 6.25 斤，每斤含靈氣 0.32 單元。計算 6.25 × 0.32，答案最接近哪個整數？',
     opts: ['0', '1', '2', '3'],
     a: 2,
-    hint: '6.25 × 0.32：625 × 32 = 20000，合共 4 位小數 → 2.0000 = 2。最接近整數 2。（兩位小數 × 兩位小數 = 最多四位小數，但末尾 0 要刪除。）',
+    hint: '悟空提示：6.25 × 0.32 — 625 × 32 = 20000，合共 4 位小數 → 2.0000 = 2。最接近整數 2。（兩位小數 × 兩位小數 = 最多四位小數，但末尾 0 要刪除。）',
     pageQ: 7, pageA: 8
   },
   {
     q: '今晚客棧結帳：3 碗素麵（每碗 1.2 錢）+ 4 盤青菜（每盤 1.25 錢）。總共要付幾多錢？',
     opts: ['7.6 錢', '8.6 錢', '9.6 錢', '8.0 錢'],
     a: 1,
-    hint: '3 × 1.2 = 3.6 錢；4 × 1.25 = 5.0 錢；加起嚟 3.6 + 5.0 = 8.6 錢。',
+    hint: '悟空提示：3 × 1.2 = 3.6 錢；4 × 1.25 = 5.0 錢；加起嚟 3.6 + 5.0 = 8.6 錢。',
     pageQ: 9, pageA: 10
   },
   {
     q: '師父的行囊：6 個水袋（每個 0.5 斤）+ 5 盒經書（每盒 1.02 斤）。八戒寫「水袋 3.0 + 經書 5.01 = 8.01 斤！」八戒錯在哪一處？正確總重量是？',
     opts: ['8.1 斤', '8.01 斤', '8.2 斤', '8.5 斤'],
     a: 0,
-    hint: '6 × 0.5 = 3.0（正確）。但 1.02 × 5 應該係 5.10 = 5.1，唔係 5.01（八戒將 102 × 5 = 510，兩位小數 → 5.10 寫錯做 5.01）。正確總重：3.0 + 5.1 = 8.1 斤。',
+    hint: '悟空提示：6 × 0.5 = 3.0（正確）。但 1.02 × 5 應該係 5.10 = 5.1，唔係 5.01（八戒將 102 × 5 = 510，兩位小數 → 5.10 寫錯做 5.01）。正確總重：3.0 + 5.1 = 8.1 斤。',
     pageQ: 11, pageA: 12
   }
 ];
@@ -241,6 +246,24 @@ const Q_SHUFFLED = Q.map(shuffleQuestion);     // shuffle ONCE per page session 
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
+
+// 廣東話講解：只朗讀題幹（題目本身），絕不讀選項/答案/提示
+function speakCurrentQ() {
+  if (!window.speechSynthesis) { alert('此瀏覽器不支援語音朗讀'); return; }
+  speechSynthesis.cancel();
+  const q = Q_SHUFFLED[slideIdx];
+  if (!q) return;
+  const text = String(q.q || '').replace(/^Q\d+\s*/, '');
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const yueVoice = voices.find(v => v.lang === 'yue-HK' || v.lang === 'zh-HK')
+                || voices.find(v => v.lang && v.lang.startsWith('zh-')) || null;
+  if (yueVoice) u.voice = yueVoice;
+  u.lang = 'zh-HK';
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch(e){} }
 
 // ==== Mode A: Slide with Q→A phases ====
 let slideIdx = 0;                           // current question (0-5)
@@ -453,6 +476,6 @@ function showFinal(correct) {
 renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="13"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="13"></script>
 </body>
 </html>

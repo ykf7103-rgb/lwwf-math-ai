@@ -125,6 +125,11 @@
       <div class="slide-q" id="slideQBox">
         <div class="slide-q-num" id="slideQLabel">第 1 題</div>
         <div class="slide-q-text" id="slideQText"></div>
+        <button id="speakBtn" onclick="speakCurrentQ()" title="廣東話讀題目（不講答案）"
+          style="background:linear-gradient(135deg,#FFB300,#FF8F00);color:white;border:none;
+           border-radius:18px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.85rem;margin:8px 0;font-family:inherit;">
+          🔊 讀題目
+        </button>
         <div class="slide-opts" id="slideOpts"></div>
         <div class="slide-explain" id="slideExplain" style="display:none;">
           <div class="title" id="slideExplainTitle"></div>
@@ -184,42 +189,42 @@ const Q = [
     q: '悟空摘了 3 籃蟠桃，每籃重 2.4 公斤。請問總共重多少公斤？',
     opts: ['7.2 公斤', '0.72 公斤', '72 公斤', '6.2 公斤'],
     a: 0,
-    hint: '2.4 × 3：先把小數當整數算 24 × 3 = 72，題目有一位小數，答案就係一位小數 → 7.2 公斤。',
+    hint: '悟空提示：2.4 × 3 — 先把小數當整數算 24 × 3 = 72，題目有一位小數，答案就係一位小數 → 7.2 公斤。',
     pageQ: 1, pageA: 2
   },
   {
     q: '八戒想列直式計算 5 × 3.6 = ?，但覺得把 5 放上面難以對齊。怎樣改寫才最正確？',
     opts: ['直接算 5 × 3.6 最簡單', '把小數點去掉變成 5 × 36', '改寫成 3.6 × 5 來列直式', '改寫成 36 × 0.5 來列直式'],
     a: 2,
-    hint: '乘法交換律：5 × 3.6 = 3.6 × 5。把小數放上面，整數放下面，直式就能對齊。答案 3.6 × 5 = 18。',
+    hint: '悟空提示：用乘法交換律 — 5 × 3.6 = 3.6 × 5。把小數放上面，整數放下面，直式就能對齊。答案 3.6 × 5 = 18。',
     pageQ: 3, pageA: 4
   },
   {
     q: '悟空拔毛變出 4 個分身，每個分身消耗 2.5 點法力。算式：2.5 × 4 = ? 哪個是最「標準」的最終形式？',
     opts: ['100 點', '1.0 點', '10.0 點', '10 點'],
     a: 3,
-    hint: '25 × 4 = 100，一位小數 → 10.0。末位的 0 沒有意義，須簡化為 10。所以最終形式為 10 點。',
+    hint: '悟空提示：25 × 4 = 100，一位小數 → 10.0。末位的 0 沒有意義，須簡化為 10。所以最終形式為 10 點。',
     pageQ: 5, pageA: 6
   },
   {
     q: '八戒大喊「4.8 × 6 = 288 公里！」悟空用火眼金睛估算，發現出錯了。正確的估算是？',
     opts: ['4.8 接近 4，4×6=24，答案應接近 24', '4.8 接近 5，5×6=30，答案應接近 30，不可能達到 288', '4.8 接近 10，10×6=60，答案應接近 60', '估算不準，悟空一定是偷看了標準解答'],
     a: 1,
-    hint: '估算：4.8 四捨五入至 5，5 × 6 = 30。實際 4.8 × 6 = 28.8，與 30 接近。八戒答 288 多了 10 倍，明顯是小數點位置錯了！',
+    hint: '悟空提示：用估算 — 4.8 四捨五入至 5，5 × 6 = 30。實際 4.8 × 6 = 28.8，與 30 接近。八戒答 288 多了 10 倍，明顯是小數點位置錯了！',
     pageQ: 7, pageA: 8
   },
   {
     q: '沙悟淨計算 8.5 × 6 = ?，但被妖怪施法改成 5.1。妖怪錯在何處？',
     opts: ['乘法算對了，但末尾 0 處理錯誤，答案應該是 51', '8 × 6 算錯，不是 48', '應該把 8.5 變成 85 來算', '完全沒錯，沙悟淨是對的'],
     a: 0,
-    hint: '85 × 6 = 510，一位小數 → 51.0 = 51。妖怪將小數點放錯位變成 5.1，答案應為 51。',
+    hint: '悟空提示：85 × 6 = 510，一位小數 → 51.0 = 51。妖怪將小數點放錯位變成 5.1，答案應為 51。',
     pageQ: 9, pageA: 10
   },
   {
     q: '為了求取真經，隊伍需要準備 8 份供品，每份重 7.2 兩。請先「估算」大約多重，再「精確計算」實際重量。',
     opts: ['估算約 64 兩；實際 57.6 兩', '估算約 56 兩；實際 576 兩', '估算約 50 兩；實際 56.6 兩', '估算約 56 兩；實際 57.6 兩'],
     a: 3,
-    hint: '估算：7.2 ≈ 7，7 × 8 = 56。精確：72 × 8 = 576，一位小數 → 57.6。答案：估算約 56 兩；實際 57.6 兩。',
+    hint: '悟空提示：用估算 — 7.2 ≈ 7，7 × 8 = 56。精確：72 × 8 = 576，一位小數 → 57.6。答案：估算約 56 兩；實際 57.6 兩。',
     pageQ: 11, pageA: 12
   }
 ];
@@ -242,6 +247,24 @@ const Q_SHUFFLED = Q.map(shuffleQuestion);     // shuffle ONCE per page session 
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 function switchMode(mode) { document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode)); document.getElementById('slidesPanel').classList.toggle('active', mode === 'slides'); document.getElementById('listPanel').classList.toggle('active', mode === 'list'); if (mode === 'list' && !listRendered) { renderList(); listRendered = true; } }
+
+// 廣東話講解：只朗讀題幹（題目本身），絕不讀選項/答案/提示
+function speakCurrentQ() {
+  if (!window.speechSynthesis) { alert('此瀏覽器不支援語音朗讀'); return; }
+  speechSynthesis.cancel();
+  const q = Q_SHUFFLED[slideIdx];
+  if (!q) return;
+  const text = String(q.q || '').replace(/^Q\d+\s*/, '');
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const yueVoice = voices.find(v => v.lang === 'yue-HK' || v.lang === 'zh-HK')
+                || voices.find(v => v.lang && v.lang.startsWith('zh-')) || null;
+  if (yueVoice) u.voice = yueVoice;
+  u.lang = 'zh-HK';
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch(e){} }
 
 // ==== Mode A: Slide with Q→A phases ====
 let slideIdx = 0;                           // current question (0-5)
@@ -454,6 +477,6 @@ function showFinal(correct) {
 renderSlide();
 </script>
 <script src="../common/feedback.js"></script>
-<script src="../common/chapter-header.js?v=20260505i" data-current-ch="13"></script>
+<script src="../common/chapter-header.js?v=20260505j" data-current-ch="13"></script>
 </body>
 </html>

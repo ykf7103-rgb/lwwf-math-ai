@@ -756,7 +756,7 @@ function endGame(){
   // Build detail list
   buildDetailList();
 
-  // Save progress to localStorage (triggers progress.js?v=20260505i v4 hijack -> Supabase upsert)
+  // Save progress to localStorage (triggers progress.js?v=20260505j v4 hijack -> Supabase upsert)
   try {
     const k = (()=>{try{const u=JSON.parse(localStorage.getItem('lwwf_auth_user')||'null');if(u&&u.class&&u.number)return`progress_ch12_${u.class}_${u.number}`;}catch(e){}return'progress_ch12';})();
     const p = JSON.parse(localStorage.getItem(k)||'{}');
