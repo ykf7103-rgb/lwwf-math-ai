@@ -58,6 +58,32 @@
 </style>
 </head>
 <body>
+<!-- Game BGM (auto-injected 2026-05-05 fix Bug #5) -->
+<audio id="bgmGame" src="../common/audio/game/bgm_battle.mp3" loop preload="auto"></audio>
+<button id="bgmToggle" onclick="toggleBgm()" title="開／關背景音樂" style="position:fixed;top:60px;right:14px;z-index:9999;background:white;border:2px solid #FF8F00;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:1.2rem;box-shadow:0 4px 10px rgba(0,0,0,0.15);">🔇</button>
+<script>
+(function(){
+  function toggleBgm(){
+    var a=document.getElementById('bgmGame');var b=document.getElementById('bgmToggle');
+    if(!a)return;
+    if(a.paused){a.play().catch(function(){});b.textContent='🔊';}
+    else{a.pause();b.textContent='🔇';}
+  }
+  window.toggleBgm=toggleBgm;
+  // First user interaction triggers BGM autoplay (browser policy)
+  function autoStart(){
+    var a=document.getElementById('bgmGame');var b=document.getElementById('bgmToggle');
+    if(a&&a.paused){a.play().catch(function(){});if(b)b.textContent='🔊';}
+    document.removeEventListener('click',autoStart);
+    document.removeEventListener('keydown',autoStart);
+    document.removeEventListener('touchstart',autoStart);
+  }
+  document.addEventListener('click',autoStart,{once:true});
+  document.addEventListener('keydown',autoStart,{once:true});
+  document.addEventListener('touchstart',autoStart,{once:true});
+})();
+</script>
+
 <header>
   <h1>⚡ 第16課 · 遊戲 2 — 體積估計極速賽</h1>
   <a href="index.html" class="back">← 返回</a>

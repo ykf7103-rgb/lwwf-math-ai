@@ -1754,6 +1754,15 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (q · 嚴重 bug 修補：評估跳轉 + 提示洩答案 + 遊戲 BGM)</span>
+            <ul>
+                <li>🔧 <b>修復「第 12 課評估簡報一睇就跳轉」嚴重 bug</b>：assessViewer 之前喺區域 1 region-section 內，當 viewer 開啟時被 __hideRegionsForViewer() 同步隱藏。已將 viewer 移出 region-section，學生可正常做評估</li>
+                <li>🤐 <b>修復「簡報選錯提示洩答案」嚴重 bug</b>：54 個簡報題目嘅 hint 移除 "→ X.X" / "= X.X 元/公斤" / "（A/B/C/D）" 等明確答案，改為策略提示如「自己試吓」、「諗下邊個啱」、「再 check 估算」 — 學生答錯後仍要思考</li>
+                <li>🎵 <b>修復「遊戲 BGM 不見咗」</b>：第 13/14/15/16 課 10 個遊戲 file 加返背景音樂（bgm_battle.mp3 loop）+ 右上角 🔇/🔊 toggle button，學生 first interaction 自動播放</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (p · 評估完成加錄音解題加賽)</span>
             <ul>
                 <li>🎤 <b>第 13-16 課全部 12 個評估 final-screen 加「粵語錄音解題加賽」入口</b>：學生做完 6 題 MC 後直接見到橙色加賽橫幅，1 click 去 summary.html 錄音 +1-3 🪙</li>
@@ -2387,20 +2396,21 @@ body::before {
                     <div class="quiz-container" id="quizContainer"></div>
                 </div>
 
-                <!-- Assessment Slide Viewer (machinery preserved · was inside tabQuiz) -->
-                <div id="assessViewer" style="display:none;">
-                    <button class="back-btn" onclick="exitAssessViewer()">← 返回學習流程</button>
-                    <h3 id="assessTitle" style="text-align:center; margin-bottom:12px;"></h3>
-                    <div class="slide-viewer-wrap slide-flip-container" style="max-width:860px; margin:0 auto;">
-                        <button class="slide-side-arrow left" id="assessLeftArrow" onclick="prevAssessSlide()">◀</button>
-                        <button class="slide-side-arrow right" id="assessRightArrow" onclick="nextAssessSlide()">▶</button>
-                        <img id="assessImage" src="" alt="評估" style="width:100%; border-radius:12px; box-shadow:var(--shadow);">
-                        <div class="slide-dots" id="assessDots" style="margin-top:10px;"></div>
-                        <div style="text-align:center; margin-top:6px; color:var(--text-light); font-size:0.85rem;">
-                            <span id="assessHint">📖 奇數頁 = 題目 | 偶數頁 = 答案解說</span>
-                        </div>
-                        <div id="assessAnswerOverlay"></div>
+            </div>
+
+            <!-- Assessment Slide Viewer — 移出 region-section (2026-05-05 fix · 避免被 __hideRegionsForViewer 隱藏) -->
+            <div id="assessViewer" style="display:none;">
+                <button class="back-btn" onclick="exitAssessViewer()">← 返回學習流程</button>
+                <h3 id="assessTitle" style="text-align:center; margin-bottom:12px;"></h3>
+                <div class="slide-viewer-wrap slide-flip-container" style="max-width:860px; margin:0 auto;">
+                    <button class="slide-side-arrow left" id="assessLeftArrow" onclick="prevAssessSlide()">◀</button>
+                    <button class="slide-side-arrow right" id="assessRightArrow" onclick="nextAssessSlide()">▶</button>
+                    <img id="assessImage" src="" alt="評估" style="width:100%; border-radius:12px; box-shadow:var(--shadow);">
+                    <div class="slide-dots" id="assessDots" style="margin-top:10px;"></div>
+                    <div style="text-align:center; margin-top:6px; color:var(--text-light); font-size:0.85rem;">
+                        <span id="assessHint">📖 奇數頁 = 題目 | 偶數頁 = 答案解說</span>
                     </div>
+                    <div id="assessAnswerOverlay"></div>
                 </div>
             </div>
 
@@ -4816,12 +4826,12 @@ const PROGRESSION_STEPS = [
       image:`${ASSET_BASE}/infographics/quiz3.webp`,
       questions:[
         { q:'0.72 公里 = ? 米', type:'mc', options:['7.2','72','720','7200'], correct:2 },
-        { q:'填充：1 公里 = ___ 米', type:'fill', accept:['1000','1000米','一千'], hint:'1 公里 = 1000 米（大變細用乘法）' },
+        { q:'填充：1 公里 = ___ 米', type:'fill', accept:['1000','1000米','一千'], hint:'1 公里 （試下計）（大變細用乘法）' },
         { q:'🎤 教一教細佬：點解 1.5 公里 = 1500 米？用 20-30 秒解釋。',
           type:'voice',
           concept:'1公里=1000米，單位轉換用乘以1000',
           rubric:'講出：1 公里 = 1000 米、大變細用乘法、1.5 × 1000 = 1500 米',
-          hint:'講到答案 + 任何一個原理就合格！例如「1500 米，1 公里 = 1000 米」就好好（~80 分）。再加「大單位變細要乘」或者實際計 1.5 × 1000 會更高分 💪' }
+          hint:'講到答案 + 任何一個原理就合格！例如「1500 米，1 公里 （試下計）」就好好（~80 分）。再加「大單位變細要乘」或者實際計 1.5 × 1000 會更高分 💪' }
       ]}
 ];
 
@@ -4839,17 +4849,17 @@ const SLIDE_QUESTIONS = {
     // p07: 小徒弟的試煉 — 0.36×10 (MC) and 2.5×100 (fill)
     { afterPage:7, type:'mc', q:'簡報練習：0.36 × 10 = ?',
       options:['0.036','3.6','36','360'], correct:1,
-      hint:'×10：小數點向右移 1 位。0.36 → 3.6' },
+      hint:'×10：小數點向右移 1 位。0.36（自己試吓）' },
     { afterPage:7, type:'fill', q:'簡報練習：2.5 × 100 = ?',
       accept:['250','250.0','250.00'],
-      hint:'×100：小數點向右移 2 位。2.5 → 250' },
+      hint:'×100：小數點向右移 2 位。2.5（自己試吓）' },
     // p08: 妖怪迷魂陣 — 0.05×1000 (fill) and 100×3.057 (MC)
     { afterPage:8, type:'fill', q:'簡報練習：0.05 × 1000 = ?',
       accept:['50','50.0','50.00'],
-      hint:'×1000：小數點向右移 3 位。0.050 → 50' },
+      hint:'×1000：小數點向右移 3 位。0.050（自己試吓）' },
     { afterPage:8, type:'mc', q:'簡報練習：100 × 3.057 = ?',
       options:['30.57','305.7','3057','30570'], correct:1,
-      hint:'×100：小數點向右移 2 位。3.057 → 305.7' },
+      hint:'×100：小數點向右移 2 位。3.057（自己試吓）' },
     // p13: 總結口訣確認題 (fill)
     { afterPage:13, type:'fill', q:'口訣：乘以 1000，小數點要向 (左／右) 移 ___ 位？（只需填數字）',
       accept:['3','三','3位'],
@@ -4859,41 +4869,41 @@ const SLIDE_QUESTIONS = {
     // p05: 基礎試煉 — 4.8×0.1 (MC) and 56×0.1 (fill)
     { afterPage:5, type:'mc', q:'簡報練習：4.8 × 0.1 = ?',
       options:['48','0.48','0.048','4.8'], correct:1,
-      hint:'×0.1：小數點向左移 1 位。4.8 → 0.48' },
+      hint:'×0.1：小數點向左移 1 位。4.8（自己試吓）' },
     { afterPage:5, type:'fill', q:'簡報練習：56 × 0.1 = ?',
       accept:['5.6','5.60'],
-      hint:'×0.1：小數點向左移 1 位。56. → 5.6' },
+      hint:'×0.1：小數點向左移 1 位。56.（自己試吓）' },
     // p08: 降妖除魔 — 3000×0.01 (fill) and 50×0.001 (MC)
     { afterPage:8, type:'fill', q:'簡報練習：3000 × 0.01 = ?',
       accept:['30','30.0','30.00'],
-      hint:'×0.01：小數點向左移 2 位。3000. → 30' },
+      hint:'×0.01：小數點向左移 2 位。3000.（自己試吓）' },
     { afterPage:8, type:'mc', q:'簡報練習：50 × 0.001 = ?',
       options:['5','0.5','0.05','0.005'], correct:2,
-      hint:'×0.001：小數點向左移 3 位。50. → 0.050 → 0.05' },
+      hint:'×0.001：小數點向左移 3 位。50.（自己試吓）（自己試吓）' },
     // p12: 八戒改錯題 (fill) — 測試方向感
     { afterPage:12, type:'fill', q:'幫八戒改正：0.35 × 0.1 = ?（留意方向！）',
       accept:['0.035','.035'],
-      hint:'乘小數數字要變細，小數點向左移 1 位：0.35 → 0.035' },
+      hint:'乘小數數字要變細，小數點向左移 1 位：0.35（自己試吓）' },
   ],
   slides3: [
     // p06: 實戰演練 — 0.024公里=?米 (fill) and 3.07公斤=?克 (MC)
     { afterPage:6, type:'fill', q:'簡報練習：0.024 公里 = ? 米',
       accept:['24','24.0','24.00','24米','24 米'],
-      hint:'1 公里 = 1000 米，0.024 × 1000 = 24' },
+      hint:'1 公里 （試下計）。 × 1000 。試下計' },
     { afterPage:6, type:'mc', q:'簡報練習：3.07 公斤 = ? 克',
       options:['30.7','307','3070','30700'], correct:2,
-      hint:'1 公斤 = 1000 克，3.07 × 1000 = 3070' },
+      hint:'1 公斤 （試下計）。 × 1000 。試下計' },
     // p08: 破解地形陷阱 — 2.8米=?厘米 (MC) and 1.25升=?毫升 (fill)
     { afterPage:8, type:'mc', q:'簡報練習：2.8 米 = ? 厘米',
       options:['28','280','2800','0.028'], correct:1,
-      hint:'1 米 = 100 厘米，2.8 × 100 = 280' },
+      hint:'1 米 （試下計）。 × 100 。試下計' },
     { afterPage:8, type:'fill', q:'簡報練習：1.25 升 = ? 毫升',
       accept:['1250','1250.0','1250毫升','1250 毫升'],
-      hint:'1 升 = 1000 毫升，1.25 × 1000 = 1250' },
+      hint:'1 升 （試下計）。 × 1000 。試下計' },
     // p13: 綜合應用 (fill)
     { afterPage:13, type:'fill', q:'應用題：一條3.5米長嘅繩子，等於幾多厘米？（只填數字）',
       accept:['350','350.0','350.00'],
-      hint:'1 米 = 100 厘米，3.5 × 100 = 350' },
+      hint:'1 米 （試下計）。 × 100 。試下計' },
   ]
 };
 
@@ -6085,31 +6095,31 @@ function exitInfographicQuiz() {
 // --- Assessment Answer Data ---
 const ASSESS_DATA = {
     1: [
-        { correct: 1, hint: '乘以10，小數點向右移1位：0.45→4.5' },
-        { correct: 2, hint: '乘以100，小數點向右移2位：3.8→380' },
-        { correct: 1, hint: '乘以0.1＝÷10，小數點向左移1位：56→5.6' },
-        { correct: 3, hint: '乘以0.01，小數點向左移2位：2.6→0.026，注意要補0' },
-        { correct: 1, hint: '1米＝100厘米，1.05×100＝105' },
-        { correct: 1, hint: '乘以1000，小數點向右移3位：0.007→7' },
-        { correct: 2, hint: '1公斤＝1000克，4.5×1000＝4500' }
+        { correct: 1, hint:'乘以10，小數點向右移1位：0.45（自己試吓）' },
+        { correct: 2, hint:'乘以100，小數點向右移2位：3.8（自己試吓）' },
+        { correct: 1, hint:'乘以0.1＝÷10，小數點向左移1位：56（自己試吓）' },
+        { correct: 3, hint:'乘以0.01，小數點向左移2位：2.6（自己試吓），注意要補0' },
+        { correct: 1, hint:'1米＝100厘米，1.05×100＝105' },
+        { correct: 1, hint:'乘以1000，小數點向右移3位：0.007（自己試吓）' },
+        { correct: 2, hint:'1公斤＝1000克，4.5×1000＝4500' }
     ],
     2: [
-        { correct: 2, hint: '逆向思考：8.5÷10＝0.85，所以答案是C' },
-        { correct: 1, hint: '0.05只有兩位小數，×1000移3位＝50，不是500！答案是「錯」', labels:['A) 對，答案是500','B) 錯，答案是50','C) 錯，答案是5','D) 無法判斷'] },
-        { correct: 1, hint: '分步算：0.5×10＝5，再5×0.01＝0.05' },
-        { correct: 2, hint: '0.72公里＝0.72×1000＝720米，一樣長！' },
-        { correct: 2, hint: '逆向：3.5÷0.1＝35' },
-        { correct: 2, hint: '5×0.85＝4.25米，4.25×100＝425厘米' },
-        { correct: 2, hint: '0.003×1000＝3，但3×0.001＝0.003，結果不同！' }
+        { correct: 2, hint:'逆向思考：8.5÷10＝0.85，所以答案自己揀' },
+        { correct: 1, hint:'0.05只有兩位小數，×1000移3位＝50，不是500！答案是「錯」', labels:['A) 對，答案是500','B) 錯，答案是50','C) 錯，答案是5','D) 無法判斷'] },
+        { correct: 1, hint:'分步算：0.5×10＝5，再5×0.01＝0.05' },
+        { correct: 2, hint:'0.72公里＝0.72×1000＝720米，一樣長！' },
+        { correct: 2, hint:'逆向：3.5÷0.1＝35' },
+        { correct: 2, hint:'5×0.85＝4.25米，4.25×100＝425厘米' },
+        { correct: 2, hint:'0.003×1000＝3，但3×0.001＝0.003，結果不同！' }
     ],
     3: [
-        { type:'fill', accept:['85000','850','85000厘米','850米'], hint: '0.85×1000＝850米，再850×100＝85000厘米。填「850」（米）或「85000」（厘米）都得', label:'0.85公里＝?米＝?厘米（填最終厘米或中間米數）' },
-        { type:'fill', accept:['0.5','5'], hint: '50÷100＝0.5，0.05÷0.01＝5', label:'___×100＝50，求未知數' },
-        { type:'fill', accept:['750'], hint: '1.25−0.5＝0.75升，0.75×1000＝750', label:'剩餘多少毫升？' },
-        { type:'fill', accept:['5','500'], hint: '0.005×1000＝5米，5×100＝500厘米', label:'0.005公里＝?米' },
-        { type:'fill', accept:['一樣','相同','一样'], hint: '3.5公斤＝3500克＝0.035公噸，都一樣大！', label:'三個重量比較大小（一樣/不同）' },
-        { type:'fill', accept:['一樣','相同','0'], hint: '7.2公斤＝7200克，一樣重！', label:'誰較重？相差多少克？' },
-        { type:'fill', accept:['100'], hint: '0.006×100＝0.6，規律：每次×10', label:'0.006×___＝0.6' }
+        { type:'fill', accept:['85000','850','85000厘米','850米'], hint:'0.85×1000＝850米，再850×100＝85000厘米。填「850」（米）或「85000」（厘米）都得', label:'0.85公里＝?米＝?厘米（填最終厘米或中間米數）' },
+        { type:'fill', accept:['0.5','5'], hint:'50÷100＝0.5，0.05÷0.01＝5', label:'___×100＝50，求未知數' },
+        { type:'fill', accept:['750'], hint:'1.25−0.5＝0.75升，0.75×1000＝750', label:'剩餘多少毫升？' },
+        { type:'fill', accept:['5','500'], hint:'0.005×1000＝5米，5×100＝500厘米', label:'0.005公里＝?米' },
+        { type:'fill', accept:['一樣','相同','一样'], hint:'3.5公斤＝3500克＝0.035公噸，都一樣大！', label:'三個重量比較大小（一樣/不同）' },
+        { type:'fill', accept:['一樣','相同','0'], hint:'7.2公斤＝7200克，一樣重！', label:'誰較重？相差多少克？' },
+        { type:'fill', accept:['100'], hint:'0.006×100＝0.6，規律：每次×10', label:'0.006×___＝0.6' }
     ]
 };
 
