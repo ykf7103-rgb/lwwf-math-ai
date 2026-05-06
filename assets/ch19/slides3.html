@@ -62,6 +62,21 @@
   .done-banner.show { display: block; animation: pop 0.4s; }
   @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
   @media (max-width: 600px) { header h1 { font-size: 0.9rem; } .btn { padding: 8px 12px; font-size: 0.85rem; } .thumb { width: 50px; height: 35px; } .mc-opts { grid-template-columns: 1fr; } }
+
+/* 2026-05-02 v2 fix: visible image loading overlay */
+.viewer { position: relative; }
+.viewer.img-loading::before {
+  content: '⌛ 載入中…';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 31, 23, 0.55);
+  color: white; font-size: 1.4rem; font-weight: 900;
+  z-index: 5; pointer-events: none;
+  animation: pulseLoad 1s ease-in-out infinite;
+}
+@keyframes pulseLoad { 0%,100%{opacity:.7} 50%{opacity:1} }
+.viewer.img-loading .slide-img { filter: brightness(0.55) blur(3px); transition: filter .25s; }
+
 </style>
 </head>
 <body>
@@ -167,7 +182,23 @@ async function checkVoice(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afte
 function triggerLock(){lockModal.classList.add('show');}
 function goBackToStart(){Object.keys(slideQuizAnswered).forEach(k=>delete slideQuizAnswered[k]);Object.keys(slideQuizWrong).forEach(k=>delete slideQuizWrong[k]);lockModal.classList.remove('show');idx=0;render();window.scrollTo({top:0,behavior:'smooth'});}
 function autoAdvance(pageNum){setTimeout(()=>{const uq=getUnansweredQ(pageNum);if(!uq){setTimeout(()=>{quizOv.classList.remove('show');if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{const newQ=getUnansweredQ(idx+1);if(newQ)showQuiz(idx+1);},400);}else{doneBanner.classList.add('show');markDone();}},700);}},250);}
-function next(){const pageNum=idx+1;const uq=getUnansweredQ(pageNum);if(uq){showQuiz(pageNum);return;}if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});}else{doneBanner.classList.add('show');markDone();}}
+// 2026-05-05 fix: 翻頁防誤觸 + preload
+let __navLock = false;
+function __navUnlock(){ __navLock = false; }
+function __preloadAdjacent(){
+  const fmt = (n) => String(n).padStart(2, '0');
+  for (const offset of [1, -1, 2]) {
+    const target = idx + offset + 1;
+    if (target < 1 || target > TOTAL) continue;
+    const pre = new Image();
+    pre.src = `pages/${PREFIX}_p${fmt(target)}.jpg`;
+  }
+}
+
+function next(){
+  if (__navLock) return;
+  __navLock = true;
+  setTimeout(__navUnlock, 600);const pageNum=idx+1;const uq=getUnansweredQ(pageNum);if(uq){showQuiz(pageNum);return;}if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});}else{doneBanner.classList.add('show');markDone();}}
 function prev(){if(idx>0){idx--;render();window.scrollTo({top:0,behavior:'smooth'});}}
 function goto(i){if(i>idx){for(let p=idx+1;p<=i;p++){const uq=getUnansweredQ(p);if(uq){idx=p-1;render();setTimeout(()=>showQuiz(p),300);return;}}}idx=Math.max(0,Math.min(TOTAL-1,i));render();}
 function markDone(){try{const key=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(key)||'{}');p[DECK_KEY]={done:true,ts:Date.now()};localStorage.setItem(key,JSON.stringify(p));}catch(e){}}
@@ -176,6 +207,37 @@ let touchX=0,touchY=0;
 document.querySelector('.viewer').addEventListener('touchstart',e=>{touchX=e.changedTouches[0].screenX;touchY=e.changedTouches[0].screenY;},{passive:true});
 document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-touchX,dy=e.changedTouches[0].screenY-touchY;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){if(dx<0)next();else prev();}},{passive:true});
 buildThumbs();render();
+
+// 2026-05-02 v2 fix: aggressive all-preload + visible loading overlay
+(function __preloadAllOnInit_v2(){
+  if (typeof TOTAL === 'undefined' || typeof PREFIX === 'undefined') return;
+  const fmt = (n) => String(n).padStart(2, '0');
+  for (let i = 1; i <= TOTAL; i++) {
+    const pre = new Image();
+    pre.src = `pages/${PREFIX}_p${fmt(i)}.jpg`;
+  }
+})();
+
+(function __wireImageLoadingState_v2(){
+  const viewer = document.querySelector('.viewer');
+  const slideImg = document.getElementById('slide');
+  if (!viewer || !slideImg) return;
+  let __loadTimer;
+  const showLoad = () => {
+    clearTimeout(__loadTimer);
+    __loadTimer = setTimeout(() => viewer.classList.add('img-loading'), 100);
+  };
+  const hideLoad = () => {
+    clearTimeout(__loadTimer);
+    viewer.classList.remove('img-loading');
+  };
+  slideImg.addEventListener('loadstart', showLoad);
+  slideImg.addEventListener('load',      hideLoad);
+  slideImg.addEventListener('error',     hideLoad);
+  // Edge case: src already set when this code runs
+  if (slideImg.complete && slideImg.naturalWidth > 0) hideLoad(); else showLoad();
+})();
+
 </script>
 <script src="../common/feedback.js"></script>
 <script src="../common/chapter-header.js?v=20260505n" data-current-ch="19"></script>

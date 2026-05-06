@@ -62,6 +62,21 @@
   .done-banner.show { display: block; animation: pop 0.4s; }
   @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
   @media (max-width: 600px) { header h1 { font-size: 0.9rem; } .btn { padding: 8px 12px; font-size: 0.85rem; } .thumb { width: 50px; height: 35px; } .mc-opts { grid-template-columns: 1fr; } }
+
+/* 2026-05-02 v2 fix: visible image loading overlay */
+.viewer { position: relative; }
+.viewer.img-loading::before {
+  content: '⌛ 載入中…';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 31, 23, 0.55);
+  color: white; font-size: 1.4rem; font-weight: 900;
+  z-index: 5; pointer-events: none;
+  animation: pulseLoad 1s ease-in-out infinite;
+}
+@keyframes pulseLoad { 0%,100%{opacity:.7} 50%{opacity:1} }
+.viewer.img-loading .slide-img { filter: brightness(0.55) blur(3px); transition: filter .25s; }
+
 </style>
 </head>
 <body>
@@ -236,6 +251,37 @@ function speakCurrentPage() {
   __ttsEnabled = wasEnabled;  // 還原 user 設定
 }
 
+
+
+// 2026-05-02 v2 fix: aggressive all-preload + visible loading overlay
+(function __preloadAllOnInit_v2(){
+  if (typeof TOTAL === 'undefined' || typeof PREFIX === 'undefined') return;
+  const fmt = (n) => String(n).padStart(2, '0');
+  for (let i = 1; i <= TOTAL; i++) {
+    const pre = new Image();
+    pre.src = `pages/${PREFIX}_p${fmt(i)}.jpg`;
+  }
+})();
+
+(function __wireImageLoadingState_v2(){
+  const viewer = document.querySelector('.viewer');
+  const slideImg = document.getElementById('slide');
+  if (!viewer || !slideImg) return;
+  let __loadTimer;
+  const showLoad = () => {
+    clearTimeout(__loadTimer);
+    __loadTimer = setTimeout(() => viewer.classList.add('img-loading'), 100);
+  };
+  const hideLoad = () => {
+    clearTimeout(__loadTimer);
+    viewer.classList.remove('img-loading');
+  };
+  slideImg.addEventListener('loadstart', showLoad);
+  slideImg.addEventListener('load',      hideLoad);
+  slideImg.addEventListener('error',     hideLoad);
+  // Edge case: src already set when this code runs
+  if (slideImg.complete && slideImg.naturalWidth > 0) hideLoad(); else showLoad();
+})();
 
 </script>
 <script src="../common/feedback.js"></script>
