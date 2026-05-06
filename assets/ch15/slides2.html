@@ -70,13 +70,13 @@
   <a href="index.html" class="back">← 返回第15課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
   <div class="viewer"><img id="slide" class="slide-img" src="pages/slides2_p01.jpg" alt="第 1 頁" /></div>
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -87,16 +87,16 @@
   </div>
   <div class="thumbs" id="thumbs"></div>
   <div class="done-banner" id="done">
-    🎉 簡報 2 完成！快啲去做預習 2！
+    🎉 簡報 2 完成！快些去做預習 2！
     <div style="margin-top:10px"><a href="prelearn2.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 2</a></div>
   </div>
 </div>
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -126,10 +126,10 @@ function getUnansweredQ(pageNum){const qs=SLIDE_QUESTIONS.filter(x=>x.afterPage=
 function buildThumbs(){thumbsEl.innerHTML='';for(let i=0;i<TOTAL;i++){const t=document.createElement('div');t.className='thumb';t.style.backgroundImage=`url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;t.onclick=()=>goto(i);const num=document.createElement('div');num.className='thumb-num';num.textContent=i+1;t.appendChild(num);thumbsEl.appendChild(t);}}
 function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';
   speakPage(idx + 1);[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
-function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答啱</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
-function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
-function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
-function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
+function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答對</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
+function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
+function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
+function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
 function triggerLock(){lockModal.classList.add('show');}
 function goBackToStart(){Object.keys(slideQuizAnswered).forEach(k=>delete slideQuizAnswered[k]);Object.keys(slideQuizWrong).forEach(k=>delete slideQuizWrong[k]);lockModal.classList.remove('show');idx=0;render();window.scrollTo({top:0,behavior:'smooth'});}
 function autoAdvance(pageNum){setTimeout(()=>{const uq=getUnansweredQ(pageNum);if(!uq){setTimeout(()=>{quizOv.classList.remove('show');if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{const newQ=getUnansweredQ(idx+1);if(newQ)showQuiz(idx+1);},400);}else{doneBanner.classList.add('show');markDone();}},700);}},250);}
@@ -161,21 +161,21 @@ document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.cha
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十五課簡報二：哆啦A夢嘅數學秘寶，誰嘅體積大？不用算式、不用工具嘅「直觀比較」大揭秘！今天我哋要把數學課本丟到一邊，純粹用「眼睛」來決勝負。',
-  2: '直觀比較概念引入 — 即係將物件並排比較，唔需要量度任何單位，純粹用眼睛觀察邊個佔嘅空間多。',
-  3: '生活中的直觀觀察 — 就像呢顆火龍果同奇異果，一眼就睇出火龍果佔到嘅空間大！所有固體都佔有空間。小熊布偶佔嘅空間大代表體積大，烏龜布偶佔嘅空間小代表體積小。',
-  4: '固體比較練習 — 通過直觀觀察唔同大細嘅固體，建立體積比較嘅基本概念。',
-  5: '瓶子一樣大，秘密在「水位」— 液體也是會佔據空間的！兩個瓶子大小一樣，葡萄汁嘅水位高（佔嘅空間比較多），柳橙汁嘅水位低（佔嘅空間比較少）。所以葡萄汁嘅體積大過柳橙汁嘅體積，一眼睇穿。',
-  6: '液體比較延續 — 即使係冇形狀嘅液體，只要容器一樣大，水位高低就直接代表體積大細。',
-  7: '氣體看不見，但氣球看得見！空氣雖然摸不到，但它同樣會佔用空間。氣球越「鼓」等於裡面裝嘅空氣越多。黃色氣球內部被撐開嘅空間很大 — 裡面氣體嘅體積大；綠色氣球被撐開嘅空間很小 — 體積小。一目了然！',
-  8: '氣體比較延續 — 氣體睇唔見，但通過容器（如氣球）變大變細，可以直觀觀察氣體嘅體積差異。',
-  9: '最強的工具，就是你的「眼睛」！定義箱：什麼係「體積」？其實就係「物體佔有空間嘅大小」。秘密法則：不需要單位，不需要刻度。只要用眼睛觀察 — 誰睇起來佔嘅位子比較多，誰嘅體積就比較大！呢個就係「直觀比較」。',
-  10: '直觀比較原則回顧 — 三大訣竅：不用算式、不用數字、用眼睛觀察。記住！睇邊個佔多空間就邊個體積大。',
+  1: '歡迎來到第十五課簡報二：哆啦A夢的數學秘寶，誰的體積大？不用算式、不用工具的「直觀比較」大揭秘！今天我們要把數學課本丟到一邊，純粹用「眼睛」來決勝負。',
+  2: '直觀比較概念引入 — 即是將物件並排比較，不需要量度任何單位，純粹用眼睛觀察哪一個佔的空間多。',
+  3: '生活中的直觀觀察 — 就像這顆火龍果同奇異果，一眼就睇出火龍果佔到的空間大！所有固體都佔有空間。小熊布偶佔的空間大代表體積大，烏龜布偶佔的空間小代表體積小。',
+  4: '固體比較練習 — 通過直觀觀察不同大細的固體，建立體積比較的基本概念。',
+  5: '瓶子一樣大，秘密在「水位」— 液體也是會佔據空間的！兩個瓶子大小一樣，葡萄汁的水位高（佔的空間比較多），柳橙汁的水位低（佔的空間比較少）。所以葡萄汁的體積大過柳橙汁的體積，一眼睇穿。',
+  6: '液體比較延續 — 即使是沒有形狀的液體，只要容器一樣大，水位高低就直接代表體積大細。',
+  7: '氣體看不見，但氣球看得見！空氣雖然摸不到，但它同樣會佔用空間。氣球越「鼓」等於裡面裝的空氣越多。黃色氣球內部被撐開的空間很大 — 裡面氣體的體積大；綠色氣球被撐開的空間很小 — 體積小。一目了然！',
+  8: '氣體比較延續 — 氣體睇不見，但通過容器（如氣球）變大變細，可以直觀觀察氣體的體積差異。',
+  9: '最強的工具，就是你的「眼睛」！定義箱：什麼是「體積」？其實就是「物體佔有空間的大小」。秘密法則：不需要單位，不需要刻度。只要用眼睛觀察 — 誰睇起來佔的位子比較多，誰的體積就比較大！這個就是「直觀比較」。',
+  10: '直觀比較原則回顧 — 三大訣竅：不用算式、不用數字、用眼睛觀察。記住！睇哪一個佔多空間就哪一個體積大。',
   11: '哆啦A夢的直觀挑戰賽 2 之 2 — 挑戰 3 固體：哪一顆球的體積比較大？籃球對網球。挑戰 4 氣體：哪一個氣球內的氣體體積比較大？大星形氣球對小星形氣球。',
-  12: '挑戰賽思考時間 — 用眼睛仔細觀察兩個物件嘅大細，決定體積比較。',
-  13: '挑戰解答與解析 2 之 2 — 解答 3 兩顆球：籃球勝出！籃球嘅輪廓明顯比網球大很多，佔嘅空間大。解答 4 星星氣球：較鼓、較大嘅星星氣球勝出！氣球被撐得比較大，代表裡面嘅空氣佔嘅空間比較多。',
-  14: '挑戰賽總結 — 兩個挑戰都印證咗直觀比較嘅威力，唔需要尺、唔需要工具，只用眼就分到大細。',
-  15: '今日重點總結 — 我哋都學會睇「體積」啦！不管它係固體、液體還是氣體，只要它存在，就會「佔有空間」！黃金法則檢查：不用算式、不用數字、用眼睛觀察，誰佔嘅空間多，體積就越大。'
+  12: '挑戰賽思考時間 — 用眼睛仔細觀察兩個物件的大細，決定體積比較。',
+  13: '挑戰解答與解析 2 之 2 — 解答 3 兩顆球：籃球勝出！籃球的輪廓明顯比網球大很多，佔的空間大。解答 4 星星氣球：較鼓、較大的星星氣球勝出！氣球被撐得比較大，代表裡面的空氣佔的空間比較多。',
+  14: '挑戰賽總結 — 兩個挑戰都印證了直觀比較的威力，不需要尺、不需要工具，只用眼就分到大細。',
+  15: '今日重點總結 — 我們都學會睇「體積」啦！不管它是固體、液體還是氣體，只要它存在，就會「佔有空間」！黃金法則檢查：不用算式、不用數字、用眼睛觀察，誰佔的空間多，體積就越大。'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

@@ -63,7 +63,7 @@
 <div class="wrap">
   <div class="intro">
     <h2>🎯 預習 1：體積概念認識</h2>
-    <p>哆啦A夢拎住縮小燈、空氣砲、隨意門周圍走！先睇下面嘅資訊圖，再完成 3 條題目。三題做啱先算完成預習。</p>
+    <p>哆啦A夢拎住縮小燈、空氣砲、隨意門周圍走！先睇下面的資訊圖，再完成 3 條題目。三題做剛才算完成預習。</p>
   </div>
 
   <div class="info-card">
@@ -73,42 +73,42 @@
 
   <!-- Q1: MC -->
   <div class="q-card" id="qc0">
-    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>哆啦A夢用縮小燈將大雄縮細咗。下面邊一句正確？</h3>
+    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>哆啦A夢用縮小燈將大雄縮細了。下面邊一句正確？</h3>
     <div class="mc-opts" id="mcOpts">
-      <button class="mc-opt" onclick="selectMC(0)">A. 大雄縮細咗，所以已經冇咗體積</button>
-      <button class="mc-opt" onclick="selectMC(1)">B. 大雄縮細咗，但仍然佔有空間，所以仍然有體積</button>
-      <button class="mc-opt" onclick="selectMC(2)">C. 只有大件物體先有體積，細件物體冇體積</button>
-      <button class="mc-opt" onclick="selectMC(3)">D. 體積等於物體嘅重量</button>
+      <button class="mc-opt" onclick="selectMC(0)">A. 大雄縮細了，所以已經沒有了體積</button>
+      <button class="mc-opt" onclick="selectMC(1)">B. 大雄縮細了，但仍然佔有空間，所以仍然有體積</button>
+      <button class="mc-opt" onclick="selectMC(2)">C. 只有大件物體先有體積，細件物體沒有體積</button>
+      <button class="mc-opt" onclick="selectMC(3)">D. 體積等於物體的重量</button>
     </div>
     <div class="hint-msg" id="mcHint"></div>
   </div>
 
   <!-- Q2: MC -->
   <div class="q-card" id="qc1">
-    <h3>第 2 題<span class="type-badge mc">選擇題</span><br>哆啦A夢拎空氣砲射出一陣勁風，將樹葉吹起。空氣有冇體積？</h3>
+    <h3>第 2 題<span class="type-badge mc">選擇題</span><br>哆啦A夢拎空氣砲射出一陣勁風，將樹葉吹起。空氣有沒有體積？</h3>
     <div class="mc-opts" id="mcOpts2">
-      <button class="mc-opt" onclick="selectMC2(0)">A. 冇體積，因為空氣睇唔到</button>
-      <button class="mc-opt" onclick="selectMC2(1)">B. 有體積，因為空氣佔住空間（將氣球吹脹就係證明）</button>
-      <button class="mc-opt" onclick="selectMC2(2)">C. 只有水先有體積，空氣冇</button>
-      <button class="mc-opt" onclick="selectMC2(3)">D. 空氣冇體積但有重量</button>
+      <button class="mc-opt" onclick="selectMC2(0)">A. 沒有體積，因為空氣睇不到</button>
+      <button class="mc-opt" onclick="selectMC2(1)">B. 有體積，因為空氣佔住空間（將氣球吹脹就是證明）</button>
+      <button class="mc-opt" onclick="selectMC2(2)">C. 只有水先有體積，空氣沒有</button>
+      <button class="mc-opt" onclick="selectMC2(3)">D. 空氣沒有體積但有重量</button>
     </div>
     <div class="hint-msg" id="mcHint2"></div>
   </div>
 
   <!-- Q3: Voice Feynman -->
   <div class="q-card" id="qc2">
-    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：點解話「固體、液體、氣體都有體積」？舉一個例子解釋。講 20-30 秒。</h3>
-    <div class="voice-hint">💡 提示：可以咁樣講 👉「固體例如書本，佔住書包嘅空間；液體例如水，倒入杯就佔住杯嘅空間；氣體例如空氣，吹脹氣球就見到佢佔住空間。所以三種狀態都有體積。」</div>
+    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：為什麼話「固體、液體、氣體都有體積」？舉一個例子解釋。講 20-30 秒。</h3>
+    <div class="voice-hint">💡 提示：可以咁樣講 👉「固體例如書本，佔住書包的空間；液體例如水，倒入杯就佔住杯的空間；氣體例如空氣，吹脹氣球就見到他佔住空間。所以三種狀態都有體積。」</div>
     <div class="voice-section">
       <div id="envWarn" style="display:none;background:#FFEBEE;border:2px solid #C62828;color:#C62828;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.9rem;"></div>
       <div class="voice-row">
         <button class="btn outline" onclick="testMic()" style="font-size:0.85rem;">🎤 試咪 2 秒</button>
         <button class="btn red" id="recBtn" onclick="startRec()">🎤 開始錄音</button>
         <button class="btn outline" id="stopBtn" onclick="stopRec()" disabled>⏹ 停止</button>
-        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交俾 AI 評分</button>
+        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交給 AI 評分</button>
       </div>
       <div class="rec-status" id="recStatus">按「開始錄音」試下（iPhone 要用 Safari；Android / 電腦用 Chrome）</div>
-      <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析你講咗乜。</span></div>
+      <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析你說了乜。</span></div>
       <div class="grade-result" id="gradeResult"></div>
 
       <div style="text-align:center;margin:18px 0 10px;position:relative;">
@@ -117,9 +117,9 @@
       </div>
       <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
         <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案（同錄音一樣由 AI 評分）</div>
-        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">冇得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
-        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「書本佔住書包嘅空間（固體）、水倒入杯佔住杯嘅空間（液體）、空氣吹脹氣球佔住空間（氣體），所以三種狀態都有體積。」"></textarea>
-        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">沒有得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
+        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「書本佔住書包的空間（固體）、水倒入杯佔住杯的空間（液體）、空氣吹脹氣球佔住空間（氣體），所以三種狀態都有體積。」"></textarea>
+        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交給 AI 評分</button>
       </div>
 
       <details style="margin-top:10px;font-size:0.82rem;color:#666;">
@@ -144,21 +144,21 @@
 const CHAPTER = 15, PRELEARN_KEY = 'prelearn1';
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev/ask';
 const VOICE_Q = {
-  q: '教一教同學：點解話「固體、液體、氣體都有體積」？',
+  q: '教一教同學：為什麼話「固體、液體、氣體都有體積」？',
   concept: '物體佔有空間就有體積。固體（如書本）、液體（如水）、氣體（如空氣）都會佔住空間。',
   rubric: '講出：三種狀態都有體積 + 至少一個例子（例如：書本佔書包空間 / 水倒入杯佔杯空間 / 空氣吹脹氣球證明佔空間）',
   hint: '講到「都有體積」+ 至少一個例子就合格（~80 分）'
 };
-const MC_CORRECT = 1, MC_HINT = '物體佔有空間就有體積。大雄縮細咗仍然佔住空間，所以仍然有體積。';
-const MC2_CORRECT = 1, MC2_HINT = '空氣可以將氣球吹脹，證明空氣會佔住空間，即係有體積。';
+const MC_CORRECT = 1, MC_HINT = '物體佔有空間就有體積。大雄縮細了仍然佔住空間，所以仍然有體積。';
+const MC2_CORRECT = 1, MC2_HINT = '空氣可以將氣球吹脹，證明空氣會佔住空間，即是有體積。';
 const answered = { mc:false, mc2:false, voice:false };
 let mediaRecorder=null, audioChunks=[], recordStartTime=0, recordTimer=null, recordedBlob=null, voiceData=null;
 
 (function envCheck(){
   const warn = document.getElementById('envWarn'); const msgs = [];
   if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') msgs.push('⚠️ 必須用 HTTPS 網址先可以錄音。');
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) msgs.push('⚠️ 你個瀏覽器唔支援錄音。iPhone 請用 Safari，Android / 電腦請用 Chrome。');
-  if (!window.MediaRecorder) msgs.push('⚠️ 你個瀏覽器太舊，冇 MediaRecorder。');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) msgs.push('⚠️ 你個瀏覽器不支援錄音。iPhone 請用 Safari，Android / 電腦請用 Chrome。');
+  if (!window.MediaRecorder) msgs.push('⚠️ 你個瀏覽器太舊，沒有 MediaRecorder。');
   if (msgs.length) { warn.innerHTML = msgs.join('<br>'); warn.style.display = 'block'; }
 })();
 
@@ -180,13 +180,13 @@ async function testMic(){
       maxLevel = Math.max(maxLevel, avg);
       if (Date.now() - startT > 2000) {
         clearInterval(interval); stream.getTracks().forEach(t => t.stop()); ctx.close();
-        if (maxLevel < 2) status.innerHTML = '<span style="color:#C62828;font-weight:700;">❌ 聽唔到聲音！請大聲啲講。</span>';
+        if (maxLevel < 2) status.innerHTML = '<span style="color:#C62828;font-weight:700;">❌ 聽不到聲音！請大聲些講。</span>';
         else if (maxLevel < 10) status.innerHTML = `<span style="color:#F57F17;font-weight:700;">⚠️ 聲音好細（${Math.round(maxLevel)}/255）。</span>`;
         else status.innerHTML = `<span style="color:#2E7D32;font-weight:700;">✅ 麥克風正常！音量 ${Math.round(maxLevel)}/255。</span>`;
       }
     }, 100);
   } catch (err) {
-    const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError' ? '❌ 麥克風權限被拒！' : err.name === 'NotFoundError' ? '❌ 搵唔到麥克風。' : '❌ ' + (err.message || err.name);
+    const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError' ? '❌ 麥克風權限被拒！' : err.name === 'NotFoundError' ? '❌ 找不到麥克風。' : '❌ ' + (err.message || err.name);
     status.innerHTML = `<span style="color:#C62828;font-weight:700;">${msg}</span>`;
   }
 }
@@ -196,16 +196,16 @@ async function submitText(){
   if (textVal.length < 8) { alert('請至少打字寫 8 個字以上的解釋。'); return; }
   const resEl = document.getElementById('gradeResult');
   resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在評分...</div>';
-  const prompt = `你係小學五年級粵語數學老師。
+  const prompt = `你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}
 合格要求：${VOICE_Q.hint}
 
-⚠️ 學生用打字代替錄音。佢嘅答案：
+⚠️ 學生用打字代替錄音。他的答案：
 ${textVal}
 
-評分：講到三種狀態都有體積 + 至少一個例子 → 80-100；只講概念冇例子 → 50-70；答案錯 → 20-40。
+評分：講到三種狀態都有體積 + 至少一個例子 → 80-100；只講概念沒有例子 → 50-70；答案錯 → 20-40。
 
 嚴格返回純 JSON：
 {"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"評語（60字內）"}`;
@@ -221,7 +221,7 @@ ${textVal}
       const has_concept = /(都有體積|三種|固體|液體|氣體|佔.*空間)/.test(textVal);
       const has_example = textVal.length >= 20 && /(書|水|空氣|氣球|杯)/.test(textVal);
       score = !has_concept ? 30 : (has_example ? 75 : 55);
-      feedback = has_example ? '✅ 文字答案合格' : '⚠️ 概念講到，但少咗具體例子';
+      feedback = has_example ? '✅ 文字答案合格' : '⚠️ 概念講到，但少了具體例子';
     } else {
       score = Math.max(0, Math.min(100, parseInt(result.score) || 0));
       feedback = cleanChineseOnly(result.feedback);
@@ -237,10 +237,10 @@ ${textVal}
   }
 }
 
-function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
-function selectMC2(i){if(answered.mc2)return;const btns=document.querySelectorAll('#mcOpts2 .mc-opt');const hint=document.getElementById('mcHint2');if(i===MC2_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc2=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC2_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC2_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
+function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
+function selectMC2(i){if(answered.mc2)return;const btns=document.querySelectorAll('#mcOpts2 .mc-opt');const hint=document.getElementById('mcHint2');if(i===MC2_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc2=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！'+MC2_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC2_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
 
-async function startRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}document.getElementById('recStatus').innerHTML='<span style="color:#1565C0;">⌛ 請允許麥克風權限...</span>';document.getElementById('recBtn').disabled=true;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioChunks=[];let options={mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:64000};if(!window.MediaRecorder||!MediaRecorder.isTypeSupported(options.mimeType))options={audioBitsPerSecond:64000};mediaRecorder=new MediaRecorder(stream,options);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const mimeType=audioChunks[0]?.type||'audio/webm';const blob=new Blob(audioChunks,{type:mimeType});const durationSec=(Date.now()-recordStartTime)/1000;clearInterval(recordTimer);document.getElementById('recBtn').disabled=false;document.getElementById('stopBtn').disabled=true;const tooShort=durationSec<3;const tooSmall=blob.size<8000;if(tooShort||tooSmall){const reason=tooShort?`錄音時間只有 ${durationSec.toFixed(1)} 秒`:`錄音太細（${Math.round(blob.size/1024)} KB）`;document.getElementById('recStatus').innerHTML=`<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。</span>`;document.getElementById('transcript').innerHTML='<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';document.getElementById('gradeBtn').disabled=true;recordedBlob=null;return;}recordedBlob=blob;document.getElementById('recStatus').innerHTML=`<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;document.getElementById('transcript').innerHTML='<span style="color:#999;">⬇️ 按「提交俾 AI 評分」分析</span>';document.getElementById('gradeBtn').disabled=false;};mediaRecorder.start();recordStartTime=Date.now();document.getElementById('recBtn').disabled=true;document.getElementById('stopBtn').disabled=false;document.getElementById('gradeBtn').disabled=true;document.getElementById('transcript').innerHTML='<span style="color:#666;">🎤 正在錄音中...</span>';if(recordTimer)clearInterval(recordTimer);recordTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recordStartTime)/1000);const color=sec>45?'#F44336':sec>30?'#F57F17':'#C62828';document.getElementById('recStatus').innerHTML=`<span style="color:${color};font-weight:700;">🔴 錄音中 ${sec} 秒</span>`+(sec>=30?' <span style="font-size:0.85rem;color:#666;">（建議 20-30 秒）</span>':'');if(sec>=60)stopRec();},250);}catch(err){const msg=err.name==='NotAllowedError'||err.name==='PermissionDeniedError'?'⚠️ 請允許麥克風權限':'❌ '+err.message;document.getElementById('recStatus').innerHTML=msg;document.getElementById('recBtn').disabled=false;}}
+async function startRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}document.getElementById('recStatus').innerHTML='<span style="color:#1565C0;">⌛ 請允許麥克風權限...</span>';document.getElementById('recBtn').disabled=true;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioChunks=[];let options={mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:64000};if(!window.MediaRecorder||!MediaRecorder.isTypeSupported(options.mimeType))options={audioBitsPerSecond:64000};mediaRecorder=new MediaRecorder(stream,options);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const mimeType=audioChunks[0]?.type||'audio/webm';const blob=new Blob(audioChunks,{type:mimeType});const durationSec=(Date.now()-recordStartTime)/1000;clearInterval(recordTimer);document.getElementById('recBtn').disabled=false;document.getElementById('stopBtn').disabled=true;const tooShort=durationSec<3;const tooSmall=blob.size<8000;if(tooShort||tooSmall){const reason=tooShort?`錄音時間只有 ${durationSec.toFixed(1)} 秒`:`錄音太細（${Math.round(blob.size/1024)} KB）`;document.getElementById('recStatus').innerHTML=`<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。</span>`;document.getElementById('transcript').innerHTML='<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';document.getElementById('gradeBtn').disabled=true;recordedBlob=null;return;}recordedBlob=blob;document.getElementById('recStatus').innerHTML=`<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;document.getElementById('transcript').innerHTML='<span style="color:#999;">⬇️ 按「提交給 AI 評分」分析</span>';document.getElementById('gradeBtn').disabled=false;};mediaRecorder.start();recordStartTime=Date.now();document.getElementById('recBtn').disabled=true;document.getElementById('stopBtn').disabled=false;document.getElementById('gradeBtn').disabled=true;document.getElementById('transcript').innerHTML='<span style="color:#666;">🎤 正在錄音中...</span>';if(recordTimer)clearInterval(recordTimer);recordTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recordStartTime)/1000);const color=sec>45?'#F44336':sec>30?'#F57F17':'#C62828';document.getElementById('recStatus').innerHTML=`<span style="color:${color};font-weight:700;">🔴 錄音中 ${sec} 秒</span>`+(sec>=30?' <span style="font-size:0.85rem;color:#666;">（建議 20-30 秒）</span>':'');if(sec>=60)stopRec();},250);}catch(err){const msg=err.name==='NotAllowedError'||err.name==='PermissionDeniedError'?'⚠️ 請允許麥克風權限':'❌ '+err.message;document.getElementById('recStatus').innerHTML=msg;document.getElementById('recBtn').disabled=false;}}
 function stopRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}}
 function blobToBase64(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=reject;r.readAsDataURL(blob);});}
 async function encodeToWav(blob){const AudioCtx=window.AudioContext||window.webkitAudioContext;const OfflineCtx=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!AudioCtx||!OfflineCtx)throw new Error('no AudioContext');const arrayBuffer=await blob.arrayBuffer();const decodeCtx=new AudioCtx();if(decodeCtx.state==='suspended'){try{await decodeCtx.resume();}catch(_){}}const audioBuffer=await new Promise((resolve,reject)=>{try{const p=decodeCtx.decodeAudioData(arrayBuffer.slice(0),resolve,reject);if(p&&typeof p.then==='function')p.then(resolve,reject);}catch(e){reject(e);}});try{decodeCtx.close();}catch(_){}const targetSR=22050;const length=Math.max(1,Math.floor(audioBuffer.duration*targetSR));const offline=new OfflineCtx(1,length,targetSR);const src=offline.createBufferSource();src.buffer=audioBuffer;src.connect(offline.destination);src.start(0);const rendered=await offline.startRendering();return audioBufferToWavBlob(rendered);}
@@ -248,7 +248,7 @@ function audioBufferToWavBlob(buffer){const numChannels=buffer.numberOfChannels,
 function extractJSON(text){if(!text)return null;const fence=text.match(/```(?:json)?\s*([\s\S]*?)```/);let candidate=fence?fence[1]:text;const start=candidate.indexOf('{'),end=candidate.lastIndexOf('}');if(start!==-1&&end>start){const js=candidate.slice(start,end+1);try{return JSON.parse(js);}catch(_){}try{return JSON.parse(js.replace(/,\s*(\}|\])/g,'$1').replace(/\n/g,' '));}catch(_){}}const tM=text.match(/"transcript"\s*:\s*"([^"]*(?:\\.[^"]*)*)"/);const sM=text.match(/"score"\s*:\s*(\d+)/);const fM=text.match(/"feedback"\s*:\s*"([^"]*(?:\\.[^"]*)*)"/);if(tM||sM||fM)return{transcript:tM?tM[1].replace(/\\"/g,'"'):'',score:sM?parseInt(sM[1]):0,feedback:fM?fM[1].replace(/\\"/g,'"'):''};return null;}
 function cleanChineseOnly(s){if(!s)return '';return String(s).replace(/```[a-z]*|```/gi,'').replace(/\{[^}]*\}/g,'').replace(/^\s*["\{\[]+|["\}\]]+\s*$/g,'').trim();}
 
-async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}const resEl=document.getElementById('gradeResult');const gradeBtn=document.getElementById('gradeBtn');gradeBtn.disabled=true;resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 AI 正在分析...</div>';document.getElementById('transcript').innerHTML='<span style="color:#666;">🔄 分析中...</span>';const prompt=`你係小學五年級粵語數學老師。
+async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}const resEl=document.getElementById('gradeResult');const gradeBtn=document.getElementById('gradeBtn');gradeBtn.disabled=true;resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 AI 正在分析...</div>';document.getElementById('transcript').innerHTML='<span style="color:#666;">🔄 分析中...</span>';const prompt=`你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}

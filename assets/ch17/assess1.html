@@ -136,7 +136,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答了先過 ▶</button>
       </div>
     </div>
   </div>
@@ -259,7 +259,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！路飛都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！路飛都讚你叻！' : `❌ 你選了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>路飛筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -271,7 +271,7 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答了先過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
     nb.textContent = '睇答案 ✓';
@@ -400,9 +400,9 @@ function showFinal(correct) {
   document.getElementById('finalScore').textContent = correct;
   let m, t;
   if (correct === Q_SHUFFLED.length) { m = '🌟 滿分！麥塊建造大師完美 cm³ 量度！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  else if (correct >= 5) { m = '💪 好勁！再溫下錯的就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題的提示'; t = '🥈'; }
+  else { m = '📖 多些溫習簡報 1，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

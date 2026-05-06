@@ -87,13 +87,13 @@
   </div>
   <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
   <div class="scene">
-    <div class="speech">睇海賊船貨倉複雜立體 → 快速分塊成簡單長方體 → 計算每塊體積 → 加埋總和速答。<br>📐 提示：圖入面**唔同顏色 / 高低嘅方塊**通常係唔同 piece。</div>
+    <div class="speech">睇海賊船貨倉複雜立體 → 快速分塊成簡單長方體 → 計算每塊體積 → 加埋總和速答。<br>📐 提示：圖入面**不同顏色 / 高低的方塊**通常是不同 piece。</div>
     <div class="shape-display">
       <div class="shape-area" id="shapeArea"></div>
       <div class="shape-info" id="shapeInfo"></div>
     </div>
     <div class="decompose-q">
-      <div class="decompose-q-label" id="qLabel">將呢個立體分塊成 N 塊長方體，速算每塊體積：</div>
+      <div class="decompose-q-label" id="qLabel">將這個立體分塊成 N 塊長方體，速算每塊體積：</div>
       <div class="pieces-grid" id="piecesGrid"></div>
     </div>
     <div class="total-row">
@@ -116,15 +116,15 @@
   <div class="lock-box">
     <div class="big">🔒</div>
     <h2>娜美話：要重新出航！</h2>
-    <p>你已經錯咗 <b>5 次</b>。要由第 1 關重新分塊速算。</p>
-    <button onclick="restart()">🔁 從頭再嚟</button>
+    <p>你已經錯了 <b>5 次</b>。要由第 1 關重新分塊速算。</p>
+    <button onclick="restart()">🔁 從頭再來</button>
   </div>
 </div>
 <script>
 const CHAPTER = 17, GAME_KEY = 'game3';
 
 // 6 道：複雜立體拆解。每題：grid display + pieces 陣列（要算）
-// shape: cells 陣列（每個 cell 用 grid coord 表示），pieces: 每塊嘅 dims [長闊高] (高 = 視覺 layer 數)
+// shape: cells 陣列（每個 cell 用 grid coord 表示），pieces: 每塊的 dims [長闊高] (高 = 視覺 layer 數)
 const QUESTIONS = [
   {
     title:'L 型立體',
@@ -164,7 +164,7 @@ const QUESTIONS = [
       { lab:'上下兩塊', formula:'2 × 1 × 1', vol: 2 }
     ],
     total: 5,
-    hint:'十字 = 橫 3 + 上下兩塊 2 = 5 cm³（中間一塊已喺橫條入面）'
+    hint:'十字 = 橫 3 + 上下兩塊 2 = 5 cm³（中間一塊已在橫條入面）'
   },
   {
     title:'雙層長方體 + 突出',
@@ -292,9 +292,9 @@ function submit() {
     els.wrongs.textContent = `${wrongs}/5`;
     els.fb.className = 'feedback wrong show';
     let msg = '❌ ';
-    if (!allPiecesOk && !totalOk) msg += '塊體積同總和都唔啱。';
+    if (!allPiecesOk && !totalOk) msg += '塊體積同總和都不對。';
     else if (!allPiecesOk) msg += '塊體積有錯。';
-    else msg += '總和唔啱（提示：求加各塊體積）。';
+    else msg += '總和不對（提示：求加各塊體積）。';
     msg += `<br>💡 ${q.hint}`;
     els.fb.innerHTML = msg;
     if (wrongs >= 5) { setTimeout(triggerLock, 700); }

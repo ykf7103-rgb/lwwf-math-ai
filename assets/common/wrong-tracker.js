@@ -15,7 +15,7 @@
 //   // 學生答對重做題時：
 //   window.LWWFWrong.markCorrect(rowId);
 //
-//   // 攞錯題清單（AI 助教用）：
+//   // 拿錯題清單（AI 助教用）：
 //   const list = await window.LWWFWrong.getList(13);
 //
 //   // 出 retry 題（POE 生）：
@@ -131,7 +131,7 @@
     }
   }
 
-  // ---------- getList(): 攞學生錯題（未 mastered） ----------
+  // ---------- getList(): 拿學生錯題（未 mastered） ----------
   async function getList(chapter, includeMastered = false) {
     const student_id = getStudentId();
     if (!student_id) return [];
@@ -148,12 +148,12 @@
   }
 
   // ---------- fetchRetries(): 用 POE 生 retry 題 ----------
-  // 揀 wrong_count >= 2 + mastered = false 嘅題目，最多 5 條，BATCH 一次過 POE call
+  // 選 wrong_count >= 2 + mastered = false 的題目，最多 5 條，BATCH 一次過 POE call
   async function fetchRetries(chapter, n_retries = 3) {
     const list = await getList(chapter, false);
     const candidates = list.filter(r => (r.wrong_count || 0) >= 2).slice(0, 5);
     if (candidates.length === 0) {
-      return { retries: [], message: '冇錯 ≥ 2 次嘅題目，繼續加油！' };
+      return { retries: [], message: '沒有錯 ≥ 2 次的題目，繼續加油！' };
     }
 
     // 如果已經 cached AI retry → 直接返
@@ -189,7 +189,7 @@
       const data = await r.json();
       const retries = (data.retries || []).slice(0, n_retries);
 
-      // 寫返 ai_retry_* fields 落 candidates，俾下次 reuse
+      // 寫返 ai_retry_* fields 落 candidates，給下次 reuse
       retries.forEach(async (ret, idx) => {
         const row = candidates[idx];
         if (!row) return;

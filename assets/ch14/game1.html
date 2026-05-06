@@ -110,9 +110,9 @@
       <div style="font-size:3rem;">🥟 + ❓<br>= ❓</div>
       <img src="images/chef_pigsy.png" alt="廚師八戒" style="width:120px;height:120px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
     </div>
-    <p>大廚嘅菜單甩咗！你要幫佢將 <b style="color:#EF6C00;">小數乘法算式</b> 同 <b style="color:#EF6C00;">答案</b> 配對返。</p>
+    <p>大廚的菜單甩了！你要幫他將 <b style="color:#EF6C00;">小數乘法算式</b> 同 <b style="color:#EF6C00;">答案</b> 配對返。</p>
     <p style="background:#FFF8E1;padding:10px;border-radius:8px;border-left:4px solid #FFB300;">
-      📖 <b>點樣玩</b>：<br>
+      📖 <b>怎樣玩</b>：<br>
       • 翻兩張卡 → 配對成功消失 ✅<br>
       • 配對錯 → 自動翻返 ❌<br>
       • 有 <b>10 對</b>（20 張卡），用越少步越高分！<br>
@@ -132,7 +132,7 @@
     <div style="display:flex;justify-content:center;margin:8px 0">
       <button id="peekBtn" onclick="peekAllCards()" style="background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;border:none;padding:10px 22px;border-radius:24px;font-weight:900;font-size:0.95rem;cursor:pointer;box-shadow:0 4px 12px rgba(255,143,0,0.4);transition:all 0.2s">👀 預覽 5 秒（剩 <span id="peekRemain">2</span> 次）</button>
     </div>
-    <div class="hint-bar" id="hintBar">翻兩張卡睇下啱唔啱配對！</div>
+    <div class="hint-bar" id="hintBar">翻兩張卡睇下對不對配對！</div>
     <div class="board" id="board"></div>
 
     <div class="end-screen" id="endScreen">
@@ -216,10 +216,10 @@ function peekAllCards() {
 
   // Countdown
   let sec = 5;
-  hint.textContent = `👀 記住卡嘅位置！剩 ${sec} 秒...`;
+  hint.textContent = `👀 記住卡的位置！剩 ${sec} 秒...`;
   const countdown = setInterval(() => {
     sec--;
-    if (sec > 0) hint.textContent = `👀 記住卡嘅位置！剩 ${sec} 秒...`;
+    if (sec > 0) hint.textContent = `👀 記住卡的位置！剩 ${sec} 秒...`;
   }, 1000);
 
   // After 5s, flip back
@@ -307,7 +307,7 @@ function checkMatch() {
       state.matched++;
       document.getElementById('matchedCount').textContent = `${state.matched} / ${PAIRS.length}`;
       hint.className = 'hint-bar correct';
-      hint.textContent = `✅ 啱！${c1.dataset.kind === 'expr' ? c1.querySelector('.expr').textContent : c2.querySelector('.expr').textContent} = ${c1.dataset.kind === 'ans' ? c1.querySelector('.ans').textContent : c2.querySelector('.ans').textContent}`;
+      hint.textContent = `✅ 對！${c1.dataset.kind === 'expr' ? c1.querySelector('.expr').textContent : c2.querySelector('.expr').textContent} = ${c1.dataset.kind === 'ans' ? c1.querySelector('.ans').textContent : c2.querySelector('.ans').textContent}`;
       if (state.matched >= PAIRS.length) setTimeout(endGame, 500);
     } else {
       c1.classList.add('wrong');
@@ -315,12 +315,12 @@ function checkMatch() {
       state.wrongs++;
       document.getElementById('wrongCount').textContent = state.wrongs;
       hint.className = 'hint-bar wrong';
-      hint.textContent = `❌ 唔啱配對，再試！`;
+      hint.textContent = `❌ 不對配對，再試！`;
       setTimeout(() => {
         c1.classList.remove('flipped', 'wrong');
         c2.classList.remove('flipped', 'wrong');
         hint.className = 'hint-bar';
-        hint.textContent = '翻兩張卡睇下啱唔啱配對！';
+        hint.textContent = '翻兩張卡睇下對不對配對！';
       }, 900);
     }
     state.flipped = [];

@@ -70,13 +70,13 @@
   <a href="index.html" class="back">← 返回第13課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
   <div class="viewer"><img id="slide" class="slide-img" src="pages/slides3_p01.jpg" alt="第 1 頁" /></div>
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -87,23 +87,23 @@
   </div>
   <div class="thumbs" id="thumbs"></div>
   <div class="done-banner" id="done">
-    🎉 簡報 3 完成！快啲去做預習 3！
+    🎉 簡報 3 完成！快些去做預習 3！
     <div style="margin-top:10px"><a href="prelearn3.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 3</a></div>
   </div>
 </div>
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
 <script>
 const PREFIX = 'slides3', TOTAL = 15, CHAPTER = 13, DECK_KEY = 'slides3';
 // 新格式 Q array — 第13課 Part 3 估算技巧深化 + 一位/兩位小數×整數整合應用
-// ⚠️ 注意：舊版內容係小數×小數（屬第14課 LO），已修正返第13課嘅 LO
+// ⚠️ 注意：舊版內容是小數×小數（屬第14課 LO），已修正返第13課的 LO
 // p05/p07/p09/p11/p13 = Q 頁 (估算 MC + 實際填充)；p06/p08/p10/p12/p14 = A 頁
 const SLIDE_QUESTIONS = [
   // p05 Q1: 沙僧暖身 5.2 × 7
@@ -113,13 +113,13 @@ const SLIDE_QUESTIONS = [
   { afterPage:7, type:'mc', q:'悟空迷霧 Q2：估算 0.9 × 4 約等於 ?', options:['0','4','9','36'], correct:1, hint:'0.9 約成 1，1 × 4 = 4（B，實際 3.6 接近）' },
   { afterPage:7, type:'fill', q:'⚒️ 實際計算：0.9 × 4 = ___', accept:['3.6','3.60'], hint:'9 × 4 = 36，一位小數（自己試吓）' },
   // p09 Q3: 沙僧採買西瓜 6 × 4.5（一位小數應用題）
-  { afterPage:9, type:'mc', q:'沙僧採買西瓜 Q3：估算沙僧大概買咗多重？(每西瓜 4.5 公斤，買 6 個)', options:['24 公斤','25 公斤','30 公斤','45 公斤'], correct:2, hint:'4.5 約成 5，5 × 6 （試下計）（C，實際 27 公斤接近）' },
+  { afterPage:9, type:'mc', q:'沙僧採買西瓜 Q3：估算沙僧大概買了多重？(每西瓜 4.5 公斤，買 6 個)', options:['24 公斤','25 公斤','30 公斤','45 公斤'], correct:2, hint:'4.5 約成 5，5 × 6 （試下計）（C，實際 27 公斤接近）' },
   { afterPage:9, type:'fill', q:'⚒️ 實際總重量：6 × 4.5 = ___ 公斤', accept:['27','27.0','27.00'], hint:'45 × 6 = 270，一位小數（自己試吓） （試下計）' },
   // p11 Q4: 悟空大戰妖怪 8 × 3.25（兩位小數應用題）
-  { afterPage:11, type:'mc', q:'悟空大戰妖怪 Q4：估算贏咗大約幾多金幣？(8 個妖怪，每個 3.25 個金幣)', options:['11 個','24 個','32 個','40 個'], correct:1, hint:'3.25 約成 3，3 × 8 = 24 個（B，實際 26 個接近）' },
+  { afterPage:11, type:'mc', q:'悟空大戰妖怪 Q4：估算贏了大約多少金幣？(8 個妖怪，每個 3.25 個金幣)', options:['11 個','24 個','32 個','40 個'], correct:1, hint:'3.25 約成 3，3 × 8 = 24 個（B，實際 26 個接近）' },
   { afterPage:11, type:'fill', q:'⚒️ 實際獲得：8 × 3.25 = ___ 個金幣', accept:['26','26.0','26.00'], hint:'325 × 8 = 2600，兩位小數（自己試吓） = 26 個金幣' },
-  // p13 Q5: 終極試煉 — 用估算判斷學生答案 7.4 × 5 = 0.37 對唔對？
-  { afterPage:13, type:'mc', q:'終極試煉 Q5：學生算到 7.4 × 5 = 0.37，用估算判斷對唔對？', options:['對，因為 4×5=20，所以小數點往左移','錯，答案應該大約 35 左右','對，答案應該大約 70 左右','對，計算睇起嚟好完美'], correct:1, hint:'7.4 約成 7，7 × 5 = 35。 完全唔合理（縮小咗 100 倍）！正確答案 = 37（諗下邊個啱）' },
+  // p13 Q5: 終極試煉 — 用估算判斷學生答案 7.4 × 5 = 0.37 對不對？
+  { afterPage:13, type:'mc', q:'終極試煉 Q5：學生算到 7.4 × 5 = 0.37，用估算判斷對不對？', options:['對，因為 4×5=20，所以小數點往左移','錯，答案應該大約 35 左右','對，答案應該大約 70 左右','對，計算睇起來好完美'], correct:1, hint:'7.4 約成 7，7 × 5 = 35。 完全不合理（縮小了 100 倍）！正確答案 = 37（想下哪一個對）' },
   { afterPage:13, type:'fill', q:'⚒️ 寫出正確答案：7.4 × 5 = ___', accept:['37','37.0','37.00'], hint:'74 × 5 = 370，一位小數（自己試吓） = 37（學生原本將小數點放錯位置）' }
 ];
 let idx = 0;
@@ -130,10 +130,10 @@ function getUnansweredQ(pageNum){const qs=SLIDE_QUESTIONS.filter(x=>x.afterPage=
 function buildThumbs(){thumbsEl.innerHTML='';for(let i=0;i<TOTAL;i++){const t=document.createElement('div');t.className='thumb';t.style.backgroundImage=`url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;t.onclick=()=>goto(i);const num=document.createElement('div');num.className='thumb-num';num.textContent=i+1;t.appendChild(num);thumbsEl.appendChild(t);}}
 function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';
   speakPage(idx + 1);[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
-function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答啱</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
-function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
-function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
-function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
+function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答對</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
+function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
+function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
+function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
 function triggerLock(){lockModal.classList.add('show');}
 function goBackToStart(){Object.keys(slideQuizAnswered).forEach(k=>delete slideQuizAnswered[k]);Object.keys(slideQuizWrong).forEach(k=>delete slideQuizWrong[k]);lockModal.classList.remove('show');idx=0;render();window.scrollTo({top:0,behavior:'smooth'});}
 function autoAdvance(pageNum){setTimeout(()=>{const uq=getUnansweredQ(pageNum);if(!uq){setTimeout(()=>{quizOv.classList.remove('show');if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{const newQ=getUnansweredQ(idx+1);if(newQ)showQuiz(idx+1);},400);}else{doneBanner.classList.add('show');markDone();}},700);}},250);}
@@ -165,21 +165,21 @@ document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.cha
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十三課簡報三：求取真「算」之旅，估算技巧深度教學同整合應用，包括一位同兩位小數乘整數。領銜主演：唐僧師徒。',
-  2: '唐僧嘅法寶：什麼係「估算」？三大重點 — 第一，估算唔係求精確答案，重點係快速捉出個大約範圍。第二，Check 答案合理性，立刻破除錯誤計算嘅幻象。第三，防止致命失誤，防範小數點位置擺錯嘅妖怪潛入算式。',
-  3: '估算心法：化作最接近嘅整數。觀察小數點後第一位（十分位），約成最接近嘅整數。例：2.5 約成 3（十分位係 5，進位）；4.7 約成 5；3.05 約成 3（十分位係 0，唔進位）；6.92 約成 7。',
-  4: '照妖鏡實戰，抓出小數點妖怪！案例一合理：3.8 乘 6，估算 4 乘 6 等如 24，實際接近 24，過關。案例二錯誤：6.4 乘 9，估算 6 乘 9 等如 54。如果學生計到嘅答案距離 54 太遠，系統警告就會響起，估算 catch 出錯誤。',
-  5: '試煉一沙僧嘅暖身題 — 基礎計算 5.2 乘 7。估算任務：5.2 乘 7 約等於多少？睇下 4 個選項，揀啱估算範圍，再喺實際計算嗰邊寫返精確答案。',
-  6: '答案分析：估算 5 乘 7 等如 35，所以 (B) 35 係啱嘅估算範圍。實際直式：52 乘 7 等如 364，因為一位小數，答案點返 1 位小數位。估算 35 同實際接近，合理。',
-  7: '試煉二悟空嘅迷霧題 — 突破迷霧 0.9 乘 4。估算任務：0.9 乘 4 約等於多少？小心 0.9 接近 1 但唔係 1，所以答案範圍應該接近但唔等於 4。',
-  8: '答案分析：估算 0.9 約 1，1 乘 4 等如 4，所以 (B) 4 係啱嘅估算。實際直式：9 乘 4 等如 36，因為一位小數，答案點返 1 位。估算同實際接近，合理。',
-  9: '試煉三沙僧探買西瓜 — 沙僧買咗 6 個西瓜，每個西瓜重 4.5 公斤。估算任務：估算沙僧大概買咗幾重嘅西瓜？4.5 約成 5，5 乘 6 等如 30，所以揀啱嘅估算範圍。',
-  10: '答案分析：估算 5 乘 6 等如 30 公斤，所以 (C) 30 公斤係啱嘅估算。實際直式：45 乘 6 等如 270，因為一位小數，答案點返 1 位。估算 30 同實際接近。',
-  11: '試煉四悟空大戰妖怪 — 悟空打敗咗 8 個妖怪，每個妖怪掉落 3.25 個金幣。估算任務：估算悟空大概贏咗幾多個金幣？3.25 約成 3，3 乘 8 等如 24。',
-  12: '答案分析：估算 3 乘 8 等如 24，所以 (B) 24 個金幣係啱嘅估算。實際直式：325 乘 8 等如 2600，因為兩位小數，答案點返 2 位。估算 24 同實際接近。',
-  13: '終極試煉看破致命幻象！考卷陷阱：有位學生算到 7.4 乘 5 嘅答案太離譜（縮小 100 倍）。估算判斷：呢個答案啱唔啱？4 個選項要揀啱思路 — 7.4 約 7，7 乘 5 等如 35；又或者 4 乘 5 = 20、8 乘 5 = 40，所以實際應該係 30 至 40 左右範圍。',
-  14: '答案分析：(C) 不對，答案應該大約 35-40 左右。實際直式：74 乘 5 等如 370，因為一位小數，答案點返 1 位。學生計到 0.37 係縮小咗 100 倍嘅典型小數點放錯錯誤。',
-  15: '唐僧嘅取經總結：估算三招式！第一招化繁為簡：約成最接近嘅整數，捨去零頭（如 3.8 約 4）。第二招 Check 合理性：先估算大概範圍，再用直式精確計算。第三招 Catch 致命錯誤：照妖鏡一照，答案太離譜（如縮小 10 或 100 倍）立刻重算。結論：先估算，後計算，小數乘法無難度。'
+  1: '歡迎來到第十三課簡報三：求取真「算」之旅，估算技巧深度教學同整合應用，包括一位同兩位小數乘整數。領銜主演：唐僧師徒。',
+  2: '唐僧的法寶：什麼是「估算」？三大重點 — 第一，估算不是求精確答案，重點是快速捉出個大約範圍。第二，Check 答案合理性，立刻破除錯誤計算的幻象。第三，防止致命失誤，防範小數點位置擺錯的妖怪潛入算式。',
+  3: '估算心法：化作最接近的整數。觀察小數點後第一位（十分位），約成最接近的整數。例：2.5 約成 3（十分位是 5，進位）；4.7 約成 5；3.05 約成 3（十分位是 0，不進位）；6.92 約成 7。',
+  4: '照妖鏡實戰，抓出小數點妖怪！案例一合理：3.8 乘 6，估算 4 乘 6 等於 24，實際接近 24，過關。案例二錯誤：6.4 乘 9，估算 6 乘 9 等於 54。如果學生計到的答案距離 54 太遠，系統警告就會響起，估算 catch 出錯誤。',
+  5: '試煉一沙僧的暖身題 — 基礎計算 5.2 乘 7。估算任務：5.2 乘 7 約等於多少？睇下 4 個選項，選對估算範圍，再在實際計算那邊寫返精確答案。',
+  6: '答案分析：估算 5 乘 7 等於 35，所以 (B) 35 是對的估算範圍。實際直式：52 乘 7 等於 364，因為一位小數，答案點回 1 位小數位。估算 35 同實際接近，合理。',
+  7: '試煉二悟空的迷霧題 — 突破迷霧 0.9 乘 4。估算任務：0.9 乘 4 約等於多少？小心 0.9 接近 1 但不是 1，所以答案範圍應該接近但不等於 4。',
+  8: '答案分析：估算 0.9 約 1，1 乘 4 等於 4，所以 (B) 4 是對的估算。實際直式：9 乘 4 等於 36，因為一位小數，答案點回 1 位。估算同實際接近，合理。',
+  9: '試煉三沙僧探買西瓜 — 沙僧買了 6 個西瓜，每個西瓜重 4.5 公斤。估算任務：估算沙僧大概買了多重的西瓜？4.5 約成 5，5 乘 6 等於 30，所以選對的估算範圍。',
+  10: '答案分析：估算 5 乘 6 等於 30 公斤，所以 (C) 30 公斤是對的估算。實際直式：45 乘 6 等於 270，因為一位小數，答案點回 1 位。估算 30 同實際接近。',
+  11: '試煉四悟空大戰妖怪 — 悟空打敗了 8 個妖怪，每個妖怪掉落 3.25 個金幣。估算任務：估算悟空大概贏了多少個金幣？3.25 約成 3，3 乘 8 等於 24。',
+  12: '答案分析：估算 3 乘 8 等於 24，所以 (B) 24 個金幣是對的估算。實際直式：325 乘 8 等於 2600，因為兩位小數，答案點回 2 位。估算 24 同實際接近。',
+  13: '終極試煉看破致命幻象！考卷陷阱：有位學生算到 7.4 乘 5 的答案太離譜（縮小 100 倍）。估算判斷：這個答案對不對？4 個選項要選對思路 — 7.4 約 7，7 乘 5 等於 35；又或者 4 乘 5 = 20、8 乘 5 = 40，所以實際應該是 30 至 40 左右範圍。',
+  14: '答案分析：(C) 不對，答案應該大約 35-40 左右。實際直式：74 乘 5 等於 370，因為一位小數，答案點回 1 位。學生計到 0.37 是縮小了 100 倍的典型小數點放錯錯誤。',
+  15: '唐僧的取經總結：估算三招式！第一招化繁為簡：約成最接近的整數，捨去零頭（如 3.8 約 4）。第二招 Check 合理性：先估算大概範圍，再用直式精確計算。第三招 Catch 致命錯誤：照妖鏡一照，答案太離譜（如縮小 10 或 100 倍）立刻重算。結論：先估算，後計算，小數乘法無難度。'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

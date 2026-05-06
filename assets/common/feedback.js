@@ -2,7 +2,7 @@
 // 回報 / 許願 功能（家長 + 學生 可以提交 bug / feature wish）
 // 簡單用法：將本 script include 入任何 page，就會自動加 floating button
 //   <script src="path/to/assets/common/feedback.js"></script>
-// 需要 Supabase table student_feedback（migration SQL 喺 /supabase/feedback_table_migration.sql）
+// 需要 Supabase table student_feedback（migration SQL 在 /supabase/feedback_table_migration.sql）
 // ============================================================
 
 (function() {
@@ -96,12 +96,12 @@
   overlay.innerHTML = `
     <div class="fb-modal" onclick="event.stopPropagation()">
       <h2>📨 回報 / 許願</h2>
-      <p class="fb-desc">見到 bug？想要新功能？話我哋知！楊老師會定期睇。</p>
+      <p class="fb-desc">見到 bug？想要新功能？話我們知！楊老師會定期睇。</p>
 
       <div class="fb-type-row">
         <button class="fb-type-btn active" id="fbTypeBug" onclick="window.__fbSetType('bug')">
           <span class="emoji">🐛</span>
-          <span>回報問題<br><span style="font-size:0.75rem;color:#888;font-weight:400;">（網站壞咗）</span></span>
+          <span>回報問題<br><span style="font-size:0.75rem;color:#888;font-weight:400;">（網站壞了）</span></span>
         </button>
         <button class="fb-type-btn" id="fbTypeWish" onclick="window.__fbSetType('wish')">
           <span class="emoji">🌟</span>
@@ -122,8 +122,8 @@
 
       <div class="fb-field">
         <label id="fbContentLabel">問題內容 <span style="color:#C62828">*</span></label>
-        <textarea id="fbContent" placeholder="具體描述遇到嘅問題..." maxlength="2000"></textarea>
-        <div class="fb-hint" id="fbHint">💡 <b>好嘅回報包括</b>：1) 喺邊一頁？ 2) 按咗乜？ 3) 出現乜錯誤？</div>
+        <textarea id="fbContent" placeholder="具體描述遇到的問題..." maxlength="2000"></textarea>
+        <div class="fb-hint" id="fbHint">💡 <b>好的回報包括</b>：1) 在邊一頁？ 2) 按了乜？ 3) 出現乜錯誤？</div>
       </div>
 
       <div id="fbResult"></div>
@@ -150,12 +150,12 @@
     const textarea = document.getElementById('fbContent');
     if (type === 'bug') {
       label.innerHTML = '問題內容 <span style="color:#C62828">*</span>';
-      hint.innerHTML = '💡 <b>好嘅回報包括</b>：1) 喺邊一頁？ 2) 按咗乜？ 3) 出現乜錯誤？';
-      textarea.placeholder = '具體描述遇到嘅問題，例：「第13課預習1，按咗開始錄音之後冇反應，screen 一片白」';
+      hint.innerHTML = '💡 <b>好的回報包括</b>：1) 在邊一頁？ 2) 按了乜？ 3) 出現乜錯誤？';
+      textarea.placeholder = '具體描述遇到的問題，例：「第13課預習1，按了開始錄音之後沒有反應，screen 一片白」';
     } else {
       label.innerHTML = '你想要乜新功能？ <span style="color:#C62828">*</span>';
-      hint.innerHTML = '💡 可以係任何諗法！例：新遊戲、新功能、內容、角色、聲音...';
-      textarea.placeholder = '例：「想有一個迷宮遊戲，要答啱小數題先可以走下一步」';
+      hint.innerHTML = '💡 可以是任何想法！例：新遊戲、新功能、內容、角色、聲音...';
+      textarea.placeholder = '例：「想有一個迷宮遊戲，要答對小數題先可以走下一步」';
     }
   };
 
@@ -227,8 +227,8 @@
         throw new Error(`HTTP ${res.status}: ${errTxt.slice(0, 120)}`);
       }
       resultEl.innerHTML = `<div class="fb-success">
-        ✅ ${currentType === 'bug' ? '已收到你嘅問題回報' : '已收到你嘅許願'}！<br>
-        <span style="font-size:0.85rem;font-weight:400;">楊老師會盡快睇。多謝你幫我哋改進網站 🙏</span>
+        ✅ ${currentType === 'bug' ? '已收到你的問題回報' : '已收到你的許願'}！<br>
+        <span style="font-size:0.85rem;font-weight:400;">楊老師會盡快睇。謝謝你幫我們改進網站 🙏</span>
       </div>`;
       submitBtn.textContent = '✓ 已提交';
       setTimeout(() => {

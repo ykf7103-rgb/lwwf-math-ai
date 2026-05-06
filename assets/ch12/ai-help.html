@@ -219,8 +219,8 @@
   <div class="chat-area" id="chatArea">
     <div class="welcome">
       <div class="emoji">&#129302;</div>
-      <h2>你好！我係數學小老師！</h2>
-      <p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>
+      <h2>你好！我是數學小老師！</h2>
+      <p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳給我睇！<br>我不會直接給答案你，但會引導你找到答案 &#128170;</p>
     </div>
   </div>
 
@@ -229,7 +229,7 @@
     <button class="quick-btn" data-q="小數點向右移是什麼意思？">&#128161; 小數點向右移是什麼意思？</button>
     <button class="quick-btn" data-q="乘以0.1和除以10一樣嗎？">&#129300; 乘以0.1和除以10一樣嗎？</button>
     <button class="quick-btn" data-q="公里怎樣換做米？">&#128207; 公里怎樣換做米？</button>
-    <button class="quick-btn" data-q="我唔明白呢條題目...">&#128075; 我唔明白呢條題目...</button>
+    <button class="quick-btn" data-q="我不明白這條題目...">&#128075; 我不明白這條題目...</button>
   </div>
 
   <!-- Image preview strip -->
@@ -273,10 +273,10 @@ const SYSTEM_PROMPT = `你是「數學小老師」，一位友善的小學五年
 8. 可以用生活化的例子幫助理解（例如用金錢、長度來解釋小數）
 9. 回答時可以用emoji讓對話更生動 😊
 10. 每次回答最多3-4句，不要太長
-11. 在每次回答的最後必須加一行視覺化提示，格式：[視覺:英文簡短描述要畫嘅嘢]
+11. 在每次回答的最後必須加一行視覺化提示，格式：[視覺:英文簡短描述要畫的東西]
     例：[視覺:colorful number line showing 0.45 multiplied by 10 becoming 4.5, cartoon, cute]
     例：[視覺:cartoon jar with 10 groups of 0.5 chocolate chips stacking up, kawaii]
-    描述要簡單、卡通、適合小學生，目的係幫學生想像題目或概念。
+    描述要簡單、卡通、適合小學生，目的是幫學生想像題目或概念。
 
 本課重點：
 - 乘以10/100/1000：小數點向右移1/2/3位
@@ -284,7 +284,7 @@ const SYSTEM_PROMPT = `你是「數學小老師」，一位友善的小學五年
 - 單位轉換：公里↔米、公斤↔克、升↔毫升`;
 
 /* ===== config ===== */
-// 部署 Cloudflare Worker 之後，將你嘅 Worker URL 貼呢度（或用 ?worker= URL param 覆寫）
+// 部署 Cloudflare Worker 之後，將你的 Worker URL 貼這裡（或用 ?worker= URL param 覆寫）
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
 
 /* ===== state ===== */
@@ -481,7 +481,7 @@ async function handleSend() {
   if (!text && !hasImage) return;
 
   if (questionsUsed >= MAX_QUESTIONS) {
-    addMessage('ai', '你今次已經問咗 ' + MAX_QUESTIONS + ' 條問題啦！如果仲有問題，可以按「重新開始」再問過 \u{1F60A}');
+    addMessage('ai', '你今次已經問了 ' + MAX_QUESTIONS + ' 條問題啦！如果仲有問題，可以按「重新開始」再問過 \u{1F60A}');
     return;
   }
 
@@ -515,7 +515,7 @@ async function handleSend() {
   updateRemain();
 
   try {
-    const reply = await sendToWorker(text || '請幫我睇下呢張圖', imgB64);
+    const reply = await sendToWorker(text || '請幫我睇下這張圖', imgB64);
 
     // Parse out [視覺:...] image prompt
     let displayText = reply;
@@ -577,7 +577,7 @@ function toggleRecording() {
   if (!recognition) {
     recognition = initSpeechRecognition();
     if (!recognition) {
-      alert('你個瀏覽器唔支援錄音辨識，請用 Chrome / Edge 打開 🙏');
+      alert('你個瀏覽器不支援錄音辨識，請用 Chrome / Edge 打開 🙏');
       return;
     }
     recognition.onresult = (e) => {
@@ -617,7 +617,7 @@ function startRecording() {
   isRecording = true;
   btnMic.classList.add('recording');
   btnMic.title = '點擊停止錄音';
-  userInput.placeholder = '🎤 講嘢 ... 講完自動停';
+  userInput.placeholder = '🎤 講東西 ... 講完自動停';
 }
 
 function stopRecording() {
@@ -704,8 +704,8 @@ function resetConversation() {
   welcome.className = 'welcome';
   welcome.innerHTML =
     '<div class="emoji">&#129302;</div>' +
-    '<h2>你好！我係數學小老師！</h2>' +
-    '<p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>';
+    '<h2>你好！我是數學小老師！</h2>' +
+    '<p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳給我睇！<br>我不會直接給答案你，但會引導你找到答案 &#128170;</p>';
   chatArea.appendChild(welcome);
 }
 

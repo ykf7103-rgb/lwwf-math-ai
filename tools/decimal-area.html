@@ -93,7 +93,7 @@
 <body>
 <div class="wrap">
   <h1>📐 小數面積可視化</h1>
-  <p class="sub">拖滑桿調整兩個小數，睇下面格仔點樣變。綠色格仔總面積 = 兩數相乘嘅答案！</p>
+  <p class="sub">拖滑桿調整兩個小數，睇下面格仔怎樣變。綠色格仔總面積 = 兩數相乘的答案！</p>
 
   <div class="card">
     <div class="slider-row">
@@ -117,7 +117,7 @@
 
     <div class="legend">
       <span class="item"><span class="sw" style="background:#C8E6C9"></span>綠色格仔 = 答案（a × b）</span>
-      <span class="item"><span class="sw" style="background:#FFF3E0"></span>淺色區域 = 整個 1 × 1 嘅格仔</span>
+      <span class="item"><span class="sw" style="background:#FFF3E0"></span>淺色區域 = 整個 1 × 1 的格仔</span>
     </div>
 
     <div class="tip" id="tip"></div>
@@ -136,10 +136,10 @@
   <div class="card" style="background:linear-gradient(135deg,#FFF8E1,#FFECB3);">
     <div style="font-weight:800;color:#E65100;margin-bottom:6px;">📝 規律發現</div>
     <ol style="margin:4px 0 4px 20px;padding:0;font-size:0.88rem;line-height:1.7;color:#555;">
-      <li>10 × 10 = 100 個小格，每格係成個面積嘅 <b>1/100</b>。</li>
-      <li>a × b 嘅格仔數 = <b>10a × 10b</b>。例如 0.3 × 0.4 ⇒ 3 × 4 = 12 個小格。</li>
+      <li>10 × 10 = 100 個小格，每格是成個面積的 <b>1/100</b>。</li>
+      <li>a × b 的格仔數 = <b>10a × 10b</b>。例如 0.3 × 0.4 ⇒ 3 × 4 = 12 個小格。</li>
       <li>12 個小格 ÷ 100 = <b>0.12</b>（面積）。</li>
-      <li>所以「兩個一位小數相乘 ⇒ 答案有 2 位小數」，就係咁嚟！</li>
+      <li>所以「兩個一位小數相乘 ⇒ 答案有 2 位小數」，就是咁來！</li>
     </ol>
   </div>
 </div>
@@ -203,7 +203,7 @@ function render() {
   // Tip
   const tipEl = document.getElementById('tip');
   tipEl.innerHTML = `💡 <b>${fmt(a)} × ${fmt(b)} = ${fmt(p)}</b>：整幅圖分 100 個小格，綠色部分有 <b>${greenCount} 個小格</b>。
-  每個小格係 <b>1/100 = 0.01</b>。所以答案 = ${greenCount} × 0.01 = <b>${fmt(greenCount / 100)}</b>。`;
+  每個小格是 <b>1/100 = 0.01</b>。所以答案 = ${greenCount} × 0.01 = <b>${fmt(greenCount / 100)}</b>。`;
 }
 
 function setVals(a, b) {

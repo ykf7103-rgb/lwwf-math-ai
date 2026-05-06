@@ -74,7 +74,7 @@
 <div class="wrap">
   <div class="intro">
     <h2>🎯 預習 1</h2>
-    <p>先睇下面嘅資訊圖，再完成 3 條題目（選擇 + 填充 + 🎤 錄音講解）。三題做啱先算完成預習。</p>
+    <p>先睇下面的資訊圖，再完成 3 條題目（選擇 + 填充 + 🎤 錄音講解）。三題做剛才算完成預習。</p>
   </div>
 
   <div class="info-card">
@@ -106,18 +106,18 @@
 
   <!-- Q3: Voice Feynman -->
   <div class="q-card" id="qc2">
-    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：0.3 × 4 點解等於 1.2？講 10-30 秒，講出答案 + 原理就合格。</h3>
-    <div class="voice-hint">💡 提示：可以咁樣講 👉「答案係 1.2。因為 0.3 有 3 個 0.1，3 個 0.1 × 4 = 12 個 0.1 = 1.2」</div>
+    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：0.3 × 4 為什麼等於 1.2？講 10-30 秒，講出答案 + 原理就合格。</h3>
+    <div class="voice-hint">💡 提示：可以咁樣講 👉「答案是 1.2。因為 0.3 有 3 個 0.1，3 個 0.1 × 4 = 12 個 0.1 = 1.2」</div>
     <div class="voice-section">
       <div id="envWarn" style="display:none;background:#FFEBEE;border:2px solid #C62828;color:#C62828;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.9rem;"></div>
       <div class="voice-row">
         <button class="btn outline" onclick="testMic()" style="font-size:0.85rem;">🎤 試咪 2 秒</button>
         <button class="btn red" id="recBtn" onclick="startRec()">🎤 開始錄音</button>
         <button class="btn outline" id="stopBtn" onclick="stopRec()" disabled>⏹ 停止</button>
-        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交俾 AI 評分</button>
+        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交給 AI 評分</button>
       </div>
       <div class="rec-status" id="recStatus">按「開始錄音」試下（iPhone 要用 Safari；Android / 電腦用 Chrome）</div>
-      <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析你講咗乜。</span></div>
+      <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析你說了乜。</span></div>
       <div class="grade-result" id="gradeResult"></div>
 
       <!-- OR-divider + Text answer (as equal choice, not fallback) -->
@@ -127,15 +127,15 @@
       </div>
       <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
         <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案（同錄音一樣由 AI 評分）</div>
-        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">冇得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
-        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="打字寫低你會點教同學（例：「答案係 1.2。因為 0.3 係 3 個 0.1，乘 4 就係 12 個 0.1 = 1.2」）"></textarea>
-        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+        <div style="font-size:0.85rem;color:#666;margin-bottom:8px;">沒有得錄音？或者想用打字？打 10 字以上解釋，AI 會一樣評分。</div>
+        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="打字寫低你會點教同學（例：「答案是 1.2。因為 0.3 是 3 個 0.1，乘 4 就是 12 個 0.1 = 1.2」）"></textarea>
+        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交給 AI 評分</button>
       </div>
 
       <details style="margin-top:10px;font-size:0.82rem;color:#666;">
         <summary style="cursor:pointer;color:#7B1FA2;font-weight:700;">🆘 錄音出錯？點 click 睇解決方法</summary>
         <div style="padding:8px 12px;background:#FFF8E1;border-radius:6px;margin-top:6px;line-height:1.6;">
-          <b>❌ 按咗開始錄音冇反應：</b><br>
+          <b>❌ 按了開始錄音沒有反應：</b><br>
           1. iPhone：去「設定 → Safari → 麥克風」改為「容許」<br>
           2. Android：去 Chrome 網址旁邊 🔒 圖示 → 網站設定 → 麥克風 → 容許<br>
           3. 電腦：按網址旁邊 🔒 圖示 → 麥克風 → 容許，然後重新整理頁面
@@ -165,7 +165,7 @@ const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev/ask';
 const VOICE_Q = {
   q: '請說明：為何 0.3 × 4 等於 1.2？',
   concept: '一位小數 × 整數：將小數拆做「n 個 0.1」，整數次數相加',
-  rubric: '講出：答案係 1.2 + 任何一個原理（例如：3 個 0.1 × 4 = 12 個 0.1；或 3 × 4 = 12，一位小數所以係 1.2；或小數點向左移一位）',
+  rubric: '講出：答案是 1.2 + 任何一個原理（例如：3 個 0.1 × 4 = 12 個 0.1；或 3 × 4 = 12，一位小數所以是 1.2；或小數點向左移一位）',
   hint: '講到答案 + 任何一個原理就合格（~80 分）'
 };
 const MC_CORRECT = 1; // 1.2
@@ -188,10 +188,10 @@ let voiceData = null;
     msgs.push('⚠️ 必須用 HTTPS 網址先可以錄音。請用 <b>https://ykf7103-rgb.github.io/lwwf-math-ai/</b>');
   }
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    msgs.push('⚠️ 你個瀏覽器唔支援錄音。iPhone 請用 Safari，Android / 電腦請用 Chrome。');
+    msgs.push('⚠️ 你個瀏覽器不支援錄音。iPhone 請用 Safari，Android / 電腦請用 Chrome。');
   }
   if (!window.MediaRecorder) {
-    msgs.push('⚠️ 你個瀏覽器太舊，冇 MediaRecorder。請更新去最新版。');
+    msgs.push('⚠️ 你個瀏覽器太舊，沒有 MediaRecorder。請更新去最新版。');
   }
   if (msgs.length) {
     warn.innerHTML = msgs.join('<br>');
@@ -223,9 +223,9 @@ async function testMic() {
         stream.getTracks().forEach(t => t.stop());
         ctx.close();
         if (maxLevel < 2) {
-          status.innerHTML = '<span style="color:#C62828;font-weight:700;">❌ 聽唔到聲音！請確認：1) 冇 mute 2) 用口講嘢 3) 檢查系統麥克風設定</span>';
+          status.innerHTML = '<span style="color:#C62828;font-weight:700;">❌ 聽不到聲音！請確認：1) 沒有 mute 2) 用口講東西 3) 檢查系統麥克風設定</span>';
         } else if (maxLevel < 10) {
-          status.innerHTML = `<span style="color:#F57F17;font-weight:700;">⚠️ 聲音好細（音量 ${Math.round(maxLevel)}/255）。請大聲啲講，靠近 mic。</span>`;
+          status.innerHTML = `<span style="color:#F57F17;font-weight:700;">⚠️ 聲音好細（音量 ${Math.round(maxLevel)}/255）。請大聲些講，靠近 mic。</span>`;
         } else {
           status.innerHTML = `<span style="color:#2E7D32;font-weight:700;">✅ 麥克風正常！音量 ${Math.round(maxLevel)}/255。可以按「🎤 開始錄音」正式錄。</span>`;
         }
@@ -235,7 +235,7 @@ async function testMic() {
     const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError'
       ? '❌ 麥克風權限被拒！iPhone：設定 → Safari → 麥克風 → 容許。Android：網址旁 🔒 → 麥克風 → 容許。'
       : err.name === 'NotFoundError'
-      ? '❌ 搵唔到麥克風。請確認你部設備有 mic。'
+      ? '❌ 找不到麥克風。請確認你部設備有 mic。'
       : '❌ ' + (err.message || err.name);
     status.innerHTML = `<span style="color:#C62828;font-weight:700;">${msg}</span>`;
   }
@@ -249,25 +249,25 @@ async function submitText() {
     return;
   }
   const resEl = document.getElementById('gradeResult');
-  resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在評分你嘅文字答案，約需 3-8 秒...</div>';
-  const prompt = `你係小學五年級粵語數學老師。
+  resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在評分你的文字答案，約需 3-8 秒...</div>';
+  const prompt = `你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}
 合格要求：${VOICE_Q.hint}
 
-⚠️ 重要：學生今次係用**打字**代替錄音（因為錄音出問題）。
-佢打字嘅答案：
+⚠️ 重要：學生今次是用**打字**代替錄音（因為錄音出問題）。
+他打字的答案：
 ${textVal}
 
 請做一件事：按 rubric 評分。
 - 答案正確 + 有原理解釋 → 80-100 分
-- 答案正確 + 無原理（只係算式）→ 50-70 分
+- 答案正確 + 無原理（只是算式）→ 50-70 分
 - 答案錯 → 20-40 分
-- 完全唔關題 → 0 分
+- 完全不關題 → 0 分
 
-請嚴格返回純 JSON（唔好加 \`\`\`）：
-{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"具體評語（唔超過60字）"}`;
+請嚴格返回純 JSON（不要加 \`\`\`）：
+{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"具體評語（不超過60字）"}`;
 
   try {
     const res = await fetch(WORKER_URL, {
@@ -322,7 +322,7 @@ function selectMC(i) {
     answered.mc = true;
     document.getElementById('qc0').classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！' + MC_HINT;
+    hint.innerHTML = '✅ 答對！' + MC_HINT;
     checkAllDone();
   } else {
     btns[i].classList.add('wrong');
@@ -349,7 +349,7 @@ function checkFill() {
     answered.fill = true;
     document.getElementById('qc1').classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！' + FILL_HINT;
+    hint.innerHTML = '✅ 答對！' + FILL_HINT;
     checkAllDone();
   } else {
     input.classList.remove('wrong'); void input.offsetWidth; input.classList.add('wrong');
@@ -384,7 +384,7 @@ async function startRec() {
       const tooSmall = blob.size < 8000;
       if (tooShort || tooSmall) {
         const reason = tooShort ? `錄音時間只有 ${durationSec.toFixed(1)} 秒` : `錄音太細聲（${Math.round(blob.size/1024)} KB）`;
-        document.getElementById('recStatus').innerHTML = `<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。請確認：1) 麥克風權限已開 2) 大聲清楚講 10-30 秒 3) 背景唔好太嘈。</span>`;
+        document.getElementById('recStatus').innerHTML = `<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。請確認：1) 麥克風權限已開 2) 大聲清楚講 10-30 秒 3) 背景不要太嘈。</span>`;
         document.getElementById('transcript').innerHTML = '<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';
         document.getElementById('gradeBtn').disabled = true;
         recordedBlob = null;
@@ -392,7 +392,7 @@ async function startRec() {
       }
       recordedBlob = blob;
       document.getElementById('recStatus').innerHTML = `<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;
-      document.getElementById('transcript').innerHTML = '<span style="color:#999;">⬇️ 按「提交俾 AI 評分」分析你講嘅內容</span>';
+      document.getElementById('transcript').innerHTML = '<span style="color:#999;">⬇️ 按「提交給 AI 評分」分析你講的內容</span>';
       document.getElementById('gradeBtn').disabled = false;
     };
     mediaRecorder.start();
@@ -400,7 +400,7 @@ async function startRec() {
     document.getElementById('recBtn').disabled = true;
     document.getElementById('stopBtn').disabled = false;
     document.getElementById('gradeBtn').disabled = true;
-    document.getElementById('transcript').innerHTML = '<span style="color:#666;">🎤 正在錄音中，請清楚講出你嘅解釋...</span>';
+    document.getElementById('transcript').innerHTML = '<span style="color:#666;">🎤 正在錄音中，請清楚講出你的解釋...</span>';
     if (recordTimer) clearInterval(recordTimer);
     recordTimer = setInterval(() => {
       const sec = Math.floor((Date.now() - recordStartTime) / 1000);
@@ -409,7 +409,7 @@ async function startRec() {
       if (sec >= 60) stopRec();
     }, 250);
   } catch (err) {
-    const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError' ? '⚠️ 請喺瀏覽器允許麥克風權限，然後再試' : (err.name === 'NotFoundError' ? '⚠️ 搵唔到麥克風' : '❌ ' + err.message);
+    const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError' ? '⚠️ 請在瀏覽器允許麥克風權限，然後再試' : (err.name === 'NotFoundError' ? '⚠️ 找不到麥克風' : '❌ ' + err.message);
     document.getElementById('recStatus').innerHTML = msg;
     document.getElementById('recBtn').disabled = false;
   }
@@ -513,24 +513,24 @@ async function submitVoice() {
   const resEl = document.getElementById('gradeResult');
   const gradeBtn = document.getElementById('gradeBtn');
   gradeBtn.disabled = true;
-  resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在分析你嘅錄音（轉字幕 + 評分），約需 5-15 秒...</div>';
+  resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在分析你的錄音（轉字幕 + 評分），約需 5-15 秒...</div>';
   document.getElementById('transcript').innerHTML = '<span style="color:#666;">🔄 分析中...</span>';
 
-  const prompt = `你係小學五年級粵語數學老師。
+  const prompt = `你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}
 合格要求：${VOICE_Q.hint}
 
-⚠️ 重要：題目問「點解 / 教一教」，學生必須解釋原理，唔可以淨係講答案。
-⚠️ 請逐個對比 rubric 要點，睇學生講咗幾多個要點。
+⚠️ 重要：題目問「為什麼 / 教一教」，學生必須解釋原理，不可以淨是講答案。
+⚠️ 請逐個對比 rubric 要點，睇學生說了多少個要點。
 
 請做兩件事：
-1. 聽呢段學生用粵語講嘅錄音，轉寫成完整通順嘅粵語句子。必須整理啲重複、口誤、語氣詞，還原成 95% 學生想表達嘅內容。
+1. 聽這段學生用粵語講的錄音，轉寫成完整通順的粵語句子。必須整理些重複、口誤、語氣詞，還原成 95% 學生想表達的內容。
 2. 根據 rubric 要點同數學正確性評分。
 
-請嚴格返回純 JSON（唔好加 \`\`\` 或其他標記）：
-{"transcript": "還原後嘅完整粵語句子", "score": 整數0-100, "feedback": "具體評語 + 改進建議（唔超過60字）"}`;
+請嚴格返回純 JSON（不要加 \`\`\` 或其他標記）：
+{"transcript": "還原後的完整粵語句子", "score": 整數0-100, "feedback": "具體評語 + 改進建議（不超過60字）"}`;
 
   let diag = { step: 'start', origType: recordedBlob.type, origSize: recordedBlob.size };
   try {
@@ -571,7 +571,7 @@ async function submitVoice() {
     voiceData = { transcript, score, feedback };
 
     const esc = s => String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const escRaw = esc(rawTranscript) || '<i style="color:#C62828;">（系統冇聽到聲音）</i>';
+    const escRaw = esc(rawTranscript) || '<i style="color:#C62828;">（系統沒有聽到聲音）</i>';
     const escTrans = esc(transcript) || '<i style="color:#999;">（AI 未整理）</i>';
     const showDiff = transcript && transcript !== rawTranscript;
     const ccColor = chineseChars >= 25 ? '#2E7D32' : chineseChars >= 10 ? '#F57F17' : '#C62828';
@@ -582,7 +582,7 @@ async function submitVoice() {
         <div style="color:#333;line-height:1.6;">${escRaw}</div>
         <div style="margin-top:6px;font-size:0.8rem;color:${ccColor};">📊 共 <b>${chineseChars}</b> 個中文字（${ccLabel}）${overridden ? ' · <b style="color:#C62828;">⚠️ 分數已被系統修正</b>' : ''}</div>
       </div>
-      ${fabricated ? `<div style="background:#FFEBEE;border-left:4px solid #C62828;padding:10px;border-radius:6px;margin-bottom:8px;"><div style="color:#C62828;font-weight:700;font-size:0.9rem;">⚠️ 系統偵測 AI 嘗試擴寫答案，已還原你實際講嘅內容並重新評分。</div></div>` : ''}
+      ${fabricated ? `<div style="background:#FFEBEE;border-left:4px solid #C62828;padding:10px;border-radius:6px;margin-bottom:8px;"><div style="color:#C62828;font-weight:700;font-size:0.9rem;">⚠️ 系統偵測 AI 嘗試擴寫答案，已還原你實際講的內容並重新評分。</div></div>` : ''}
       ${(!fabricated && showDiff) ? `<div style="background:#E8F5E9;border-left:4px solid #2E7D32;padding:10px;border-radius:6px;"><div style="color:#2E7D32;font-weight:700;font-size:0.9rem;margin-bottom:6px;">🤖 AI 修正錯字後：</div><div style="color:#333;line-height:1.6;">${escTrans}</div></div>` : ''}
     `;
     const color = score >= 80 ? '#2E7D32' : score >= 60 ? '#F57F17' : '#C62828';
@@ -607,7 +607,7 @@ async function submitVoice() {
     let friendly = '⚠️ 評分失敗';
     if (/429|RATE_LIMIT/.test(errMsg)) friendly = '⏸ 太多同學同時用，請等 1 分鐘再試';
     else if (/403/.test(errMsg)) friendly = '🚫 網站未授權（Origin 問題）通知老師';
-    else if (/Failed to fetch|NetworkError|Load failed/.test(errMsg)) friendly = '📶 網絡連唔到 AI，請檢查 WiFi';
+    else if (/Failed to fetch|NetworkError|Load failed/.test(errMsg)) friendly = '📶 網絡連不到 AI，請檢查 WiFi';
     else if (/500|502|503|504/.test(errMsg)) friendly = '🔧 AI 伺服器暫時有問題，等 30 秒再試';
     resEl.innerHTML = `<div style="color:#C62828;padding:10px;background:#FFEBEE;border-radius:8px;">${friendly}<div style="margin-top:6px;font-size:0.78rem;color:#888;">詳細錯誤：${errMsg}</div><div style="margin-top:8px;"><button class="btn" onclick="submitVoice()">🔄 重試</button> <button class="btn outline" onclick="resetVoice()">🎤 重錄</button></div></div>`;
     gradeBtn.disabled = false;

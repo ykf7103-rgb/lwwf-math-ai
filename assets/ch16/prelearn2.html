@@ -67,24 +67,24 @@
 <div class="wrap">
   <div class="intro">
     <h2>🎯 預習 2：1 m³ 真實量感 + 估計</h2>
-    <p>1 m³ 大概係幾大？Steve 嘅烽火台又有幾大？先睇資訊圖，再做 3 條題目。</p>
+    <p>1 m³ 大概是多大？Steve 的烽火台又有多大？先睇資訊圖，再做 3 條題目。</p>
   </div>
   <div class="info-card">
     <h3>📙 資訊圖 2：1 m³ 真實量感</h3>
     <img src="images/info2.png" alt="資訊圖 2：1 m³ 量感" onclick="zoom(this.src)" />
   </div>
   <div class="q-card" id="qc0">
-    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>1 m³ 大約等於幾多 m × m × m 嘅立方體？以下邊個比喻最接近 1 m³ 嘅實際大細？</h3>
+    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>1 m³ 大約等於多少 m × m × m 的立方體？以下哪一個比喻最接近 1 m³ 的實際大細？</h3>
     <div class="mc-opts" id="mcOpts">
-      <button class="mc-opt" onclick="selectMC(0)">A. 一隻足球嘅大細</button>
-      <button class="mc-opt" onclick="selectMC(1)">B. 大約 4 個小學生企埋同等高度可以裝入嘅空間（1 m × 1 m × 1 m）</button>
+      <button class="mc-opt" onclick="selectMC(0)">A. 一隻足球的大細</button>
+      <button class="mc-opt" onclick="selectMC(1)">B. 大約 4 個小學生企埋同等高度可以裝入的空間（1 m × 1 m × 1 m）</button>
       <button class="mc-opt" onclick="selectMC(2)">C. 一架巴士咁大</button>
       <button class="mc-opt" onclick="selectMC(3)">D. 一個鞋盒咁大</button>
     </div>
     <div class="hint-msg" id="mcHint"></div>
   </div>
   <div class="q-card" id="qc1">
-    <h3>第 2 題<span class="type-badge fill">填充題</span><br>Steve 砌一個 5 m × 4 m × 2 m 嘅烽火台。佢嘅體積係幾多 m³？（只填數字）</h3>
+    <h3>第 2 題<span class="type-badge fill">填充題</span><br>Steve 砌一個 5 m × 4 m × 2 m 的烽火台。他的體積是多少 m³？（只填數字）</h3>
     <div class="fill-box">
       <input type="text" class="fill-input" id="fillInput" placeholder="輸入答案..." />
       <button class="btn purple" onclick="checkFill()">提交</button>
@@ -92,15 +92,15 @@
     <div class="hint-msg" id="fillHint"></div>
   </div>
   <div class="q-card" id="qc2">
-    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：點解一間細細嘅課室入面唔可以淨用 cm³ 量度體積，要用 m³？舉一個比較例子解釋。講 20-30 秒。</h3>
-    <div class="voice-hint">💡 提示：可以咁樣講 👉「課室通常 8 m × 6 m × 3 m，如果用 cm 計就係 800 × 600 × 300 = 144,000,000 cm³，數字超大好難記。所以大空間用 m³，小物件用 cm³。」</div>
+    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：為什麼一間細細的課室入面不可以淨用 cm³ 量度體積，要用 m³？舉一個比較例子解釋。講 20-30 秒。</h3>
+    <div class="voice-hint">💡 提示：可以咁樣講 👉「課室通常 8 m × 6 m × 3 m，如果用 cm 計就是 800 × 600 × 300 = 144,000,000 cm³，數字超大好難記。所以大空間用 m³，小物件用 cm³。」</div>
     <div class="voice-section">
       <div id="envWarn" style="display:none;background:#FFEBEE;border:2px solid #C62828;color:#C62828;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.9rem;"></div>
       <div class="voice-row">
         <button class="btn outline" onclick="testMic()" style="font-size:0.85rem;">🎤 試咪 2 秒</button>
         <button class="btn red" id="recBtn" onclick="startRec()">🎤 開始錄音</button>
         <button class="btn outline" id="stopBtn" onclick="stopRec()" disabled>⏹ 停止</button>
-        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交俾 AI 評分</button>
+        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交給 AI 評分</button>
       </div>
       <div class="rec-status" id="recStatus">按「開始錄音」試下</div>
       <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析。</span></div>
@@ -112,8 +112,8 @@
       </div>
       <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
         <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案</div>
-        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「課室咁大用 cm³ 計會出超大數字（過億），記都記唔到。用 m³ 數字細好多容易理解。」"></textarea>
-        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「課室咁大用 cm³ 計會出超大數字（過億），記都記不到。用 m³ 數字細好多容易理解。」"></textarea>
+        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交給 AI 評分</button>
       </div>
     </div>
   </div>
@@ -130,35 +130,35 @@
 const CHAPTER = 16, PRELEARN_KEY = 'prelearn2';
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev/ask';
 const VOICE_Q = {
-  q: '教一教同學：點解大空間（如課室）要用 m³ 而唔用 cm³ 量度體積？',
+  q: '教一教同學：為什麼大空間（如課室）要用 m³ 而不用 cm³ 量度體積？',
   concept: '大空間如果用 cm³ 計會出超大數字，難讀難記。用 m³ 數字較細較易理解。1 m³ = 1,000,000 cm³。',
   rubric: '講出：用 cm³ 計大空間會出超大數字 + 用 m³ 數字較細較易明（可舉一個比較例子）',
   hint: '講到「大數字 vs 細數字」+ 一個量度單位選擇例子（房 / 課室 / 房間）就合格（~80 分）'
 };
-const MC_CORRECT = 1, MC_HINT = '1 m³ = 1 m × 1 m × 1 m，大約 4 個學生站埋嘅空間。';
+const MC_CORRECT = 1, MC_HINT = '1 m³ = 1 m × 1 m × 1 m，大約 4 個學生站埋的空間。';
 const FILL_ACCEPT = ['40'], FILL_HINT = '5 × 4 × 2 = 40 m³。';
 const answered = { mc:false, fill:false, voice:false };
 let mediaRecorder=null, audioChunks=[], recordStartTime=0, recordTimer=null, recordedBlob=null, voiceData=null;
 
-(function envCheck(){const warn=document.getElementById('envWarn');const msgs=[];if(location.protocol!=='https:'&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1')msgs.push('⚠️ 必須用 HTTPS。');if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)msgs.push('⚠️ 瀏覽器唔支援錄音。');if(!window.MediaRecorder)msgs.push('⚠️ 瀏覽器太舊。');if(msgs.length){warn.innerHTML=msgs.join('<br>');warn.style.display='block';}})();
+(function envCheck(){const warn=document.getElementById('envWarn');const msgs=[];if(location.protocol!=='https:'&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1')msgs.push('⚠️ 必須用 HTTPS。');if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)msgs.push('⚠️ 瀏覽器不支援錄音。');if(!window.MediaRecorder)msgs.push('⚠️ 瀏覽器太舊。');if(msgs.length){warn.innerHTML=msgs.join('<br>');warn.style.display='block';}})();
 
 async function testMic(){const status=document.getElementById('recStatus');status.innerHTML='🔍 檢查中...';try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});status.innerHTML='✅ 麥克風 OK';setTimeout(()=>stream.getTracks().forEach(t=>t.stop()),500);}catch(err){status.innerHTML='❌ '+(err.message||err.name);}}
 
-async function submitText(){const textVal=document.getElementById('textFallback').value.trim();if(textVal.length<8){alert('請至少打字 8 字。');return;}const resEl=document.getElementById('gradeResult');resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 評分中...</div>';const prompt=`你係小學五年級粵語數學老師。
+async function submitText(){const textVal=document.getElementById('textFallback').value.trim();if(textVal.length<8){alert('請至少打字 8 字。');return;}const resEl=document.getElementById('gradeResult');resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 評分中...</div>';const prompt=`你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}
 合格要求：${VOICE_Q.hint}
 
-⚠️ 學生用打字代替錄音。佢嘅答案：
+⚠️ 學生用打字代替錄音。他的答案：
 ${textVal}
 
-評分：講到單位選擇 + 例子 → 80-100；只有概念冇例子 → 50-70；錯誤 → 20-40。
+評分：講到單位選擇 + 例子 → 80-100；只有概念沒有例子 → 50-70；錯誤 → 20-40。
 嚴格返回純 JSON：
-{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"評語（60字內）"}`;try{const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();const reply=data.reply||data.text||'';const result=extractJSON(reply);let score,feedback;if(!result){const has_concept=/(m³|cm³|單位|大|細|數字)/.test(textVal);const has_example=textVal.length>=20&&/(房|課室|車|樓|大廈|游泳池|cm|m)/.test(textVal);score=!has_concept?30:(has_example?75:55);feedback=has_example?'✅ 合格':'⚠️ 少咗例子';}else{score=Math.max(0,Math.min(100,parseInt(result.score)||0));feedback=cleanChineseOnly(result.feedback);}voiceData={transcript:textVal,score,feedback};const color=score>=80?'#2E7D32':score>=60?'#F57F17':'#C62828';const bg=score>=80?'#E8F5E9':score>=60?'#FFF8E1':'#FFEBEE';resEl.innerHTML=`<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};"><div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div><div style="margin-top:6px;color:#333;">${feedback}</div></div>`;if(score>=60){answered.voice=true;document.getElementById('qc2').classList.add('done');checkAllDone();}}catch(e){resEl.innerHTML=`<div style="color:#C62828;">⚠️ ${e.message}</div>`;}}
+{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"評語（60字內）"}`;try{const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();const reply=data.reply||data.text||'';const result=extractJSON(reply);let score,feedback;if(!result){const has_concept=/(m³|cm³|單位|大|細|數字)/.test(textVal);const has_example=textVal.length>=20&&/(房|課室|車|樓|大廈|游泳池|cm|m)/.test(textVal);score=!has_concept?30:(has_example?75:55);feedback=has_example?'✅ 合格':'⚠️ 少了例子';}else{score=Math.max(0,Math.min(100,parseInt(result.score)||0));feedback=cleanChineseOnly(result.feedback);}voiceData={transcript:textVal,score,feedback};const color=score>=80?'#2E7D32':score>=60?'#F57F17':'#C62828';const bg=score>=80?'#E8F5E9':score>=60?'#FFF8E1':'#FFEBEE';resEl.innerHTML=`<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};"><div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div><div style="margin-top:6px;color:#333;">${feedback}</div></div>`;if(score>=60){answered.voice=true;document.getElementById('qc2').classList.add('done');checkAllDone();}}catch(e){resEl.innerHTML=`<div style="color:#C62828;">⚠️ ${e.message}</div>`;}}
 
-function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
-function checkFill(){if(answered.fill)return;const input=document.getElementById('fillInput');const hint=document.getElementById('fillHint');const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=FILL_ACCEPT.some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;answered.fill=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+FILL_HINT;checkAllDone();}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${FILL_HINT}`;setTimeout(()=>input.classList.remove('wrong'),500);}}
+function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
+function checkFill(){if(answered.fill)return;const input=document.getElementById('fillInput');const hint=document.getElementById('fillHint');const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=FILL_ACCEPT.some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;answered.fill=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！'+FILL_HINT;checkAllDone();}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${FILL_HINT}`;setTimeout(()=>input.classList.remove('wrong'),500);}}
 document.getElementById('fillInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkFill();});
 
 async function startRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}document.getElementById('recBtn').disabled=true;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioChunks=[];let options={mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:64000};if(!MediaRecorder.isTypeSupported(options.mimeType))options={audioBitsPerSecond:64000};mediaRecorder=new MediaRecorder(stream,options);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(audioChunks,{type:audioChunks[0]?.type||'audio/webm'});const durationSec=(Date.now()-recordStartTime)/1000;clearInterval(recordTimer);document.getElementById('recBtn').disabled=false;document.getElementById('stopBtn').disabled=true;if(durationSec<3||blob.size<8000){document.getElementById('recStatus').innerHTML='❌ 錄音無效，請重錄';recordedBlob=null;return;}recordedBlob=blob;document.getElementById('recStatus').innerHTML=`✅ 錄音完成（${durationSec.toFixed(1)} 秒）`;document.getElementById('gradeBtn').disabled=false;};mediaRecorder.start();recordStartTime=Date.now();document.getElementById('stopBtn').disabled=false;recordTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recordStartTime)/1000);document.getElementById('recStatus').innerHTML=`🔴 錄音中 ${sec} 秒`;if(sec>=60)stopRec();},250);}catch(err){document.getElementById('recStatus').innerHTML='❌ '+err.message;document.getElementById('recBtn').disabled=false;}}
@@ -169,7 +169,7 @@ function audioBufferToWavBlob(buffer){const numChannels=buffer.numberOfChannels,
 function extractJSON(text){if(!text)return null;const fence=text.match(/```(?:json)?\s*([\s\S]*?)```/);let candidate=fence?fence[1]:text;const start=candidate.indexOf('{'),end=candidate.lastIndexOf('}');if(start!==-1&&end>start){const js=candidate.slice(start,end+1);try{return JSON.parse(js);}catch(_){}try{return JSON.parse(js.replace(/,\s*(\}|\])/g,'$1').replace(/\n/g,' '));}catch(_){}}return null;}
 function cleanChineseOnly(s){if(!s)return '';return String(s).replace(/```[a-z]*|```/gi,'').replace(/\{[^}]*\}/g,'').replace(/^\s*["\{\[]+|["\}\]]+\s*$/g,'').trim();}
 
-async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}const resEl=document.getElementById('gradeResult');const gradeBtn=document.getElementById('gradeBtn');gradeBtn.disabled=true;resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 分析中...</div>';const prompt=`你係小學五年級粵語數學老師。
+async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}const resEl=document.getElementById('gradeResult');const gradeBtn=document.getElementById('gradeBtn');gradeBtn.disabled=true;resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 分析中...</div>';const prompt=`你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}

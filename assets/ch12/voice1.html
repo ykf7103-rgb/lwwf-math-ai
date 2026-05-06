@@ -54,7 +54,7 @@ body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-ser
   <div class="intro">
     <b>🎤 第 12 課 錄音題 1 — 小數乘法</b><br>
     細閱下方資訊圖總結，然後用 <b>20-30 秒粵語</b>回答問題。<br>
-    AI 老師會 <b>自動整理你嘅錄音句子</b>（去重複），再俾分。<b>85+ = 3 金幣 · 70+ = 2 金幣 · 60+ = 1 金幣</b>。
+    AI 老師會 <b>自動整理你的錄音句子</b>（去重複），再給分。<b>85+ = 3 金幣 · 70+ = 2 金幣 · 60+ = 1 金幣</b>。
   </div>
 
   <div class="lo-panel">
@@ -66,12 +66,12 @@ body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-ser
 
   <div class="recorder" id="recorderPanel">
     <h2>🎤 錄音回答（粵語 · 20-30 秒）</h2>
-    <p><b>問題：</b>請用粵語講出乘以 10、100、1000 嘅口訣（小數點向邊個方向移幾多位），並舉一個例子（例：0.36 × 10 等如幾多）。</p>
+    <p><b>問題：</b>請用粵語講出乘以 10、100、1000 的口訣（小數點向哪一個方向移多少位），並舉一個例子（例：0.36 × 10 等於多少）。</p>
     <button class="btn-record" id="recordBtn" onclick="toggleRecord()">🎤 開始錄音</button>
-    <div class="transcript-box" id="transcript"><span class="placeholder">錄音之後，文字會顯示喺呢度...</span></div>
+    <div class="transcript-box" id="transcript"><span class="placeholder">錄音之後，文字會顯示在這裡...</span></div>
     <details style="margin-top:12px;">
       <summary style="cursor:pointer;color:#666;font-size:0.88rem;">🖋️ 不能錄音？改用打字</summary>
-      <textarea class="fallback-textarea" id="fallbackText" placeholder="如果錄音唔得，可以打字代替（最少 20 字）..."></textarea>
+      <textarea class="fallback-textarea" id="fallbackText" placeholder="如果錄音不可以，可以打字代替（最少 20 字）..."></textarea>
     </details>
     <button class="btn-submit" id="submitBtn" onclick="submitGrade()" disabled>✅ 提交評分</button>
   </div>
@@ -83,14 +83,14 @@ body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-ser
       <tr><td>👍 <b>60-69 分</b></td><td>= 1 金幣（合格！再進步）</td></tr>
       <tr><td>💪 <b>0-59 分</b></td><td>= 0 金幣（再嘗試，AI 會比提示）</td></tr>
     </table>
-    <div style="margin-top:8px;font-size:0.82rem;color:#7B1FA2;">💡 AI 會自動整理你嘅錄音重複句子，唔使擔心口齒不清。</div>
+    <div style="margin-top:8px;font-size:0.82rem;color:#7B1FA2;">💡 AI 會自動整理你的錄音重複句子，不使擔心口齒不清。</div>
   </div>
 
   <div class="result" id="resultPanel">
     <div class="score-big" id="scoreBig">--</div>
     <div class="coin-reward" id="coinReward"></div>
     <div class="consolidated-box" id="consolidatedBox" style="display:none;">
-      <b>📝 AI 整理後嘅你嘅回答（保持原意，去除重複）：</b>
+      <b>📝 AI 整理後的你的回答（保持原意，去除重複）：</b>
       <div id="consolidatedText"></div>
     </div>
     <div class="feedback-box" id="feedbackBox"></div>
@@ -103,8 +103,8 @@ body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-ser
 const CHAPTER = 12;
 const VOICE_NUM = 1;
 const TITLE = '小數乘法';
-const QUESTION = `請用粵語講出乘以 10、100、1000 嘅口訣（小數點向邊個方向移幾多位），並舉一個例子（例：0.36 × 10 等如幾多）。`;
-const RUBRIC = `×10 小數點向右移 1 位；×100 向右移 2 位；×1000 向右移 3 位。學生應講出方向（右）+ 移位數同 0 嘅個數對應 + 1 個例子。`;
+const QUESTION = `請用粵語講出乘以 10、100、1000 的口訣（小數點向哪一個方向移多少位），並舉一個例子（例：0.36 × 10 等於多少）。`;
+const RUBRIC = `×10 小數點向右移 1 位；×100 向右移 2 位；×1000 向右移 3 位。學生應講出方向（右）+ 移位數同 0 的個數對應 + 1 個例子。`;
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
 let recognition = null, isRecording = false, transcript = '';
 
@@ -142,7 +142,7 @@ function toggleRecord() { if (isRecording) stopRecord(); else startRecord(); }
 
 function startRecord() {
   if (!recognition) recognition = setupRecognition();
-  if (!recognition) { alert('你嘅瀏覽器唔支援錄音。請用打字代替（下方 textarea）。'); return; }
+  if (!recognition) { alert('你的瀏覽器不支援錄音。請用打字代替（下方 textarea）。'); return; }
   transcript = '';
   document.getElementById('transcript').innerHTML = '<span class="placeholder">聽緊...</span>';
   document.getElementById('transcript').classList.remove('has-content');
@@ -166,7 +166,7 @@ function stopRecord() {
 async function submitGrade() {
   const fallback = document.getElementById('fallbackText').value.trim();
   let finalTranscript = transcript || fallback;
-  if (!finalTranscript || finalTranscript.length < 10) { alert('請錄音或打字最少 10 個字嘅解釋'); return; }
+  if (!finalTranscript || finalTranscript.length < 10) { alert('請錄音或打字最少 10 個字的解釋'); return; }
   if (isRecording) stopRecord();
 
   const submitBtn = document.getElementById('submitBtn');
@@ -236,10 +236,10 @@ function showResult(data, transcriptText) {
 
   let fbHtml = `<b>🤖 AI 老師回應：</b><br>${feedback}`;
   if (data.key_concepts_mentioned && data.key_concepts_mentioned.length) {
-    fbHtml += `<br><br><b>✓ 你提到嘅重點：</b>${data.key_concepts_mentioned.join('、')}`;
+    fbHtml += `<br><br><b>✓ 你提到的重點：</b>${data.key_concepts_mentioned.join('、')}`;
   }
   if (score < 70 && data.missing_concepts && data.missing_concepts.length) {
-    fbHtml += `<br><br><b>💡 提示：</b>建議覆蓋呢啲方向 — ${data.missing_concepts.join('、')}（記住唔好抄答案，要自己用粵語講）`;
+    fbHtml += `<br><br><b>💡 提示：</b>建議覆蓋這些方向 — ${data.missing_concepts.join('、')}（記住不要抄答案，要自己用粵語講）`;
   }
   document.getElementById('feedbackBox').innerHTML = fbHtml;
 
@@ -268,7 +268,7 @@ function showResult(data, transcriptText) {
 
 function resetForRetry() {
   transcript = '';
-  document.getElementById('transcript').innerHTML = '<span class="placeholder">錄音之後，文字會顯示喺呢度...</span>';
+  document.getElementById('transcript').innerHTML = '<span class="placeholder">錄音之後，文字會顯示在這裡...</span>';
   document.getElementById('transcript').classList.remove('has-content');
   document.getElementById('fallbackText').value = '';
   document.getElementById('submitBtn').disabled = true;

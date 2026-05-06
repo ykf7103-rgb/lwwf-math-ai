@@ -84,7 +84,7 @@
   <a href="index.html" class="back">← 返回第15課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 
 <div class="wrap">
@@ -96,7 +96,7 @@
 
   <!-- Quiz overlay appears below the slide image -->
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -110,7 +110,7 @@
   <div class="thumbs" id="thumbs"></div>
 
   <div class="done-banner" id="done">
-    🎉 簡報 1 完成！快啲去做預習 1！
+    🎉 簡報 1 完成！快些去做預習 1！
     <div style="margin-top:10px"><a href="prelearn1.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 1</a></div>
   </div>
 </div>
@@ -119,9 +119,9 @@
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -138,7 +138,7 @@ const SLIDE_QUESTIONS = [
   { afterPage:5, type:'mc', q:'簡報練習：超大水池與一小瓶水比較，哪一邊液體的體積較大？', options:['水池','一小瓶水','兩者相同','液體沒有體積'], correct:0, hint:'水池內的液體佔據極大的空間，故水池的水體積遠大於一小瓶水；液體都有體積，可以比較大小。' },
   // p7: 空氣砲 — 氣體有體積
   { afterPage:7, type:'mc', q:'簡報練習：哆啦A夢的空氣砲將大量氣體壓縮並發射，這個現象說明甚麼？', options:['氣體佔有空間，即氣體有體積','氣體沒有體積','只有液體有體積','空氣不能被壓縮'], correct:0, hint:'空氣砲將氣體壓縮在槍管內並發射出去，證明氣體佔據空間，所以氣體有體積。' },
-  // p10: 挑戰時間 4 選 1 — 邊樣有體積
+  // p10: 挑戰時間 4 選 1 — 哪一種有體積
   { afterPage:10, type:'mc', q:'挑戰時間：以下四樣東西，哪一樣有「體積」？', options:['影子','回憶','紙箱','以上都沒有體積'], correct:2, hint:'影子只是光線被擋住的暗區，不佔空間；回憶存在大腦和思想裡，也不佔空間。紙箱是實體物，佔據空間，故有體積。' },
   // p12: 陷阱揭曉 — 影子+回憶不佔空間
   { afterPage:12, type:'mc', q:'陷阱揭曉：以下哪兩樣東西「不佔空間」，沒有體積？', options:['紙箱與水','影子與回憶','空氣與紙箱','水與空氣'], correct:1, hint:'影子是光線被擋住的暗區（並非實體），回憶存在大腦和思想裡（無形），所以兩者都不佔空間，沒有體積。' },
@@ -220,7 +220,7 @@ function showQuiz(pageNum) {
     html += `<div id="qb${i}" class="quiz-block${done?' done':''}">`;
     html += `<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;
     if (done) {
-      html += `<div class="hint-msg correct">✅ 已答啱</div>`;
+      html += `<div class="hint-msg correct">✅ 已答對</div>`;
     } else if (type === 'fill') {
       html += `<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;
       html += `<div class="hint-msg" id="hm${i}"></div>`;
@@ -235,7 +235,7 @@ function showQuiz(pageNum) {
   });
   quizBody.innerHTML = html;
   const wrongs = slideQuizWrong[pageNum] || 0;
-  wrongNote.textContent = wrongs > 0 ? `⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
+  wrongNote.textContent = wrongs > 0 ? `⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
   quizOv.classList.add('show');
   setTimeout(()=> {
     const firstInput = quizBody.querySelector('.fill-input:not([disabled])');
@@ -265,7 +265,7 @@ function checkMC(qIdx, selected, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     btns[selected].classList.add('wrong');
@@ -293,7 +293,7 @@ function checkFill(qIdx, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     input.classList.remove('wrong'); void input.offsetWidth; input.classList.add('wrong');
@@ -306,7 +306,7 @@ function checkFill(qIdx, pageNum) {
 
 function registerWrong(pageNum) {
   slideQuizWrong[pageNum] = (slideQuizWrong[pageNum] || 0) + 1;
-  wrongNote.textContent = `⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
+  wrongNote.textContent = `⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
   if (slideQuizWrong[pageNum] >= 2) {
     setTimeout(triggerLock, 600);
   }
@@ -435,21 +435,21 @@ document.querySelector('.viewer').addEventListener('touchend', e=>{
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十五課簡報一：哆啦A夢嘅科學教室，今天來認識「體積」！大雄你知道嗎？呢個世界上嘅每一件東西，都藏住一個睇唔見嘅秘密 — 它哋都會「佔空間」！',
-  2: '固體大比拼：誰佔嘅空間比較大？火龍果（超大空間 — 體積大）對奇異果（小巧玲瓏 — 體積小）。用眼睛就睇得出，火龍果比較大，所以它「佔嘅空間」也比較大。黃金法則：物體所佔空間嘅大小，就稱為該物體嘅「體積」。',
-  3: '縮小燈嘅魔法：體積係可以改變嘅！冇錯！當小熊縮小，它擋住嘅空間變少咗，呢個代表它嘅「體積」變小咗！但它依然係一個會佔空間嘅固體喔！',
-  4: '固體例子延續 — 唔同大小嘅固體，體積都唔同。從大到細：水池、桌子、書本、橡皮擦、米粒，都係佔住空間嘅固體，全部都有體積。',
-  5: '液體嘅形狀會變，但依然「佔空間」！呢兩個瓶子一模一樣大，但葡萄汁嘅水位比較高，代表液體佔嘅空間比較多，所以葡萄汁嘅體積較大。',
-  6: '液體繼續探索 — 牛奶杯、水杯、汽水樽，呢啲液體都有體積，可以用容量單位（毫升、升）量度。',
-  7: '超大水池對一小瓶水 — 好涼快啊！呢度嘅水可以裝滿成千上萬個水瓶吧！科學結論：水池入面嘅水佔據咗極大嘅空間，所以水池內液體嘅「體積」遠遠大於水瓶內液體嘅體積。',
-  8: '液體同氣體都會佔空間 — 即使我哋睇唔到氣體，它嘅存在依然會「佔空間」。下一頁將會用空氣砲示範。',
-  9: '轟！空氣砲嘅威力！我哋雖然睇唔見空氣，但絕對能感受到它！空氣砲將大量嘅氣體壓縮喺一個空間裡發射出去。氣體絕對有體積！',
-  10: '氣體繼續探索 — 氣球入面嘅空氣、輪胎入面嘅氣體、汽水樽入面嘅二氧化碳氣泡，呢啲氣體全部都會佔住空間，所以全部都有體積。',
-  11: '哆啦A夢嘅體積定律！蘋果（固體）加水（液體）加氣球（氣體）等如「佔據空間」。「有體積」嘅意思，就等於「會佔空間」！不管它係硬嘅（固體）、流動嘅（液體）還是飄浮嘅（氣體），只要它係真實存在嘅物質，就一定有體積。',
-  12: '固液氣三態整合 — 三種狀態嘅物質都會佔空間，唯一差別係它哋嘅形狀同流動性，但體積概念對三者都通用。',
-  13: '動動腦！想像把它們裝進箱子裡 — 把影子放進櫃子裡，櫃子會滿嗎？把回憶塞進書包裡，書包會變重嗎？呢啲嘢有冇體積？',
-  14: '正確答案：紙箱與水都有體積！紙箱（固體）：放喺房間裡，你走路就得繞過它。水（液體）：倒進杯子裡，杯子嘅空間就會變少。它哋實實在在地擋住咗空間，所以絕對有體積。但影子同回憶都唔佔實際空間，所以冇體積。',
-  15: '宇宙不變嘅真理：萬物皆有體積！記住今日嘅秘密：不管你係固體、液體還是氣體，只要你存在呢個世界上，你就會「佔空間」！呢個就係你嘅體積。'
+  1: '歡迎來到第十五課簡報一：哆啦A夢的科學教室，今天來認識「體積」！大雄你知道嗎？這個世界上的每一件東西，都藏住一個睇不見的秘密 — 它們都會「佔空間」！',
+  2: '固體大比拼：誰佔的空間比較大？火龍果（超大空間 — 體積大）對奇異果（小巧玲瓏 — 體積小）。用眼睛就睇得出，火龍果比較大，所以它「佔的空間」也比較大。黃金法則：物體所佔空間的大小，就稱為該物體的「體積」。',
+  3: '縮小燈的魔法：體積是可以改變的！沒有錯！當小熊縮小，它擋住的空間變少了，這個代表它的「體積」變小了！但它依然是一個會佔空間的固體喔！',
+  4: '固體例子延續 — 不同大小的固體，體積都不同。從大到細：水池、桌子、書本、橡皮擦、米粒，都是佔住空間的固體，全部都有體積。',
+  5: '液體的形狀會變，但依然「佔空間」！這兩個瓶子一模一樣大，但葡萄汁的水位比較高，代表液體佔的空間比較多，所以葡萄汁的體積較大。',
+  6: '液體繼續探索 — 牛奶杯、水杯、汽水樽，這些液體都有體積，可以用容量單位（毫升、升）量度。',
+  7: '超大水池對一小瓶水 — 好涼快啊！這裡的水可以裝滿成千上萬個水瓶吧！科學結論：水池入面的水佔據了極大的空間，所以水池內液體的「體積」遠遠大於水瓶內液體的體積。',
+  8: '液體同氣體都會佔空間 — 即使我們睇不到氣體，它的存在依然會「佔空間」。下一頁將會用空氣砲示範。',
+  9: '轟！空氣砲的威力！我們雖然睇不見空氣，但絕對能感受到它！空氣砲將大量的氣體壓縮在一個空間裡發射出去。氣體絕對有體積！',
+  10: '氣體繼續探索 — 氣球入面的空氣、輪胎入面的氣體、汽水樽入面的二氧化碳氣泡，這些氣體全部都會佔住空間，所以全部都有體積。',
+  11: '哆啦A夢的體積定律！蘋果（固體）加水（液體）加氣球（氣體）等於「佔據空間」。「有體積」的意思，就等於「會佔空間」！不管它是硬的（固體）、流動的（液體）還是飄浮的（氣體），只要它是真實存在的物質，就一定有體積。',
+  12: '固液氣三態整合 — 三種狀態的物質都會佔空間，唯一差別是它們的形狀同流動性，但體積概念對三者都通用。',
+  13: '動動腦！想像把它們裝進箱子裡 — 把影子放進櫃子裡，櫃子會滿嗎？把回憶塞進書包裡，書包會變重嗎？這些東西有沒有體積？',
+  14: '正確答案：紙箱與水都有體積！紙箱（固體）：放在房間裡，你走路就得繞過它。水（液體）：倒進杯子裡，杯子的空間就會變少。它們實實在在地擋住了空間，所以絕對有體積。但影子同回憶都不佔實際空間，所以沒有體積。',
+  15: '宇宙不變的真理：萬物皆有體積！記住今日的秘密：不管你是固體、液體還是氣體，只要你存在這個世界上，你就會「佔空間」！這個就是你的體積。'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

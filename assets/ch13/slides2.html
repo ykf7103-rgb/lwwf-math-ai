@@ -70,13 +70,13 @@
   <a href="index.html" class="back">← 返回第13課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
   <div class="viewer"><img id="slide" class="slide-img" src="pages/slides2_p01.jpg" alt="第 1 頁" /></div>
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -87,38 +87,38 @@
   </div>
   <div class="thumbs" id="thumbs"></div>
   <div class="done-banner" id="done">
-    🎉 簡報 2 完成！快啲去做預習 2！
+    🎉 簡報 2 完成！快些去做預習 2！
     <div style="margin-top:10px"><a href="prelearn2.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 2</a></div>
   </div>
 </div>
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
 <script>
 const PREFIX = 'slides2', TOTAL = 15, CHAPTER = 13, DECK_KEY = 'slides2';
-// 新格式 Q array — 對齊 NLM JPG 嘅 八戒 兩位小數×整數
+// 新格式 Q array — 對齊 NLM JPG 的 八戒 兩位小數×整數
 // p05/p07/p09/p11/p13 = Q 頁 + 額外估算題；p06/p08/p10/p12/p14 = A 頁
 const SLIDE_QUESTIONS = [
   // p05 Q1: 八戒買點心 0.45 × 6
-  { afterPage:5, type:'mc', q:'八戒買點心 Q1：酥脆小麻花每包 0.45 元，買 6 包要幾錢？(0.45 × 6 = ?)', options:['0.27','2.70','27.0','270'], correct:1, hint:'45 × 6 = 270，兩位小數（試下計，再 check 估算）（諗下邊個啱）' },
+  { afterPage:5, type:'mc', q:'八戒買點心 Q1：酥脆小麻花每包 0.45 元，買 6 包要多少錢？(0.45 × 6 = ?)', options:['0.27','2.70','27.0','270'], correct:1, hint:'45 × 6 = 270，兩位小數（試下計，再 check 估算）（想下哪一個對）' },
   { afterPage:5, type:'mc', q:'🔍 八戒估算：0.45 約成 0.5，0.5 × 6 ≈ ?', options:['0.3','3','30','45'], correct:1, hint:'0.5 × 6 = 3（再 check 實際答案）' },
   // p07 Q2: 八戒買蘋果 1.25 × 8
-  { afterPage:7, type:'mc', q:'八戒買蘋果 Q2：紅蘋果每顆 1.25 元，買 8 顆要幾錢？(1.25 × 8 = ?)', options:['1.00','10.00','100.0','1000'], correct:1, hint:'125 × 8 = 1000，兩位小數（自己試吓） （試下計）（諗下邊個啱）' },
-  { afterPage:7, type:'mc', q:'🔍 估算：1.25 約成 1，1 × 8 = ? (用嚟 check 答案範圍)', options:['1','8','10','12'], correct:1, hint:'1 × 8 = 8（再 check 實際答案）' },
+  { afterPage:7, type:'mc', q:'八戒買蘋果 Q2：紅蘋果每顆 1.25 元，買 8 顆要多少錢？(1.25 × 8 = ?)', options:['1.00','10.00','100.0','1000'], correct:1, hint:'125 × 8 = 1000，兩位小數（自己試吓） （試下計）（想下哪一個對）' },
+  { afterPage:7, type:'mc', q:'🔍 估算：1.25 約成 1，1 × 8 = ? (用來 check 答案範圍)', options:['1','8','10','12'], correct:1, hint:'1 × 8 = 8（再 check 實際答案）' },
   // p09 Q3: 八戒買葡萄 2.07 × 5（填充，注意中間 0）
-  { afterPage:9, type:'fill', q:'八戒買葡萄 Q3（小心中間嘅 0！）：2.07 × 5 = ___', accept:['10.35','10.350'], hint:'207 × 5 = 1035，兩位小數（自己試吓）（中間個 0 唔可以漏！）' },
+  { afterPage:9, type:'fill', q:'八戒買葡萄 Q3（小心中間的 0！）：2.07 × 5 = ___', accept:['10.35','10.350'], hint:'207 × 5 = 1035，兩位小數（自己試吓）（中間個 0 不可以漏！）' },
   { afterPage:9, type:'mc', q:'🔍 估算：2.07 約成 2，2 × 5 = ?', options:['1','5','10','20'], correct:2, hint:'2 × 5 = 10（再 check 實際答案）' },
   // p11 Q4: 八戒買芒果（應用題）3.85 × 4
-  { afterPage:11, type:'mc', q:'八戒買芒果 Q4：每隻 3.85 元，買 4 隻共幾錢？', options:['15.40 元','14.40 元','1.54 元','154.0 元'], correct:0, hint:'385 × 4 = 1540，兩位小數（試下計，再 check 估算）（諗下邊個啱）' },
+  { afterPage:11, type:'mc', q:'八戒買芒果 Q4：每隻 3.85 元，買 4 隻共多少錢？', options:['15.40 元','14.40 元','1.54 元','154.0 元'], correct:0, hint:'385 × 4 = 1540，兩位小數（試下計，再 check 估算）（想下哪一個對）' },
   { afterPage:11, type:'mc', q:'🔍 估算：3.85 約成 4，4 × 4 = ?', options:['8','12','16','40'], correct:2, hint:'4 × 4 = 16（再 check 實際答案）' },
   // p13 Q5: 八戒買哈密瓜（終極陷阱）7.06 × 9
-  { afterPage:13, type:'mc', q:'八戒買哈密瓜 Q5（終極陷阱！）：7.06 × 9 = ?', options:['63.54','635.4','6.354','63.04'], correct:0, hint:'706 × 9 = 6354，兩位小數（自己試吓）（諗下邊個啱）。學生常錯：返 1 位變 635.4，或漏中間 0 變 63.04' },
+  { afterPage:13, type:'mc', q:'八戒買哈密瓜 Q5（終極陷阱！）：7.06 × 9 = ?', options:['63.54','635.4','6.354','63.04'], correct:0, hint:'706 × 9 = 6354，兩位小數（自己試吓）（想下哪一個對）。學生常錯：返 1 位變 635.4，或漏中間 0 變 63.04' },
   { afterPage:13, type:'mc', q:'🔍 估算 check：7.06 約成 7，7 × 9 = ?', options:['16','45','63','70'], correct:2, hint:'7 × 9 = 63（再 check 實際答案）' }
 ];
 let idx = 0;
@@ -129,10 +129,10 @@ function getUnansweredQ(pageNum){const qs=SLIDE_QUESTIONS.filter(x=>x.afterPage=
 function buildThumbs(){thumbsEl.innerHTML='';for(let i=0;i<TOTAL;i++){const t=document.createElement('div');t.className='thumb';t.style.backgroundImage=`url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;t.onclick=()=>goto(i);const num=document.createElement('div');num.className='thumb-num';num.textContent=i+1;t.appendChild(num);thumbsEl.appendChild(t);}}
 function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';
   speakPage(idx + 1);[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
-function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答啱</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
-function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
-function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
-function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
+function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答對</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
+function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
+function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
+function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
 function triggerLock(){lockModal.classList.add('show');}
 function goBackToStart(){Object.keys(slideQuizAnswered).forEach(k=>delete slideQuizAnswered[k]);Object.keys(slideQuizWrong).forEach(k=>delete slideQuizWrong[k]);lockModal.classList.remove('show');idx=0;render();window.scrollTo({top:0,behavior:'smooth'});}
 function autoAdvance(pageNum){setTimeout(()=>{const uq=getUnansweredQ(pageNum);if(!uq){setTimeout(()=>{quizOv.classList.remove('show');if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{const newQ=getUnansweredQ(idx+1);if(newQ)showQuiz(idx+1);},400);}else{doneBanner.classList.add('show');markDone();}},700);}},250);}
@@ -164,21 +164,21 @@ document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.cha
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十三課簡報二：八戒買果記，小數乘法之兩位小數同整數嘅乘法運算，重點係直式計算同估算結果。',
+  1: '歡迎來到第十三課簡報二：八戒買果記，小數乘法之兩位小數同整數的乘法運算，重點是直式計算同估算結果。',
   2: '八戒買水蜜桃 — 仙界水蜜桃每顆 2.45 元，買 3 顆。算式 2.45 乘 3。三大步驟：無視小數點，將 2.45 變返整數 245；當作整數計算；最後返返小數點，因為兩位小數，向左移返 2 位。',
-  3: '直式列法步驟逐步分解 — 步驟一：尾巴對齊（乘法直式時暫時忽略小數點）。步驟二：整數計算，245 乘 3 等如 735。步驟三：返返小數點 2 位。',
-  4: '防騙神技 — 買前先估算！檢查自己有冇點錯小數點位置。將 2.45 約成 2，2 乘 3 等如 6，所以實際答案應該接近 6 多少少。如果計到 73.5 元就絕對係算錯。',
-  5: '八戒買點心挑戰一 — 0.45 乘 6 等如幾多？酥脆小麻花每包 0.45 元，八戒想買 6 包俾沙僧。先估算：0.45 約成 0.5，0.5 乘 6 大約幾多？再揀啱答案。',
-  6: '答案分析：直式計 45 乘 6 等如 270，因為兩位小數，答案返返小數點 2 位變成 2.70 元。估算驗證：0.5 乘 6 等如 3，實際接近 3 元範圍。',
-  7: '八戒買蘋果挑戰二 — 1.25 乘 8 等如幾多？紅蘋果每顆 1.25 元，八戒一次買咗 8 顆。先估算：1.25 約成 1，1 乘 8 範圍係幾多？',
-  8: '答案分析：直式計 125 乘 8 等如 1000，因為兩位小數，答案返返小數點 2 位變成 10.00 元。估算驗證：1 乘 8 等如 8，實際接近 10，合理。',
-  9: '八戒買葡萄挑戰三填充題 — 2.07 乘 5 等如多少？小心中間嘅 0！紫葡萄一串 2.07 元，買咗 5 串。估算：2.07 約成 2，2 乘 5 等如 10，所以答案大概 10 多一點。',
-  10: '答案分析：直式計 207 乘 5 等如 1035，注意中間 0 唔可以漏；因為兩位小數，答案返返小數點 2 位。估算驗證符合「10 多一點」嘅範圍。',
-  11: '八戒買芒果挑戰四應用題 — 市集大芒果每隻 3.85 元，買 4 隻。總金額幾多？先估算：3.85 接近 4，4 乘 4 等如 16，所以答案應該接近 16。八戒錢袋有 20 元，夠唔夠付？',
-  12: '答案分析：直式計 385 乘 4 等如 1540，因為兩位小數，答案返返小數點 2 位。估算驗證接近 16，合理。',
-  13: '八戒買哈密瓜終極陷阱題 — 7.06 乘 9 等如幾多？頂級哈密瓜每粒 7.06 元，買 9 粒。估算：7.06 約成 7，7 乘 9 等如 63，睇下邊個選項最合理。其中一個選項 635.4 有警告⚠，明顯係小數點位置擺錯。',
-  14: '答案分析：直式計 706 乘 9 等如 6354，因為兩位小數，答案返返小數點 2 位。估算驗證接近 63，合理。635.4 同 6.354 都係小數點點錯位置嘅陷阱。',
-  15: '八戒嘅生果帳本滿分秘訣！秘訣 1：直式尾巴對齊，把小數當整數寫，無視小數點。秘訣 2：兩位小數乘整數，答案小數點向左跳返 2 位。秘訣 3：算前先四捨五入估算，秒殺錯小數點嘅離譜答案。'
+  3: '直式列法步驟逐步分解 — 步驟一：尾巴對齊（乘法直式時暫時忽略小數點）。步驟二：整數計算，245 乘 3 等於 735。步驟三：返返小數點 2 位。',
+  4: '防騙神技 — 買前先估算！檢查自己有沒有點錯小數點位置。將 2.45 約成 2，2 乘 3 等於 6，所以實際答案應該接近 6 多少少。如果計到 73.5 元就絕對是算錯。',
+  5: '八戒買點心挑戰一 — 0.45 乘 6 等於多少？酥脆小麻花每包 0.45 元，八戒想買 6 包給沙僧。先估算：0.45 約成 0.5，0.5 乘 6 大約多少？再選對答案。',
+  6: '答案分析：直式計 45 乘 6 等於 270，因為兩位小數，答案返返小數點 2 位變成 2.70 元。估算驗證：0.5 乘 6 等於 3，實際接近 3 元範圍。',
+  7: '八戒買蘋果挑戰二 — 1.25 乘 8 等於多少？紅蘋果每顆 1.25 元，八戒一次買了 8 顆。先估算：1.25 約成 1，1 乘 8 範圍是多少？',
+  8: '答案分析：直式計 125 乘 8 等於 1000，因為兩位小數，答案返返小數點 2 位變成 10.00 元。估算驗證：1 乘 8 等於 8，實際接近 10，合理。',
+  9: '八戒買葡萄挑戰三填充題 — 2.07 乘 5 等於多少？小心中間的 0！紫葡萄一串 2.07 元，買了 5 串。估算：2.07 約成 2，2 乘 5 等於 10，所以答案大概 10 多一點。',
+  10: '答案分析：直式計 207 乘 5 等於 1035，注意中間 0 不可以漏；因為兩位小數，答案返返小數點 2 位。估算驗證符合「10 多一點」的範圍。',
+  11: '八戒買芒果挑戰四應用題 — 市集大芒果每隻 3.85 元，買 4 隻。總金額多少？先估算：3.85 接近 4，4 乘 4 等於 16，所以答案應該接近 16。八戒錢袋有 20 元，夠不夠付？',
+  12: '答案分析：直式計 385 乘 4 等於 1540，因為兩位小數，答案返返小數點 2 位。估算驗證接近 16，合理。',
+  13: '八戒買哈密瓜終極陷阱題 — 7.06 乘 9 等於多少？頂級哈密瓜每粒 7.06 元，買 9 粒。估算：7.06 約成 7，7 乘 9 等於 63，睇下哪一個選項最合理。其中一個選項 635.4 有警告⚠，明顯是小數點位置擺錯。',
+  14: '答案分析：直式計 706 乘 9 等於 6354，因為兩位小數，答案返返小數點 2 位。估算驗證接近 63，合理。635.4 同 6.354 都是小數點點錯位置的陷阱。',
+  15: '八戒的生果帳本滿分秘訣！秘訣 1：直式尾巴對齊，把小數當整數寫，無視小數點。秘訣 2：兩位小數乘整數，答案小數點向左跳返 2 位。秘訣 3：算前先四捨五入估算，秒殺錯小數點的離譜答案。'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

@@ -168,9 +168,9 @@ body{
   <h2>西天取經路 · 一位小數 × 整數</h2>
   <img src="images/monkey_think.png" class="hero" alt="悟空">
   <div class="intro">
-    🚪 唐僧迷失喺一個有 10 間密室嘅迷宮入面！每間房有 4 道門 — 揀啱嘅算式答案，先打得開正確嘅門出去。
+    🚪 唐僧迷失在一個有 10 間密室的迷宮入面！每間房有 4 道門 — 選對的算式答案，先打得開正確的門出去。
     <br><br>
-    ❤️ <b>3 條命</b>：揀錯 3 次要由頭再嚟過。
+    ❤️ <b>3 條命</b>：選錯 3 次要由頭再來過。
     <br>
     🏆 行到最後一間房就到達 <b>西天</b>！
   </div>
@@ -264,7 +264,7 @@ const ROOMS = [
     q:'3.4 × 2 = ?', options:['6.8','0.68','68','3.42'], correct:0,
     explain:'34 × 2 = 68，一位小數 → 6.8' },
   { emoji:'🍓', name:'士多啤梨園', char:'pigsy',
-    q:'每條士多啤梨 0.8 元，買 7 條要幾多錢？', options:['$5.6','$0.56','$56','$7.8'], correct:0,
+    q:'每條士多啤梨 0.8 元，買 7 條要多少錢？', options:['$5.6','$0.56','$56','$7.8'], correct:0,
     explain:'0.8 × 7 = 5.6（元），一位小數' },
   { emoji:'🎋', name:'青竹繩橋', char:'sandy',
     q:'一條繩子長 4.2 米，5 條總長度？', options:['$21','21米','2.1米','210米'], correct:1,
@@ -370,7 +370,7 @@ function chooseDoor(idx) {
 
   if (idx === room.correct) {
     state.score += 10;
-    document.getElementById('hintMsg').textContent = '🚪 門打開咗！';
+    document.getElementById('hintMsg').textContent = '🚪 門打開了！';
     document.getElementById('explanation').innerHTML = `✅ 正確！<br>${room.explain}`;
     document.getElementById('explanation').classList.add('show');
     document.getElementById('nextBtn').classList.add('show');
@@ -380,7 +380,7 @@ function chooseDoor(idx) {
     // Update lives display immediately (UX)
     const lampsHtml = [0,1,2].map(i => `<span class="lamp${i >= state.lives ? ' lost' : ''}">🕯️</span>`).join('');
     document.getElementById('livesBox').innerHTML = lampsHtml;
-    document.getElementById('hintMsg').textContent = '❌ 揀錯門！再睇清楚算式';
+    document.getElementById('hintMsg').textContent = '❌ 選錯門！再睇清楚算式';
 
     // Track wrong (Supabase)
     if (window.LWWFWrong) {
@@ -393,7 +393,7 @@ function chooseDoor(idx) {
       }).catch(() => null);
     }
 
-    document.getElementById('explanation').innerHTML = `❌ 揀錯咗！正確答案：<b>${room.options[room.correct]}</b><br>${room.explain}<br>💡 用呢個提示再衝下一關`;
+    document.getElementById('explanation').innerHTML = `❌ 選錯了！正確答案：<b>${room.options[room.correct]}</b><br>${room.explain}<br>💡 用這個提示再衝下一關`;
     document.getElementById('explanation').classList.add('show');
 
     if (state.lives <= 0) {

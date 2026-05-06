@@ -147,7 +147,7 @@ const SLIDE_QUESTIONS = [
     hint:'填補法：200 − 32 = 168 cm³。' },
 
   // p9 第三戰：U 型立體（總寬 14 m、總高 11 m、厚度 5 m）— 分割法
-  { afterPage:9, type:'mc', q:'第三戰：U 型立體（總寬 14 m、總高 11 m、厚度 5 m，左柱寬 5 m、右柱寬 3 m）— 適合用分割法切成幾個部分？',
+  { afterPage:9, type:'mc', q:'第三戰：U 型立體（總寬 14 m、總高 11 m、厚度 5 m，左柱寬 5 m、右柱寬 3 m）— 適合用分割法切成多少個部分？',
     options:['2 個部分','3 個部分（A、B、C）','4 個部分','切不開'], correct:1,
     hint:'U 型立體可分成左柱 A、右柱 B、底部 C 三個長方體。' },
   { afterPage:9, type:'mc', q:'分割法計算：U 型立體的總體積是多少？（左柱 5×5×5 + 右柱 3×5×5 + 底部 14×5×6）',
@@ -173,7 +173,7 @@ const SLIDE_QUESTIONS = [
   // p15 🎤 Voice question (Feynman 教學法)
   { afterPage:15, type:'voice',
     q:'🎤 小智挑戰：用 Feynman 方法，假設你是老師，教同學如何計算階梯立體（3 個邊長 8 cm 的正方體組成）的體積。講 20-30 秒。',
-    concept:'分割法 = 把不規則立體切成幾個簡單長方體，分別計算後加總',
+    concept:'分割法 = 把不規則立體切成多少個簡單長方體，分別計算後加總',
     rubric:'講出：分割成 3 個正方體、每個 8×8×8=512、合計 3×512=1536 cm³',
     hint:'講到答案 1536 cm³ + 解釋分割法原理就達標！例如「將立體切成 3 個邊長 8 cm 的正方體，每個體積 = 8×8×8 = 512 cm³，3 個相加 = 1536 cm³」就達標（~80 分）。再加上「分割法適合凸出多塊的不規則立體」會得到更高分 💪' }
 ];
@@ -356,7 +356,7 @@ async function checkVoice(qIdx, pageNum) {
   hint.className = 'hint-msg';
   hint.style.cssText = 'background:#FFF3E0;color:#E65100;padding:8px;border-radius:6px;display:block;';
   hint.innerHTML = '🤖 小智評分中...';
-  const prompt = `學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept || ''}\n評分要點：${q.rubric || ''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；冇關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;
+  const prompt = `學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept || ''}\n評分要點：${q.rubric || ''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；沒有關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;
   try {
     const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
       method: 'POST', headers: {'Content-Type':'application/json'},

@@ -76,7 +76,7 @@
   <div class="scene">
     <div class="start-screen" id="startScreen">
       <h2>🛒 美冴的購物代數挑戰</h2>
-      <p>🌸 美冴帶住小新去春日部超市買嘢！<br>每件物品有未知數量／價錢，揀啱<b>正確嘅代數式</b>。<br>每題 <b>8 秒</b>內答；連對 +bonus，連錯 5 次要重頭來過！</p>
+      <p>🌸 美冴帶住小新去春日部超市買東西！<br>每件物品有未知數量／價錢，選對<b>正確的代數式</b>。<br>每題 <b>8 秒</b>內答；連對 +bonus，連錯 5 次要重頭來過！</p>
       <button class="start-btn" onclick="startGame()">🛍️ 開始購物</button>
     </div>
     <div class="play-screen" id="playScreen">
@@ -217,7 +217,7 @@ function answer(idx) {
     const gained = 10 + speedBonus + streakBonus;
     score += gained;
     els.fb.className = 'feedback right show';
-    els.fb.innerHTML = `✅ 啱晒！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
+    els.fb.innerHTML = `✅ 對晒！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
   } else {
     buttons[idx].classList.add('wrong');
     buttons[q.cor].classList.add('correct');
@@ -265,7 +265,7 @@ function endGame(reason) {
   els.playScreen.classList.remove('active');
   els.endScreen.classList.add('active');
   if (reason === 'lock') {
-    els.endTitle.textContent = '🔒 連錯 5 次！美冴叫你由頭嚟過！';
+    els.endTitle.textContent = '🔒 連錯 5 次！美冴叫你由頭來過！';
   } else {
     els.endTitle.textContent = '🛒 滿載而歸！完成購物！';
   }

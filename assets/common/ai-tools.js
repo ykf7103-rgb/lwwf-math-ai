@@ -6,11 +6,11 @@
 //   <script src="../common/wrong-tracker.js"></script>
 //   <script src="../common/ai-tools.js"></script>
 //
-//   <!-- 喺 ai-help.html 加 3 個掣 -->
+//   <!-- 在 ai-help.html 加 3 個掣 -->
 //   <div class="ai-tools-row">
 //     <button onclick="LWWFAITools.openOcr()">📷 拍題目自動轉 MC</button>
-//     <button onclick="LWWFAITools.openWrongList(13)">📝 我嘅錯題練習</button>
-//     <button id="speakBtn">🔊 唸返呢條題目</button>
+//     <button onclick="LWWFAITools.openWrongList(13)">📝 我的錯題練習</button>
+//     <button id="speakBtn">🔊 唸返這條題目</button>
 //   </div>
 //   <div id="ai-tools-modal-host"></div>
 //
@@ -96,10 +96,10 @@
       <button class="ait-close" onclick="LWWFAITools.closeModal()">×</button>
       <h2>📷 拍題目自動轉 MC</h2>
       <p style="color:#666;margin-bottom:12px;font-size:0.92rem;line-height:1.6">
-        揀張題目相片（課本／工作紙），AI 會自動辨認題目，幫你出 4 選 1 嘅 MC 練習題。
+        選張題目相片（課本／工作紙），AI 會自動辨認題目，幫你出 4 選 1 的 MC 練習題。
       </p>
       <label class="ait-fileinput">
-        📷 揀相片 / 影相
+        📷 選相片 / 影相
         <input type="file" accept="image/*" onchange="LWWFAITools._handleOcrFile(event)">
       </label>
       <div id="ait-ocr-status"></div>
@@ -164,7 +164,7 @@
     chapter = chapter || window.LWWF_CURRENT_CHAPTER || 13;
     openModal(`
       <button class="ait-close" onclick="LWWFAITools.closeModal()">×</button>
-      <h2>📝 我嘅錯題練習</h2>
+      <h2>📝 我的錯題練習</h2>
       <div id="ait-wl-status" class="ait-status">⏳ 載入錯題中...</div>
       <div id="ait-wl-result"></div>
     `);
@@ -186,7 +186,7 @@
       }
 
       status.className = 'ait-status success';
-      status.innerHTML = `✅ POE 出咗 ${data.retries.length} 條 retry 題（${data.provider}）`;
+      status.innerHTML = `✅ POE 出了 ${data.retries.length} 條 retry 題（${data.provider}）`;
 
       const html = data.retries.map((r, idx) => `
         <div class="ait-retry-item" data-id="${r.id}">
@@ -194,7 +194,7 @@
           <div class="ait-q">📝 ${r.question}</div>
           <div class="ait-hint">💡 ${r.hint || ''}</div>
           <div class="ait-input-row">
-            <input id="ait-wl-ans-${idx}" placeholder="你嘅答案">
+            <input id="ait-wl-ans-${idx}" placeholder="你的答案">
             <button onclick="LWWFAITools._checkRetry(${idx}, ${JSON.stringify(String(r.answer)).replace(/"/g, '&quot;')}, ${r.id || 'null'})">提交</button>
           </div>
           <div class="ait-explain" id="ait-wl-fb-${idx}"></div>
@@ -224,7 +224,7 @@
     } else {
       fb.style.background = '#FFCDD2';
       fb.style.color = '#B71C1C';
-      fb.innerHTML = `❌ 唔啱。正確答案 = <b>${correctAnswer}</b>。再試一次！`;
+      fb.innerHTML = `❌ 不對。正確答案 = <b>${correctAnswer}</b>。再試一次！`;
     }
   }
 

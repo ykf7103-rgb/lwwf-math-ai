@@ -99,18 +99,18 @@
   </div>
   <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
   <div class="scene">
-    <div class="speech" id="hint">幫哆啦A夢偵察！睇下呢樣嘢嘅狀態係咩，揀「固體 / 液體 / 氣體 / 冇體積」。<br><b>記住：固/液/氣都有體積，但影子之類冇體積！</b></div>
+    <div class="speech" id="hint">幫哆啦A夢偵察！睇下這樣東西的狀態是咩，選「固體 / 液體 / 氣體 / 沒有體積」。<br><b>記住：固/液/氣都有體積，但影子之類沒有體積！</b></div>
     <div class="item-display">
       <img class="item-img" id="itemImg" src="" alt="" style="display:none">
       <span class="item-emoji" id="itemEmoji" style="display:none">📦</span>
       <div class="item-name" id="itemName">物件</div>
-      <div class="item-question">呢樣嘢屬咩狀態？</div>
+      <div class="item-question">這樣東西屬咩狀態？</div>
     </div>
     <div class="options">
       <button class="opt solid" data-cat="solid" onclick="answer('solid')">🪨 固體</button>
       <button class="opt liquid" data-cat="liquid" onclick="answer('liquid')">💧 液體</button>
       <button class="opt gas" data-cat="gas" onclick="answer('gas')">💨 氣體</button>
-      <button class="opt none" data-cat="none" onclick="answer('none')">❌ 冇體積</button>
+      <button class="opt none" data-cat="none" onclick="answer('none')">❌ 沒有體積</button>
     </div>
     <div class="feedback" id="fb"></div>
     <button class="next-btn" id="nextBtn" onclick="nextQ()">下一題 ▶</button>
@@ -125,9 +125,9 @@
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>哆啦A夢話：要由頭再嚟！</h2>
-    <p>你已經錯咗 <b>5 次</b>。要由第 1 題重頭做，加深印象。</p>
-    <button onclick="restart()">🔁 由頭再嚟</button>
+    <h2>哆啦A夢話：要由頭再來！</h2>
+    <p>你已經錯了 <b>5 次</b>。要由第 1 題重頭做，加深印象。</p>
+    <button onclick="restart()">🔁 由頭再來</button>
   </div>
 </div>
 <script>
@@ -135,16 +135,16 @@ const CHAPTER = 15, GAME_KEY = 'game1';
 
 // 10 items 嚴格按本課 LO（固/液/氣 + 反例）
 const ITEMS = [
-  { img: 'images/apple.png',       emoji: '🍎', name: '蘋果', cat: 'solid', hint: '蘋果係固體，佔咗檯面空間 → 有體積（固體）' },
-  { img: 'images/water_glass.png', emoji: '💧', name: '一杯水', cat: 'liquid', hint: '水係液體，佔咗杯嘅空間 → 有體積（液體）' },
-  { img: 'images/balloon.png',     emoji: '🎈', name: '吹脹咗嘅氣球', cat: 'gas', hint: '氣球入面嘅空氣係氣體，佔咗氣球空間 → 有體積（氣體）' },
-  { img: 'images/shadow.png',      emoji: '👤', name: '影子', cat: 'none', hint: '影子只係光被擋住嘅暗區，唔佔空間 → 冇體積' },
-  { img: 'images/orange.png',      emoji: '🍊', name: '一個橙', cat: 'solid', hint: '橙係固體，佔空間 → 有體積（固體）' },
-  { img: 'images/juice_cup.png',   emoji: '🥤', name: '杯裝橙汁', cat: 'liquid', hint: '橙汁係液體，杯入面佔咗空間 → 有體積（液體）' },
-  { img: 'images/cloud.png',       emoji: '☁️', name: '一朵雲（水蒸氣）', cat: 'gas', hint: '雲係水蒸氣（氣體），佔咗天空空間 → 有體積（氣體）' },
-  { img: 'images/rainbow.png',     emoji: '🌈', name: '彩虹', cat: 'none', hint: '彩虹係光線折射現象，唔係物件，唔佔空間 → 冇體積' },
-  { img: 'images/milk_glass.png',  emoji: '🥛', name: '一杯牛奶', cat: 'liquid', hint: '牛奶係液體，佔杯嘅空間 → 有體積（液體）' },
-  { img: 'images/air_blast.png',   emoji: '💨', name: '哆啦A夢空氣砲射出嘅氣', cat: 'gas', hint: '空氣砲射出嘅都係氣體，會佔空間 → 有體積（氣體）' }
+  { img: 'images/apple.png',       emoji: '🍎', name: '蘋果', cat: 'solid', hint: '蘋果是固體，佔了檯面空間 → 有體積（固體）' },
+  { img: 'images/water_glass.png', emoji: '💧', name: '一杯水', cat: 'liquid', hint: '水是液體，佔了杯的空間 → 有體積（液體）' },
+  { img: 'images/balloon.png',     emoji: '🎈', name: '吹脹了的氣球', cat: 'gas', hint: '氣球入面的空氣是氣體，佔了氣球空間 → 有體積（氣體）' },
+  { img: 'images/shadow.png',      emoji: '👤', name: '影子', cat: 'none', hint: '影子只是光被擋住的暗區，不佔空間 → 沒有體積' },
+  { img: 'images/orange.png',      emoji: '🍊', name: '一個橙', cat: 'solid', hint: '橙是固體，佔空間 → 有體積（固體）' },
+  { img: 'images/juice_cup.png',   emoji: '🥤', name: '杯裝橙汁', cat: 'liquid', hint: '橙汁是液體，杯入面佔了空間 → 有體積（液體）' },
+  { img: 'images/cloud.png',       emoji: '☁️', name: '一朵雲（水蒸氣）', cat: 'gas', hint: '雲是水蒸氣（氣體），佔了天空空間 → 有體積（氣體）' },
+  { img: 'images/rainbow.png',     emoji: '🌈', name: '彩虹', cat: 'none', hint: '彩虹是光線折射現象，不是物件，不佔空間 → 沒有體積' },
+  { img: 'images/milk_glass.png',  emoji: '🥛', name: '一杯牛奶', cat: 'liquid', hint: '牛奶是液體，佔杯的空間 → 有體積（液體）' },
+  { img: 'images/air_blast.png',   emoji: '💨', name: '哆啦A夢空氣砲射出的氣', cat: 'gas', hint: '空氣砲射出的都是氣體，會佔空間 → 有體積（氣體）' }
 ];
 
 let qIdx = 0, score = 0, wrongs = 0, coins = 0;
@@ -197,7 +197,7 @@ function answer(cat) {
   }
   scoreEl.textContent = score;
 }
-function labelFor(c){return {solid:'🪨 固體', liquid:'💧 液體', gas:'💨 氣體', none:'❌ 冇體積'}[c];}
+function labelFor(c){return {solid:'🪨 固體', liquid:'💧 液體', gas:'💨 氣體', none:'❌ 沒有體積'}[c];}
 
 function nextQ() {
   qIdx++;

@@ -199,7 +199,7 @@
 <body>
 <div class="wrap">
   <h1>🔢 直式乘法輸入工具</h1>
-  <p class="sub">選擇一個關卡，然後按格仔 → 再按數字鍵輸入。全部答啱先過關！</p>
+  <p class="sub">選擇一個關卡，然後按格仔 → 再按數字鍵輸入。全部答剛才過關！</p>
 
   <!-- Level picker -->
   <div class="levels" id="levels"></div>
@@ -249,7 +249,7 @@
 // Ch13: 一位小數×整數, 兩位小數×整數, 小數×小數
 // HK 方法：對於 2-digit × 2-digit，先補 0 乘十位，再乘個位（TENS first in ppList）
 // Each problem: top, bot, ppList (partial products, integer only), ans (SIMPLIFIED 最終答案，無末尾零),
-//               raw (可選：未簡化嘅答案，用於教學對比),
+//               raw (可選：未簡化的答案，用於教學對比),
 //               hint (解題提示)
 const LEVELS = {
   beginner: {
@@ -257,7 +257,7 @@ const LEVELS = {
     desc: '一位小數 × 個位整數',
     problems: [
       { top: '0.3', bot: '4', ppList: ['12'], ans: '1.2', hint: '3×4=12，一位小數 → 1.2' },
-      { top: '0.6', bot: '5', ppList: ['30'], ans: '3', raw: '3.0', hint: '6×5=30，一位小數本應係 3.0，但末尾零要簡化 → 答案 = 3' },
+      { top: '0.6', bot: '5', ppList: ['30'], ans: '3', raw: '3.0', hint: '6×5=30，一位小數本應是 3.0，但末尾零要簡化 → 答案 = 3' },
       { top: '0.7', bot: '8', ppList: ['56'], ans: '5.6', hint: '7×8=56，一位小數 → 5.6' },
     ],
   },
@@ -510,7 +510,7 @@ function input(digit) {
   if (activeCell < 0) { setStatus('err', '⚠️ 先點一個格仔！'); return; }
   const c = cells[activeCell];
   if (c.el.classList.contains('correct')) return;
-  if (c.isDot) { setStatus('err', '⚠️ 呢格要小數點「·」，唔係數字。'); c.el.classList.add('wrong'); setTimeout(()=>c.el.classList.remove('wrong'), 400); return; }
+  if (c.isDot) { setStatus('err', '⚠️ 這格要小數點「·」，不是數字。'); c.el.classList.add('wrong'); setTimeout(()=>c.el.classList.remove('wrong'), 400); return; }
   c.user = String(digit);
   c.el.textContent = String(digit);
   c.el.classList.remove('empty', 'wrong');
@@ -525,7 +525,7 @@ function input(digit) {
     else checkAll();
   } else {
     c.el.classList.add('wrong');
-    setStatus('err', `❌ ${digit} 唔啱。再試或者按「💡 提示」睇步驟。`);
+    setStatus('err', `❌ ${digit} 不對。再試或者按「💡 提示」睇步驟。`);
   }
 }
 
@@ -536,7 +536,7 @@ function inputDot() {
   if (!c.isDot) {
     c.el.classList.add('wrong');
     setTimeout(()=>c.el.classList.remove('wrong'), 400);
-    setStatus('err', '❌ 呢格唔係小數點位置。諗下：兩邊總共有幾多位小數？');
+    setStatus('err', '❌ 這格不是小數點位置。想下：兩邊總共有多少位小數？');
     return;
   }
   c.user = '.';
@@ -579,20 +579,20 @@ function checkAll() {
   if (allCorrect) {
     streak++;
     const p = LEVELS[currentLevel].problems[problemIdx];
-    let msg = `🎉 全部答啱！連對 ${streak} 題。`;
+    let msg = `🎉 全部答對！連對 ${streak} 題。`;
     if (p.raw) {
       // Answer was simplified from a version with trailing zeros
-      msg = `🎉 答啱！但要注意：直接計出嚟係 <b>${p.raw}</b>，末尾嘅零可以簡化 → <b>${p.ans}</b>。連對 ${streak}。`;
+      msg = `🎉 答對！但要注意：直接計出來是 <b>${p.raw}</b>，末尾的零可以簡化 → <b>${p.ans}</b>。連對 ${streak}。`;
     }
     setStatus('ok', msg);
     // Also pop up the simplify hint banner if applicable
     if (p.raw) {
       const box = document.getElementById('hintBox');
-      box.innerHTML = `✨ <b>簡化規則</b>：小數末尾嘅 0 可以刪（唔改變值）。例如：<br>
-        · 3.0 = 3（全部小數位都係 0 → 可刪埋小數點）<br>
-        · 0.60 = 0.6（只係末尾嗰個 0 可刪）<br>
+      box.innerHTML = `✨ <b>簡化規則</b>：小數末尾的 0 可以刪（不改變值）。例如：<br>
+        · 3.0 = 3（全部小數位都是 0 → 可刪埋小數點）<br>
+        · 0.60 = 0.6（只是末尾那個 0 可刪）<br>
         · 2.6000 = 2.6（所有末尾零都可刪）<br>
-        ⚠️ 但<b>中間</b>嘅零唔可以刪，例如 0.08 ≠ 0.8`;
+        ⚠️ 但<b>中間</b>的零不可以刪，例如 0.08 ≠ 0.8`;
       box.classList.add('show');
     }
     document.getElementById('nextBtn').disabled = false;
@@ -623,7 +623,7 @@ function nextProblem() {
     document.getElementById('tableau').innerHTML = `<div style="text-align:center;padding:20px;font-size:1.1rem;">
       <div style="font-size:3rem;">🏆</div>
       <div style="font-weight:800;color:#E65100;margin:8px 0;">關卡完成！</div>
-      <div style="color:#666;">揀其他難度繼續練，或者按「🔄 重做」再試一次。</div>
+      <div style="color:#666;">選其他難度繼續練，或者按「🔄 重做」再試一次。</div>
     </div>`;
     document.getElementById('status').innerHTML = '🎉 恭喜完成！';
     document.getElementById('status').className = 'status ok';

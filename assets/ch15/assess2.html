@@ -141,7 +141,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答了先過 ▶</button>
       </div>
     </div>
   </div>
@@ -164,7 +164,7 @@
     <p id="finalMsg" style="margin:10px 0;"></p>
     <div style="background:linear-gradient(135deg,#FFE0B2,#FFCC80);border:3px solid #FF9800;border-radius:14px;padding:14px;margin:14px 0;text-align:left;">
       <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎤 加賽：粵語錄音解題（最多 +3 🪙）</div>
-      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你嘅理解，AI 老師即時評分。</div>
+      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你的理解，AI 老師即時評分。</div>
       <a href="summary.html" class="btn" style="background:linear-gradient(135deg,#FF7043,#E64A19);color:white;">🎤 去課程總結錄音</a>
     </div>
     <div>
@@ -192,11 +192,11 @@ const CHAPTER = 15, DECK_KEY = 'assess2', IMG_PREFIX = 'assess2';
 // ⚠️ 嚴格按本課 LO：直觀比較不用單位/數字
 // 2026-05-03 polish：q 字段全部繁體中文書面語（rule #18）
 const Q = [
-  { q: '體積大挑戰 Q1：觀察上圖，哆啦A夢和大雄，誰的體積比較大？', opts: ['(A) 哆啦A夢','(B) 大雄','(C) 一樣大','(D) 無法比較'], a: 1, hint: '哆啦A夢提示：直觀比較 — 大雄係小學生比哆啦A夢高，佔用空間較多，所以大雄體積比較大。', pageQ: 1, pageA: 2 },
-  { q: '挑戰二 — 果汁對決！Q2：兩個一模一樣的瓶子裡裝了果汁。葡萄汁和橙汁，哪一種果汁的體積比較大？', opts: ['(A) 葡萄汁','(B) 橙汁','(C) 一樣大','(D) 需要打開才知'], a: 0, hint: '哆啦A夢提示：兩瓶大小相同，葡萄汁裝得滿，橙汁只裝半瓶 — 葡萄汁佔嘅空間多，所以葡萄汁體積較大。', pageQ: 3, pageA: 4 },
-  { q: '挑戰三 — 氣球大考驗！Q3：空氣也是會佔用空間的喔！請看這兩個氣球，哪一個氣球內「氣體」的體積比較大？', opts: ['(A) 綠色心型氣球','(B) 黃色大圓氣球','(C) 一樣大','(D) 無法判斷'], a: 1, hint: '哆啦A夢提示：氣球被吹得越鼓越大，代表內裡氣體佔嘅空間越大 — 黃色大圓氣球明顯比綠色心型氣球大。', pageQ: 5, pageA: 6 },
-  { q: '挑戰四 — 玻璃杯的陷阱！Q4：兩個形狀和大小都相同的玻璃杯。杯子 A 和杯子 B，哪一杯水的體積比較小？', opts: ['(A) 杯子 A 比較小','(B) 杯子 B 比較小','(C) 一樣','(D) 無法判斷'], a: 0, hint: '哆啦A夢提示：兩杯一樣大，杯 A 只裝半杯水，杯 B 裝差唔多滿。水位低嘅杯 A 水體積比較小。', pageQ: 7, pageA: 8 },
-  { q: '挑戰五 — 球場爭霸戰！Q5：把它們放在一起比一比，哪一個球的體積比較大？', opts: ['(A) 網球','(B) 籃球','(C) 一樣大','(D) 無法比較'], a: 1, hint: '哆啦A夢提示：直觀觀察 — 籃球明顯大過網球好多，籃球佔嘅空間較多，所以籃球體積比較大。', pageQ: 9, pageA: 10 },
+  { q: '體積大挑戰 Q1：觀察上圖，哆啦A夢和大雄，誰的體積比較大？', opts: ['(A) 哆啦A夢','(B) 大雄','(C) 一樣大','(D) 無法比較'], a: 1, hint: '哆啦A夢提示：直觀比較 — 大雄是小學生比哆啦A夢高，佔用空間較多，所以大雄體積比較大。', pageQ: 1, pageA: 2 },
+  { q: '挑戰二 — 果汁對決！Q2：兩個一模一樣的瓶子裡裝了果汁。葡萄汁和橙汁，哪一種果汁的體積比較大？', opts: ['(A) 葡萄汁','(B) 橙汁','(C) 一樣大','(D) 需要打開才知'], a: 0, hint: '哆啦A夢提示：兩瓶大小相同，葡萄汁裝得滿，橙汁只裝半瓶 — 葡萄汁佔的空間多，所以葡萄汁體積較大。', pageQ: 3, pageA: 4 },
+  { q: '挑戰三 — 氣球大考驗！Q3：空氣也是會佔用空間的喔！請看這兩個氣球，哪一個氣球內「氣體」的體積比較大？', opts: ['(A) 綠色心型氣球','(B) 黃色大圓氣球','(C) 一樣大','(D) 無法判斷'], a: 1, hint: '哆啦A夢提示：氣球被吹得越鼓越大，代表內裡氣體佔的空間越大 — 黃色大圓氣球明顯比綠色心型氣球大。', pageQ: 5, pageA: 6 },
+  { q: '挑戰四 — 玻璃杯的陷阱！Q4：兩個形狀和大小都相同的玻璃杯。杯子 A 和杯子 B，哪一杯水的體積比較小？', opts: ['(A) 杯子 A 比較小','(B) 杯子 B 比較小','(C) 一樣','(D) 無法判斷'], a: 0, hint: '哆啦A夢提示：兩杯一樣大，杯 A 只裝半杯水，杯 B 裝差不多滿。水位低的杯 A 水體積比較小。', pageQ: 7, pageA: 8 },
+  { q: '挑戰五 — 球場爭霸戰！Q5：把它們放在一起比一比，哪一個球的體積比較大？', opts: ['(A) 網球','(B) 籃球','(C) 一樣大','(D) 無法比較'], a: 1, hint: '哆啦A夢提示：直觀觀察 — 籃球明顯大過網球好多，籃球佔的空間較多，所以籃球體積比較大。', pageQ: 9, pageA: 10 },
   { q: '最終關卡 — 綜合大挑戰！Q6：仔細觀察這三個紙箱，請找出體積「最小」和體積「最大」的箱子分別是哪一個？', opts: ['(A) 最小 A、最大 B','(B) 最小 A、最大 C','(C) 最小 C、最大 B','(D) 三個一樣大'], a: 0, hint: '哆啦A夢提示：直觀比較三個紙箱大小 — A 細小（紅色），C 中等，B 最大（藍色） → 最小 A、最大 B。', pageQ: 11, pageA: 12 }
 ];
 
@@ -289,7 +289,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！大聖都讚你叻！' : `❌ 你選了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -301,7 +301,7 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答了先過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
     nb.textContent = '睇答案 ✓';
@@ -430,9 +430,9 @@ function showFinal(correct) {
   document.getElementById('finalScore').textContent = correct;
   let m, t;
   if (correct === Q_SHUFFLED.length) { m = '🌟 滿分！你完全掌握一位小數乘整數！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  else if (correct >= 5) { m = '💪 好勁！再溫下錯的就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題的提示'; t = '🥈'; }
+  else { m = '📖 多些溫習簡報 1，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

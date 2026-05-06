@@ -94,12 +94,12 @@
       <img src="images/cake_slice.png" style="width:90px;height:90px;">
     </div>
     <h2>廚神挑戰 Recipe Chef</h2>
-    <p>你係新晉大廚！<b>10 位顧客</b>輪住落單，你要快速計出總價或分量，用小數乘法應用 🧮</p>
+    <p>你是新晉大廚！<b>10 位顧客</b>輪住落單，你要快速計出總價或分量，用小數乘法應用 🧮</p>
     <div style="background:#EDE7F6;padding:12px;border-radius:10px;border-left:4px solid #673AB7;text-align:left;font-size:0.9rem;color:#555;">
       📖 <b>玩法</b>：<br>
       • 每單讀清楚顧客要咩<br>
       • 用小數乘法計 → 打入答案<br>
-      • 答啱直接過下一單 ✅<br>
+      • 答對直接過下一單 ✅<br>
       • 答錯見解釋後再試 ❌（最多 3 次）<br>
       • 完成 10 單有 🪙 3 金幣
     </div>
@@ -109,7 +109,7 @@
   <div id="gameScreen">
     <div class="hud">
       <div class="hud-item"><div class="label">顧客</div><div class="val" id="orderIdx">0 / 10</div></div>
-      <div class="hud-item"><div class="label">答啱</div><div class="val ok" id="correctCount">0</div></div>
+      <div class="hud-item"><div class="label">答對</div><div class="val ok" id="correctCount">0</div></div>
       <div class="hud-item"><div class="label">試錯</div><div class="val bad" id="wrongCount">0</div></div>
     </div>
 
@@ -143,16 +143,16 @@ const CHAPTER = 14, GAME_KEY = 'game3';
 
 // 10 orders (mixed applications — 小數乘法應用題)
 const ORDERS = [
-  { emoji: '👵', who: '阿婆', text: '買 <b>3</b> 個蛋撻，每個 <b>$4.1</b>，合共幾多錢？', acc: ['12.3','$12.3','12.30','$12.30'], hint: '4.1 × 3 = 12.3 元（一位小數 × 整數）', ans: '12.3' },
-  { emoji: '👨', who: '學生', text: '飲品每杯 <b>$8.5</b>，買 <b>4</b> 杯幾多錢？', acc: ['34','$34','34.0','$34.0'], hint: '8.5 × 4 = 34.0 = $34', ans: '34' },
-  { emoji: '👩', who: '媽媽', text: '紅豆沙每碗 <b>0.3</b> 公升，煮 <b>0.5</b> 份咁多人飲，用紅豆沙幾多公升？', acc: ['0.15','.15'], hint: '0.3 × 0.5 = 0.15 公升（一位 × 一位，2 位小數）', ans: '0.15' },
-  { emoji: '🧑', who: '阿哥', text: '買 <b>2.5</b> kg 豬肉，每 kg <b>$28.5</b>，要比幾多錢？（取近似值至個位）', acc: ['71','$71','71.25','$71.25'], hint: '28.5 × 2.5 = 71.25 元 ≈ $71（取近似至個位）', ans: '71' },
+  { emoji: '👵', who: '阿婆', text: '買 <b>3</b> 個蛋撻，每個 <b>$4.1</b>，合共多少錢？', acc: ['12.3','$12.3','12.30','$12.30'], hint: '4.1 × 3 = 12.3 元（一位小數 × 整數）', ans: '12.3' },
+  { emoji: '👨', who: '學生', text: '飲品每杯 <b>$8.5</b>，買 <b>4</b> 杯多少錢？', acc: ['34','$34','34.0','$34.0'], hint: '8.5 × 4 = 34.0 = $34', ans: '34' },
+  { emoji: '👩', who: '媽媽', text: '紅豆沙每碗 <b>0.3</b> 公升，煮 <b>0.5</b> 份咁多人飲，用紅豆沙多少公升？', acc: ['0.15','.15'], hint: '0.3 × 0.5 = 0.15 公升（一位 × 一位，2 位小數）', ans: '0.15' },
+  { emoji: '🧑', who: '阿哥', text: '買 <b>2.5</b> kg 豬肉，每 kg <b>$28.5</b>，要比多少錢？（取近似值至個位）', acc: ['71','$71','71.25','$71.25'], hint: '28.5 × 2.5 = 71.25 元 ≈ $71（取近似至個位）', ans: '71' },
   { emoji: '🧒', who: '小朋友', text: '糖果每包 <b>0.125</b> kg，買 <b>4</b> 包共 kg？', acc: ['0.5','0.50','.5'], hint: '0.125 × 4 = 0.500 = 0.5 kg', ans: '0.5' },
-  { emoji: '👨‍🎤', who: '叔叔', text: '咖啡每杯 <b>$12.5</b>，買 <b>6</b> 杯要幾多錢？', acc: ['75','$75','75.0','$75.0'], hint: '12.5 × 6 = 75.0 = $75', ans: '75' },
+  { emoji: '👨‍🎤', who: '叔叔', text: '咖啡每杯 <b>$12.5</b>，買 <b>6</b> 杯要多少錢？', acc: ['75','$75','75.0','$75.0'], hint: '12.5 × 6 = 75.0 = $75', ans: '75' },
   { emoji: '👩‍🦰', who: '姑姑', text: '毛巾長 <b>0.4</b> 米、闊 <b>0.2</b> 米，面積多少平方米？', acc: ['0.08','.08'], hint: '面積 = 長×闊 = 0.4 × 0.2 = 0.08 平方米', ans: '0.08' },
-  { emoji: '🧓', who: '阿公', text: '茶葉每兩 <b>$3.8</b>，買 <b>5</b> 兩要幾多錢？', acc: ['19','$19','19.0','$19.0'], hint: '3.8 × 5 = 19.0 = $19', ans: '19' },
-  { emoji: '👨‍🚀', who: '陌生人', text: '桌布長 <b>1.5</b> 米、闊 <b>0.8</b> 米，面積幾多平方米？', acc: ['1.2','1.20'], hint: '1.5 × 0.8 = 1.20 = 1.2 平方米', ans: '1.2' },
-  { emoji: '🧙', who: '老師', text: '估算 <b>9.7 × 5.2</b> ≈ 幾多？（四捨五入至整數）', acc: ['50','50.0'], hint: '9.7 ≈ 10，5.2 ≈ 5，10 × 5 = 50。實際 50.44。', ans: '50' }
+  { emoji: '🧓', who: '阿公', text: '茶葉每兩 <b>$3.8</b>，買 <b>5</b> 兩要多少錢？', acc: ['19','$19','19.0','$19.0'], hint: '3.8 × 5 = 19.0 = $19', ans: '19' },
+  { emoji: '👨‍🚀', who: '陌生人', text: '桌布長 <b>1.5</b> 米、闊 <b>0.8</b> 米，面積多少平方米？', acc: ['1.2','1.20'], hint: '1.5 × 0.8 = 1.20 = 1.2 平方米', ans: '1.2' },
+  { emoji: '🧙', who: '老師', text: '估算 <b>9.7 × 5.2</b> ≈ 多少？（四捨五入至整數）', acc: ['50','50.0'], hint: '9.7 ≈ 10，5.2 ≈ 5，10 × 5 = 50。實際 50.44。', ans: '50' }
 ];
 
 let state = { idx: 0, correct: 0, wrongs: 0, attempts: 0 };
@@ -195,7 +195,7 @@ function submitAns() {
     inp.disabled = true;
     state.correct++;
     hint.className = 'hint correct-box';
-    hint.innerHTML = `✅ 大廚話啱晒！<br>💡 ${o.hint}`;
+    hint.innerHTML = `✅ 大廚話對晒！<br>💡 ${o.hint}`;
     document.getElementById('correctCount').textContent = state.correct;
     setTimeout(() => {
       state.idx++;
@@ -209,7 +209,7 @@ function submitAns() {
     document.getElementById('wrongCount').textContent = state.wrongs;
     hint.className = 'hint wrong-box';
     if (state.attempts >= 3) {
-      hint.innerHTML = `❌ 試咗 3 次都唔啱，畀你答案：<b>${o.ans}</b><br>💡 ${o.hint}`;
+      hint.innerHTML = `❌ 試了 3 次都不對，給你答案：<b>${o.ans}</b><br>💡 ${o.hint}`;
       inp.disabled = true;
       setTimeout(() => {
         state.idx++;
@@ -217,7 +217,7 @@ function submitAns() {
         else renderOrder();
       }, 2500);
     } else {
-      hint.innerHTML = `❌ 唔啱，再試！（仲有 ${3 - state.attempts} 次）<br>💡 提示：${o.hint.substring(0, 30)}...`;
+      hint.innerHTML = `❌ 不對，再試！（仲有 ${3 - state.attempts} 次）<br>💡 提示：${o.hint.substring(0, 30)}...`;
     }
     setTimeout(() => inp.classList.remove('wrong'), 500);
   }
@@ -231,7 +231,7 @@ function endGame() {
   document.getElementById('endScore').textContent = state.correct;
   let coins = 1, trophy = '🥉', msg = '👍 做完 10 單！繼續努力練習！';
   if (state.correct === 10 && state.wrongs <= 3) { coins = 3; trophy = '🏆'; msg = '🌟 廚神誕生！小數應用題無難度！'; }
-  else if (state.correct >= 7) { coins = 2; trophy = '🥈'; msg = '💪 好勁！再細心多啲就滿分！'; }
+  else if (state.correct >= 7) { coins = 2; trophy = '🥈'; msg = '💪 好勁！再細心多些就滿分！'; }
   document.getElementById('endTrophy').textContent = trophy;
   document.getElementById('endMsg').textContent = msg;
   document.getElementById('endTitle').textContent = coins === 3 ? '🎉 廚神誕生！' : '完成 10 單！';

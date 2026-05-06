@@ -70,13 +70,13 @@
   <a href="index.html" class="back">← 返回第14課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
   <div class="viewer"><img id="slide" class="slide-img" src="pages/slides2_p01.jpg" alt="第 1 頁" /></div>
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -87,16 +87,16 @@
   </div>
   <div class="thumbs" id="thumbs"></div>
   <div class="done-banner" id="done">
-    🎉 簡報 2 完成！快啲去做預習 2！
+    🎉 簡報 2 完成！快些去做預習 2！
     <div style="margin-top:10px"><a href="prelearn2.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 2</a></div>
   </div>
 </div>
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -134,10 +134,10 @@ function getUnansweredQ(pageNum){const qs=SLIDE_QUESTIONS.filter(x=>x.afterPage=
 function buildThumbs(){thumbsEl.innerHTML='';for(let i=0;i<TOTAL;i++){const t=document.createElement('div');t.className='thumb';t.style.backgroundImage=`url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;t.onclick=()=>goto(i);const num=document.createElement('div');num.className='thumb-num';num.textContent=i+1;t.appendChild(num);thumbsEl.appendChild(t);}}
 function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';
   speakPage(idx + 1);[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
-function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答啱</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
-function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
-function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
-function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
+function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答對</div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
+function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
+function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
+function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
 function triggerLock(){lockModal.classList.add('show');}
 function goBackToStart(){Object.keys(slideQuizAnswered).forEach(k=>delete slideQuizAnswered[k]);Object.keys(slideQuizWrong).forEach(k=>delete slideQuizWrong[k]);lockModal.classList.remove('show');idx=0;render();window.scrollTo({top:0,behavior:'smooth'});}
 function autoAdvance(pageNum){setTimeout(()=>{const uq=getUnansweredQ(pageNum);if(!uq){setTimeout(()=>{quizOv.classList.remove('show');if(idx<TOTAL-1){idx++;render();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{const newQ=getUnansweredQ(idx+1);if(newQ)showQuiz(idx+1);},400);}else{doneBanner.classList.add('show');markDone();}},700);}},250);}
@@ -169,21 +169,21 @@ document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.cha
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十四課簡報二：西遊數學道場第 14 話，點心閣的危機！小數乘法的奧義 — 兩位小數乘一位小數，估算與四捨五入的絕技。',
-  2: '大師兄！這籠豆沙包重 2.35 公斤，客人話只要買 0.7 籠... 算式 2.35 乘 0.7 等如幾多？兩位小數乘一位小數該怎麼算？唐僧開示：悟空，切勿盲目列式！遇見未知，先用「化緣估算法」探測虛實。',
-  3: '第一式：火眼金睛估算法 — 2.35 取至整數大約 2，0.7 取至整數大約 1。原來如此！2 乘 1 等如 2。所以最終答案必定喺 2 嘅附近，這就有了底氣。',
-  4: '第二式：直式對齊的鐵則！八戒嘅習慣（加減法嘅遺毒）：千萬唔好對齊小數點！乘法奧義：一開始無視小數點，數字全靠右對齊先係王道。',
-  5: '第三式：無視結界的連擊 — 暫時擊碎小數點！當作整數直接乘！235 乘 7 等如 1645。一口氣乘到底，唔好猶豫。',
-  6: '第四式：小數點歸位之術 — 被乘數 2.35 係兩位小數，乘數 0.7 係一位小數。大師兄發現了：2 加 1 等如 3！呢兩個數字加埋，「積」必定係三位小數。',
-  7: '奧義完成！破解豆沙包之謎 — 1645 從右邊往左跳 3 位變成 1.645。善哉！1.645 公斤非常接近一開始估算嘅 2 公斤，呢劫破矣。',
-  8: '八戒的突發狀況：虛無之零的陷阱！八戒計到 1.25 乘 6.4 嘅直式答案後面有幾個零，難道要跟客人收 8 點 000 元嗎？呢個數字好傻啊！',
-  9: '斬斷虛無之刃！喺橫式中寫出最終答案時，小數點後末尾嘅「0」可以勇敢地刪去！俐落又乾淨，最終答案就係整數形式。',
-  10: '唐僧嘅化緣哲學：認識「≈」— 世間萬物有時無須太過執著於絕對嘅精確。尤其喺算錢嘅時候，小數點後太多位數係攞唔開嘅。當我哋「取近似值」時，必須使用呢個幻化符號 ≈！',
-  11: '四捨五入幻化術：鎖定「十分位」— 將 7.65 取近似值至十分位。鎖定目標：睇下一位（百分位）數字係 5。判定法則：四捨五入，5 達標必須進 1。變身結果：十分位嘅 6 加 1 等如 7。所以 7.65 約等如 7.7。',
-  12: '進階幻化：百分位的「連鎖反應」— 將 2.5976 取近似值至百分位。千分位 7 大於 5 進 1；百分位 9 加 1 等如 10，寫 0 再進 1；十分位 5 加 1 等如 6。最後變成 2.60。緊記！保留百分位嘅「0」，必須寫成 2.60，絕不能只寫 2.6。',
-  13: '點心閣大挑戰：實戰演練 — 每公斤麵粉售 12.6 元，沙僧購入 0.45 公斤做點心，需付幾多元？答案取至十分位。步驟一列式 12.6 乘 0.45；步驟二直式連擊與斬零；步驟三四捨五入幻化。任務完成，獲得滿滿嘅經驗值。',
-  14: '西遊數學秘笈大公開 — 四大鐵則：悟空話無視小數點，數字全靠右對齊乘到底。沙僧話兩數小數位相加，決定最終答案嘅小數點。八戒話橫式寫答案時末尾有 0 勇敢刪。唐僧話睇清題目求近似，四捨五入記得用 ≈。',
-  15: '簡報二完成！恭喜你掌握咗兩位小數乘一位小數同四捨五入嘅技巧。'
+  1: '歡迎來到第十四課簡報二：西遊數學道場第 14 話，點心閣的危機！小數乘法的奧義 — 兩位小數乘一位小數，估算與四捨五入的絕技。',
+  2: '大師兄！這籠豆沙包重 2.35 公斤，客人話只要買 0.7 籠... 算式 2.35 乘 0.7 等於多少？兩位小數乘一位小數該怎麼算？唐僧開示：悟空，切勿盲目列式！遇見未知，先用「化緣估算法」探測虛實。',
+  3: '第一式：火眼金睛估算法 — 2.35 取至整數大約 2，0.7 取至整數大約 1。原來如此！2 乘 1 等於 2。所以最終答案必定在 2 的附近，這就有了底氣。',
+  4: '第二式：直式對齊的鐵則！八戒的習慣（加減法的遺毒）：千萬不要對齊小數點！乘法奧義：一開始無視小數點，數字全靠右對齊先是王道。',
+  5: '第三式：無視結界的連擊 — 暫時擊碎小數點！當作整數直接乘！235 乘 7 等於 1645。一口氣乘到底，不要猶豫。',
+  6: '第四式：小數點歸位之術 — 被乘數 2.35 是兩位小數，乘數 0.7 是一位小數。大師兄發現了：2 加 1 等於 3！這兩個數字加埋，「積」必定是三位小數。',
+  7: '奧義完成！破解豆沙包之謎 — 1645 從右邊往左跳 3 位變成 1.645。善哉！1.645 公斤非常接近一開始估算的 2 公斤，這劫破矣。',
+  8: '八戒的突發狀況：虛無之零的陷阱！八戒計到 1.25 乘 6.4 的直式答案後面有多少個零，難道要跟客人收 8 點 000 元嗎？這個數字好傻啊！',
+  9: '斬斷虛無之刃！在橫式中寫出最終答案時，小數點後末尾的「0」可以勇敢地刪去！俐落又乾淨，最終答案就是整數形式。',
+  10: '唐僧的化緣哲學：認識「≈」— 世間萬物有時無須太過執著於絕對的精確。尤其在算錢的時候，小數點後太多位數是拿不開的。當我們「取近似值」時，必須使用這個幻化符號 ≈！',
+  11: '四捨五入幻化術：鎖定「十分位」— 將 7.65 取近似值至十分位。鎖定目標：睇下一位（百分位）數字是 5。判定法則：四捨五入，5 達標必須進 1。變身結果：十分位的 6 加 1 等於 7。所以 7.65 約等於 7.7。',
+  12: '進階幻化：百分位的「連鎖反應」— 將 2.5976 取近似值至百分位。千分位 7 大於 5 進 1；百分位 9 加 1 等於 10，寫 0 再進 1；十分位 5 加 1 等於 6。最後變成 2.60。緊記！保留百分位的「0」，必須寫成 2.60，絕不能只寫 2.6。',
+  13: '點心閣大挑戰：實戰演練 — 每公斤麵粉售 12.6 元，沙僧購入 0.45 公斤做點心，需付多少元？答案取至十分位。步驟一列式 12.6 乘 0.45；步驟二直式連擊與斬零；步驟三四捨五入幻化。任務完成，獲得滿滿的經驗值。',
+  14: '西遊數學秘笈大公開 — 四大鐵則：悟空話無視小數點，數字全靠右對齊乘到底。沙僧話兩數小數位相加，決定最終答案的小數點。八戒話橫式寫答案時末尾有 0 勇敢刪。唐僧話睇清題目求近似，四捨五入記得用 ≈。',
+  15: '簡報二完成！恭喜你掌握了兩位小數乘一位小數同四捨五入的技巧。'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

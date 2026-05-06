@@ -1,7 +1,7 @@
 // ============================================================
 // Speech-to-Text auto-injector for prelearn 錄音題 pages
 // 用法：<script src="../common/stt.js"></script> at end of body
-// 自動喺任何有 #textFallback 嘅 page 加 🎙️ 語音輸入 button
+// 自動在任何有 #textFallback 的 page 加 🎙️ 語音輸入 button
 // 用 Web Speech API（webkitSpeechRecognition）
 // ============================================================
 (function() {
@@ -41,7 +41,7 @@
     if (!SR) {
       sttBtn.disabled = true;
       sttBtn.style.opacity = '0.5';
-      sttBtn.title = '你個瀏覽器唔支援語音輸入';
+      sttBtn.title = '你個瀏覽器不支援語音輸入';
     }
 
     // === STT logic ===
@@ -50,7 +50,7 @@
     sttBtn.onclick = function() {
       const status = document.getElementById('sttStatus');
       if (!SR) {
-        status.innerHTML = '<span style="color:#C62828;">⚠️ 唔支援。請用 Chrome / Edge / Safari。</span>';
+        status.innerHTML = '<span style="color:#C62828;">⚠️ 不支援。請用 Chrome / Edge / Safari。</span>';
         return;
       }
       if (listening) {
@@ -85,7 +85,7 @@
           try { stt.start(); return; } catch(e2) {}
         }
         if (e.error === 'no-speech') {
-          status.innerHTML = '<span style="color:#FB8C00;">🤐 聽唔到聲，講大聲啲？</span>';
+          status.innerHTML = '<span style="color:#FB8C00;">🤐 聽不到聲，講大聲些？</span>';
           return;
         }
         status.innerHTML = `<span style="color:#C62828;">⚠️ ${e.error}。試吓改用打字。</span>`;
@@ -109,7 +109,7 @@
         sttBtn.textContent = '⏹ 停止語音輸入';
         sttBtn.style.background = '#FFEBEE';
       } catch(e) {
-        status.innerHTML = `<span style="color:#C62828;">⚠️ 開唔到 mic：${e.message}</span>`;
+        status.innerHTML = `<span style="color:#C62828;">⚠️ 開不到 mic：${e.message}</span>`;
       }
     };
   }

@@ -93,7 +93,7 @@
 
   <!-- Quiz overlay appears below the slide image -->
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -107,7 +107,7 @@
   <div class="thumbs" id="thumbs"></div>
 
   <div class="done-banner" id="done">
-    🎉 簡報 1 完成！快啲去做預習 1！
+    🎉 簡報 1 完成！快些去做預習 1！
     <div style="margin-top:10px"><a href="prelearn1.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 1</a></div>
   </div>
 </div>
@@ -116,9 +116,9 @@
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -172,7 +172,7 @@ const SLIDE_QUESTIONS = [
 
   // p15 🎤 Voice question (Feynman 教學法 — 解釋代入檢驗的原理)
   { afterPage:15, type:'voice',
-    q:'🎤 小新挑戰：用 Feynman 方法，假設你係老師，向同學解釋「為什麼解方程後要做代入檢驗？」 講 20-30 秒。',
+    q:'🎤 小新挑戰：用 Feynman 方法，假設你是老師，向同學解釋「為什麼解方程後要做代入檢驗？」 講 20-30 秒。',
     concept:'代入檢驗 = 把求出的未知數值代回原方程，計左邊看是否等於右邊',
     rubric:'講出：把答案代回原方程、左邊計算、與右邊比較、若相等則答案正確',
     hint:'講到「代入檢驗就是把答案放回原方程，看左邊是否等於右邊」就 80 分啦！再加埋「可以抓出計算錯誤」會更高分 💪' }
@@ -251,11 +251,11 @@ function showQuiz(pageNum) {
     html += `<div id="qb${i}" class="quiz-block${done?' done':''}">`;
     html += `<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;
     if (done) {
-      html += `<div class="hint-msg correct">✅ 已答啱</div>`;
+      html += `<div class="hint-msg correct">✅ 已答對</div>`;
     } else if (type === 'voice') {
-      html += `<div style="background:#FCE4EC;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;color:#880E4F;">💡 ${pq.hint || '用自己嘅話解釋俾同學知。'}</div>`;
-      html += `<textarea id="vt${i}" placeholder="✏️ 用你嘅話解釋（最少 20 字）..." style="width:100%;min-height:80px;padding:10px;border:2px solid #E91E63;border-radius:8px;font-size:0.95rem;font-family:inherit;outline:none;resize:vertical;"></textarea>`;
-      html += `<button class="fill-btn" style="background:linear-gradient(135deg,#E91E63,#AD1457);margin-top:6px;" onclick="checkVoice(${i},${pageNum})">🤖 提交俾 AI 評分</button>`;
+      html += `<div style="background:#FCE4EC;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;color:#880E4F;">💡 ${pq.hint || '用自己的話解釋給同學知。'}</div>`;
+      html += `<textarea id="vt${i}" placeholder="✏️ 用你的話解釋（最少 20 字）..." style="width:100%;min-height:80px;padding:10px;border:2px solid #E91E63;border-radius:8px;font-size:0.95rem;font-family:inherit;outline:none;resize:vertical;"></textarea>`;
+      html += `<button class="fill-btn" style="background:linear-gradient(135deg,#E91E63,#AD1457);margin-top:6px;" onclick="checkVoice(${i},${pageNum})">🤖 提交給 AI 評分</button>`;
       html += `<div class="hint-msg" id="hm${i}"></div>`;
     } else if (type === 'fill') {
       html += `<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;
@@ -271,7 +271,7 @@ function showQuiz(pageNum) {
   });
   quizBody.innerHTML = html;
   const wrongs = slideQuizWrong[pageNum] || 0;
-  wrongNote.textContent = wrongs > 0 ? `⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
+  wrongNote.textContent = wrongs > 0 ? `⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
   quizOv.classList.add('show');
   setTimeout(()=> {
     const firstInput = quizBody.querySelector('.fill-input:not([disabled])');
@@ -301,7 +301,7 @@ function checkMC(qIdx, selected, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！小新都讚你叻！';
+    hint.innerHTML = '✅ 答對！小新都讚你叻！';
     autoAdvance(pageNum);
   } else {
     btns[selected].classList.add('wrong');
@@ -329,7 +329,7 @@ function checkFill(qIdx, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！小新都讚你叻！';
+    hint.innerHTML = '✅ 答對！小新都讚你叻！';
     autoAdvance(pageNum);
   } else {
     input.classList.remove('wrong'); void input.offsetWidth; input.classList.add('wrong');
@@ -356,7 +356,7 @@ async function checkVoice(qIdx, pageNum) {
   hint.className = 'hint-msg';
   hint.style.cssText = 'background:#FFF3E0;color:#E65100;padding:8px;border-radius:6px;display:block;';
   hint.innerHTML = '🤖 小新評分中...';
-  const prompt = `學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept || ''}\n評分要點：${q.rubric || ''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；冇關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;
+  const prompt = `學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept || ''}\n評分要點：${q.rubric || ''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；沒有關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;
   try {
     const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
       method: 'POST', headers: {'Content-Type':'application/json'},
@@ -398,7 +398,7 @@ async function checkVoice(qIdx, pageNum) {
 
 function registerWrong(pageNum) {
   slideQuizWrong[pageNum] = (slideQuizWrong[pageNum] || 0) + 1;
-  wrongNote.textContent = `⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
+  wrongNote.textContent = `⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
   if (slideQuizWrong[pageNum] >= 2) {
     setTimeout(triggerLock, 600);
   }

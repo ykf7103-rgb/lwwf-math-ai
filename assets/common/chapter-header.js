@@ -11,8 +11,8 @@
   })();
 
   // Auto-load shared progress sync module (Supabase ↔ localStorage hybrid).
-  // 一加一個 <script> 就搞掂全網所有 sub-page 嘅進度同步。
-  // 2026-05-03: 保留 chapter-header.js 嘅 ?v=YYYYMMDD cache-bust query string
+  // 一加一個 <script> 就辦妥全網所有 sub-page 的進度同步。
+  // 2026-05-03: 保留 chapter-header.js 的 ?v=YYYYMMDD cache-bust query string
   // 自動套用到 progress.js URL（避免瀏覽器 cache 舊版 progress.js）
   if (!window.LWWFProgress && scriptEl && scriptEl.src) {
     const ps = document.createElement('script');
@@ -47,8 +47,8 @@
   }
 
   // Internal helper — MUST mirror LWWFProgress.computeCh12Coins() in progress.js
-  // 2026-05-03 fix：李祉瑩 5A18 case — root index 顯示 13 vs ch16 顯示 22，因 ch12 logic 唔一致
-  // 統一 logic：任何 entry 有 v.coins → 計入；quiz1/quiz4 冇 coins 用 score/total derivation；其他唔計
+  // 2026-05-03 fix：李祉瑩 5A18 case — root index 顯示 13 vs ch16 顯示 22，因 ch12 logic 不一致
+  // 統一 logic：任何 entry 有 v.coins → 計入；quiz1/quiz4 沒有 coins 用 score/total derivation；其他不計
   function computeCh12CoinsLocal(scores) {
     if (!scores || typeof scores !== 'object') return 0;
     let total = 0;
@@ -65,7 +65,7 @@
 
   // Internal helper — MUST stay in sync with LWWFProgress.computeCoins() in progress.js
   // rule #19 / § M.5：default coin rules（game*=3, slides/prelearn/assess=2, etc.）
-  // 之前 bug：fallback path 只計 s.coins 已存在，冇 default → 學生完成步驟（無明確 coins 字段）唔計入
+  // 之前 bug：fallback path 只計 s.coins 已存在，沒有 default → 學生完成步驟（無明確 coins 字段）不計入
   // → 第一頁（root index 直接用 progress.js）vs ch13-18 fallback path 計算 mismatch（2026-05-03 學生投訴）
   function computeCoinsLocal(progress) {
     if (!progress || typeof progress !== 'object') return 0;
@@ -378,7 +378,7 @@
           <span class="emo">${ch.emoji}</span>
           <div class="info">
             <div class="title">${ch.title}</div>
-            <div class="sub">${ch.id === currentCh ? '✓ 當前課題' : '點擊去到呢一課'}</div>
+            <div class="sub">${ch.id === currentCh ? '✓ 當前課題' : '點擊去到這一課'}</div>
           </div>
           ${ch.id === currentCh ? '<span class="badge">當前</span>' : ''}
         </a>
@@ -426,7 +426,7 @@
     setTimeout(() => location.reload(), 300);
   };
   window.__mathaiLogout = () => {
-    if (!confirm('確定要登出？進度仍會保留喺本機。')) return;
+    if (!confirm('確定要登出？進度仍會保留在本機。')) return;
     localStorage.removeItem('lwwf_auth_user');
     localStorage.removeItem('mathai_user');
     localStorage.removeItem('lwwf_auth_lastActive');

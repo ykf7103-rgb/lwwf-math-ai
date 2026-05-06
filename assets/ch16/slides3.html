@@ -70,13 +70,13 @@
   <a href="index.html" class="back">← 返回第16課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 <div class="wrap">
   <div class="progress"><div class="progress-fill" id="pfill"></div></div>
   <div class="viewer"><img id="slide" class="slide-img" src="pages/slides3_p01.jpg" alt="第 1 頁" /></div>
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -87,16 +87,16 @@
   </div>
   <div class="thumbs" id="thumbs"></div>
   <div class="done-banner" id="done">
-    🎉 簡報 3 完成！快啲去做預習 3！
+    🎉 簡報 3 完成！快些去做預習 3！
     <div style="margin-top:10px"><a href="prelearn3.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 3</a></div>
   </div>
 </div>
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -151,7 +151,7 @@ const SLIDE_QUESTIONS = [
     q:'🎤 鍊金術士挑戰：用 Feynman 方法，教同學如何選擇「cm³」或「m³」作為體積單位。講 20-30 秒。',
     concept:'細物用 cm³（如手機、書包），大物用 m³（如巴士、課室）',
     rubric:'講出：細物用 cm³、大物用 m³、舉例（任何一對：手機/巴士、擦膠/水塘等）',
-    hint:'講到「細用 cm³ 大用 m³」+ 舉一個例就合格啦！例如「手機用 cm³，巴士用 m³」就好好（~80 分）。再加埋「點解唔可以亂用」（數字會爆表）會更高分 💪' }
+    hint:'講到「細用 cm³ 大用 m³」+ 舉一個例就合格啦！例如「手機用 cm³，巴士用 m³」就好好（~80 分）。再加埋「為什麼不可以亂用」（數字會爆表）會更高分 💪' }
 ];
 let idx = 0;
 const slideQuizAnswered = {}, slideQuizWrong = {};
@@ -161,12 +161,12 @@ function getUnansweredQ(pageNum){const qs=SLIDE_QUESTIONS.filter(x=>x.afterPage=
 function buildThumbs(){thumbsEl.innerHTML='';for(let i=0;i<TOTAL;i++){const t=document.createElement('div');t.className='thumb';t.style.backgroundImage=`url('pages/${PREFIX}_p${pad(i+1)}.jpg')`;t.onclick=()=>goto(i);const num=document.createElement('div');num.className='thumb-num';num.textContent=i+1;t.appendChild(num);thumbsEl.appendChild(t);}}
 function render(){img.src=`pages/${PREFIX}_p${pad(idx+1)}.jpg`;img.alt=`第 ${idx+1} 頁`;ind.textContent=`${idx+1} / ${TOTAL}`;prevBtn.disabled=idx===0;nextBtn.textContent=idx===TOTAL-1?'完成 ✓':'下一頁 ▶';pfill.style.width=Math.round((idx+1)/TOTAL*100)+'%';
   speakPage(idx + 1);[...thumbsEl.children].forEach((el,i)=>{el.classList.toggle('active',i===idx);const pg=i+1;const hasQ=SLIDE_QUESTIONS.some(q=>q.afterPage===pg);const allAnswered=hasQ&&!getUnansweredQ(pg);el.classList.toggle('answered',allAnswered);});const active=thumbsEl.querySelector('.thumb.active');if(active)active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});quizOv.classList.remove('show');if(idx===TOTAL-1){const allDone=!SLIDE_QUESTIONS.some((q,i)=>!slideQuizAnswered[q.afterPage+'_'+SLIDE_QUESTIONS.filter(x=>x.afterPage===q.afterPage).indexOf(q)]);if(allDone){doneBanner.classList.add('show');markDone();}}}
-function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':type==='voice'?'<span class="type-badge" style="background:#E91E63;">🎤 解釋題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答啱</div>`;}else if(type==='voice'){html+=`<div style="background:#FCE4EC;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;color:#880E4F;">💡 ${pq.hint||'用自己嘅話解釋。'}</div><textarea id="vt${i}" placeholder="✏️ 用你嘅話解釋（最少 20 字）..." style="width:100%;min-height:80px;padding:10px;border:2px solid #E91E63;border-radius:8px;font-size:0.95rem;font-family:inherit;outline:none;resize:vertical;"></textarea><button class="fill-btn" style="background:linear-gradient(135deg,#E91E63,#AD1457);margin-top:6px;" onclick="checkVoice(${i},${pageNum})">🤖 提交俾 AI 評分</button><div class="hint-msg" id="hm${i}"></div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
-function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
-function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
-function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
+function showQuiz(pageNum){const pageQs=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum);let html='';pageQs.forEach((pq,i)=>{const key=pageNum+'_'+i;const done=slideQuizAnswered[key];const type=pq.type||'mc';const badge=type==='fill'?'<span class="type-badge fill">填充題</span>':type==='voice'?'<span class="type-badge" style="background:#E91E63;">🎤 解釋題</span>':'<span class="type-badge mc">選擇題</span>';html+=`<div id="qb${i}" class="quiz-block${done?' done':''}">`;html+=`<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;if(done){html+=`<div class="hint-msg correct">✅ 已答對</div>`;}else if(type==='voice'){html+=`<div style="background:#FCE4EC;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;color:#880E4F;">💡 ${pq.hint||'用自己的話解釋。'}</div><textarea id="vt${i}" placeholder="✏️ 用你的話解釋（最少 20 字）..." style="width:100%;min-height:80px;padding:10px;border:2px solid #E91E63;border-radius:8px;font-size:0.95rem;font-family:inherit;outline:none;resize:vertical;"></textarea><button class="fill-btn" style="background:linear-gradient(135deg,#E91E63,#AD1457);margin-top:6px;" onclick="checkVoice(${i},${pageNum})">🤖 提交給 AI 評分</button><div class="hint-msg" id="hm${i}"></div>`;}else if(type==='fill'){html+=`<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;html+=`<div class="hint-msg" id="hm${i}"></div>`;}else{html+=`<div class="mc-opts">`;pq.options.forEach((opt,oi)=>{html+=`<button class="mc-opt" data-i="${oi}" onclick="checkMC(${i},${oi},${pageNum})">${['A','B','C','D'][oi]}. ${opt}</button>`;});html+=`</div><div class="hint-msg" id="hm${i}"></div>`;}html+=`</div>`;});quizBody.innerHTML=html;const wrongs=slideQuizWrong[pageNum]||0;wrongNote.textContent=wrongs>0?`⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）`:'';quizOv.classList.add('show');setTimeout(()=>{const firstInput=quizBody.querySelector('.fill-input:not([disabled])');if(firstInput)firstInput.focus();},100);quizBody.querySelectorAll('.fill-input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){const i=inp.id.slice(2);checkFill(parseInt(i),pageNum);}});});}
+function checkMC(qIdx,selected,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const block=document.getElementById('qb'+qIdx);const hint=document.getElementById('hm'+qIdx);const btns=block.querySelectorAll('.mc-opt');if(selected===q.correct){btns[selected].classList.add('correct');btns.forEach(b=>b.disabled=true);slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{btns[selected].classList.add('wrong');btns[selected].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);}}
+function checkFill(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const input=document.getElementById('fi'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const val=input.value.trim();if(!val){input.focus();return;}const normalize=s=>String(s).trim().replace(/\s+/g,'').replace(/，/g,',');const userAns=normalize(val);const correct=(q.accept||[]).some(a=>normalize(a)===userAns);if(correct){input.classList.add('correct');input.disabled=true;slideQuizAnswered[key]=true;block.classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！';autoAdvance(pageNum);}else{input.classList.remove('wrong');void input.offsetWidth;input.classList.add('wrong');hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${q.hint}`;registerWrong(pageNum);setTimeout(()=>input.classList.remove('wrong'),500);}}
+function registerWrong(pageNum){slideQuizWrong[pageNum]=(slideQuizWrong[pageNum]||0)+1;wrongNote.textContent=`⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;if(slideQuizWrong[pageNum]>=2){setTimeout(triggerLock,600);}}
 
-async function checkVoice(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const ta=document.getElementById('vt'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const text=(ta.value||'').trim();if(text.length<20){hint.className='hint-msg wrong';hint.innerHTML='⚠️ 至少寫 20 字（試吓多寫幾句解釋）';return;}hint.className='hint-msg';hint.style.cssText='background:#FFF3E0;color:#E65100;padding:8px;border-radius:6px;display:block;';hint.innerHTML='🤖 AI 評分中...';const prompt=`學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept||''}\n評分要點：${q.rubric||''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；冇關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;try{const res=await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});const data=await res.json();let parsed;try{parsed=JSON.parse(data.reply);}catch{parsed={score:70,feedback:data.reply||'已收到答案 ✓'};}const passed=parsed.score>=60;hint.className='hint-msg '+(passed?'correct':'wrong');hint.style.cssText='';hint.innerHTML=`${passed?'✅':'⚠️'} AI 得分：<b>${parsed.score}/100</b><br>${parsed.feedback}`;if(passed){slideQuizAnswered[key]=true;block.classList.add('done');ta.disabled=true;try{const k=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(k)||'{}');const oldVoice=(p[DECK_KEY]&&p[DECK_KEY].voice)||{};p[DECK_KEY]=Object.assign(p[DECK_KEY]||{},{done:true,ts:Date.now(),voice:Object.assign(oldVoice,{score:parsed.score,text:text.slice(0,200)})});localStorage.setItem(k,JSON.stringify(p));}catch(e){}autoAdvance(pageNum);}else{registerWrong(pageNum);}}catch(e){hint.className='hint-msg wrong';hint.style.cssText='';hint.innerHTML='❌ AI 評分失敗，再試？('+(e.message||'')+')';}}
+async function checkVoice(qIdx,pageNum){const q=SLIDE_QUESTIONS.filter(x=>x.afterPage===pageNum)[qIdx];const key=pageNum+'_'+qIdx;const ta=document.getElementById('vt'+qIdx);const hint=document.getElementById('hm'+qIdx);const block=document.getElementById('qb'+qIdx);const text=(ta.value||'').trim();if(text.length<20){hint.className='hint-msg wrong';hint.innerHTML='⚠️ 至少寫 20 字（試吓多寫幾句解釋）';return;}hint.className='hint-msg';hint.style.cssText='background:#FFF3E0;color:#E65100;padding:8px;border-radius:6px;display:block;';hint.innerHTML='🤖 AI 評分中...';const prompt=`學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept||''}\n評分要點：${q.rubric||''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；沒有關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;try{const res=await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});const data=await res.json();let parsed;try{parsed=JSON.parse(data.reply);}catch{parsed={score:70,feedback:data.reply||'已收到答案 ✓'};}const passed=parsed.score>=60;hint.className='hint-msg '+(passed?'correct':'wrong');hint.style.cssText='';hint.innerHTML=`${passed?'✅':'⚠️'} AI 得分：<b>${parsed.score}/100</b><br>${parsed.feedback}`;if(passed){slideQuizAnswered[key]=true;block.classList.add('done');ta.disabled=true;try{const k=(()=>{try{const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");if(u&&u.class&&u.number)return`progress_ch${CHAPTER}_${u.class}_${u.number}`;}catch(e){}return`progress_ch${CHAPTER}`;})();const p=JSON.parse(localStorage.getItem(k)||'{}');const oldVoice=(p[DECK_KEY]&&p[DECK_KEY].voice)||{};p[DECK_KEY]=Object.assign(p[DECK_KEY]||{},{done:true,ts:Date.now(),voice:Object.assign(oldVoice,{score:parsed.score,text:text.slice(0,200)})});localStorage.setItem(k,JSON.stringify(p));}catch(e){}autoAdvance(pageNum);}else{registerWrong(pageNum);}}catch(e){hint.className='hint-msg wrong';hint.style.cssText='';hint.innerHTML='❌ AI 評分失敗，再試？('+(e.message||'')+')';}}
 
 function triggerLock(){lockModal.classList.add('show');}
 function goBackToStart(){Object.keys(slideQuizAnswered).forEach(k=>delete slideQuizAnswered[k]);Object.keys(slideQuizWrong).forEach(k=>delete slideQuizWrong[k]);lockModal.classList.remove('show');idx=0;render();window.scrollTo({top:0,behavior:'smooth'});}
@@ -199,21 +199,21 @@ document.querySelector('.viewer').addEventListener('touchend',e=>{const dx=e.cha
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十六課簡報三：體積大挑戰 — 成為空間創世神！第 16 課：選擇合適嘅體積單位 cm³ 同 m³。準備開始旅程！',
-  2: '單位選擇引入 — 唔同物件用唔同單位，先簡單先準確。',
-  3: '視覺衝擊：火柴盒對貨櫃箱 — 火柴盒體積極小，適合用 cm³ 量度。貨櫃嘅體積約係 77 m³。如果用 cm³，數字將高達數千萬！所以大物件要用大單位先方便。',
-  4: '單位選擇對比延續 — 學生通過視覺對比，建立「物件大細決定單位選擇」嘅直覺。',
-  5: '終極合成公式：單位嘅魔法轉換 — Exploded View Matrix。1 米等如 100 厘米，所以 1 m³ 等如 100 cm 乘 100 cm 乘 100 cm 等如 1,000,000 cm³。1 個巨大嘅立方米方塊，等於 100 萬個微小嘅立方厘米方塊！',
-  6: '換算公式應用 — 牢記呢個換算關係：1 m³ = 1,000,000 cm³。將 cm³ 換成 m³ 需要除以 100 萬，將 m³ 換成 cm³ 需要乘以 100 萬。',
-  7: '裝備庫檢查 2 之 3：大型載具篇 — 雙層巴士應該用 cm³ 定 m³？巴士嘅體積遠遠大於 1 m³。如果用 cm³ 數字會爆表！正確裝備係 m³。',
-  8: '裝備庫思考 — 點解唔用細嘅單位量度大物件？因為數字會變得極大同難以閱讀，唔方便日常溝通。',
-  9: '體積光譜：尋找單位嘅切換點 — 1 m³ 結界。cm³ 領域（小於 1 立方米）：魔方、電話、書包；m³ 領域（大於 1 立方米）：巴士、貨櫃、水塘。只要物體比一個展開雙臂嘅箱子大，就跨越咗結界！',
-  10: '結界判斷練習 — 對比常見物件嘅大細，建立 1 m³ 嘅「結界」直覺，方便決定用邊個單位。',
+  1: '歡迎來到第十六課簡報三：體積大挑戰 — 成為空間創世神！第 16 課：選擇合適的體積單位 cm³ 同 m³。準備開始旅程！',
+  2: '單位選擇引入 — 不同物件用不同單位，先簡單先準確。',
+  3: '視覺衝擊：火柴盒對貨櫃箱 — 火柴盒體積極小，適合用 cm³ 量度。貨櫃的體積約是 77 m³。如果用 cm³，數字將高達數千萬！所以大物件要用大單位先方便。',
+  4: '單位選擇對比延續 — 學生通過視覺對比，建立「物件大細決定單位選擇」的直覺。',
+  5: '終極合成公式：單位的魔法轉換 — Exploded View Matrix。1 米等於 100 厘米，所以 1 m³ 等於 100 cm 乘 100 cm 乘 100 cm 等於 1,000,000 cm³。1 個巨大的立方米方塊，等於 100 萬個微小的立方厘米方塊！',
+  6: '換算公式應用 — 牢記這個換算關是：1 m³ = 1,000,000 cm³。將 cm³ 換成 m³ 需要除以 100 萬，將 m³ 換成 cm³ 需要乘以 100 萬。',
+  7: '裝備庫檢查 2 之 3：大型載具篇 — 雙層巴士應該用 cm³ 定 m³？巴士的體積遠遠大於 1 m³。如果用 cm³ 數字會爆表！正確裝備是 m³。',
+  8: '裝備庫思考 — 為什麼不用細的單位量度大物件？因為數字會變得極大同難以閱讀，不方便日常溝通。',
+  9: '體積光譜：尋找單位的切換點 — 1 m³ 結界。cm³ 領域（小於 1 立方米）：魔方、電話、書包；m³ 領域（大於 1 立方米）：巴士、貨櫃、水塘。只要物體比一個展開雙臂的箱子大，就跨越了結界！',
+  10: '結界判斷練習 — 對比常見物件的大細，建立 1 m³ 的「結界」直覺，方便決定用哪一個單位。',
   11: '估計挑戰 Level 1：客廳尋寶 — 電視遙控器能塞進支架嗎？選擇 cm³。三人沙發能塞進支架嗎？選擇 m³。',
-  12: '客廳尋寶分析 — 細物件如遙控器佔嘅空間極細，適合用 cm³；大型家具如沙發佔幾乎成個客廳一角，適合用 m³。',
-  13: '終極綜合挑戰 Boss Battle — 擦膠等如 8 cm³；巨型郵輪等如 150,000 m³；魔方等如 216 cm³；課室等如 120 m³。每個物件配對啱單位同數值。',
-  14: 'Boss Battle 分析 — 通過實際數值配對，深入理解物件大細嚟對應 cm³ 同 m³ 嘅應用範圍，數字大細亦反映物件嘅實際體積。',
-  15: '繼續你嘅創世旅程！你已經獲得咗「空間創世神」嘅視角。而家，抬起頭睇下你嘅房間。找出一個體積用 cm³ 記錄嘅物件，以及一個用 m³ 記錄嘅物件吧！下一課見！'
+  12: '客廳尋寶分析 — 細物件如遙控器佔的空間極細，適合用 cm³；大型家具如沙發佔幾乎成個客廳一角，適合用 m³。',
+  13: '終極綜合挑戰 Boss Battle — 擦膠等於 8 cm³；巨型郵輪等於 150,000 m³；魔方等於 216 cm³；課室等於 120 m³。每個物件配對對單位同數值。',
+  14: 'Boss Battle 分析 — 通過實際數值配對，深入理解物件大細來對應 cm³ 同 m³ 的應用範圍，數字大細亦反映物件的實際體積。',
+  15: '繼續你的創世旅程！你已經獲得了「空間創世神」的視角。現在，抬起頭睇下你的房間。找出一個體積用 cm³ 記錄的物件，以及一個用 m³ 記錄的物件吧！下一課見！'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

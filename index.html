@@ -1754,13 +1754,13 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
-            <span class="update-date">2026-05-05 (u · 🎤 大改 — 每課加 3 條對應簡報嘅錄音題 + AI 自動整理錄音重複)</span>
+            <span class="update-date">2026-05-05 (u · 🎤 大改 — 每課加 3 條對應簡報的錄音題 + AI 自動整理錄音重複)</span>
             <ul>
                 <li>🎤 <b>第 12-16 課全部新增 3 條錄音題（共 15 條）</b>：簡報 1↔評估 1↔錄音題 1 一一對應；每條錄音題有橫向資訊圖、學習目標、AI 整合 + 評分；每題最多 3 🪙</li>
-                <li>🤖 <b>修「錄音題太苛刻」(用戶投訴) — 後端 worker.js 加 transcript consolidation step</b>：學生口齒不清／句子重複都會由 LLM 先整理成一句流暢句子（保持原意，唔加學生冇講嘅內容），再俾 Gemini Flash 評分</li>
-                <li>📊 <b>評分標準寬鬆化</b>：60-69 分（嘗試答+涉及主題）、70-84 分（答對方向+1 個關鍵字）、85+（答案清晰+2 個原理）；唔再因為學生表達唔流暢扣分</li>
+                <li>🤖 <b>修「錄音題太苛刻」(用戶投訴) — 後端 worker.js 加 transcript consolidation step</b>：學生口齒不清／句子重複都會由 LLM 先整理成一句流暢句子（保持原意，不加學生沒有講的內容），再給 Gemini Flash 評分</li>
+                <li>📊 <b>評分標準寬鬆化</b>：60-69 分（嘗試答+涉及主題）、70-84 分（答對方向+1 個關鍵字）、85+（答案清晰+2 個原理）；不再因為學生表達不流暢扣分</li>
                 <li>🪙 <b>STEP_KEYS 加 voice1/voice2/voice3 entries</b>（ch13-16）：每課由 9 步 → 12 步進度；prior 學生金幣 100% 保留（mergeBest）</li>
-                <li>🎨 <b>UI 升級</b>：voice page 紫色主題（區別簡報藍、評估橙、總結綠）；學生睇到 AI 整理後嘅自己回答（透明度 + 增加學習成效）</li>
+                <li>🎨 <b>UI 升級</b>：voice page 紫色主題（區別簡報藍、評估橙、總結綠）；學生睇到 AI 整理後的自己回答（透明度 + 增加學習成效）</li>
                 <li>⚠️ <b>需要 user 跑 wrangler deploy</b> 將 worker.js consolidation 上 Cloudflare 才能生效</li>
             </ul>
         </div>
@@ -1786,8 +1786,8 @@ body::before {
         <div class="update-entry">
             <span class="update-date">2026-05-05 (r · ch15 評估 OCR 對齊 + ch13/slides1 講解對齊)</span>
             <ul>
-                <li>🔧 <b>修復「ch15 評估題目同頁面唔對應」嚴重 bug</b>：ch15/assess1/2/3 全部 18 條題目經 OCR 對齊重寫 — 之前 Q array 講「火龍果 vs 奇異果」但 image 顯示完全唔同題目；學生點 [B] 時被判錯</li>
-                <li>📋 <b>ch15/assess1/2/3 重寫主題</b>：assess1（固液氣三態）、assess2（直觀比較大細）、assess3（照片限制 + 量度單位）— 全部 q text + opts + correct 對齊 NLM 生成嘅 JPG</li>
+                <li>🔧 <b>修復「ch15 評估題目同頁面不對應」嚴重 bug</b>：ch15/assess1/2/3 全部 18 條題目經 OCR 對齊重寫 — 之前 Q array 講「火龍果 vs 奇異果」但 image 顯示完全不同題目；學生點 [B] 時被判錯</li>
+                <li>📋 <b>ch15/assess1/2/3 重寫主題</b>：assess1（固液氣三態）、assess2（直觀比較大細）、assess3（照片限制 + 量度單位）— 全部 q text + opts + correct 對齊 NLM 生成的 JPG</li>
                 <li>🎤 <b>ch13/slides1 PAGE_NARRATION OCR 對齊</b>（15 頁 narration）：之前 narration 講 0.6×7 但 image 講 2.5×3，學生收到錯資訊；新 narration 對齊每頁實際內容（蝙蝠妖／筋斗雲／蟠桃／香蕉／蜘蛛精）</li>
                 <li>⏳ <b>仍待修</b>：ch13/slides2-3、ch14/15/16/slides1-3（共 14 個簡報 ~196 條 narration）— 需後續 session 繼續</li>
             </ul>
@@ -1796,9 +1796,9 @@ body::before {
         <div class="update-entry">
             <span class="update-date">2026-05-05 (q · 嚴重 bug 修補：評估跳轉 + 提示洩答案 + 遊戲 BGM)</span>
             <ul>
-                <li>🔧 <b>修復「第 12 課評估簡報一睇就跳轉」嚴重 bug</b>：assessViewer 之前喺區域 1 region-section 內，當 viewer 開啟時被 __hideRegionsForViewer() 同步隱藏。已將 viewer 移出 region-section，學生可正常做評估</li>
-                <li>🤐 <b>修復「簡報選錯提示洩答案」嚴重 bug</b>：54 個簡報題目嘅 hint 移除 "→ X.X" / "= X.X 元/公斤" / "（A/B/C/D）" 等明確答案，改為策略提示如「自己試吓」、「諗下邊個啱」、「再 check 估算」 — 學生答錯後仍要思考</li>
-                <li>🎵 <b>修復「遊戲 BGM 不見咗」</b>：第 13/14/15/16 課 10 個遊戲 file 加返背景音樂（bgm_battle.mp3 loop）+ 右上角 🔇/🔊 toggle button，學生 first interaction 自動播放</li>
+                <li>🔧 <b>修復「第 12 課評估簡報一睇就跳轉」嚴重 bug</b>：assessViewer 之前在區域 1 region-section 內，當 viewer 開啟時被 __hideRegionsForViewer() 同步隱藏。已將 viewer 移出 region-section，學生可正常做評估</li>
+                <li>🤐 <b>修復「簡報選錯提示洩答案」嚴重 bug</b>：54 個簡報題目的 hint 移除 "→ X.X" / "= X.X 元/公斤" / "（A/B/C/D）" 等明確答案，改為策略提示如「自己試吓」、「想下哪一個對」、「再 check 估算」 — 學生答錯後仍要思考</li>
+                <li>🎵 <b>修復「遊戲 BGM 不見了」</b>：第 13/14/15/16 課 10 個遊戲 file 加回背景音樂（bgm_battle.mp3 loop）+ 右上角 🔇/🔊 toggle button，學生 first interaction 自動播放</li>
             </ul>
         </div>
 
@@ -1806,7 +1806,7 @@ body::before {
             <span class="update-date">2026-05-05 (p · 評估完成加錄音解題加賽)</span>
             <ul>
                 <li>🎤 <b>第 13-16 課全部 12 個評估 final-screen 加「粵語錄音解題加賽」入口</b>：學生做完 6 題 MC 後直接見到橙色加賽橫幅，1 click 去 summary.html 錄音 +1-3 🪙</li>
-                <li>💪 <b>UX 補強</b>：學生唔需要返到 chapter index 都可以做錄音；加賽連結置首位（再做、玩遊戲、返入口之上）— 鼓勵學生即時嘗試</li>
+                <li>💪 <b>UX 補強</b>：學生不需要返到 chapter index 都可以做錄音；加賽連結置首位（再做、玩遊戲、返入口之上）— 鼓勵學生即時嘗試</li>
             </ul>
         </div>
 
@@ -1830,11 +1830,11 @@ body::before {
         </div>
 
         <div class="update-entry">
-            <span class="update-date">2026-05-05 (m · 修簡報睇唔到 + 刪預習)</span>
+            <span class="update-date">2026-05-05 (m · 修簡報睇不到 + 刪預習)</span>
             <ul>
-                <li>👀 <b>修復「簡報睇唔到」bug</b>：開簡報／評估時自動隱藏 3 區域 cards（之前 cards 遮住 viewer）+ 自動 scroll 至頂</li>
+                <li>👀 <b>修復「簡報睇不到」bug</b>：開簡報／評估時自動隱藏 3 區域 cards（之前 cards 遮住 viewer）+ 自動 scroll 至頂</li>
                 <li>🗑️ <b>移除預習</b>：第 13/14/15/16 課入口刪除預習 cards（用戶要求），prelearn 文件保留以兼容學生 prior 進度</li>
-                <li>📋 <b>新「課程總結」頁面</b>（每課 1 張）：資訊圖 + 學生粵語錄音 + AI 評分（POE Gemini Flash）+ 金幣派發 85+=3 / 70+=2 / 60+=1 / <60=0；低分有提示但唔洩答案</li>
+                <li>📋 <b>新「課程總結」頁面</b>（每課 1 張）：資訊圖 + 學生粵語錄音 + AI 評分（POE Gemini Flash）+ 金幣派發 85+=3 / 70+=2 / 60+=1 / <60=0；低分有提示但不洩答案</li>
                 <li>🤖 <b>夜班自動化</b>：NLM agent 重生 5 簡潔文字風 summary 資訊圖；POE agent 重製全部 game 角色／素材 PNG（~70-80 張）</li>
             </ul>
         </div>
@@ -1842,8 +1842,8 @@ body::before {
         <div class="update-entry">
             <span class="update-date">2026-05-05 (j · 大型修補 — 4 大改善)</span>
             <ul>
-                <li>🔇 <b>修復簡報講解重複聲 + 改 opt-in</b>：所有第 12-16 課簡報預設靜音，學生 1 click 開／關 + 「🎤 講呢頁」即時聽 1 次</li>
-                <li>🎯 <b>第 12 課主頁完整 3 區域</b>：之前漏 3 簡報 cards 已補返；區域 1（6 cards）+ 區域 2（2）+ 區域 3（2）；學生 prior 進度保留</li>
+                <li>🔇 <b>修復簡報講解重複聲 + 改 opt-in</b>：所有第 12-16 課簡報預設靜音，學生 1 click 開／關 + 「🎤 講這頁」即時聽 1 次</li>
+                <li>🎯 <b>第 12 課主頁完整 3 區域</b>：之前漏 3 簡報 cards 已補回；區域 1（6 cards）+ 區域 2（2）+ 區域 3（2）；學生 prior 進度保留</li>
                 <li>🎨 <b>第 15 課遊戲 10 個物件改 AI 生圖</b>：蘋果 / 水杯 / 氣球 / 影子 / 橙 / 橙汁 / 雲 / 彩虹 / 牛奶 / 空氣砲 — POE NANO BANANA 取代 emoji</li>
                 <li>🔊 <b>所有評估題加「讀題目」按鈕</b>（12 個評估）：廣東話讀題幹，<b>絕不讀</b>選項/答案/提示；Hint 加角色提示（悟空 / 八戒 / 哆啦A夢 / Steve）</li>
             </ul>
@@ -1876,7 +1876,7 @@ body::before {
                     </ul>
                 </li>
                 <li>✨ 全部高解像度 PNG（800-1600 KB），透明背景，kawaii anime style 一致</li>
-                <li>🔧 自動化工具 `scripts/poe_nanobanana.py` 保留作日後新角色生成（API key 已 gitignore 唔上傳）</li>
+                <li>🔧 自動化工具 `scripts/poe_nanobanana.py` 保留作日後新角色生成（API key 已 gitignore 不上傳）</li>
             </ul>
         </div>
 
@@ -1890,7 +1890,7 @@ body::before {
                         <li>📋 <b>區域 2：總結區</b>（綠色）— 學習卡 + 資訊圖 link</li>
                         <li>🎮 <b>區域 3：趣味區</b>（橙色）— 4 個遊戲 cards</li>
                         <li>每 card 右上角 +金幣 badge</li>
-                        <li>學生 prior 完成嘅步驟 + 金幣 100% 保留（mergeBest 保護）</li>
+                        <li>學生 prior 完成的步驟 + 金幣 100% 保留（mergeBest 保護）</li>
                     </ul>
                 </li>
                 <li>🛡️ <b>switchTab(&apos;scores&apos;) 跳轉</b>：sticky 「我的成績」按鈕仍 work，學生點頂欄即時跳成績 tab</li>
@@ -1901,7 +1901,7 @@ body::before {
         <div class="update-entry">
             <span class="update-date">2026-05-05 (f · Phase 3 學習卡中文化)</span>
             <ul>
-                <li>📚 <b>第 13/14 課學習卡全面中文化</b>（之前係英文 ~50 卡）</li>
+                <li>📚 <b>第 13/14 課學習卡全面中文化</b>（之前是英文 ~50 卡）</li>
             </ul>
         </div>
 
@@ -1912,7 +1912,7 @@ body::before {
                     <ul style="margin-top:4px">
                         <li>Root cause：第 15/16/17/18/19 課缺 coin_new.png 圖檔 → chapter-header.js?v=20260505n 載入時 broken</li>
                         <li>Fix：複製 coin_new.png 到 5 個課題 images/ 文件夾</li>
-                        <li>學生喺所有 sub-page 都見到金幣圖標 + 數字</li>
+                        <li>學生在所有 sub-page 都見到金幣圖標 + 數字</li>
                     </ul>
                 </li>
             </ul>
@@ -1943,14 +1943,14 @@ body::before {
                     <ul style="margin-top:4px">
                         <li>🤖 <b>AI 問功課</b>（紫色）— 任何頁面右上角 1 click 即跳 Gemini Gem</li>
                         <li>🏆 <b>我的成績</b>（橙色）— 任何頁面 1 click 跳返主頁成績 tab</li>
-                        <li>無論喺簡報、評估、遊戲、預習任何 sub-page 都見到</li>
+                        <li>無論在簡報、評估、遊戲、預習任何 sub-page 都見到</li>
                     </ul>
                 </li>
-                <li>🛡️ <b>承諾：學生已賺金幣永遠唔會減少</b>
+                <li>🛡️ <b>承諾：學生已賺金幣永遠不會減少</b>
                     <ul style="margin-top:4px">
-                        <li>即將進行嘅大規模 UI 重構（區域 1 自學區／區域 2 總結區／區域 3 趣味區）</li>
-                        <li>所有更新都用 mergeBest 保護機制 — 學生 prior 完成嘅步驟同金幣 100% 保留</li>
-                        <li>新題目／新評估出嚟之後，學生可以 optional 重做賺更多金幣</li>
+                        <li>即將進行的大規模 UI 重構（區域 1 自學區／區域 2 總結區／區域 3 趣味區）</li>
+                        <li>所有更新都用 mergeBest 保護機制 — 學生 prior 完成的步驟同金幣 100% 保留</li>
+                        <li>新題目／新評估出來之後，學生可以 optional 重做賺更多金幣</li>
                     </ul>
                 </li>
             </ul>
@@ -1961,7 +1961,7 @@ body::before {
             <ul>
                 <li>🚨 <b>緊急修復「學號不能選」bug</b>（學生反映）：
                     <ul style="margin-top:4px">
-                        <li>之前更新引入重複 const AVAILABLE_CHAPTERS → JavaScript 全 page error → 揀班別後學號 dropdown 永遠 disabled</li>
+                        <li>之前更新引入重複 const AVAILABLE_CHAPTERS → JavaScript 全 page error → 選班別後學號 dropdown 永遠 disabled</li>
                         <li>已移除重複，登入即時恢復正常</li>
                         <li>108 個頁面 cache-bust 確保學生瀏覽器立即抓 fresh JS（無需 Ctrl+Shift+R）</li>
                     </ul>
@@ -1972,17 +1972,17 @@ body::before {
         <div class="update-entry">
             <span class="update-date">2026-05-03 (f · 5 大 bug 全面修補)</span>
             <ul>
-                <li>🎮 <b>修復遊戲玩完冇加金幣 bug</b>（學生反映）：
+                <li>🎮 <b>修復遊戲玩完沒有加金幣 bug</b>（學生反映）：
                     <ul style="margin-top:4px">
-                        <li>15 個遊戲 file 加返 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
+                        <li>15 個遊戲 file 加回 markDone callback（ch12 三個全寫；ch15/16 六個加 done:true；ch17/18/19 g2/g3 六個補修）</li>
                         <li>玩完即時寫 localStorage → progress.js?v=20260505n v4 hijack 自動 Supabase upsert → 跨頁同步</li>
                     </ul>
                 </li>
                 <li>🎲 <b>評估題目選項位置每次隨機（21 個 assess）</b>：
                     <ul style="margin-top:4px">
-                        <li>之前 ch14/ch15 全部答案永遠係 A，學生猜 A 100% 中 → 失去評估價值</li>
+                        <li>之前 ch14/ch15 全部答案永遠是 A，學生猜 A 100% 中 → 失去評估價值</li>
                         <li>render 時 Fisher-Yates shuffle 選項，但記住正確答案 text，學生點正確選項就判 correct</li>
-                        <li>每次 reload 順序唔同，學生唔可以背位置</li>
+                        <li>每次 reload 順序不同，學生不可以背位置</li>
                     </ul>
                 </li>
                 <li>🗂️ <b>「我的成績」加每課完成進度卡</b>（用戶要求）：
@@ -1994,9 +1994,9 @@ body::before {
                 </li>
                 <li>🛡️ <b>學生先前進度永久保留</b>（重要保證）：
                     <ul style="margin-top:4px">
-                        <li>即使更新題目，學生之前完成嘅 step 仍然顯示 ✓ 同保留金幣</li>
+                        <li>即使更新題目，學生之前完成的 step 仍然顯示 ✓ 同保留金幣</li>
                         <li>progress.js?v=20260505n mergeBest 規則：done 一旦 true 永遠 true，coins/score 取最高</li>
-                        <li>學生唔會因為我哋改題目而被扣金幣</li>
+                        <li>學生不會因為我們改題目而被扣金幣</li>
                     </ul>
                 </li>
             </ul>
@@ -2011,17 +2011,17 @@ body::before {
                         <li>ch15：完整重寫 — 哆啦A夢主題（體積概念／直觀比較／照片限制）</li>
                         <li>ch16：完整重寫 — Minecraft 主題（cm³ 數粒／m³ 量感／單位換算）</li>
                         <li>ch17：全新建立 3 個 prelearn — 海賊王主題（體積公式／反求未知數／正方體+綜合）</li>
-                        <li>前 ch15/16 prelearn 仲係 cp ch14 殘留小數乘法內容（學生睇唔啱課題）— 已修</li>
+                        <li>前 ch15/16 prelearn 仲是 cp ch14 殘留小數乘法內容（學生睇不對課題）— 已修</li>
                     </ul>
                 </li>
-                <li>🔗 <b>5 chapter 入口加返 prelearn link</b>（之前 v5 整修移走）：
+                <li>🔗 <b>5 chapter 入口加回 prelearn link</b>（之前 v5 整修移走）：
                     <ul style="margin-top:4px">
                         <li>每節變 flow-3：📖 預習 → 📦 簡報 → ✏️ 評估 → 🎮 遊戲</li>
-                        <li>section title 修正本課主題（ch15/16/17 之前仲係 cp ch14 小數乘法殘留）</li>
+                        <li>section title 修正本課主題（ch15/16/17 之前仲是 cp ch14 小數乘法殘留）</li>
                         <li>STEP_KEYS 由 9 步擴展至 12 步，hero progress 跟住更新</li>
                     </ul>
                 </li>
-                <li>🖼️ <b>修正 ch15/16 prelearn 資訊圖路徑</b>（原 src 指向唔存在的 infographic1-3.jpg，改用實際 info1-3.png）</li>
+                <li>🖼️ <b>修正 ch15/16 prelearn 資訊圖路徑</b>（原 src 指向不存在的 infographic1-3.jpg，改用實際 info1-3.png）</li>
             </ul>
         </div>
 
@@ -2034,7 +2034,7 @@ body::before {
                         <li>對齊 NLM JPG 內容（rule #20 OCR）</li>
                     </ul>
                 </li>
-                <li>🐛 <b>修正 4 條題目嘅答案錯誤</b>（學生之前答啱會被判錯）：
+                <li>🐛 <b>修正 4 條題目的答案錯誤</b>（學生之前答對會被判錯）：
                     <ul style="margin-top:4px">
                         <li>簡報 1 Lv.1：金方塊立體體積 8 → 9 cm³（含 3 隱藏方塊）</li>
                         <li>評估 1 Q2：方塊數量 5×2 → 3×2，體積 = 6 cm³</li>
@@ -2055,7 +2055,7 @@ body::before {
                         <li>評估 3：照片限制 + 概念整合（縮小電筒、影子無體積、單位量度預告）</li>
                     </ul>
                 </li>
-                <li>🔍 全面審計：第 17 / 18 / 19 課 simulation 題目 q 字段已完全冇粵語口語殘留</li>
+                <li>🔍 全面審計：第 17 / 18 / 19 課 simulation 題目 q 字段已完全沒有粵語口語殘留</li>
             </ul>
         </div>
 
@@ -2064,9 +2064,9 @@ body::before {
             <ul>
                 <li>💰 <b>修正「我的成績」tab 累計金幣顯示不一致</b>（學生反映：頂欄 22、我的成績 15）：
                     <ul style="margin-top:4px">
-                        <li>「累計金幣」+「剩餘可換」改用同 topbar 一樣嘅 unified logic（含全部課題）</li>
-                        <li>「本課進度」分母 /39 對應 ch12 only，分子改用 computeCh12Coins（補返漏 ch12_game2 嘅 bug）</li>
-                        <li>教師詳細成績 modal 同步用 computeCh12Coins（補返漏 ch12_game2）</li>
+                        <li>「累計金幣」+「剩餘可換」改用同 topbar 一樣的 unified logic（含全部課題）</li>
+                        <li>「本課進度」分母 /39 對應 ch12 only，分子改用 computeCh12Coins（補回漏 ch12_game2 的 bug）</li>
+                        <li>教師詳細成績 modal 同步用 computeCh12Coins（補回漏 ch12_game2）</li>
                     </ul>
                 </li>
                 <li>📌 <b>底層機制</b>：登入畫面 update log 由今日起每次更新都自動加 entry，學生＋家長透明見到變動</li>
@@ -2078,12 +2078,12 @@ body::before {
             <ul>
                 <li>💰 <b>修正金幣跨頁顯示不一致</b>（學生反映：第 1 頁 13、ch16 22）：
                     <ul style="margin-top:4px">
-                        <li>統一 ch12 計算 logic（quiz1 cap 至 max 2 coins，唔再用 raw score 過量）</li>
+                        <li>統一 ch12 計算 logic（quiz1 cap 至 max 2 coins，不再用 raw score 過量）</li>
                         <li>單一 source of truth：`LWWFProgress.getTotalCoinsAllChapters()`</li>
                         <li>所有頁面（root index、ch12-19）顯示相同金幣 — 邊玩邊賺即時累積</li>
                     </ul>
                 </li>
-                <li>🚀 <b>自動清舊 cache</b>（學生唔需要 Ctrl+Shift+R）：
+                <li>🚀 <b>自動清舊 cache</b>（學生不需要 Ctrl+Shift+R）：
                     <ul style="margin-top:4px">
                         <li>102 個頁面加版本號 cache-bust，瀏覽器自動 fetch 新版 JS</li>
                         <li>學生下次開頁面即時見到 fix，無需任何操作</li>
@@ -2092,17 +2092,17 @@ body::before {
                 <li>📚 <b>學習卡全面繁體中文書面語</b>（第 15-19 課，共 60 張）：
                     <ul style="margin-top:4px">
                         <li>ch15 體積概念 / ch16 體積量度 / ch17 長正方體 / ch18 立體圖形 / ch19 簡易方程</li>
-                        <li>內容對應本課 LO（之前 ch15/16 仲係小數乘法內容）</li>
+                        <li>內容對應本課 LO（之前 ch15/16 仲是小數乘法內容）</li>
                     </ul>
                 </li>
                 <li>📝 <b>簡報 + 評估題目全面書面語化</b>（rule #18 升級）：
                     <ul style="margin-top:4px">
                         <li>ch15 slides 1/2/3 共 18 條題目對齊 NLM JPG（縮小燈/水池/空氣砲/影子+回憶/房間氣體）</li>
-                        <li>ch17/18/19 slides+assess 共 51+ 條題目改為書面語（「邊個」→「哪一個」、「點解」→「為何」）</li>
+                        <li>ch17/18/19 slides+assess 共 51+ 條題目改為書面語（「哪一個」→「哪一個」、「為什麼」→「為何」）</li>
                         <li>ch18 assess3 + ch19 assess2/3 對齊本課 LO（不規則立體切割 / 認識方程 / 平衡法）</li>
                     </ul>
                 </li>
-                <li>🎮 <b>第 18 + 19 課遊戲全新建立</b>（之前完全冇）：
+                <li>🎮 <b>第 18 + 19 課遊戲全新建立</b>（之前完全沒有）：
                     <ul style="margin-top:4px">
                         <li>第 18 課：寶可夢主題 ×3 遊戲（不規則立體分割／填補／排疊）</li>
                         <li>第 19 課：蠟筆小新主題 ×3 遊戲（動感超人試煉／春日部購物／天平平衡法）</li>
@@ -2120,12 +2120,12 @@ body::before {
             <span class="update-date">2026-04-28 (v5 大整修)</span>
             <ul>
                 <li>🔄 <b>進度同步系統升級</b>（Supabase + 跨裝置）</li>
-                <li>💰 修復金幣會減少嘅 bug（mergeBest 永遠保最高分）</li>
+                <li>💰 修復金幣會減少的 bug（mergeBest 永遠保最高分）</li>
                 <li>📦 第 16 課 v5 重做：簡報 1/2/3 配上 NLM JPG</li>
                 <li>🎤 簡報加「解釋題」AI 評分（Feynman 教學法）</li>
                 <li>🎮 遊戲區移到頂部，學生隨時可玩</li>
                 <li>📋 簡化版面：簡報 → 評估（去除預習）</li>
-                <li>📚 教師版可揀任何課題睇進度（Ch12-16）</li>
+                <li>📚 教師版可選任何課題睇進度（Ch12-16）</li>
                 <li>📨 回報/許願 panel（學生告知老師問題）</li>
             </ul>
         </div>
@@ -2134,7 +2134,7 @@ body::before {
             <span class="update-date">2026-04-23</span>
             <ul>
                 <li>🥟 <b>第 14 課小數乘法（二）正式上線！</b>（網站層先上，NLM 素材生成中）</li>
-                <li>🎮 3 款全新玩法（完全唔 copy Ch12/13）：
+                <li>🎮 3 款全新玩法（完全不 copy Ch12/13）：
                     <ul style="margin-top:4px">
                         <li>🃏 配對卡 Memory Match · 翻卡配對算式答案</li>
                         <li>🎈 氣球爆破 Balloon Pop · 60 秒限時篤爆</li>
@@ -2163,7 +2163,7 @@ body::before {
                 </li>
                 <li>🎨 Ch13 遊戲用返 Ch12 西遊記 AI 人物畫風（悟空/唐僧/妖怪/金幣）</li>
                 <li>📊 <b>簡報加綜合評估題</b>：每個 deck 結尾 3 條評估題（5 練習 + 3 評估 = 8 題）</li>
-                <li>📘 第 13 課簡報內嵌 MC + 填充題（答啱先過頁）</li>
+                <li>📘 第 13 課簡報內嵌 MC + 填充題（答剛才過頁）</li>
                 <li>🎤 第 13 課預習加 Feynman 錄音題（AI 評分）</li>
                 <li>🔒 <b>錯兩次鎖</b>：簡報同一頁答錯 2 次 → 返第 1 頁重讀（Ch12 + Ch13）</li>
                 <li>📋 第 13 課入口重構：3 區域 × 4 步（簡報→預習→評估→遊戲）</li>
@@ -2190,8 +2190,8 @@ body::before {
             <span class="update-date">2026-04-18</span>
             <ul>
                 <li>錄音題評分更貼心，小學五年級友善標準</li>
-                <li>AI 唔會再自動擴寫答案，保留你實際講嘅字</li>
-                <li>修正 iPhone 靜音錄音仍然高分嘅 bug</li>
+                <li>AI 不會再自動擴寫答案，保留你實際講的字</li>
+                <li>修正 iPhone 靜音錄音仍然高分的 bug</li>
             </ul>
         </div>
 
@@ -2205,7 +2205,7 @@ body::before {
         </div>
 
         <div style="text-align:center;margin-top:12px;padding-top:10px;border-top:1px dashed #ddd;font-size:0.78rem;color:#999;">
-            💡 學生同家長：有問題可以搵楊老師
+            💡 學生同家長：有問題可以找楊老師
         </div>
     </div>
 
@@ -2298,9 +2298,9 @@ body::before {
             <div id="slideQuizLockModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;align-items:center;justify-content:center;padding:20px;">
               <div style="background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.4);">
                 <div style="font-size:3.5rem;margin-bottom:6px;">🔒</div>
-                <h2 style="margin:4px 0 10px;font-size:1.4rem;color:white;">要返去由頭睇！</h2>
-                <p style="margin:10px 0;line-height:1.6;font-size:0.95rem;">你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-                <p style="font-size:0.85rem;opacity:0.9;">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+                <h2 style="margin:4px 0 10px;font-size:1.4rem;color:white;">要回去由頭睇！</h2>
+                <p style="margin:10px 0;line-height:1.6;font-size:0.95rem;">你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+                <p style="font-size:0.85rem;opacity:0.9;">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
                 <button onclick="slideQuizLockReset()" style="background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px;">🔁 返第 1 頁重新開始</button>
               </div>
             </div>
@@ -2343,7 +2343,7 @@ body::before {
                             </div>
                         </div>
                         <div class="card-body">
-                            跟悟空學小數點向右移嘅放大規律，配廣東話講解。
+                            跟悟空學小數點向右移的放大規律，配廣東話講解。
                             <div style="margin-top:8px;" id="slideStatus1"><span class="progression-step-badge active">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
                         </div>
                     </div>
@@ -2358,7 +2358,7 @@ body::before {
                             </div>
                         </div>
                         <div class="card-body">
-                            跟唐僧學小數點向左移嘅縮小心法，配廣東話講解。
+                            跟唐僧學小數點向左移的縮小心法，配廣東話講解。
                             <div style="margin-top:8px;" id="slideStatus2"><span class="progression-step-badge active">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
                         </div>
                     </div>
@@ -2373,7 +2373,7 @@ body::before {
                             </div>
                         </div>
                         <div class="card-body">
-                            日常生活單位換算 — 公斤、克、米、厘米全部搞掂。
+                            日常生活單位換算 — 公斤、克、米、厘米全部辦妥。
                             <div style="margin-top:8px;" id="slideStatus3"><span class="progression-step-badge active">最多 2 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
                         </div>
                     </div>
@@ -2430,7 +2430,7 @@ body::before {
                 </div>
 
                 <!-- 錄音題簡報（每個簡報對應 1 條錄音題，用粵語答學習目標）-->
-                <div style="font-size:0.92rem;font-weight:700;color:#7B1FA2;margin:18px 4px 10px;">🎤 錄音回答區（3 個簡報嘅錄音題 · AI 自動整理重複句子 · 每題最多 3 🪙）</div>
+                <div style="font-size:0.92rem;font-weight:700;color:#7B1FA2;margin:18px 4px 10px;">🎤 錄音回答區（3 個簡報的錄音題 · AI 自動整理重複句子 · 每題最多 3 🪙）</div>
                 <div class="cards-grid">
                     <a href="assets/ch12/voice1.html" class="card" style="position:relative;cursor:pointer;text-decoration:none;color:inherit;display:block;border:2px solid #CE93D8;background:linear-gradient(135deg,#ffffff,#F3E5F5);">
                         <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
@@ -2438,7 +2438,7 @@ body::before {
                             <div class="card-icon" style="background:linear-gradient(135deg,#CE93D8,#7B1FA2);color:white;">🎤</div>
                             <div><div class="card-title" style="color:#6A1B9A;">錄音題 1</div><div class="card-subtitle">×10/×100/×1000 · 對應簡報 1</div></div>
                         </div>
-                        <div class="card-body">用粵語講出乘以 10、100、1000 嘅口訣，舉一個例子。AI 整理重複後評分。</div>
+                        <div class="card-body">用粵語講出乘以 10、100、1000 的口訣，舉一個例子。AI 整理重複後評分。</div>
                     </a>
                     <a href="assets/ch12/voice2.html" class="card" style="position:relative;cursor:pointer;text-decoration:none;color:inherit;display:block;border:2px solid #CE93D8;background:linear-gradient(135deg,#ffffff,#F3E5F5);">
                         <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
@@ -2446,7 +2446,7 @@ body::before {
                             <div class="card-icon" style="background:linear-gradient(135deg,#CE93D8,#7B1FA2);color:white;">🎤</div>
                             <div><div class="card-title" style="color:#6A1B9A;">錄音題 2</div><div class="card-subtitle">×0.1/×0.01/×0.001 · 對應簡報 2</div></div>
                         </div>
-                        <div class="card-body">用粵語講出乘以 0.1、0.01、0.001 嘅口訣，舉一個例子。</div>
+                        <div class="card-body">用粵語講出乘以 0.1、0.01、0.001 的口訣，舉一個例子。</div>
                     </a>
                     <a href="assets/ch12/voice3.html" class="card" style="position:relative;cursor:pointer;text-decoration:none;color:inherit;display:block;border:2px solid #CE93D8;background:linear-gradient(135deg,#ffffff,#F3E5F5);">
                         <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
@@ -2454,7 +2454,7 @@ body::before {
                             <div class="card-icon" style="background:linear-gradient(135deg,#CE93D8,#7B1FA2);color:white;">🎤</div>
                             <div><div class="card-title" style="color:#6A1B9A;">錄音題 3</div><div class="card-subtitle">單位換算 · 對應簡報 3</div></div>
                         </div>
-                        <div class="card-body">用粵語講出公斤↔克 / 米↔厘米嘅換算同生活例子。</div>
+                        <div class="card-body">用粵語講出公斤↔克 / 米↔厘米的換算同生活例子。</div>
                     </a>
                 </div>
 
@@ -2493,7 +2493,7 @@ body::before {
                             <div class="card-icon green">📋</div>
                             <div><div class="card-title">課程總結</div><div class="card-subtitle">資訊圖總覽 + 錄音 AI 評分</div></div>
                         </div>
-                        <div class="card-body">睇一張總覽資訊圖，再用粵語錄音講解你嘅理解，AI 即時評分送金幣！</div>
+                        <div class="card-body">睇一張總覽資訊圖，再用粵語錄音講解你的理解，AI 即時評分送金幣！</div>
                     </a>
                     <div class="card" onclick="document.getElementById('flashcardsContainer').scrollIntoView({behavior:'smooth',block:'center'})" style="position:relative;cursor:pointer;">
                         <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+2 🪙</div>
@@ -2699,8 +2699,8 @@ body::before {
         <!-- Empty state: shown before a class is selected -->
         <div id="teacherEmptyState" style="background:white;border-radius:var(--radius);padding:48px 24px;text-align:center;box-shadow:var(--shadow);margin-bottom:20px;">
             <div style="font-size:3rem;margin-bottom:12px;">📊</div>
-            <h2 style="margin:0 0 8px;color:var(--primary);">請喺上方選擇班別開始</h2>
-            <p style="margin:0;color:#666;font-size:0.95rem;">選擇「全部班別」查看全校概況，或揀特定班別深入分析。</p>
+            <h2 style="margin:0 0 8px;color:var(--primary);">請在上方選擇班別開始</h2>
+            <p style="margin:0;color:#666;font-size:0.95rem;">選擇「全部班別」查看全校概況，或選特定班別深入分析。</p>
         </div>
 
         <!-- All teacher content wrapped — hidden until a class is selected -->
@@ -2721,12 +2721,12 @@ body::before {
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
                 <h3 style="margin:0;">📋 完成名單 / 分數查詢</h3>
                 <select id="completionSelect" onchange="renderCompletionView()" style="padding:8px 12px;border:2px solid var(--primary);border-radius:8px;font-size:0.95rem;background:white;">
-                    <option value="" disabled selected>— 揀一個項目查看名單 —</option>
+                    <option value="" disabled selected>— 選一個項目查看名單 —</option>
                     <!-- Options will be dynamically populated by rebuildCompletionSelect() based on CHAPTER -->
                 </select>
             </div>
             <div id="completionContent" style="min-height:60px;">
-                <p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 揀上面嘅下拉選單查看邊個完成咗 / 邊個未完成 + 分數</p>
+                <p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 選上面的下拉選單查看哪一個完成了 / 哪一個未完成 + 分數</p>
             </div>
         </div>
         </div><!-- /#secCompletion -->
@@ -2820,8 +2820,8 @@ body::before {
      ============================================================ -->
 <div class="chapter-selector-overlay" id="chapterSelectorOverlay" onclick="if(event.target===this)closeChapterSelector()">
     <div class="chapter-selector-box">
-        <h2>📚 揀一個課題</h2>
-        <p class="csub">揀你想學嘅課題，系統會切換去對應嘅學習區。更多課題會陸續上線。</p>
+        <h2>📚 選一個課題</h2>
+        <p class="csub">選你想學的課題，系統會切換去對應的學習區。更多課題會陸續上線。</p>
         <div class="chapter-grid" id="chapterGrid"></div>
         <button class="chapter-close-btn" onclick="closeChapterSelector()">關閉</button>
     </div>
@@ -2863,7 +2863,7 @@ function rebuildCompletionSelect() {
     if (!sel) return;
     const labels = CH_ACTIVITY_LABELS[CHAPTER] || CH_ACTIVITY_LABELS[12];
     sel.innerHTML = `
-        <option value="" disabled selected>— 揀第 ${CHAPTER} 課項目查看名單 —</option>
+        <option value="" disabled selected>— 選第 ${CHAPTER} 課項目查看名單 —</option>
         <optgroup label="📚 教學簡報">
             <option value="slides1">簡報 1（${labels.slides[0]}）</option>
             <option value="slides2">簡報 2（${labels.slides[1]}）</option>
@@ -2892,7 +2892,7 @@ function rebuildCompletionSelect() {
     `;
     // Reset content area
     const content = document.getElementById('completionContent');
-    if (content) content.innerHTML = `<p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 揀上面嘅下拉選單查看第 ${CHAPTER} 課邊個完成咗</p>`;
+    if (content) content.innerHTML = `<p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 選上面的下拉選單查看第 ${CHAPTER} 課哪一個完成了</p>`;
 }
 
 function changeTeacherChapter(ch) {
@@ -3349,7 +3349,7 @@ setInterval(() => {
     try {
         const last = parseInt(localStorage.getItem(AUTH_ACTIVE_KEY) || '0', 10);
         if (Date.now() - last > IDLE_LIMIT_MS) {
-            alert('⏰ 你已經 10 分鐘冇活動，為安全起見系統已自動登出。請重新登入。');
+            alert('⏰ 你已經 10 分鐘沒有活動，為安全起見系統已自動登出。請重新登入。');
             logout();
         }
     } catch (e) {}
@@ -3883,7 +3883,7 @@ async function saveQuizScore() {
 // ch12 = 39 (legacy hardcoded with iq_quiz/quiz1/etc.)
 // ch13-19 = 12 steps（3 prelearn×2 + 3 slides×2 + 3 assess×2 + 3 game×3 = 6+6+6+9 = 27）
 const CHAPTER_MAX_COINS = { 12: 39, 13: 27, 14: 27, 15: 27, 16: 27, 17: 27, 18: 27, 19: 27 };
-// Note: 用 existing 全局 AVAILABLE_CHAPTERS（line ~3870 已 declared）— 唔再 redeclare（syntax error）
+// Note: 用 existing 全局 AVAILABLE_CHAPTERS（line ~3870 已 declared）— 不再 redeclare（syntax error）
 
 // Compute earned coins for a single chapter (uses unified LWWFProgress logic)
 function getChapterCoins(ch) {
@@ -3913,7 +3913,7 @@ function renderScores() {
     } else {
         earnedCoins = computeEarnedCoins(scores);  // legacy fallback
     }
-    // 「本課進度」分母 39 = ch12 max → 分子用 ch12-only computeCh12Coins（修返漏 ch12_game2 嘅 bug）
+    // 「本課進度」分母 39 = ch12 max → 分子用 ch12-only computeCh12Coins（修返漏 ch12_game2 的 bug）
     const ch12Coins = (window.LWWFProgress && typeof window.LWWFProgress.computeCh12Coins === 'function')
         ? window.LWWFProgress.computeCh12Coins(scores)
         : computeEarnedCoins(scores);
@@ -4030,10 +4030,10 @@ function renderScores() {
             <h3>🏅 換取 EDX 分</h3>
             <p style="color: var(--text-light); margin-bottom: 12px; font-size: 0.9rem;">
                 你有 <strong><img src="${coinImg}" style="width:18px;vertical-align:middle;"> ${spendable}</strong> 金幣可以換取 EDX 分。
-                <br><span style="font-size:0.8rem;">💡 EDX 分可以喺學校換取真實獎品</span>
+                <br><span style="font-size:0.8rem;">💡 EDX 分可以在學校換取真實獎品</span>
             </p>
             ${EDX_RATES.some(r => spendable >= r.coins) ? '' : `<div style="padding:14px;background:#FFF3E0;border-radius:10px;color:#E65100;font-size:0.9rem;">
-                ⚠️ 金幣唔夠啊！至少要 10 金幣先可以換 EDX。繼續努力完成學習任務啦！
+                ⚠️ 金幣不夠啊！至少要 10 金幣先可以換 EDX。繼續努力完成學習任務啦！
             </div>`}
             ${EDX_RATES.map((r, i) => {
                 const enabled = spendable >= r.coins;
@@ -4311,7 +4311,7 @@ function renderFeedbackList() {
     `;
 
     if (items.length === 0) {
-        list.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">📭 冇符合條件嘅項目</div>';
+        list.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">📭 沒有符合條件的項目</div>';
         return;
     }
 
@@ -4403,7 +4403,7 @@ function renderCompletionView() {
     const content = document.getElementById('completionContent');
     if (!content) return;
     if (!item) {
-        content.innerHTML = '<p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 揀上面嘅下拉選單查看邊個完成咗 / 邊個未完成 + 分數</p>';
+        content.innerHTML = '<p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 選上面的下拉選單查看哪一個完成了 / 哪一個未完成 + 分數</p>';
         return;
     }
     const filter = document.getElementById('teacherClassFilter').value;
@@ -4413,7 +4413,7 @@ function renderCompletionView() {
         return s.class === filter;
     });
     if (!students.length) {
-        content.innerHTML = '<p style="color:#999;text-align:center;padding:16px;">冇學生數據</p>';
+        content.innerHTML = '<p style="color:#999;text-align:center;padding:16px;">沒有學生數據</p>';
         return;
     }
 
@@ -4490,7 +4490,7 @@ function renderCompletionView() {
                     ✅ 已完成 ${done.length}/${students.length} 人 ${showScore ? '（含分數）' : ''}
                 </div>
                 <div style="display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;">
-                    ${done.length ? done.map(r => renderStudentCard(r, 'done')).join('') : '<p style="color:#999;font-size:0.88rem;padding:8px;">仲冇人完成</p>'}
+                    ${done.length ? done.map(r => renderStudentCard(r, 'done')).join('') : '<p style="color:#999;font-size:0.88rem;padding:8px;">仲沒有人完成</p>'}
                 </div>
             </div>
             <div>
@@ -4540,7 +4540,7 @@ function renderIQTeacherView(quizNum) {
     const stepKey = 'quiz' + quizNum;
     const step = PROGRESSION_STEPS.find(s => s.id === stepKey);
     if (!step) {
-        container.innerHTML = '<p style="color:#999;">冇呢個問答資料</p>';
+        container.innerHTML = '<p style="color:#999;">沒有這個問答資料</p>';
         return;
     }
 
@@ -4660,7 +4660,7 @@ function renderIQTeacherView(quizNum) {
                         <div style="background:${borderColor};color:white;padding:2px 10px;border-radius:12px;font-weight:700;font-size:0.85rem;white-space:nowrap;">${score}/100</div>
                     </div>
                     <div style="margin-top:8px;padding:8px;background:white;border-radius:6px;font-style:italic;color:#333;line-height:1.5;">
-                        「${transcript || '<span style=\"color:#999;\">（AI 聽唔清楚）</span>'}」
+                        「${transcript || '<span style=\"color:#999;\">（AI 聽不清楚）</span>'}」
                     </div>
                     ${feedback ? `<div style="margin-top:6px;color:${color};font-size:0.85rem;">💬 AI 評語：${feedback}</div>` : ''}
                 </div>`;
@@ -4693,8 +4693,8 @@ async function showStudentDetail(cls, num, name) {
     const edxHistory = await cloudStore.loadEdxHistory(cls, num);
     const totalEdx = edxHistory.reduce((s, r) => s + r.edx_earned, 0);
     const totalSpent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
-    // 2026-05-03 fix：教師 view ch12 詳細成績用 computeCh12Coins（補返漏 ch12_game2 嘅 bug）
-    // 注：分母 39 = ch12 max，所以呢度用 ch12-only logic（rule #19 + computeCh12Coins）
+    // 2026-05-03 fix：教師 view ch12 詳細成績用 computeCh12Coins（補回漏 ch12_game2 的 bug）
+    // 注：分母 39 = ch12 max，所以這裡用 ch12-only logic（rule #19 + computeCh12Coins）
     const earnedCoins = (window.LWWFProgress && typeof window.LWWFProgress.computeCh12Coins === 'function')
         ? window.LWWFProgress.computeCh12Coins(scores)
         : computeEarnedCoins(scores);
@@ -4872,10 +4872,10 @@ const PROGRESSION_STEPS = [
       questions:[
         { q:'0.45 × 10 = ?', type:'mc', options:['0.045','4.5','45','450'], correct:1 },
         { q:'填充：4 × 100 = ___', type:'fill', accept:['400','400.0','400.00'], hint:'×100 小數點向右移 2 位' },
-        { q:'🎤 用你自己嘅說話，教一個同學點樣計 2.3 × 100。用 20-30 秒解釋。',
+        { q:'🎤 用你自己的說話，教一個同學怎樣計 2.3 × 100。用 20-30 秒解釋。',
           type:'voice',
           concept:'乘以100 小數點向右移2位',
-          rubric:'講得清楚：小數點向右移 2 位。答案係 230',
+          rubric:'講得清楚：小數點向右移 2 位。答案是 230',
           hint:'講到答案 + 任何一個原理就合格！例如「230，小數點向右移 2 位」就好好（~80 分）。再加「乘 100 就移 2 位」或者生活例子會更高分 💪' }
       ]},
     { id:'slides2', type:'slides', title:'簡報2：唐僧的縮小心法', desc:'×0.1 / ×0.01 / ×0.001', folder:'slides2', total:14, icon:'📘' },
@@ -4884,11 +4884,11 @@ const PROGRESSION_STEPS = [
       questions:[
         { q:'2.6 × 0.001 = ?', type:'mc', options:['260','0.26','0.026','0.0026'], correct:3 },
         { q:'填充：乘以 0.1 等於除以 ___', type:'fill', accept:['10','十'], hint:'×0.1 = ÷10，因為 0.1 = 1/10' },
-        { q:'🎤 用 Feynman 方法：假設你係老師，教同學點解 45 × 0.01 = 0.45。講 20-30 秒。',
+        { q:'🎤 用 Feynman 方法：假設你是老師，教同學為什麼 45 × 0.01 = 0.45。講 20-30 秒。',
           type:'voice',
           concept:'乘以0.01 小數點向左移2位',
           rubric:'講出：乘細數數字變細、小數點向左移 2 位、答案 0.45',
-          hint:'講到答案 + 任何一個原理就合格啦！例如「0.45，小數點向左移 2 位」就好好（~80 分）。再加多個原因（例：乘 0.01 即係除以 100）或者舉例會更高分 💪' }
+          hint:'講到答案 + 任何一個原理就合格啦！例如「0.45，小數點向左移 2 位」就好好（~80 分）。再加多個原因（例：乘 0.01 即是除以 100）或者舉例會更高分 💪' }
       ]},
     { id:'slides3', type:'slides', title:'簡報3：單位轉換大冒險', desc:'公里↔米 / 公斤↔克 / 升↔毫升', folder:'slides3', total:14, icon:'📙' },
     { id:'quiz3', type:'infoquiz', title:'課前預習3：單位轉換', desc:'3題（含錄音費曼題）', icon:'📖',
@@ -4896,7 +4896,7 @@ const PROGRESSION_STEPS = [
       questions:[
         { q:'0.72 公里 = ? 米', type:'mc', options:['7.2','72','720','7200'], correct:2 },
         { q:'填充：1 公里 = ___ 米', type:'fill', accept:['1000','1000米','一千'], hint:'1 公里 （試下計）（大變細用乘法）' },
-        { q:'🎤 教一教細佬：點解 1.5 公里 = 1500 米？用 20-30 秒解釋。',
+        { q:'🎤 教一教細佬：為什麼 1.5 公里 = 1500 米？用 20-30 秒解釋。',
           type:'voice',
           concept:'1公里=1000米，單位轉換用乘以1000',
           rubric:'講出：1 公里 = 1000 米、大變細用乘法、1.5 × 1000 = 1500 米',
@@ -4970,7 +4970,7 @@ const SLIDE_QUESTIONS = {
       accept:['1250','1250.0','1250毫升','1250 毫升'],
       hint:'1 升 （試下計）。 × 1000 。試下計' },
     // p13: 綜合應用 (fill)
-    { afterPage:13, type:'fill', q:'應用題：一條3.5米長嘅繩子，等於幾多厘米？（只填數字）',
+    { afterPage:13, type:'fill', q:'應用題：一條3.5米長的繩子，等於多少厘米？（只填數字）',
       accept:['350','350.0','350.00'],
       hint:'1 米 （試下計）。 × 100 。試下計' },
   ]
@@ -4979,52 +4979,52 @@ const SLIDE_QUESTIONS = {
 // Pre-written lecture text for each slide page (~20-30 seconds of speech each)
 const SLIDE_EXPLANATIONS = {
   slides1: {
-    1:'歡迎嚟到有趣嘅乘法，第一集「悟空嘅放大法術」！呢一課我哋會學三個修煉目標：第一，學識乘以10、100同1000嘅變大魔法；第二，學識乘以0.1、0.01同0.001嘅縮小心法；第三，係終極試煉，生活中嘅單位轉換。跟住西遊師徒，一齊解開數字變大嘅秘密！',
-    2:'呢一頁引入乘以10嘅概念。想像小數點係一個金丹，每次乘以10，個金丹就會向右跳一位。例如3.5乘以10等於35，小數點由3同5之間跳到5嘅右邊。記住，乘以越大嘅數，個結果就越大，小數點要向右移！',
-    3:'乘以10嘅法術規則：小數點向右移一位。如果位數唔夠，就要加零幫手填位。例如0.7乘以10等於7，小數點由0同7之間跳到7嘅右邊。當後面冇位時，7就啱啱好係答案。',
-    4:'注入更多法力：乘以100同乘以1000。乘以100有兩個零，小數點要向右移兩位；乘以1000有三個零，要向右移三位。遇到整數嘅時候，記住呼喚隱形嘅小數點，佢永遠收喺個位嘅右邊。例如4可以當成4點0，咁乘以10就變成40。',
-    5:'沙僧嘅挑水任務，基礎示範。0.45乘以10等於4.5，小數點向右移一位。3.8乘以100等於380，3.8向右移兩位：先變成38，再變成380，尾位用零填補。記住遇到空位，就請零嚟幫忙佔位！',
-    6:'悟空嘅筋斗雲示範。0.007乘以1000等於7，小數點向右移三位，之後0變成無效零，要掃乾淨。5.11乘以10等於51.1，小數點向右移一位。最前面嘅無效零記得要刪除，結果先至整齊。',
-    7:'小徒弟嘅試煉！請喺白板或紙上寫低答案同跳躍路徑。0.36乘以10等於幾多？有一個零，移一位。2.5乘以100等於幾多？有兩個零，移兩位，唔夠位嘅時候記得請零幫忙。諗清楚先答！',
-    8:'小心妖怪嘅迷魂陣！陷阱題來了。0.05乘以1000等於幾多？記住唔好只喺後面加三個零，要向右移小數點。100乘以3.057等於幾多？數字交換位置，乘出嚟嘅結果係一樣，呢個叫做乘法交換律。',
-    9:'牛魔王發出挑戰：求出未知嘅法力！Warm up題：0.003乘以1000等於3。逆向題：幾多乘以10等於8.5？結果係8.5表示向右移咗一位，所以原本係0.85，要將時間倒轉退返去！反逆思考好重要。',
-    10:'穿越火燄山！大數字同未知數嘅終極考驗。15乘以1000等於15000，三個零，小數點向右移三位。逆向題：幾多乘以100等於50？結果50除以100等於0.5，即係小數點向左移兩位，返返去搵原形。',
-    11:'八戒又犯錯啦！八戒將3.5乘以10寫做3.50，佢以為係喺後面加零，其實要將小數點向右移一位，答案係35。大家千祈唔好學八戒，要記住係移小數點，唔係加零！',
-    12:'八戒又犯錯啦第二集。八戒將0.8乘以100寫成0.800，又錯啦！正確做法係小數點向右移兩位，0.8變成80。大家要記住：乘大右移變更大，小數點跳幾多位就睇個乘數有幾多個零。',
-    13:'取得真經：放大法術秘訣總結！終極口訣係：乘嘅數有幾多個零，小數點就向右移幾多位。乘以10移一位，乘以100移兩位，乘以1000移三位。施法注意事項：空位要補零，前面多餘嘅零可以消滅，整數嘅小數點喺最右邊！',
-    14:'預告下一部分嘅故事。放大法術學完啦，下一集我哋會學習唐僧嘅縮小心法。準備好迎接新嘅挑戰，學習乘以0.1、乘以0.01同乘以0.001嘅秘密啦！'
+    1:'歡迎來到有趣的乘法，第一集「悟空的放大法術」！這一課我們會學三個修煉目標：第一，學識乘以10、100同1000的變大魔法；第二，學識乘以0.1、0.01同0.001的縮小心法；第三，是終極試煉，生活中的單位轉換。跟住西遊師徒，一起解開數字變大的秘密！',
+    2:'這一頁引入乘以10的概念。想像小數點是一個金丹，每次乘以10，個金丹就會向右跳一位。例如3.5乘以10等於35，小數點由3同5之間跳到5的右邊。記住，乘以越大的數，個結果就越大，小數點要向右移！',
+    3:'乘以10的法術規則：小數點向右移一位。如果位數不夠，就要加零幫手填位。例如0.7乘以10等於7，小數點由0同7之間跳到7的右邊。當後面沒有位時，7就剛剛好是答案。',
+    4:'注入更多法力：乘以100同乘以1000。乘以100有兩個零，小數點要向右移兩位；乘以1000有三個零，要向右移三位。遇到整數的時候，記住呼喚隱形的小數點，他永遠收在個位的右邊。例如4可以當成4點0，咁乘以10就變成40。',
+    5:'沙僧的挑水任務，基礎示範。0.45乘以10等於4.5，小數點向右移一位。3.8乘以100等於380，3.8向右移兩位：先變成38，再變成380，尾位用零填補。記住遇到空位，就請零來幫忙佔位！',
+    6:'悟空的筋斗雲示範。0.007乘以1000等於7，小數點向右移三位，之後0變成無效零，要掃乾淨。5.11乘以10等於51.1，小數點向右移一位。最前面的無效零記得要刪除，結果先至整齊。',
+    7:'小徒弟的試煉！請在白板或紙上寫低答案同跳躍路徑。0.36乘以10等於多少？有一個零，移一位。2.5乘以100等於多少？有兩個零，移兩位，不夠位的時候記得請零幫忙。想清楚先答！',
+    8:'小心妖怪的迷魂陣！陷阱題來了。0.05乘以1000等於多少？記住不要只在後面加三個零，要向右移小數點。100乘以3.057等於多少？數字交換位置，乘出來的結果是一樣，這個叫做乘法交換律。',
+    9:'牛魔王發出挑戰：求出未知的法力！Warm up題：0.003乘以1000等於3。逆向題：多少乘以10等於8.5？結果是8.5表示向右移了一位，所以原本是0.85，要將時間倒轉退回去！反逆思考好重要。',
+    10:'穿越火燄山！大數字同未知數的終極考驗。15乘以1000等於15000，三個零，小數點向右移三位。逆向題：多少乘以100等於50？結果50除以100等於0.5，即是小數點向左移兩位，返回去找原形。',
+    11:'八戒又犯錯啦！八戒將3.5乘以10寫做3.50，他以為是在後面加零，其實要將小數點向右移一位，答案是35。大家千祈不要學八戒，要記住是移小數點，不是加零！',
+    12:'八戒又犯錯啦第二集。八戒將0.8乘以100寫成0.800，又錯啦！正確做法是小數點向右移兩位，0.8變成80。大家要記住：乘大右移變更大，小數點跳多少位就睇個乘數有多少個零。',
+    13:'取得真經：放大法術秘訣總結！終極口訣是：乘的數有多少個零，小數點就向右移多少位。乘以10移一位，乘以100移兩位，乘以1000移三位。施法注意事項：空位要補零，前面多餘的零可以消滅，整數的小數點在最右邊！',
+    14:'預告下一部分的故事。放大法術學完啦，下一集我們會學習唐僧的縮小心法。準備好迎接新的挑戰，學習乘以0.1、乘以0.01同乘以0.001的秘密啦！'
   },
   slides2: {
-    1:'歡迎嚟到有趣嘅乘法，第二集「唐僧嘅縮小心法」！上集大師兄悟空傳授咗放大法術，今集我哋會學緊乘以0.1、0.01、0.001嘅縮小心法，數字會越嚟越細。準備好學習師父嘅絕學未？',
-    2:'乘以0.1嘅縮小心法：小數點向左移一位。例如5乘以0.1等於0.5，50乘以0.1等於5。遇到小數嘅時候，例如4.8乘以0.1就變成0.48。乘細數，結果會變細，小數點要向左移！',
-    3:'乘以0.01同乘以0.001嘅比較。乘以0.01：小數點向左移兩位；乘以0.001：小數點向左移三位。例如123.4乘以0.01等於1.234，小數點從3同4之間跳返去1同2之間。',
-    4:'第二層心法：位數加深同「虛空補零」。123.4乘以0.01等於1.234，向左移兩位。123.4乘以0.001等於0.1234。唐僧特別叮嚀：如果向左移動時前面位數唔夠，就要用0嚟填補！心法有云，空即是色，冇數字嘅地方就用0來填！',
-    5:'徒弟們嘅基礎試煉上集。試煉一：4.8乘以0.1等於0.48，秘訣係乘0.1向左移一位。試煉二：56乘以0.1等於5.6，整數嘅小數點藏喺最後面，即係56點，向左移一位變成5.6。',
-    6:'徒弟們嘅基礎試煉下集。續續練習更多例題，強化縮小心法。記住口訣：乘小左移變更小，小數點跳幾位就睇乘數小數點後面幾多個零。慢慢嚟，每一步都要清晰！',
-    7:'降妖除魔實戰演練上集！遇到妖怪，快用縮小心法擊破佢哋嘅數字護盾。妖怪護盾一：0.05乘以0.01等於0.0005，乘0.01，小數點向左移兩位。妖怪護盾二：0.1乘以0.35等於0.035，可以先交換位置諗成0.35乘以0.1會易啲算！',
-    8:'降妖除魔實戰演練下集！當遇到巨大嘅整數妖怪，縮小心法特別好用。妖怪護盾三：3000乘以0.01等於30，從3000點開始向左移兩位，多餘嘅零可以消除。妖怪護盾四：50乘以0.001等於0.05，從50點開始向左移三位，前面記得補零。',
-    9:'沙僧嘅進階挑戰上集。面對更複雜嘅小數乘法題，要小心思考方向同位數。每一題都要諗清楚係放大定縮小，小數點向左定向右移。熟能生巧，大家加油！',
-    10:'沙僧嘅進階挑戰下集：法術混合同終極反推！迷魂陣三：0.5乘以10再乘以0.01等於0.05，先向右移一位，再向左移兩位，總共向左移一位。迷魂陣四：反推題，幾多乘以0.001等於0.008？答案係8，將小數點推返右邊三位。',
-    11:'八戒又犯錯啦上集。八戒最怕方向感，成日將左右搞亂。記住：乘大數向右移，乘小數向左移。千祈唔好搞錯方向，否則會被妖怪笑！',
-    12:'八戒又犯錯啦下集。八戒將0.1乘以0.35寫成3.5，方向完全搞反啦！正確答案係0.035，要向左移一位。師父嘅嚴格診斷：乘小數數字必須變小，要向左移！八戒嘅罰寫筆記：乘小數，向左移！',
-    13:'取經秘笈：乘法移位總心法！記住呢句口訣：乘大右移變更大，乘小左移變更小。悟空嘅放大法術係乘以10、100、1000，小數點向右移1、2、3位。唐僧嘅縮小心法係乘以0.1、0.01、0.001，小數點向左移1、2、3位。',
-    14:'預告下一集：取經路上嘅單位轉換大冒險！學識咗放大同縮小之後，最後一集我哋會學將呢啲技巧應用喺生活中嘅單位轉換，例如公里同米、公斤同克。準備好挑戰最終章未？'
+    1:'歡迎來到有趣的乘法，第二集「唐僧的縮小心法」！上集大師兄悟空傳授了放大法術，今集我們會學緊乘以0.1、0.01、0.001的縮小心法，數字會越來越細。準備好學習師父的絕學未？',
+    2:'乘以0.1的縮小心法：小數點向左移一位。例如5乘以0.1等於0.5，50乘以0.1等於5。遇到小數的時候，例如4.8乘以0.1就變成0.48。乘細數，結果會變細，小數點要向左移！',
+    3:'乘以0.01同乘以0.001的比較。乘以0.01：小數點向左移兩位；乘以0.001：小數點向左移三位。例如123.4乘以0.01等於1.234，小數點從3同4之間跳回去1同2之間。',
+    4:'第二層心法：位數加深同「虛空補零」。123.4乘以0.01等於1.234，向左移兩位。123.4乘以0.001等於0.1234。唐僧特別叮嚀：如果向左移動時前面位數不夠，就要用0來填補！心法有云，空即是色，沒有數字的地方就用0來填！',
+    5:'徒弟們的基礎試煉上集。試煉一：4.8乘以0.1等於0.48，秘訣是乘0.1向左移一位。試煉二：56乘以0.1等於5.6，整數的小數點藏在最後面，即是56點，向左移一位變成5.6。',
+    6:'徒弟們的基礎試煉下集。續續練習更多例題，強化縮小心法。記住口訣：乘小左移變更小，小數點跳幾位就睇乘數小數點後面多少個零。慢慢來，每一步都要清晰！',
+    7:'降妖除魔實戰演練上集！遇到妖怪，快用縮小心法擊破他們的數字護盾。妖怪護盾一：0.05乘以0.01等於0.0005，乘0.01，小數點向左移兩位。妖怪護盾二：0.1乘以0.35等於0.035，可以先交換位置想成0.35乘以0.1會易些算！',
+    8:'降妖除魔實戰演練下集！當遇到巨大的整數妖怪，縮小心法特別好用。妖怪護盾三：3000乘以0.01等於30，從3000點開始向左移兩位，多餘的零可以消除。妖怪護盾四：50乘以0.001等於0.05，從50點開始向左移三位，前面記得補零。',
+    9:'沙僧的進階挑戰上集。面對更複雜的小數乘法題，要小心思考方向同位數。每一題都要想清楚是放大定縮小，小數點向左定向右移。熟能生巧，大家加油！',
+    10:'沙僧的進階挑戰下集：法術混合同終極反推！迷魂陣三：0.5乘以10再乘以0.01等於0.05，先向右移一位，再向左移兩位，總共向左移一位。迷魂陣四：反推題，多少乘以0.001等於0.008？答案是8，將小數點推返右邊三位。',
+    11:'八戒又犯錯啦上集。八戒最怕方向感，經常將左右搞亂。記住：乘大數向右移，乘小數向左移。千祈不要搞錯方向，否則會被妖怪笑！',
+    12:'八戒又犯錯啦下集。八戒將0.1乘以0.35寫成3.5，方向完全搞反啦！正確答案是0.035，要向左移一位。師父的嚴格診斷：乘小數數字必須變小，要向左移！八戒的罰寫筆記：乘小數，向左移！',
+    13:'取經秘笈：乘法移位總心法！記住這句口訣：乘大右移變更大，乘小左移變更小。悟空的放大法術是乘以10、100、1000，小數點向右移1、2、3位。唐僧的縮小心法是乘以0.1、0.01、0.001，小數點向左移1、2、3位。',
+    14:'預告下一集：取經路上的單位轉換大冒險！學識了放大同縮小之後，最後一集我們會學將這些技巧應用在生活中的單位轉換，例如公里同米、公斤同克。準備好挑戰最終章未？'
   },
   slides3: {
-    1:'歡迎嚟到終極一集：取經路上嘅單位轉換大冒險！掌握咗放大法術同縮小心法之後，今集我哋會用呢啲魔法嚟解決生活中嘅單位轉換問題。呢個係掌握小數點空間魔法嘅最終章！',
-    2:'單位轉換嘅基本原理：大單位變細單位用放大法術，細單位變大單位用縮小心法。例如1米等於100厘米，1公里等於1000米，1公斤等於1000克，1升等於1000毫升。呢啲關係要記熟！',
-    3:'悟空示範：用放大法術做單位轉換。1.05米等於幾多厘米？算式係1.05乘以100，等於105厘米。0.72公里等於幾多米？算式係0.72乘以1000，等於720米。記住從大變細，數字要增加，用乘法！',
-    4:'悟空示範更多例子。由大單位轉細單位，即係用乘以10、100、1000，小數點向右移。例如將公里轉做米，乘以1000；將米轉做厘米，乘以100；將公斤轉做克，乘以1000。識咗呢啲就識做大部分題目！',
-    5:'唐僧示範：用縮小心法做單位轉換。將細單位轉做大單位，例如將米轉做公里，要除以1000即係乘以0.001；將克轉做公斤都係乘以0.001。呢類題目數字會縮細，小數點向左移！',
-    6:'實戰演練上集：擊退數字小妖。題目三：0.024公里等於幾多米？算式係0.024乘以1000，等於24米。題目四：3.07公斤等於幾多克？算式係3.07乘以1000，等於3070克。法術詠唱提示：乘以1000，金丹向右移3位！',
-    7:'實戰演練下集。繼續練習更多類型嘅單位轉換題。每題都要分析：係大變細定細變大？然後選擇乘以邊個數字，最後諗清楚小數點要向邊個方向移。一步一步，就唔會出錯！',
-    8:'取經挑戰：破解地形陷阱下集。任務三：沙僧搵到一條2.8米嘅堅韌藤條準備攀岩，換成厘米係幾多？答案係2.8乘以100等於280厘米。任務四：唐僧得1.25升嘅甘泉水恢復體力，係幾多毫升？答案係1.25乘以1000等於1250毫升。',
-    9:'迎戰守關大將：四大謎題上集。謎題一長度題：唐僧今天徒步走咗0.85公里，即係幾多米？正解0.85乘以1000等於850米。謎題二重量題：八戒抱緊一顆重2.3公斤嘅西瓜，即係幾多克？正解2.3乘以1000等於2300克。',
-    10:'迎戰守關大將：四大謎題下集。謎題三容量題：沙僧嘅水壺裝滿咗1.5升嘅水，即係幾多毫升？正解1.5乘以1000等於1500毫升。謎題四長度題：悟空揮舞長3.6米嘅金箍棒，即係幾多厘米？正解3.6乘以100等於360厘米。',
-    11:'常見錯誤分析：唔好搞亂方向。好多同學做單位轉換時會唔肯定係乘定除。記住：大變細就乘，細變大就除。例如公里係大單位，米係細單位，所以公里變米要乘以1000；相反米變公里要除以1000。',
-    12:'常見錯誤分析：記錯關係。有啲同學會記錯單位之間嘅倍數關係。最好記住呢啲常用嘅：1米等於100厘米，1公里等於1000米，1公斤等於1000克，1升等於1000毫升。多練習自然會記得熟！',
-    13:'取得真經：單位轉換速記表。悟空嘅放大法術：大單位變細單位，用整數乘法，即係乘以10、100、1000，小數點金丹向右移。唐僧嘅縮小心法：細單位變大單位，用小數乘法，即係乘以0.1、0.01、0.001，小數點金丹向左移。總結口訣：幾多個零或者小數點後有幾多位，金丹就跳幾多步！',
-    14:'恭喜完成所有三集嘅修煉！你已經掌握咗有趣嘅乘法同單位轉換嘅精髓。接落嚟可以挑戰評估區同遊戲區，測試自己嘅功力。繼續加油，成為小數點嘅大魔法師！'
+    1:'歡迎來到終極一集：取經路上的單位轉換大冒險！掌握了放大法術同縮小心法之後，今集我們會用這些魔法來解決生活中的單位轉換問題。這個是掌握小數點空間魔法的最終章！',
+    2:'單位轉換的基本原理：大單位變細單位用放大法術，細單位變大單位用縮小心法。例如1米等於100厘米，1公里等於1000米，1公斤等於1000克，1升等於1000毫升。這些關是要記熟！',
+    3:'悟空示範：用放大法術做單位轉換。1.05米等於多少厘米？算式是1.05乘以100，等於105厘米。0.72公里等於多少米？算式是0.72乘以1000，等於720米。記住從大變細，數字要增加，用乘法！',
+    4:'悟空示範更多例子。由大單位轉細單位，即是用乘以10、100、1000，小數點向右移。例如將公里轉做米，乘以1000；將米轉做厘米，乘以100；將公斤轉做克，乘以1000。識了這些就識做大部分題目！',
+    5:'唐僧示範：用縮小心法做單位轉換。將細單位轉做大單位，例如將米轉做公里，要除以1000即是乘以0.001；將克轉做公斤都是乘以0.001。這類題目數字會縮細，小數點向左移！',
+    6:'實戰演練上集：擊退數字小妖。題目三：0.024公里等於多少米？算式是0.024乘以1000，等於24米。題目四：3.07公斤等於多少克？算式是3.07乘以1000，等於3070克。法術詠唱提示：乘以1000，金丹向右移3位！',
+    7:'實戰演練下集。繼續練習更多類型的單位轉換題。每題都要分析：是大變細定細變大？然後選擇乘以哪一個數字，最後想清楚小數點要向哪一個方向移。一步一步，就不會出錯！',
+    8:'取經挑戰：破解地形陷阱下集。任務三：沙僧找到一條2.8米的堅韌藤條準備攀岩，換成厘米是多少？答案是2.8乘以100等於280厘米。任務四：唐僧得1.25升的甘泉水恢復體力，是多少毫升？答案是1.25乘以1000等於1250毫升。',
+    9:'迎戰守關大將：四大謎題上集。謎題一長度題：唐僧今天徒步走了0.85公里，即是多少米？正解0.85乘以1000等於850米。謎題二重量題：八戒抱緊一顆重2.3公斤的西瓜，即是多少克？正解2.3乘以1000等於2300克。',
+    10:'迎戰守關大將：四大謎題下集。謎題三容量題：沙僧的水壺裝滿了1.5升的水，即是多少毫升？正解1.5乘以1000等於1500毫升。謎題四長度題：悟空揮舞長3.6米的金箍棒，即是多少厘米？正解3.6乘以100等於360厘米。',
+    11:'常見錯誤分析：不要搞亂方向。好多同學做單位轉換時會不肯定是乘定除。記住：大變細就乘，細變大就除。例如公里是大單位，米是細單位，所以公里變米要乘以1000；相反米變公里要除以1000。',
+    12:'常見錯誤分析：記錯關是。有些同學會記錯單位之間的倍數關是。最好記住這些常用的：1米等於100厘米，1公里等於1000米，1公斤等於1000克，1升等於1000毫升。多練習自然會記得熟！',
+    13:'取得真經：單位轉換速記表。悟空的放大法術：大單位變細單位，用整數乘法，即是乘以10、100、1000，小數點金丹向右移。唐僧的縮小心法：細單位變大單位，用小數乘法，即是乘以0.1、0.01、0.001，小數點金丹向左移。總結口訣：多少個零或者小數點後有多少位，金丹就跳多少步！',
+    14:'恭喜完成所有三集的修煉！你已經掌握了有趣的乘法同單位轉換的精髓。接落來可以挑戰評估區同遊戲區，測試自己的功力。繼續加油，成為小數點的大魔法師！'
   }
 };
 
@@ -5042,7 +5042,7 @@ function toggleAutoLecture() {
         btn.style.background = autoLectureEnabled ? 'linear-gradient(135deg,#FFB300,#FF8F00)' : 'linear-gradient(135deg,#FFF3E0,#FFE082)';
         btn.style.color = autoLectureEnabled ? 'white' : '#E65100';
     }
-    stopSlideLecture();  // 停低之前嘅 utterance（避免重複聲）
+    stopSlideLecture();  // 停低之前的 utterance（避免重複聲）
     if (autoLectureEnabled) setTimeout(() => playSlideLecture(), 100);
 }
 
@@ -5055,11 +5055,11 @@ const CURRENT_CHAPTER_THEME = '西遊記';
 // rate: 0.5-2.0 (1.0 = normal)
 // intro: short greeting read before the lecture to give character personality
 const THEME_VOICES = {
-    '西遊記':       { gender:'male',   pitch:0.95, rate:1.05, character:'孫悟空', intro:'俺老孫嚟啦！' },
+    '西遊記':       { gender:'male',   pitch:0.95, rate:1.05, character:'孫悟空', intro:'俺老孫來啦！' },
     '哆啦A夢':     { gender:'female', pitch:1.30, rate:1.10, character:'哆啦A夢', intro:'大雄！' },
     '三國演義':    { gender:'male',   pitch:0.85, rate:0.95, character:'諸葛軍師', intro:'諸君聽令！' },
     '名偵探柯南':  { gender:'female', pitch:1.15, rate:1.05, character:'柯南', intro:'真相只有一個！' },
-    '海賊王':      { gender:'male',   pitch:1.10, rate:1.10, character:'魯夫', intro:'俺係魯夫！' },
+    '海賊王':      { gender:'male',   pitch:1.10, rate:1.10, character:'魯夫', intro:'俺是魯夫！' },
     '鬼滅之刃':    { gender:'male',   pitch:1.05, rate:1.00, character:'炭治郎', intro:'全集中呼吸！' },
     '寶可夢':      { gender:'female', pitch:1.20, rate:1.15, character:'小智', intro:'精靈球，去！' },
     '數碼暴龍':    { gender:'male',   pitch:1.00, rate:1.05, character:'太一', intro:'進化啦！' },
@@ -5099,14 +5099,14 @@ function playSlideLecture() {
     const text = SLIDE_EXPLANATIONS[step.folder]?.[pageNum];
 
     if (!text) {
-        document.getElementById('lectureStatus').textContent = '⚠️ 呢一頁冇講解';
+        document.getElementById('lectureStatus').textContent = '⚠️ 這一頁沒有講解';
         return;
     }
 
     stopSlideLecture();
 
     if (!window.speechSynthesis) {
-        document.getElementById('lectureStatus').textContent = '⚠️ 你嘅瀏覽器唔支援語音';
+        document.getElementById('lectureStatus').textContent = '⚠️ 你的瀏覽器不支援語音';
         return;
     }
 
@@ -5280,7 +5280,7 @@ function renderProgression() {
     // Bonus game 3 (decimal drag) + Overall progress
     const allDone = PROGRESSION_STEPS.every(s => isStepDone(s.id));
     html += `<div class="ch-bonus-section">
-      <div style="font-weight:800;color:#7B1FA2;margin-bottom:10px;">🎁 Bonus 遊戲（唔屬任何一節，玩下鬆一鬆）</div>
+      <div style="font-weight:800;color:#7B1FA2;margin-bottom:10px;">🎁 Bonus 遊戲（不屬任何一節，玩下鬆一鬆）</div>
       <div class="ch-card ch-card-bonus" onclick="switchTab('games');setTimeout(()=>loadGame(3),50)" style="max-width:300px;margin:0 auto;">
         <div class="ch-emoji">✨</div>
         <div class="ch-title" style="color:#7B1FA2;">小數點金丹魔法</div>
@@ -5296,7 +5296,7 @@ function renderProgression() {
     document.getElementById('infographicQuiz').style.display = 'none';
 }
 
-// 2026-05-05 fix（學生反映：簡報睇唔到）
+// 2026-05-05 fix（學生反映：簡報睇不到）
 // Helper: 隱藏／顯示 3 區域 cards（避免 viewer 顯示時 cards 仍佔位置）
 function __hideRegionsForViewer() {
     document.querySelectorAll('.region-section').forEach(el => el.style.display = 'none');
@@ -5336,7 +5336,7 @@ function updateSlideView() {
     document.querySelectorAll('#slideDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
     // Show complete button on last slide
     document.getElementById('slideCompleteBtn').style.display = (idx === step.total - 1) ? '' : 'none';
-    // 2026-05-05 fix：page change → cancel 之前嘅 utterance（避免重複聲）+ 預設 OFF
+    // 2026-05-05 fix：page change → cancel 之前的 utterance（避免重複聲）+ 預設 OFF
     stopSlideLecture();
     if (autoLectureEnabled && window.speechSynthesis) {
         setTimeout(() => { try { playSlideLecture(); } catch(e) {} }, 350);
@@ -5415,7 +5415,7 @@ function showSlideQuiz(q, folder, ansKey, pageNum) {
         html += `<div id="sqBlock${idx}" style="margin-bottom:16px;padding:14px;border-radius:12px;background:${done?'#E8F5E9':'white'};border:2px solid ${done?'#4CAF50':'#FFB74D'};">`;
         html += `<div style="font-weight:700;color:${done?'#2E7D32':'#333'};margin-bottom:10px;">${done?'✅ ':''}第${idx+1}題${typeBadge}：${pq.q}</div>`;
         if (done) {
-            html += `<div style="color:#2E7D32;font-weight:600;">答啱！</div>`;
+            html += `<div style="color:#2E7D32;font-weight:600;">答對！</div>`;
         } else if (qType === 'fill') {
             html += `<div class="sq-fill" data-qidx="${idx}" data-key="${key}" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">`;
             html += `<input type="text" class="sq-fill-input" placeholder="輸入答案..." style="flex:1;min-width:180px;padding:10px 14px;border:2px solid #FFB74D;border-radius:8px;font-size:1rem;color:#333;outline:none;">`;
@@ -5437,7 +5437,7 @@ function showSlideQuiz(q, folder, ansKey, pageNum) {
     // Show current wrong count for this page (if any)
     const wrongs = (slideQuizWrong[folder] || {})[pageNum] || 0;
     const noteEl = document.getElementById('slideQuizWrongNote');
-    if (noteEl) noteEl.textContent = wrongs > 0 ? `⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
+    if (noteEl) noteEl.textContent = wrongs > 0 ? `⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
     overlay.style.display = '';
     overlay.scrollIntoView({behavior:'smooth',block:'nearest'});
 
@@ -5467,7 +5467,7 @@ function showSlideQuiz(q, folder, ansKey, pageNum) {
 function markSlideQuizCorrect(folder, ansKey, qIdx, pageNum) {
     if (!slideQuizAnswered[folder]) slideQuizAnswered[folder] = {};
     slideQuizAnswered[folder][ansKey] = true;
-    document.getElementById('sqHint'+qIdx).innerHTML = '<div style="color:#2E7D32;font-weight:600;">✅ 答啱！</div>';
+    document.getElementById('sqHint'+qIdx).innerHTML = '<div style="color:#2E7D32;font-weight:600;">✅ 答對！</div>';
     const block = document.getElementById('sqBlock'+qIdx);
     if (block) { block.style.background = '#E8F5E9'; block.style.borderColor = '#4CAF50'; }
     // Auto-advance if all questions for this page answered
@@ -5538,7 +5538,7 @@ function registerSlideQuizWrong(folder, pageNum) {
     if (!slideQuizWrong[folder]) slideQuizWrong[folder] = {};
     slideQuizWrong[folder][pageNum] = (slideQuizWrong[folder][pageNum] || 0) + 1;
     const note = document.getElementById('slideQuizWrongNote');
-    if (note) note.textContent = `⚠️ 呢一頁已錯 ${slideQuizWrong[folder][pageNum]} 次（錯 2 次要由頭睇）`;
+    if (note) note.textContent = `⚠️ 這一頁已錯 ${slideQuizWrong[folder][pageNum]} 次（錯 2 次要由頭睇）`;
     if (slideQuizWrong[folder][pageNum] >= 2) {
         setTimeout(() => {
             const modal = document.getElementById('slideQuizLockModal');
@@ -5611,7 +5611,7 @@ function completeCurrentSlides() {
             const sortedPages = [...unansweredPages].sort((a, b) => a - b);
             const firstPage = sortedPages[0];
             const pagesStr = sortedPages.map(p => `第 ${p} 頁`).join('、');
-            alert(`仲有題目未答：${pagesStr}\n\n系統會幫你跳返去第 ${firstPage} 頁答題！`);
+            alert(`仲有題目未答：${pagesStr}\n\n系統會幫你跳回去第 ${firstPage} 頁答題！`);
             // Auto-jump back to the first unanswered page + fire the quiz
             currentSlideIndex = firstPage - 1;
             updateSlideView();
@@ -5678,7 +5678,7 @@ function openInfographicQuiz(stepIdx) {
         } else if (q.type === 'voice') {
             html += `<div class="iq-voice" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);padding:14px;border-radius:12px;border:2px solid #E91E63;">
                 <div style="font-size:0.85rem;color:#880E4F;margin-bottom:8px;background:rgba(255,255,255,0.6);padding:8px 10px;border-radius:6px;">
-                    💡 <b>點樣做：</b> ① 按「開始錄音」用粵語解釋 20-30 秒 → ② 按「停止」 → ③ 按「提交」俾 AI 分析錄音內容並評分（AI 會幫你整理句子同評分）
+                    💡 <b>怎樣做：</b> ① 按「開始錄音」用粵語解釋 20-30 秒 → ② 按「停止」 → ③ 按「提交」給 AI 分析錄音內容並評分（AI 會幫你整理句子同評分）
                 </div>
                 ${q.hint ? `<div style="font-size:0.9rem;color:#4A148C;margin-bottom:10px;background:#FFF9C4;padding:10px;border-radius:8px;border-left:4px solid #FBC02D;">
                     ⭐ <b>合格要求：</b> ${q.hint}
@@ -5692,7 +5692,7 @@ function openInfographicQuiz(stepIdx) {
                     <span style="color:#999;">按「開始錄音」試下</span>
                 </div>
                 <div style="margin-top:10px;">
-                    <button class="btn btn-sm btn-primary" id="gradeBtn${qi}" onclick="gradeVoiceAnswer(${qi})" disabled>📊 提交俾 AI 分析 + 評分</button>
+                    <button class="btn btn-sm btn-primary" id="gradeBtn${qi}" onclick="gradeVoiceAnswer(${qi})" disabled>📊 提交給 AI 分析 + 評分</button>
                 </div>
                 <div id="gradeResult${qi}" style="margin-top:10px;"></div>
             </div>`;
@@ -5724,7 +5724,7 @@ function checkIQFill(qi) {
         input.style.background = '#E8F5E9';
         input.style.color = '#2E7D32';
         fillAnswered[qi] = true;
-        resEl.innerHTML = '<span style="color:#2E7D32;font-weight:700;">✅ 答啱！</span>';
+        resEl.innerHTML = '<span style="color:#2E7D32;font-weight:700;">✅ 答對！</span>';
     } else {
         input.style.borderColor = '#F44336';
         input.style.animation = 'shake 0.4s';
@@ -5773,9 +5773,9 @@ async function startVoiceRecording(qi) {
             const tooShort = durationSec < 1.5;
             const tooSmall = blob.size < 1500;  // < 1.5 KB ≈ pure silence / accidental early stop
             if (tooShort || tooSmall) {
-                const reason = tooShort ? `錄音時間只有 ${durationSec.toFixed(1)} 秒（最少要講 2 秒以上）` : `錄音檔案太細（${Math.round(blob.size/1024)} KB），可能係靜音或手抖停咗`;
+                const reason = tooShort ? `錄音時間只有 ${durationSec.toFixed(1)} 秒（最少要講 2 秒以上）` : `錄音檔案太細（${Math.round(blob.size/1024)} KB），可能是靜音或手抖停了`;
                 document.getElementById('recStatus'+qi).innerHTML =
-                    `<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。請確認：1) 麥克風權限已開 2) 大聲清楚講 20-30 秒 3) 背景唔好太嘈。按「開始錄音」重錄。</span>`;
+                    `<span style="color:#C62828;font-weight:700;">❌ 錄音無效：${reason}。請確認：1) 麥克風權限已開 2) 大聲清楚講 20-30 秒 3) 背景不要太嘈。按「開始錄音」重錄。</span>`;
                 document.getElementById('transcript'+qi).innerHTML =
                     '<span style="color:#C62828;">⚠️ 錄音無效，請重錄</span>';
                 document.getElementById('gradeBtn'+qi).disabled = true;  // BLOCK submit
@@ -5787,7 +5787,7 @@ async function startVoiceRecording(qi) {
             document.getElementById('recStatus'+qi).innerHTML =
                 `<span style="color:#2E7D32;font-weight:700;">✅ 錄音完成（${Math.round(blob.size/1024)} KB，${durationSec.toFixed(1)} 秒）</span>`;
             document.getElementById('transcript'+qi).innerHTML =
-                '<span style="color:#999;">⬇️ 按「提交」讓 AI 分析錄音並顯示你講嘅內容</span>';
+                '<span style="color:#999;">⬇️ 按「提交」讓 AI 分析錄音並顯示你講的內容</span>';
             document.getElementById('gradeBtn'+qi).disabled = false;
         };
 
@@ -5796,7 +5796,7 @@ async function startVoiceRecording(qi) {
         document.getElementById('recBtn'+qi).disabled = true;
         document.getElementById('stopBtn'+qi).disabled = false;
         document.getElementById('gradeBtn'+qi).disabled = true;
-        document.getElementById('transcript'+qi).innerHTML = '<span style="color:#666;">🎤 正在錄音中，請清楚講出你嘅解釋...</span>';
+        document.getElementById('transcript'+qi).innerHTML = '<span style="color:#666;">🎤 正在錄音中，請清楚講出你的解釋...</span>';
 
         // Update timer display
         if (recordTimer) clearInterval(recordTimer);
@@ -5812,8 +5812,8 @@ async function startVoiceRecording(qi) {
         }, 250);
     } catch (err) {
         const msg = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError'
-            ? '⚠️ 請喺瀏覽器允許麥克風權限，然後再試'
-            : (err.name === 'NotFoundError' ? '⚠️ 搵唔到麥克風，請檢查你部設備' : '❌ ' + err.message);
+            ? '⚠️ 請在瀏覽器允許麥克風權限，然後再試'
+            : (err.name === 'NotFoundError' ? '⚠️ 找不到麥克風，請檢查你部設備' : '❌ ' + err.message);
         document.getElementById('recStatus'+qi).innerHTML = msg;
         document.getElementById('recBtn'+qi).disabled = false;
     }
@@ -5957,24 +5957,24 @@ async function gradeVoiceAnswer(qi) {
     const resEl = document.getElementById('gradeResult'+qi);
     const gradeBtn = document.getElementById('gradeBtn'+qi);
     gradeBtn.disabled = true;
-    resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在分析你嘅錄音（轉字幕 + 評分），約需 5-15 秒...</div>';
+    resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在分析你的錄音（轉字幕 + 評分），約需 5-15 秒...</div>';
     document.getElementById('transcript'+qi).innerHTML = '<span style="color:#666;">🔄 分析中...</span>';
 
-    const prompt = `你係小學五年級粵語數學老師。
+    const prompt = `你是小學五年級粵語數學老師。
 題目：「${q.q}」
 核心概念：${q.concept || '（未標明）'}
-評分要點（學生必須講到嘅關鍵要點）：${q.rubric || '（未標明）'}
-${q.hint ? `合格要求（show 俾學生睇過）：${q.hint}` : ''}
+評分要點（學生必須講到的關鍵要點）：${q.rubric || '（未標明）'}
+${q.hint ? `合格要求（show 給學生睇過）：${q.hint}` : ''}
 
-⚠️ 重要：題目問「點解 / 教一教」，**學生必須解釋原理**，唔可以淨係講答案。
-⚠️ 請逐個對比 rubric 要點，睇學生講咗幾多個要點。
+⚠️ 重要：題目問「為什麼 / 教一教」，**學生必須解釋原理**，不可以淨是講答案。
+⚠️ 請逐個對比 rubric 要點，睇學生說了多少個要點。
 
 請做兩件事：
-1. 聽呢段學生用粵語講嘅錄音，轉寫成完整通順嘅粵語句子。必須整理啲重複、口誤、語氣詞（例如「呢個」「嗰個」「即係」），將意思還原成 95% 學生想表達嘅內容。
-2. 根據 rubric 要點同數學正確性評分（具體規則喺下面 5 STEP）。
+1. 聽這段學生用粵語講的錄音，轉寫成完整通順的粵語句子。必須整理些重複、口誤、語氣詞（例如「這個」「那個」「即是」），將意思還原成 95% 學生想表達的內容。
+2. 根據 rubric 要點同數學正確性評分（具體規則在下面 5 STEP）。
 
-請嚴格返回純 JSON（唔好加 \`\`\` 或其他標記）：
-{"transcript": "還原後嘅完整粵語句子", "score": 整數0-100, "feedback": "具體評語 + 改進建議（唔超過60字）"}`;
+請嚴格返回純 JSON（不要加 \`\`\` 或其他標記）：
+{"transcript": "還原後的完整粵語句子", "score": 整數0-100, "feedback": "具體評語 + 改進建議（不超過60字）"}`;
 
     // Diagnostic state — shown in UI if something fails (so iOS users can report)
     let diag = { step: 'start', origType: blob.type, origSize: blob.size };
@@ -6041,7 +6041,7 @@ ${q.hint ? `合格要求（show 俾學生睇過）：${q.hint}` : ''}
 
         // Transparent transcript display — show what Whisper actually heard + AI polish
         const esc = s => String(s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const escapedRaw = esc(rawTranscript) || '<i style="color:#C62828;">（系統冇聽到聲音）</i>';
+        const escapedRaw = esc(rawTranscript) || '<i style="color:#C62828;">（系統沒有聽到聲音）</i>';
         const escapedTranscript = esc(transcript) || '<i style="color:#999;">（AI 未整理）</i>';
         const showCleanedDiff = transcript && transcript !== rawTranscript;
         const charStatusColor = chineseChars >= 25 ? '#2E7D32' : chineseChars >= 10 ? '#F57F17' : '#C62828';
@@ -6057,7 +6057,7 @@ ${q.hint ? `合格要求（show 俾學生睇過）：${q.hint}` : ''}
             ${fabricated ? `
             <div style="background:#FFEBEE;border-left:4px solid #C62828;padding:10px;border-radius:6px;margin-bottom:8px;">
                 <div style="color:#C62828;font-weight:700;font-size:0.9rem;margin-bottom:6px;">⚠️ 系統偵測到 AI 嘗試替你擴寫答案</div>
-                <div style="color:#333;line-height:1.5;font-size:0.85rem;">你實際只講咗上面嗰段字，AI 錯誤地加多咗內容再評分。已經還原你真正講嘅嘢，並重新評分。要提升分數 → 下次錄音時自己加埋原理（例：「小數點向左移 2 位」）。</div>
+                <div style="color:#333;line-height:1.5;font-size:0.85rem;">你實際只說了上面那段字，AI 錯誤地加多了內容再評分。已經還原你真正講的東西，並重新評分。要提升分數 → 下次錄音時自己加埋原理（例：「小數點向左移 2 位」）。</div>
             </div>` : ''}
             ${(!fabricated && showCleanedDiff) ? `
             <div style="background:#E8F5E9;border-left:4px solid #2E7D32;padding:10px;border-radius:6px;">
@@ -6113,9 +6113,9 @@ async function submitInfographicQuiz() {
     step.questions.forEach((q, qi) => {
         if (q.type === 'mc') {
             const selected = document.querySelector(`#iqMC${qi} .iq-mc-option.selected`);
-            if (!selected) { allAnswered = false; missingMsg = `第${qi+1}題未揀答案`; }
+            if (!selected) { allAnswered = false; missingMsg = `第${qi+1}題未選答案`; }
         } else if (q.type === 'fill') {
-            if (!fillAnswered[qi]) { allAnswered = false; missingMsg = `第${qi+1}題要答啱先可以提交（請按「檢查」）`; }
+            if (!fillAnswered[qi]) { allAnswered = false; missingMsg = `第${qi+1}題要答剛才可以提交（請按「檢查」）`; }
         } else if (q.type === 'voice') {
             if (!voiceData[qi]) { allAnswered = false; missingMsg = `第${qi+1}題請錄音並提交評分`; }
         } else {
@@ -6173,7 +6173,7 @@ const ASSESS_DATA = {
         { correct: 2, hint:'1公斤＝1000克，4.5×1000＝4500' }
     ],
     2: [
-        { correct: 2, hint:'逆向思考：8.5÷10＝0.85，所以答案自己揀' },
+        { correct: 2, hint:'逆向思考：8.5÷10＝0.85，所以答案自己選' },
         { correct: 1, hint:'0.05只有兩位小數，×1000移3位＝50，不是500！答案是「錯」', labels:['A) 對，答案是500','B) 錯，答案是50','C) 錯，答案是5','D) 無法判斷'] },
         { correct: 1, hint:'分步算：0.5×10＝5，再5×0.01＝0.05' },
         { correct: 2, hint:'0.72公里＝0.72×1000＝720米，一樣長！' },

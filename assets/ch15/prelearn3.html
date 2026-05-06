@@ -62,42 +62,42 @@
 <div class="wrap">
   <div class="intro">
     <h2>🎯 預習 3：照片限制 + 整合</h2>
-    <p>哆啦A夢拎住相機影相，但係相片睇唔出真實大細！先睇資訊圖，再做 3 條題目。做啱先算完成預習。</p>
+    <p>哆啦A夢拎住相機影相，但是相片睇不出真實大細！先睇資訊圖，再做 3 條題目。做剛才算完成預習。</p>
   </div>
   <div class="info-card">
-    <h3>📕 資訊圖 3：照片睇唔出真實體積</h3>
+    <h3>📕 資訊圖 3：照片睇不出真實體積</h3>
     <img src="images/info3.png" alt="資訊圖 3：照片限制" onclick="zoom(this.src)" />
   </div>
   <div class="q-card" id="qc0">
-    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>大雄影咗一張相，相中遠處嘅大樹睇起嚟好細，近處嘅蘋果睇起嚟好大。下面邊一句正確？</h3>
+    <h3>第 1 題<span class="type-badge mc">選擇題</span><br>大雄影了一張相，相中遠處的大樹睇起來好細，近處的蘋果睇起來好大。下面邊一句正確？</h3>
     <div class="mc-opts" id="mcOpts">
-      <button class="mc-opt" onclick="selectMC(0)">A. 蘋果體積真係比大樹大</button>
-      <button class="mc-opt" onclick="selectMC(1)">B. 影相距離影響睇到嘅大細，大樹真實體積仍然遠遠大過蘋果</button>
+      <button class="mc-opt" onclick="selectMC(0)">A. 蘋果體積真是比大樹大</button>
+      <button class="mc-opt" onclick="selectMC(1)">B. 影相距離影響睇到的大細，大樹真實體積仍然遠遠大過蘋果</button>
       <button class="mc-opt" onclick="selectMC(2)">C. 兩者體積一樣</button>
-      <button class="mc-opt" onclick="selectMC(3)">D. 用尺量度蘋果同大樹喺相中嘅長度就可知真實體積</button>
+      <button class="mc-opt" onclick="selectMC(3)">D. 用尺量度蘋果同大樹在相中的長度就可知真實體積</button>
     </div>
     <div class="hint-msg" id="mcHint"></div>
   </div>
   <div class="q-card" id="qc1">
-    <h3>第 2 題<span class="type-badge mc">選擇題</span><br>陽光照射哆啦A夢，喺地下出現一個影子。下面邊一句正確？</h3>
+    <h3>第 2 題<span class="type-badge mc">選擇題</span><br>陽光照射哆啦A夢，在地下出現一個影子。下面邊一句正確？</h3>
     <div class="mc-opts" id="mcOpts2">
-      <button class="mc-opt" onclick="selectMC2(0)">A. 影子係哆啦A夢嘅體積</button>
-      <button class="mc-opt" onclick="selectMC2(1)">B. 影子冇佔住空間，所以冇體積</button>
-      <button class="mc-opt" onclick="selectMC2(2)">C. 影子會增加哆啦A夢嘅體積</button>
+      <button class="mc-opt" onclick="selectMC2(0)">A. 影子是哆啦A夢的體積</button>
+      <button class="mc-opt" onclick="selectMC2(1)">B. 影子沒有佔住空間，所以沒有體積</button>
+      <button class="mc-opt" onclick="selectMC2(2)">C. 影子會增加哆啦A夢的體積</button>
       <button class="mc-opt" onclick="selectMC2(3)">D. 影子大小決定體積</button>
     </div>
     <div class="hint-msg" id="mcHint2"></div>
   </div>
   <div class="q-card" id="qc2">
-    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：點解「影相」唔係比較體積嘅可靠方法？舉一個例子解釋。講 20-30 秒。</h3>
-    <div class="voice-hint">💡 提示：可以咁樣講 👉「影相要睇距離。例如近影一隻細杯睇起嚟可以好大，遠影一架巴士睇起嚟可以好細。所以唔可以淨用相片決定體積，要直觀觀察真實物件。」</div>
+    <h3>第 3 題<span class="type-badge voice">🎤 錄音題</span><br>🎤 教一教同學：為什麼「影相」不是比較體積的可靠方法？舉一個例子解釋。講 20-30 秒。</h3>
+    <div class="voice-hint">💡 提示：可以咁樣講 👉「影相要睇距離。例如近影一隻細杯睇起來可以好大，遠影一架巴士睇起來可以好細。所以不可以淨用相片決定體積，要直觀觀察真實物件。」</div>
     <div class="voice-section">
       <div id="envWarn" style="display:none;background:#FFEBEE;border:2px solid #C62828;color:#C62828;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.9rem;"></div>
       <div class="voice-row">
         <button class="btn outline" onclick="testMic()" style="font-size:0.85rem;">🎤 試咪 2 秒</button>
         <button class="btn red" id="recBtn" onclick="startRec()">🎤 開始錄音</button>
         <button class="btn outline" id="stopBtn" onclick="stopRec()" disabled>⏹ 停止</button>
-        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交俾 AI 評分</button>
+        <button class="btn green" id="gradeBtn" onclick="submitVoice()" disabled>提交給 AI 評分</button>
       </div>
       <div class="rec-status" id="recStatus">按「開始錄音」試下</div>
       <div class="transcript" id="transcript"><span style="color:#999;">錄完音按「提交」等 AI 分析。</span></div>
@@ -109,8 +109,8 @@
       </div>
       <div style="background:#F3E5F5;border:2px solid #9C27B0;border-radius:10px;padding:12px;">
         <div style="font-weight:700;color:#6A1B9A;margin-bottom:6px;">✏️ 打字答案</div>
-        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「影相受距離影響，近影細物件可能睇起嚟比遠影大物件大，所以唔可以淨用相片決定真實體積。」"></textarea>
-        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交俾 AI 評分</button>
+        <textarea id="textFallback" style="width:100%;min-height:80px;border:2px solid #9C27B0;border-radius:8px;padding:10px;font-family:inherit;font-size:0.95rem;" placeholder="例：「影相受距離影響，近影細物件可能睇起來比遠影大物件大，所以不可以淨用相片決定真實體積。」"></textarea>
+        <button class="btn purple" style="margin-top:8px;" onclick="submitText()">📝 打字提交給 AI 評分</button>
       </div>
     </div>
   </div>
@@ -127,35 +127,35 @@
 const CHAPTER = 15, PRELEARN_KEY = 'prelearn3';
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev/ask';
 const VOICE_Q = {
-  q: '教一教同學：點解影相唔係比較體積嘅可靠方法？',
-  concept: '相片受距離 / 角度影響，物件距離鏡頭近會睇起嚟大，遠會睇起嚟細，所以相片唔等於真實體積。',
+  q: '教一教同學：為什麼影相不是比較體積的可靠方法？',
+  concept: '相片受距離 / 角度影響，物件距離鏡頭近會睇起來大，遠會睇起來細，所以相片不等於真實體積。',
   rubric: '講出：影相受距離 / 角度影響 + 至少一個例子（近 vs 遠）',
   hint: '講到「距離影響」+ 一個例子就合格（~80 分）'
 };
-const MC_CORRECT = 1, MC_HINT = '影相距離會令物件睇起嚟大細不同。實際大樹體積遠大過蘋果。';
-const MC2_CORRECT = 1, MC2_HINT = '影子只係光被擋住嘅範圍，自己冇佔住空間，所以冇體積。';
+const MC_CORRECT = 1, MC_HINT = '影相距離會令物件睇起來大細不同。實際大樹體積遠大過蘋果。';
+const MC2_CORRECT = 1, MC2_HINT = '影子只是光被擋住的範圍，自己沒有佔住空間，所以沒有體積。';
 const answered = { mc:false, mc2:false, voice:false };
 let mediaRecorder=null, audioChunks=[], recordStartTime=0, recordTimer=null, recordedBlob=null, voiceData=null;
 
-(function envCheck(){const warn=document.getElementById('envWarn');const msgs=[];if(location.protocol!=='https:'&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1')msgs.push('⚠️ 必須用 HTTPS。');if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)msgs.push('⚠️ 瀏覽器唔支援錄音。');if(!window.MediaRecorder)msgs.push('⚠️ 瀏覽器太舊。');if(msgs.length){warn.innerHTML=msgs.join('<br>');warn.style.display='block';}})();
+(function envCheck(){const warn=document.getElementById('envWarn');const msgs=[];if(location.protocol!=='https:'&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1')msgs.push('⚠️ 必須用 HTTPS。');if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)msgs.push('⚠️ 瀏覽器不支援錄音。');if(!window.MediaRecorder)msgs.push('⚠️ 瀏覽器太舊。');if(msgs.length){warn.innerHTML=msgs.join('<br>');warn.style.display='block';}})();
 
 async function testMic(){const status=document.getElementById('recStatus');status.innerHTML='🔍 檢查中...';try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});status.innerHTML='✅ 麥克風 OK';setTimeout(()=>stream.getTracks().forEach(t=>t.stop()),500);}catch(err){status.innerHTML='❌ '+(err.message||err.name);}}
 
-async function submitText(){const textVal=document.getElementById('textFallback').value.trim();if(textVal.length<8){alert('請至少打字 8 字。');return;}const resEl=document.getElementById('gradeResult');resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 AI 評分中...</div>';const prompt=`你係小學五年級粵語數學老師。
+async function submitText(){const textVal=document.getElementById('textFallback').value.trim();if(textVal.length<8){alert('請至少打字 8 字。');return;}const resEl=document.getElementById('gradeResult');resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 AI 評分中...</div>';const prompt=`你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}
 合格要求：${VOICE_Q.hint}
 
-⚠️ 學生用打字代替錄音。佢嘅答案：
+⚠️ 學生用打字代替錄音。他的答案：
 ${textVal}
 
-評分：講到距離影響 + 例子 → 80-100；只有概念冇例子 → 50-70；錯誤 → 20-40。
+評分：講到距離影響 + 例子 → 80-100；只有概念沒有例子 → 50-70；錯誤 → 20-40。
 嚴格返回純 JSON：
-{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"評語（60字內）"}`;try{const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();const reply=data.reply||data.text||'';const result=extractJSON(reply);let score,feedback;if(!result){const has_concept=/(距離|遠|近|角度|相片|影相)/.test(textVal);const has_example=textVal.length>=20&&/(細|大|杯|樹|物件|對比)/.test(textVal);score=!has_concept?30:(has_example?75:55);feedback=has_example?'✅ 合格':'⚠️ 少咗例子';}else{score=Math.max(0,Math.min(100,parseInt(result.score)||0));feedback=cleanChineseOnly(result.feedback);}voiceData={transcript:textVal,score,feedback};const color=score>=80?'#2E7D32':score>=60?'#F57F17':'#C62828';const bg=score>=80?'#E8F5E9':score>=60?'#FFF8E1':'#FFEBEE';resEl.innerHTML=`<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};"><div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div><div style="margin-top:6px;color:#333;">${feedback}</div></div>`;if(score>=60){answered.voice=true;document.getElementById('qc2').classList.add('done');checkAllDone();}}catch(e){resEl.innerHTML=`<div style="color:#C62828;">⚠️ ${e.message}</div>`;}}
+{"transcript":"${textVal.replace(/"/g,'\\"').replace(/\n/g,'\\n')}","score":整數0到100,"feedback":"評語（60字內）"}`;try{const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();const reply=data.reply||data.text||'';const result=extractJSON(reply);let score,feedback;if(!result){const has_concept=/(距離|遠|近|角度|相片|影相)/.test(textVal);const has_example=textVal.length>=20&&/(細|大|杯|樹|物件|對比)/.test(textVal);score=!has_concept?30:(has_example?75:55);feedback=has_example?'✅ 合格':'⚠️ 少了例子';}else{score=Math.max(0,Math.min(100,parseInt(result.score)||0));feedback=cleanChineseOnly(result.feedback);}voiceData={transcript:textVal,score,feedback};const color=score>=80?'#2E7D32':score>=60?'#F57F17':'#C62828';const bg=score>=80?'#E8F5E9':score>=60?'#FFF8E1':'#FFEBEE';resEl.innerHTML=`<div style="padding:14px;border-radius:10px;background:${bg};border:2px solid ${color};"><div style="font-size:1.8rem;font-weight:900;color:${color};">${score} / 100 分</div><div style="margin-top:6px;color:#333;">${feedback}</div></div>`;if(score>=60){answered.voice=true;document.getElementById('qc2').classList.add('done');checkAllDone();}}catch(e){resEl.innerHTML=`<div style="color:#C62828;">⚠️ ${e.message}</div>`;}}
 
-function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
-function selectMC2(i){if(answered.mc2)return;const btns=document.querySelectorAll('#mcOpts2 .mc-opt');const hint=document.getElementById('mcHint2');if(i===MC2_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc2=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答啱！'+MC2_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC2_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
+function selectMC(i){if(answered.mc)return;const btns=document.querySelectorAll('#mcOpts .mc-opt');const hint=document.getElementById('mcHint');if(i===MC_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc=true;document.getElementById('qc0').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！'+MC_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
+function selectMC2(i){if(answered.mc2)return;const btns=document.querySelectorAll('#mcOpts2 .mc-opt');const hint=document.getElementById('mcHint2');if(i===MC2_CORRECT){btns[i].classList.add('correct');btns.forEach(b=>b.disabled=true);answered.mc2=true;document.getElementById('qc1').classList.add('done');hint.className='hint-msg correct';hint.innerHTML='✅ 答對！'+MC2_HINT;checkAllDone();}else{btns[i].classList.add('wrong');btns[i].disabled=true;hint.className='hint-msg wrong';hint.innerHTML=`❌ 再試！💡 ${MC2_HINT}`;setTimeout(()=>btns[i].classList.remove('wrong'),500);}}
 
 async function startRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}document.getElementById('recBtn').disabled=true;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioChunks=[];let options={mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:64000};if(!MediaRecorder.isTypeSupported(options.mimeType))options={audioBitsPerSecond:64000};mediaRecorder=new MediaRecorder(stream,options);mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(audioChunks,{type:audioChunks[0]?.type||'audio/webm'});const durationSec=(Date.now()-recordStartTime)/1000;clearInterval(recordTimer);document.getElementById('recBtn').disabled=false;document.getElementById('stopBtn').disabled=true;if(durationSec<3||blob.size<8000){document.getElementById('recStatus').innerHTML='❌ 錄音無效，請重錄';recordedBlob=null;return;}recordedBlob=blob;document.getElementById('recStatus').innerHTML=`✅ 錄音完成（${durationSec.toFixed(1)} 秒）`;document.getElementById('gradeBtn').disabled=false;};mediaRecorder.start();recordStartTime=Date.now();document.getElementById('stopBtn').disabled=false;recordTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recordStartTime)/1000);document.getElementById('recStatus').innerHTML=`🔴 錄音中 ${sec} 秒`;if(sec>=60)stopRec();},250);}catch(err){document.getElementById('recStatus').innerHTML='❌ '+err.message;document.getElementById('recBtn').disabled=false;}}
 function stopRec(){if(mediaRecorder&&mediaRecorder.state==='recording'){try{mediaRecorder.stop();}catch(_){}}}
@@ -165,7 +165,7 @@ function audioBufferToWavBlob(buffer){const numChannels=buffer.numberOfChannels,
 function extractJSON(text){if(!text)return null;const fence=text.match(/```(?:json)?\s*([\s\S]*?)```/);let candidate=fence?fence[1]:text;const start=candidate.indexOf('{'),end=candidate.lastIndexOf('}');if(start!==-1&&end>start){const js=candidate.slice(start,end+1);try{return JSON.parse(js);}catch(_){}try{return JSON.parse(js.replace(/,\s*(\}|\])/g,'$1').replace(/\n/g,' '));}catch(_){}}return null;}
 function cleanChineseOnly(s){if(!s)return '';return String(s).replace(/```[a-z]*|```/gi,'').replace(/\{[^}]*\}/g,'').replace(/^\s*["\{\[]+|["\}\]]+\s*$/g,'').trim();}
 
-async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}const resEl=document.getElementById('gradeResult');const gradeBtn=document.getElementById('gradeBtn');gradeBtn.disabled=true;resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 AI 分析中...</div>';const prompt=`你係小學五年級粵語數學老師。
+async function submitVoice(){if(!recordedBlob){alert('請先錄音！');return;}const resEl=document.getElementById('gradeResult');const gradeBtn=document.getElementById('gradeBtn');gradeBtn.disabled=true;resEl.innerHTML='<div style="color:#666;padding:10px;">🤖 AI 分析中...</div>';const prompt=`你是小學五年級粵語數學老師。
 題目：「${VOICE_Q.q}」
 核心概念：${VOICE_Q.concept}
 評分要點：${VOICE_Q.rubric}

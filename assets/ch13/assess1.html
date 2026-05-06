@@ -141,7 +141,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答了先過 ▶</button>
       </div>
     </div>
   </div>
@@ -164,7 +164,7 @@
     <p id="finalMsg" style="margin:10px 0;"></p>
     <div style="background:linear-gradient(135deg,#FFE0B2,#FFCC80);border:3px solid #FF9800;border-radius:14px;padding:14px;margin:14px 0;text-align:left;">
       <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎤 加賽：粵語錄音解題（最多 +3 🪙）</div>
-      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你嘅理解，AI 老師即時評分。</div>
+      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你的理解，AI 老師即時評分。</div>
       <a href="summary.html" class="btn" style="background:linear-gradient(135deg,#FF7043,#E64A19);color:white;">🎤 去課程總結錄音</a>
     </div>
     <div>
@@ -194,7 +194,7 @@ const Q = [
     q: '悟空摘了 3 籃蟠桃，每籃重 2.4 公斤。請問總共重多少公斤？',
     opts: ['7.2 公斤', '0.72 公斤', '72 公斤', '6.2 公斤'],
     a: 0,
-    hint: '悟空提示：2.4 × 3 — 先把小數當整數算 24 × 3 = 72，題目有一位小數，答案就係一位小數 → 7.2 公斤。',
+    hint: '悟空提示：2.4 × 3 — 先把小數當整數算 24 × 3 = 72，題目有一位小數，答案就是一位小數 → 7.2 公斤。',
     pageQ: 1, pageA: 2
   },
   {
@@ -323,7 +323,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！大聖都讚你叻！' : `❌ 你選了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -335,7 +335,7 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答了先過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
     nb.textContent = '睇答案 ✓';
@@ -464,9 +464,9 @@ function showFinal(correct) {
   document.getElementById('finalScore').textContent = correct;
   let m, t;
   if (correct === Q_SHUFFLED.length) { m = '🌟 滿分！你完全掌握一位小數乘整數！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  else if (correct >= 5) { m = '💪 好勁！再溫下錯的就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題的提示'; t = '🥈'; }
+  else { m = '📖 多些溫習簡報 1，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

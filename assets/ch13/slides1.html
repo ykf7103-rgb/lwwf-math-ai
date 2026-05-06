@@ -84,7 +84,7 @@
   <a href="index.html" class="back">← 返回第13課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 
 <div class="wrap">
@@ -96,7 +96,7 @@
 
   <!-- Quiz overlay appears below the slide image -->
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -110,7 +110,7 @@
   <div class="thumbs" id="thumbs"></div>
 
   <div class="done-banner" id="done">
-    🎉 簡報 1 完成！快啲去做預習 1！
+    🎉 簡報 1 完成！快些去做預習 1！
     <div style="margin-top:10px"><a href="prelearn1.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 1</a></div>
   </div>
 </div>
@@ -119,9 +119,9 @@
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -133,20 +133,20 @@ const PREFIX = 'slides1', TOTAL = 15, CHAPTER = 13, DECK_KEY = 'slides1';
 // p05/p07/p09/p11/p13 = Q 頁，p06/p08/p10/p12/p14 = A 頁
 const SLIDE_QUESTIONS = [
   // p05 Q1: 0.6 × 7（主 MC + 火眼金睛估算題）
-  { afterPage:5, type:'mc', q:'任務 Q1：0.6 × 7 = ?', options:['0.42','4.2','42','0.042'], correct:1, hint:'6 × 7 = 42，一位小數（自己試吓）（諗下邊個啱）' },
+  { afterPage:5, type:'mc', q:'任務 Q1：0.6 × 7 = ?', options:['0.42','4.2','42','0.042'], correct:1, hint:'6 × 7 = 42，一位小數（自己試吓）（想下哪一個對）' },
   { afterPage:5, type:'mc', q:'🔥 火眼金睛額外題：估算 0.6 × 7 ≈ ?', options:['0.7','4','7','42'], correct:2, hint:'0.6 約成 1，1 × 7 = 7（再 check 實際答案）' },
   // p07 Q2: 1.4 × 5
-  { afterPage:7, type:'mc', q:'任務 Q2：1.4 × 5 = ?', options:['7.0','0.7','70','0.07'], correct:0, hint:'14 × 5 = 70，一位小數（自己試吓）（諗下邊個啱）' },
+  { afterPage:7, type:'mc', q:'任務 Q2：1.4 × 5 = ?', options:['7.0','0.7','70','0.07'], correct:0, hint:'14 × 5 = 70，一位小數（自己試吓）（想下哪一個對）' },
   { afterPage:7, type:'mc', q:'🔥 估算：1.4 × 5 ≈ ?', options:['5','7','10','70'], correct:0, hint:'1.4 約成 1，1 × 5 = 5（再 check 實際答案）' },
   // p09 Q3: 3.7 × 8（填充）
   { afterPage:9, type:'fill', q:'任務 Q3（沒選項，自己列直式）：3.7 × 8 = ___', accept:['29.6','29.60'], hint:'37 × 8 = 296，一位小數（自己試吓）' },
   { afterPage:9, type:'mc', q:'🔥 估算：3.7 × 8 ≈ ?', options:['24','32','37','40'], correct:1, hint:'3.7 約成 4，4 × 8 = 32（再 check 實際答案）' },
   // p11 Q4: 應用題 5 × 2.3 元
-  { afterPage:11, type:'mc', q:'任務 Q4：悟空買 5 條香蕉，每條 2.3 元，總共幾錢？', options:['1.15 元','10.5 元','11.5 元','115 元'], correct:2, hint:'2.3 × 5 （試下計）（23×5=115，一位小數（自己試吓））' },
+  { afterPage:11, type:'mc', q:'任務 Q4：悟空買 5 條香蕉，每條 2.3 元，總共多少錢？', options:['1.15 元','10.5 元','11.5 元','115 元'], correct:2, hint:'2.3 × 5 （試下計）（23×5=115，一位小數（自己試吓））' },
   { afterPage:11, type:'mc', q:'🔥 估算：2.3 × 5 ≈ ?', options:['5 元','10 元','15 元','20 元'], correct:1, hint:'2.3 約成 2，2 × 5 （試下計）（再 check 實際答案）' },
   // p13 Q5: 陷阱題 6.4 × 9
   { afterPage:13, type:'mc', q:'任務 Q5（陷阱題！）：6.4 × 9 = ?', options:['5.76','57.6','576','0.576'], correct:1, hint:'64 × 9 = 576，一位小數（自己試吓）。學生小心常見錯誤（小數點放錯位置）' },
-  { afterPage:13, type:'mc', q:'🔥 用估算 check 小數點啱唔啱：6.4 × 9 ≈ ?', options:['5','12','54','576'], correct:2, hint:'6.4 約成 6，6 × 9 = 54。所以實際 57.6 啱。 太細 100 倍唔合理！' }
+  { afterPage:13, type:'mc', q:'🔥 用估算 check 小數點對不對：6.4 × 9 ≈ ?', options:['5','12','54','576'], correct:2, hint:'6.4 約成 6，6 × 9 = 54。所以實際 57.6 對。 太細 100 倍不合理！' }
 ];
 
 let idx = 0;
@@ -223,7 +223,7 @@ function showQuiz(pageNum) {
     html += `<div id="qb${i}" class="quiz-block${done?' done':''}">`;
     html += `<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;
     if (done) {
-      html += `<div class="hint-msg correct">✅ 已答啱</div>`;
+      html += `<div class="hint-msg correct">✅ 已答對</div>`;
     } else if (type === 'fill') {
       html += `<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;
       html += `<div class="hint-msg" id="hm${i}"></div>`;
@@ -238,7 +238,7 @@ function showQuiz(pageNum) {
   });
   quizBody.innerHTML = html;
   const wrongs = slideQuizWrong[pageNum] || 0;
-  wrongNote.textContent = wrongs > 0 ? `⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
+  wrongNote.textContent = wrongs > 0 ? `⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
   quizOv.classList.add('show');
   setTimeout(()=> {
     const firstInput = quizBody.querySelector('.fill-input:not([disabled])');
@@ -268,7 +268,7 @@ function checkMC(qIdx, selected, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     btns[selected].classList.add('wrong');
@@ -296,7 +296,7 @@ function checkFill(qIdx, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     input.classList.remove('wrong'); void input.offsetWidth; input.classList.add('wrong');
@@ -309,7 +309,7 @@ function checkFill(qIdx, pageNum) {
 
 function registerWrong(pageNum) {
   slideQuizWrong[pageNum] = (slideQuizWrong[pageNum] || 0) + 1;
-  wrongNote.textContent = `⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
+  wrongNote.textContent = `⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
   if (slideQuizWrong[pageNum] >= 2) {
     setTimeout(triggerLock, 600);
   }
@@ -438,21 +438,21 @@ document.querySelector('.viewer').addEventListener('touchend', e=>{
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十三課簡報一：孫悟空嘅小數降妖大決戰，學習一位小數同整數嘅乘法運算。本課學習目標係精通一位小數同整數嘅乘法同估算法。',
-  2: '降妖任務 — 計算 2.5 乘 3。金箍棒秘訣係將一位小數暫時當「整數」嚟計算：將 2.5 向右移 1 位變成 25，先計 25 乘 3。',
-  3: '列直式時，千萬唔好理小數點，全部「靠右對齊」就啱！3 個步驟：第 1 步靠右對齊；第 2 步當整數計；第 3 步點返小數點 — 因為題目係一位小數，答案要從右向左移返 1 位。',
-  4: '火眼金睛估算法：將 2.5 約成 3（四捨五入），三乘三等如九，所以 2.5 乘 3 大約等如 9。判斷結果：實際答案接近估算值，證明小數點冇放錯位。',
-  5: '任務 Q1 — 蝙蝠妖掉低 7 顆寶石，每顆重 0.6 兩，總共幾重？算式 0.6 乘 7。先估算大約幾多，再用直式計，揀啱嘅答案。',
-  6: '直式破解：6 乘 7 等如 42，再把小數點點返 1 位。火眼金睛估算：將 0.6 約成 1，1 乘 7 等如 7，估算同實際接近，證明小數點冇放錯。',
-  7: '任務 Q2 — 俺駕著筋斗雲飛 5 次，每次飛 1.4 公里，總共飛了幾遠？算式 1.4 乘 5。先估算大約幾多，再揀啱答案。',
-  8: '直式破解：14 乘 5 等如 70，但唔好忘記點返一位小數。火眼金睛估算：將 1.4 約成 1，1 乘 5 等如 5，實際接近 5，合理！',
-  9: '任務 Q3 填充題 — 蟠桃園嘅仙桃每顆重 3.7 公斤，俺摘咗 8 顆，總重量幾多？呢題冇選項，請喺紙上自己列直式計算。',
-  10: '直式破解：37 乘 8 等如 296，因為題目係一位小數，答案點返 1 位小數位。火眼金睛估算：將 3.7 約成 4，4 乘 8 等如 32，實際同估算接近。',
-  11: '任務 Q4 應用題 — 花果山嘅孩兒們嘴饞咗，俺買 5 條香蕉每條 2.3 元，總共要付幾錢？火眼金睛額外題：估算 2.3 乘 5 大約幾多？',
-  12: '直式破解：23 乘 5 等如 115，因為題目係一位小數，答案點返 1 位小數位。火眼金睛估算：將 2.3 約成 2，2 乘 5 等如 10 蚊，實際接近 10 蚊，合理！',
-  13: '任務 Q5 陷阱題 — 蜘蛛精散佈幻象陷阱！佢話 6.4 乘 9 等如 5.76。你覺得呢個小數點位置啱唔啱？快用估算幫俺拆穿佢！',
-  14: '答案分析：64 乘 9 等如 576，因為一位小數，答案點返 1 位變成五十七點六。蜘蛛精擺錯小數點先變得太細 — 用估算 check：6 乘 9 大約 54，所以答案應該接近 54。',
-  15: '大聖叮囑：一位小數乘法三大心法總結 — 要點 1：直式右邊對齊（暫時忽略小數點）。要點 2：點返小數點 1 位（題目係一位小數，答案都係一位）。要點 3：用火眼金睛估算 check 合理性，瞬間識破小數點放錯嘅陷阱。'
+  1: '歡迎來到第十三課簡報一：孫悟空的小數降妖大決戰，學習一位小數同整數的乘法運算。本課學習目標是精通一位小數同整數的乘法同估算法。',
+  2: '降妖任務 — 計算 2.5 乘 3。金箍棒秘訣是將一位小數暫時當「整數」來計算：將 2.5 向右移 1 位變成 25，先計 25 乘 3。',
+  3: '列直式時，千萬不要理小數點，全部「靠右對齊」就對！3 個步驟：第 1 步靠右對齊；第 2 步當整數計；第 3 步點回小數點 — 因為題目是一位小數，答案要從右向左移返 1 位。',
+  4: '火眼金睛估算法：將 2.5 約成 3（四捨五入），三乘三等於九，所以 2.5 乘 3 大約等於 9。判斷結果：實際答案接近估算值，證明小數點沒有放錯位。',
+  5: '任務 Q1 — 蝙蝠妖掉低 7 顆寶石，每顆重 0.6 兩，總共多重？算式 0.6 乘 7。先估算大約多少，再用直式計，選對的答案。',
+  6: '直式破解：6 乘 7 等於 42，再把小數點點回 1 位。火眼金睛估算：將 0.6 約成 1，1 乘 7 等於 7，估算同實際接近，證明小數點沒有放錯。',
+  7: '任務 Q2 — 俺駕著筋斗雲飛 5 次，每次飛 1.4 公里，總共飛了多遠？算式 1.4 乘 5。先估算大約多少，再選對答案。',
+  8: '直式破解：14 乘 5 等於 70，但不要忘記點回一位小數。火眼金睛估算：將 1.4 約成 1，1 乘 5 等於 5，實際接近 5，合理！',
+  9: '任務 Q3 填充題 — 蟠桃園的仙桃每顆重 3.7 公斤，俺摘了 8 顆，總重量多少？這題沒有選項，請在紙上自己列直式計算。',
+  10: '直式破解：37 乘 8 等於 296，因為題目是一位小數，答案點回 1 位小數位。火眼金睛估算：將 3.7 約成 4，4 乘 8 等於 32，實際同估算接近。',
+  11: '任務 Q4 應用題 — 花果山的孩兒們嘴饞了，俺買 5 條香蕉每條 2.3 元，總共要付多少錢？火眼金睛額外題：估算 2.3 乘 5 大約多少？',
+  12: '直式破解：23 乘 5 等於 115，因為題目是一位小數，答案點回 1 位小數位。火眼金睛估算：將 2.3 約成 2，2 乘 5 等於 10 蚊，實際接近 10 蚊，合理！',
+  13: '任務 Q5 陷阱題 — 蜘蛛精散佈幻象陷阱！他話 6.4 乘 9 等於 5.76。你覺得這個小數點位置對不對？快用估算幫俺拆穿他！',
+  14: '答案分析：64 乘 9 等於 576，因為一位小數，答案點回 1 位變成五十七點六。蜘蛛精擺錯小數怎樣才變得太細 — 用估算 check：6 乘 9 大約 54，所以答案應該接近 54。',
+  15: '大聖叮囑：一位小數乘法三大心法總結 — 要點 1：直式右邊對齊（暫時忽略小數點）。要點 2：點回小數點 1 位（題目是一位小數，答案都是一位）。要點 3：用火眼金睛估算 check 合理性，瞬間識破小數點放錯的陷阱。'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

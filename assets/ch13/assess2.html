@@ -141,7 +141,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答了先過 ▶</button>
       </div>
     </div>
   </div>
@@ -164,7 +164,7 @@
     <p id="finalMsg" style="margin:10px 0;"></p>
     <div style="background:linear-gradient(135deg,#FFE0B2,#FFCC80);border:3px solid #FF9800;border-radius:14px;padding:14px;margin:14px 0;text-align:left;">
       <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎤 加賽：粵語錄音解題（最多 +3 🪙）</div>
-      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你嘅理解，AI 老師即時評分。</div>
+      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你的理解，AI 老師即時評分。</div>
       <a href="summary.html" class="btn" style="background:linear-gradient(135deg,#FF7043,#E64A19);color:white;">🎤 去課程總結錄音</a>
     </div>
     <div>
@@ -190,7 +190,7 @@ const CHAPTER = 13, DECK_KEY = 'assess2', IMG_PREFIX = 'assess2';
 // === 6 real questions from NLM-generated assessment JPGs (兩位小數 × 整數) ===
 const Q = [
   {
-    q: '八戒話：「1000 顆仙丹 × 每顆 0.15 克，小數點向右移… 答案係 15 克！」找出八戒嘅錯誤，正確總重量係？',
+    q: '八戒話：「1000 顆仙丹 × 每顆 0.15 克，小數點向右移… 答案是 15 克！」找出八戒的錯誤，正確總重量是？',
     opts: ['1.5 克', '15 克', '150 克', '1500 克'],
     a: 2,
     hint: '悟空提示：0.15 × 1000 — 15 × 1000 = 15000，兩位小數 → 150.00 = 150 克。八戒算漏了，正確是 150 克。',
@@ -200,14 +200,14 @@ const Q = [
     q: '買 4 個法寶，每個 1.3 兩銀子。八戒說「1.3 × 3 = 3.9，所以 1.3 × 4 一定是 4.12 兩」。八戒誤用了整數規則，正確答案是？',
     opts: ['4.12 兩', '4.2 兩', '5.2 兩', '5.12 兩'],
     a: 2,
-    hint: '悟空提示：1.3 × 4 — 13 × 4 = 52，一位小數 → 5.2 兩。八戒將 1.3 × 3 = 3.9 直接 + 0.22 變成 4.12，呢個規律係錯。',
+    hint: '悟空提示：1.3 × 4 — 13 × 4 = 52，一位小數 → 5.2 兩。八戒將 1.3 × 3 = 3.9 直接 + 0.22 變成 4.12，這個規律是錯。',
     pageQ: 3, pageA: 4
   },
   {
     q: '布料長 8.5 尺，每尺 0.9 錢。計算確切結果，用四捨五入法取近似值至「十分位」。大約值多少錢？',
     opts: ['≈ 7.6', '≈ 7.7', '≈ 8.0', '≈ 7.65'],
     a: 1,
-    hint: '悟空提示：8.5 × 0.9 — 85 × 9 = 765，合共 2 位小數 → 7.65。四捨五入到十分位（睇百分位嘅 5）→ 7.7 錢。',
+    hint: '悟空提示：8.5 × 0.9 — 85 × 9 = 765，合共 2 位小數 → 7.65。四捨五入到十分位（睇百分位的 5）→ 7.7 錢。',
     pageQ: 5, pageA: 6
   },
   {
@@ -218,17 +218,17 @@ const Q = [
     pageQ: 7, pageA: 8
   },
   {
-    q: '今晚客棧結帳：3 碗素麵（每碗 1.2 錢）+ 4 盤青菜（每盤 1.25 錢）。總共要付幾多錢？',
+    q: '今晚客棧結帳：3 碗素麵（每碗 1.2 錢）+ 4 盤青菜（每盤 1.25 錢）。總共要付多少錢？',
     opts: ['7.6 錢', '8.6 錢', '9.6 錢', '8.0 錢'],
     a: 1,
-    hint: '悟空提示：3 × 1.2 = 3.6 錢；4 × 1.25 = 5.0 錢；加起嚟 3.6 + 5.0 = 8.6 錢。',
+    hint: '悟空提示：3 × 1.2 = 3.6 錢；4 × 1.25 = 5.0 錢；加起來 3.6 + 5.0 = 8.6 錢。',
     pageQ: 9, pageA: 10
   },
   {
     q: '師父的行囊：6 個水袋（每個 0.5 斤）+ 5 盒經書（每盒 1.02 斤）。八戒寫「水袋 3.0 + 經書 5.01 = 8.01 斤！」八戒錯在哪一處？正確總重量是？',
     opts: ['8.1 斤', '8.01 斤', '8.2 斤', '8.5 斤'],
     a: 0,
-    hint: '悟空提示：6 × 0.5 = 3.0（正確）。但 1.02 × 5 應該係 5.10 = 5.1，唔係 5.01（八戒將 102 × 5 = 510，兩位小數 → 5.10 寫錯做 5.01）。正確總重：3.0 + 5.1 = 8.1 斤。',
+    hint: '悟空提示：6 × 0.5 = 3.0（正確）。但 1.02 × 5 應該是 5.10 = 5.1，不是 5.01（八戒將 102 × 5 = 510，兩位小數 → 5.10 寫錯做 5.01）。正確總重：3.0 + 5.1 = 8.1 斤。',
     pageQ: 11, pageA: 12
   }
 ];
@@ -322,7 +322,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！大聖都讚你叻！' : `❌ 你選了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -334,7 +334,7 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答了先過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
     nb.textContent = '睇答案 ✓';
@@ -463,9 +463,9 @@ function showFinal(correct) {
   document.getElementById('finalScore').textContent = correct;
   let m, t;
   if (correct === Q_SHUFFLED.length) { m = '🌟 滿分！你完全掌握兩位小數乘整數！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 2，再嚟挑戰'; t = '📚'; }
+  else if (correct >= 5) { m = '💪 好勁！再溫下錯的就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題的提示'; t = '🥈'; }
+  else { m = '📖 多些溫習簡報 2，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

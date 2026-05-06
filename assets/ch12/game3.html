@@ -95,7 +95,7 @@ body{
   <h1>✨ 小數點金丹魔法 ✨</h1>
   <h2>第12課 小數乘法 · 西遊記</h2>
   <img src="images/monkey_happy.png" class="hero" alt="悟空">
-  <p>拖動神秘嘅「小數點金丹」去左或右，將數字變成目標值！<br>
+  <p>拖動神秘的「小數點金丹」去左或右，將數字變成目標值！<br>
   每答對一題，悟空就會揮舞金箍棒擊敗小數妖怪。<br>
   <b>10 關</b>挑戰，最多獲得 <b>3 金幣</b>！</p>
   <button class="btn-start" onclick="startGame()">開始冒險 ⚔️</button>
@@ -119,7 +119,7 @@ body{
   <div class="target-panel">
     <div class="target-instruction" id="instructionText">—</div>
     <div id="targetNumber" style="display:none;"></div>
-    <div class="current-label">你嘅答案：</div>
+    <div class="current-label">你的答案：</div>
     <div class="number-display" id="numberDisplay"></div>
     <div class="position-hint" id="positionHint">⬅ 拖動小數點 ➡ 到正確位置</div>
     <div class="action-row">
@@ -379,7 +379,7 @@ function checkAnswer() {
     document.getElementById('hpFill').style.width = state.hp + '%';
     document.getElementById('hpText').textContent = state.hp + '/100';
     fb.className = 'feedback show wrong';
-    fb.innerHTML = `❌ 你答咗 <b>${currentStr}</b>，唔啱喎。再試！`;
+    fb.innerHTML = `❌ 你答了 <b>${currentStr}</b>，不對。再試！`;
     playTone(220, 0.3, 'sawtooth');
 
     if (state.hp <= 0) {
@@ -417,7 +417,7 @@ function endGame() {
   });
 
   document.getElementById('stats').innerHTML =
-    '✅ 答啱：<b>' + state.correctCount + ' / ' + ROUNDS.length + '</b> 題<br>' +
+    '✅ 答對：<b>' + state.correctCount + ' / ' + ROUNDS.length + '</b> 題<br>' +
     '💯 分數：<b>' + state.score + ' 分</b><br>' +
     '⏱️ 時間：<b>' + Math.floor(elapsed/60) + ' 分 ' + (elapsed%60) + ' 秒</b><br>' +
     '🪙 金幣：<b>' + coins + ' / 3 枚</b>';

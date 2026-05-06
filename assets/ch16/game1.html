@@ -101,7 +101,7 @@
   </div>
   <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
   <div class="scene">
-    <div class="speech" id="hint">點擊網格嘅格仔砌方塊！每個方塊 = 1 cm³。砌到目標體積就提交。<br>🎯 切換層數 (L1-L4) 可以一格上面再疊方塊。</div>
+    <div class="speech" id="hint">點擊網格的格仔砌方塊！每個方塊 = 1 cm³。砌到目標體積就提交。<br>🎯 切換層數 (L1-L4) 可以一格上面再疊方塊。</div>
     <div class="target-box">
       <div class="target-label">🎯 目標體積</div>
       <div class="target-val"><span id="targetVal">0</span> cm³</div>
@@ -123,7 +123,7 @@
     <button class="next-btn" id="nextBtn" onclick="nextQ()">下一關 ▶</button>
   </div>
   <div class="done-banner" id="doneBanner">
-    🎉 Minecraft 砌嘢大師！<br>
+    🎉 Minecraft 砌東西大師！<br>
     <span id="finalScore"></span><br>
     <span class="coin-row" id="finalCoins"></span>
     <a href="index.html" style="color:white;background:#7B1FA2;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px">回課題</a>
@@ -133,8 +133,8 @@
   <div class="lock-box">
     <div class="big">🔒</div>
     <h2>Steve 話：要重砌！</h2>
-    <p>你已經錯咗 <b>5 次</b>。要由第 1 關重新砌。</p>
-    <button onclick="restart()">🔁 從頭再嚟</button>
+    <p>你已經錯了 <b>5 次</b>。要由第 1 關重新砌。</p>
+    <button onclick="restart()">🔁 從頭再來</button>
   </div>
 </div>
 <script>
@@ -142,14 +142,14 @@ const CHAPTER = 16, GAME_KEY = 'game1';
 const GRID_SIZE = 5;  // 5x5 base
 const MAX_LAYERS = 4;
 const LEVELS = [
-  { target: 4,  hint:'砌個 2×2 嘅單層平台' },
-  { target: 6,  hint:'2×3 嘅單層長方形' },
-  { target: 8,  hint:'砌 2×2×2 嘅小立方體（要 2 層）' },
+  { target: 4,  hint:'砌個 2×2 的單層平台' },
+  { target: 6,  hint:'2×3 的單層長方形' },
+  { target: 8,  hint:'砌 2×2×2 的小立方體（要 2 層）' },
   { target: 12, hint:'試試 3×2×2 或者 4×3×1' },
-  { target: 18, hint:'3×3×2 嘅厚平台' },
+  { target: 18, hint:'3×3×2 的厚平台' },
   { target: 24, hint:'多層砌 — 例 4×3×2' },
   { target: 27, hint:'砌 3×3×3 完美立方體！' },
-  { target: 40, hint:'最終挑戰：你諗點砌都得 — 4×5×2 / 5×4×2 / 4×4×2.5 等等' }
+  { target: 40, hint:'最終挑戰：你想點砌都得 — 4×5×2 / 5×4×2 / 4×4×2.5 等等' }
 ];
 
 let qIdx = 0, score = 0, wrongs = 0, coins = 0;
@@ -191,7 +191,7 @@ function toggleCell(r, c) {
     flashError(); return;
   }
   if (occupancy[key]) {
-    // 不可以刪 — 上面有方塊嘅話
+    // 不可以刪 — 上面有方塊的話
     if (occupancy[`${r},${c},${curLayer+1}`]) { flashError(); return; }
     delete occupancy[key];
   } else {
@@ -203,7 +203,7 @@ function toggleCell(r, c) {
 
 function flashError() {
   els.fb.className = 'feedback wrong show';
-  els.fb.innerHTML = '⚠️ 方塊冇 support！上面嘅方塊要先砌底層。';
+  els.fb.innerHTML = '⚠️ 方塊沒有 support！上面的方塊要先砌底層。';
   setTimeout(() => els.fb.classList.remove('show'), 2000);
 }
 
@@ -250,16 +250,16 @@ function submitBuild() {
   if (total === lvl.target) {
     score += 12;
     els.fb.className = 'feedback right show';
-    els.fb.innerHTML = `✅ 完美！砌咗 ${total} cm³ = 目標 ${lvl.target} cm³`;
+    els.fb.innerHTML = `✅ 完美！砌了 ${total} cm³ = 目標 ${lvl.target} cm³`;
     els.nextBtn.classList.add('show');
   } else {
     wrongs++;
     els.wrongs.textContent = `${wrongs}/5`;
     els.fb.className = 'feedback wrong show';
     if (total < lvl.target) {
-      els.fb.innerHTML = `❌ 唔夠！你砌咗 ${total} cm³，差 ${lvl.target - total} cm³。${lvl.hint}`;
+      els.fb.innerHTML = `❌ 不夠！你砌了 ${total} cm³，差 ${lvl.target - total} cm³。${lvl.hint}`;
     } else {
-      els.fb.innerHTML = `❌ 多咗！你砌咗 ${total} cm³，多咗 ${total - lvl.target} cm³。${lvl.hint}`;
+      els.fb.innerHTML = `❌ 多了！你砌了 ${total} cm³，多了 ${total - lvl.target} cm³。${lvl.hint}`;
     }
     if (wrongs >= 5) { setTimeout(triggerLock, 700); }
   }

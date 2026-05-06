@@ -84,7 +84,7 @@
   <a href="index.html" class="back">← 返回第14課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 
 <div class="wrap">
@@ -96,7 +96,7 @@
 
   <!-- Quiz overlay appears below the slide image -->
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -110,7 +110,7 @@
   <div class="thumbs" id="thumbs"></div>
 
   <div class="done-banner" id="done">
-    🎉 簡報 1 完成！快啲去做預習 1！
+    🎉 簡報 1 完成！快些去做預習 1！
     <div style="margin-top:10px"><a href="prelearn1.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 1</a></div>
   </div>
 </div>
@@ -119,9 +119,9 @@
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -228,7 +228,7 @@ function showQuiz(pageNum) {
     html += `<div id="qb${i}" class="quiz-block${done?' done':''}">`;
     html += `<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;
     if (done) {
-      html += `<div class="hint-msg correct">✅ 已答啱</div>`;
+      html += `<div class="hint-msg correct">✅ 已答對</div>`;
     } else if (type === 'fill') {
       html += `<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;
       html += `<div class="hint-msg" id="hm${i}"></div>`;
@@ -243,7 +243,7 @@ function showQuiz(pageNum) {
   });
   quizBody.innerHTML = html;
   const wrongs = slideQuizWrong[pageNum] || 0;
-  wrongNote.textContent = wrongs > 0 ? `⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
+  wrongNote.textContent = wrongs > 0 ? `⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
   quizOv.classList.add('show');
   setTimeout(()=> {
     const firstInput = quizBody.querySelector('.fill-input:not([disabled])');
@@ -273,7 +273,7 @@ function checkMC(qIdx, selected, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     btns[selected].classList.add('wrong');
@@ -301,7 +301,7 @@ function checkFill(qIdx, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     input.classList.remove('wrong'); void input.offsetWidth; input.classList.add('wrong');
@@ -314,7 +314,7 @@ function checkFill(qIdx, pageNum) {
 
 function registerWrong(pageNum) {
   slideQuizWrong[pageNum] = (slideQuizWrong[pageNum] || 0) + 1;
-  wrongNote.textContent = `⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
+  wrongNote.textContent = `⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
   if (slideQuizWrong[pageNum] >= 2) {
     setTimeout(triggerLock, 600);
   }
@@ -444,20 +444,20 @@ document.querySelector('.viewer').addEventListener('touchend', e=>{
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十四課簡報一：小數乘法戰鬥卷軸！學習一位小數乘一位小數嘅直式連續技。今集主角：龍珠悟空。',
-  2: '師父，前面有結界擋路！一塊長方形毛巾長 0.4 米，闊 0.2 米，面積係幾多平方米？算式：0.4 乘 0.2 等如幾多？',
-  3: '唐僧開示：悟空，唔好被表象迷惑。小數嘅真面目其實係「分數」！一位小數等如分母係 10 嘅分數 — 0.4 等如 4 分之 10，0.2 等如 2 分之 10。',
-  4: '唐僧發動法術：分母相乘變成 100，所以積必定係「兩位小數」！4/10 乘 2/10 等如 8/100 = 0.08。所以 0.4 乘 0.2 等如 0.08。',
-  5: '師父說得對！但喺實戰中，我哋要用「直式連續技 (Combo)」嚟速戰速決。算式 0.4 乘 0.2 直式列算，準備迎戰！',
-  6: 'Combo 1：靠右對齊！無視小數點！第一式 — 唔好理小數點喺邊，數字通通往右邊牆壁貼齊！',
-  7: 'Combo 2：整數狂打！第二式 — 把它當作平常嘅整數乘法！4 乘以 2 直接等於 8！',
-  8: 'Combo 3：結算小數點位數！0.4 係一位小數，0.2 係一位小數，1 加 1 等如兩位小數。所以最後答案要點返 2 位小數位。',
-  9: '必殺技：精準點擊，空位補零！從右邊向左數兩個位子！點上小數點！空缺嘅地方用 0 補滿！0.4 乘 0.2 等如 0.08。',
-  10: '換俺老豬嚟試試！一位小數加一位小數... 答案肯定係兩位小數！例：28.1 乘 0.7，直式計到一位加一位等如兩位，答案係兩位小數形式。',
-  11: '變異頭目出現！5.5 乘 1.8 = ?八戒：等等！算出嚟係 990... 點上兩位小數變成 9.90... 為什麼橫式答案只有 9.9？尾巴嘅零去咗邊？',
-  12: '兩界嘅法則不同！直式結界：計算過程中，零必須留著佔位（保留 9.90）。橫式結界：寫出最終答案時，末尾嘅零要刪去（5.5 乘 1.8 = 9.9）。',
-  13: '秘技：去零斬！喺橫式中寫出最終答案時，小數點後末尾嘅「0」必須無情斬去！9.90 變成 9.9。所以 5.5 乘 1.8 = 9.9。',
-  14: '不管尾巴有幾多個零，統統斬掉！例如：31.4 乘 1.5 = 47.10，斬零變 47.1。又例如：12.5 乘 6.4 = 80.00，斬零變 80。',
+  1: '歡迎來到第十四課簡報一：小數乘法戰鬥卷軸！學習一位小數乘一位小數的直式連續技。今集主角：龍珠悟空。',
+  2: '師父，前面有結界擋路！一塊長方形毛巾長 0.4 米，闊 0.2 米，面積是多少平方米？算式：0.4 乘 0.2 等於多少？',
+  3: '唐僧開示：悟空，不要被表象迷惑。小數的真面目其實是「分數」！一位小數等於分母是 10 的分數 — 0.4 等於 4 分之 10，0.2 等於 2 分之 10。',
+  4: '唐僧發動法術：分母相乘變成 100，所以積必定是「兩位小數」！4/10 乘 2/10 等於 8/100 = 0.08。所以 0.4 乘 0.2 等於 0.08。',
+  5: '師父說得對！但在實戰中，我們要用「直式連續技 (Combo)」來速戰速決。算式 0.4 乘 0.2 直式列算，準備迎戰！',
+  6: 'Combo 1：靠右對齊！無視小數點！第一式 — 不要理小數點在邊，數字通通往右邊牆壁貼齊！',
+  7: 'Combo 2：整數狂打！第二式 — 把它當作平常的整數乘法！4 乘以 2 直接等於 8！',
+  8: 'Combo 3：結算小數點位數！0.4 是一位小數，0.2 是一位小數，1 加 1 等於兩位小數。所以最後答案要點回 2 位小數位。',
+  9: '必殺技：精準點擊，空位補零！從右邊向左數兩個位子！點上小數點！空缺的地方用 0 補滿！0.4 乘 0.2 等於 0.08。',
+  10: '換俺老豬來試試！一位小數加一位小數... 答案肯定是兩位小數！例：28.1 乘 0.7，直式計到一位加一位等於兩位，答案是兩位小數形式。',
+  11: '變異頭目出現！5.5 乘 1.8 = ?八戒：等等！算出來是 990... 點上兩位小數變成 9.90... 為什麼橫式答案只有 9.9？尾巴的零去了邊？',
+  12: '兩界的法則不同！直式結界：計算過程中，零必須留著佔位（保留 9.90）。橫式結界：寫出最終答案時，末尾的零要刪去（5.5 乘 1.8 = 9.9）。',
+  13: '秘技：去零斬！在橫式中寫出最終答案時，小數點後末尾的「0」必須無情斬去！9.90 變成 9.9。所以 5.5 乘 1.8 = 9.9。',
+  14: '不管尾巴有多少個零，統統斬掉！例如：31.4 乘 1.5 = 47.10，斬零變 47.1。又例如：12.5 乘 6.4 = 80.00，斬零變 80。',
   15: '數學取經卷軸：小數乘法三大鐵則 — 第 1 鐵則：靠右對齊，無視小數。第 2 鐵則：位數相加，精準落點。第 3 鐵則：橫式尾零，無情斬去。恭喜破關，下一個數學妖怪再見！'
 };
 

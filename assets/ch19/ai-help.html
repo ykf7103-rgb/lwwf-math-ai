@@ -219,17 +219,17 @@
   <div class="chat-area" id="chatArea">
     <div class="welcome">
       <div class="emoji">&#129302;</div>
-      <h2>你好！我係數學小老師！</h2>
-      <p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>
+      <h2>你好！我是數學小老師！</h2>
+      <p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳給我睇！<br>我不會直接給答案你，但會引導你找到答案 &#128170;</p>
     </div>
   </div>
 
   <!-- Quick question buttons -->
   <div class="quick-bar" id="quickBar">
-    <button class="quick-btn" data-q="長方體體積公式點計？例如 4×3×2 嘅長方體">&#128161; 長方體體積公式點計？</button>
-    <button class="quick-btn" data-q="正方體體積點解係邊乘邊乘邊？6cm 嘅正方體體積是多少？">&#129300; 正方體 6³ 點計？</button>
+    <button class="quick-btn" data-q="長方體體積公式點計？例如 4×3×2 的長方體">&#128161; 長方體體積公式點計？</button>
+    <button class="quick-btn" data-q="正方體體積為什麼是邊乘邊乘邊？6cm 的正方體體積是多少？">&#129300; 正方體 6³ 點計？</button>
     <button class="quick-btn" data-q="長方體體積 200 cm³，長 8、闊 5，求高？">&#128300; 已知體積，反求高度</button>
-    <button class="quick-btn" data-q="cm³ 同 m³ 點轉換？1 m³ 等於幾多 cm³？">&#128075; cm³ 同 m³ 換算</button>
+    <button class="quick-btn" data-q="cm³ 同 m³ 點轉換？1 m³ 等於多少 cm³？">&#128075; cm³ 同 m³ 換算</button>
   </div>
 
   <!-- Image preview strip -->
@@ -267,16 +267,16 @@ const SYSTEM_PROMPT = `你是「數學小老師」，一位友善的小學五年
 2. 用引導式提問幫助學生思考
 3. 給予提示和暗示，讓學生自己找到答案
 4. 如果學生卡住了，給更多提示，但仍然不給答案
-5. 用鼓勵的語氣，例如「好嘅嘗試！」「你快揾到啦！」
+5. 用鼓勵的語氣，例如「好的嘗試！」「你快揾到啦！」
 6. 用簡單易懂的繁體中文，適合 10-11 歲學生
 7. 如果學生上傳圖片，先描述你看到的題目，然後引導解題
-8. 可以用蠟筆小新角色／生活化例子幫助理解（例如小新嘅寶箱體積）
+8. 可以用蠟筆小新角色／生活化例子幫助理解（例如小新的寶箱體積）
 9. 回答時可以用 emoji 讓對話更生動 🏴‍☠️⚓📦
 10. 每次回答最多 3-4 句，不要太長
-11. 在每次回答的最後必須加一行視覺化提示，格式：[視覺:英文簡短描述要畫嘅嘢]
+11. 在每次回答的最後必須加一行視覺化提示，格式：[視覺:英文簡短描述要畫的東西]
     例：[視覺:cartoon Luffy holding a rectangular treasure chest with dimensions 4cm 3cm 2cm = 24cm cubed, kawaii]
     例：[視覺:Zoro deducing the missing height of a long-rect box V=200 L=8 W=5, anime style]
-    描述要簡單、卡通、適合小學生，目的係幫學生想像題目或概念。
+    描述要簡單、卡通、適合小學生，目的是幫學生想像題目或概念。
 
 本課重點（4 個 LO，源自 NLM 5下B單元5備課手冊）：
 - LO1 長方體體積公式：V = 長 × 闊 × 高（例：4 × 3 × 2 = 24 cm³）
@@ -284,10 +284,10 @@ const SYSTEM_PROMPT = `你是「數學小老師」，一位友善的小學五年
 - LO3 正方體體積公式：V = 邊 × 邊 × 邊（例：6³ = 216 cm³）
 - LO4 綜合應用題：積木拼砌、切割剩餘（× 3/4）、熔掉重鑄（體積守恆）、稜長與體積轉換
 - 常見錯誤：混淆面積（cm²）與體積（cm³）、單位轉換錯、求邊長時忘記開立方根
-- 注意：所有題目用繁體中文書面語（用「多少」唔好用「幾多」、用「是」唔好用「係」）`;
+- 注意：所有題目用繁體中文書面語（用「多少」不要用「多少」、用「是」不要用「是」）`;
 
 /* ===== config ===== */
-// 部署 Cloudflare Worker 之後，將你嘅 Worker URL 貼呢度（或用 ?worker= URL param 覆寫）
+// 部署 Cloudflare Worker 之後，將你的 Worker URL 貼這裡（或用 ?worker= URL param 覆寫）
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
 
 /* ===== state ===== */
@@ -484,7 +484,7 @@ async function handleSend() {
   if (!text && !hasImage) return;
 
   if (questionsUsed >= MAX_QUESTIONS) {
-    addMessage('ai', '你今次已經問咗 ' + MAX_QUESTIONS + ' 條問題啦！如果仲有問題，可以按「重新開始」再問過 \u{1F60A}');
+    addMessage('ai', '你今次已經問了 ' + MAX_QUESTIONS + ' 條問題啦！如果仲有問題，可以按「重新開始」再問過 \u{1F60A}');
     return;
   }
 
@@ -518,7 +518,7 @@ async function handleSend() {
   updateRemain();
 
   try {
-    const reply = await sendToWorker(text || '請幫我睇下呢張圖', imgB64);
+    const reply = await sendToWorker(text || '請幫我睇下這張圖', imgB64);
 
     // Parse out [視覺:...] image prompt
     let displayText = reply;
@@ -580,7 +580,7 @@ function toggleRecording() {
   if (!recognition) {
     recognition = initSpeechRecognition();
     if (!recognition) {
-      alert('你個瀏覽器唔支援錄音辨識，請用 Chrome / Edge 打開 🙏');
+      alert('你個瀏覽器不支援錄音辨識，請用 Chrome / Edge 打開 🙏');
       return;
     }
     recognition.onresult = (e) => {
@@ -620,7 +620,7 @@ function startRecording() {
   isRecording = true;
   btnMic.classList.add('recording');
   btnMic.title = '點擊停止錄音';
-  userInput.placeholder = '🎤 講嘢 ... 講完自動停';
+  userInput.placeholder = '🎤 講東西 ... 講完自動停';
 }
 
 function stopRecording() {
@@ -707,8 +707,8 @@ function resetConversation() {
   welcome.className = 'welcome';
   welcome.innerHTML =
     '<div class="emoji">&#129302;</div>' +
-    '<h2>你好！我係數學小老師！</h2>' +
-    '<p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳畀我睇！<br>我唔會直接畀答案你，但會引導你搵到答案 &#128170;</p>';
+    '<h2>你好！我是數學小老師！</h2>' +
+    '<p>有咩數學問題都可以問我，<br>你亦可以影低功課再上傳給我睇！<br>我不會直接給答案你，但會引導你找到答案 &#128170;</p>';
   chatArea.appendChild(welcome);
 }
 

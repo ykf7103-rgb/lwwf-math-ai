@@ -84,7 +84,7 @@
   <a href="index.html" class="back">← 返回第16課</a>
 </header>
 <button id="ttsToggleBtn" onclick="toggleTTS()" title="開啟／關閉自動廣東話講解" style="position:fixed;top:60px;right:14px;z-index:99;background:white;border:2px solid #FF8F00;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;color:#FF8F00;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🔇 自動講解：關</button>
-<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽呢一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講呢頁</button>
+<button id="ttsSpeakNowBtn" onclick="speakCurrentPage()" title="即時聽這一頁講解 1 次" style="position:fixed;top:100px;right:14px;z-index:99;background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:0.85rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);">🎤 講這頁</button>
 
 
 <div class="wrap">
@@ -96,7 +96,7 @@
 
   <!-- Quiz overlay appears below the slide image -->
   <div class="quiz-overlay" id="quizOv">
-    <div class="quiz-banner">🎯 答啱呢一頁嘅題目先可以過下一頁！</div>
+    <div class="quiz-banner">🎯 答對這一頁的題目先可以過下一頁！</div>
     <div id="quizBody"></div>
     <div style="margin-top:8px;font-size:0.8rem;color:#C62828;text-align:center;" id="wrongNote"></div>
   </div>
@@ -110,7 +110,7 @@
   <div class="thumbs" id="thumbs"></div>
 
   <div class="done-banner" id="done">
-    🎉 簡報 1 完成！快啲去做預習 1！
+    🎉 簡報 1 完成！快些去做預習 1！
     <div style="margin-top:10px"><a href="prelearn1.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900">📝 做預習 1</a></div>
   </div>
 </div>
@@ -119,9 +119,9 @@
 <div class="lock-modal" id="lockModal">
   <div class="lock-box">
     <div class="big">🔒</div>
-    <h2>要返去由頭睇！</h2>
-    <p>你喺呢一頁已經答錯 <b>2 次</b>，要返去由第 1 頁重頭溫習，之前嘅題目要重新答。</p>
-    <p style="font-size:0.85rem;opacity:0.9">唔使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
+    <h2>要回去由頭睇！</h2>
+    <p>你在這一頁已經答錯 <b>2 次</b>，要回去由第 1 頁重頭溫習，之前的題目要重新答。</p>
+    <p style="font-size:0.85rem;opacity:0.9">不使擔心，慢慢睇、睇清楚，你一定做到 💪</p>
     <button onclick="goBackToStart()">🔁 返第 1 頁重新開始</button>
   </div>
 </div>
@@ -257,11 +257,11 @@ function showQuiz(pageNum) {
     html += `<div id="qb${i}" class="quiz-block${done?' done':''}">`;
     html += `<div class="q-label">${done?'✅ ':''}第${i+1}題${badge}<br>${pq.q}</div>`;
     if (done) {
-      html += `<div class="hint-msg correct">✅ 已答啱</div>`;
+      html += `<div class="hint-msg correct">✅ 已答對</div>`;
     } else if (type === 'voice') {
-      html += `<div style="background:#FCE4EC;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;color:#880E4F;">💡 ${pq.hint || '用自己嘅話解釋俾同學知。'}</div>`;
-      html += `<textarea id="vt${i}" placeholder="✏️ 用你嘅話解釋（最少 20 字）..." style="width:100%;min-height:80px;padding:10px;border:2px solid #E91E63;border-radius:8px;font-size:0.95rem;font-family:inherit;outline:none;resize:vertical;"></textarea>`;
-      html += `<button class="fill-btn" style="background:linear-gradient(135deg,#E91E63,#AD1457);margin-top:6px;" onclick="checkVoice(${i},${pageNum})">🤖 提交俾 AI 評分</button>`;
+      html += `<div style="background:#FCE4EC;padding:10px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;color:#880E4F;">💡 ${pq.hint || '用自己的話解釋給同學知。'}</div>`;
+      html += `<textarea id="vt${i}" placeholder="✏️ 用你的話解釋（最少 20 字）..." style="width:100%;min-height:80px;padding:10px;border:2px solid #E91E63;border-radius:8px;font-size:0.95rem;font-family:inherit;outline:none;resize:vertical;"></textarea>`;
+      html += `<button class="fill-btn" style="background:linear-gradient(135deg,#E91E63,#AD1457);margin-top:6px;" onclick="checkVoice(${i},${pageNum})">🤖 提交給 AI 評分</button>`;
       html += `<div class="hint-msg" id="hm${i}"></div>`;
     } else if (type === 'fill') {
       html += `<div class="fill-box"><input type="text" class="fill-input" id="fi${i}" placeholder="輸入答案..."><button class="fill-btn" onclick="checkFill(${i},${pageNum})">提交</button></div>`;
@@ -277,7 +277,7 @@ function showQuiz(pageNum) {
   });
   quizBody.innerHTML = html;
   const wrongs = slideQuizWrong[pageNum] || 0;
-  wrongNote.textContent = wrongs > 0 ? `⚠️ 呢一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
+  wrongNote.textContent = wrongs > 0 ? `⚠️ 這一頁已錯 ${wrongs} 次（錯 2 次要由頭睇）` : '';
   quizOv.classList.add('show');
   setTimeout(()=> {
     const firstInput = quizBody.querySelector('.fill-input:not([disabled])');
@@ -307,7 +307,7 @@ function checkMC(qIdx, selected, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     btns[selected].classList.add('wrong');
@@ -335,7 +335,7 @@ function checkFill(qIdx, pageNum) {
     slideQuizAnswered[key] = true;
     block.classList.add('done');
     hint.className = 'hint-msg correct';
-    hint.innerHTML = '✅ 答啱！';
+    hint.innerHTML = '✅ 答對！';
     autoAdvance(pageNum);
   } else {
     input.classList.remove('wrong'); void input.offsetWidth; input.classList.add('wrong');
@@ -362,7 +362,7 @@ async function checkVoice(qIdx, pageNum) {
   hint.className = 'hint-msg';
   hint.style.cssText = 'background:#FFF3E0;color:#E65100;padding:8px;border-radius:6px;display:block;';
   hint.innerHTML = '🤖 史蒂夫評分中...';
-  const prompt = `學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept || ''}\n評分要點：${q.rubric || ''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；冇關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;
+  const prompt = `學生用打字代替錄音回答。題目：${q.q}\n核心概念：${q.concept || ''}\n評分要點：${q.rubric || ''}\n學生答案：${text}\n\n評分：講到答案+1原理→78-88；只有答案→50-65；答案錯→20-40；沒有關事→0-20。\n返回 JSON: {"score":N,"feedback":"鼓勵式 1-2 句"}`;
   try {
     const res = await fetch('https://lwwf-math-ai.lwwfaiteams.workers.dev/ask', {
       method: 'POST', headers: {'Content-Type':'application/json'},
@@ -404,7 +404,7 @@ async function checkVoice(qIdx, pageNum) {
 
 function registerWrong(pageNum) {
   slideQuizWrong[pageNum] = (slideQuizWrong[pageNum] || 0) + 1;
-  wrongNote.textContent = `⚠️ 呢一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
+  wrongNote.textContent = `⚠️ 這一頁已錯 ${slideQuizWrong[pageNum]} 次（錯 2 次要由頭睇）`;
   if (slideQuizWrong[pageNum] >= 2) {
     setTimeout(triggerLock, 600);
   }
@@ -533,21 +533,21 @@ document.querySelector('.viewer').addEventListener('touchend', e=>{
 // === Cantonese TTS Narration (zh-HK) ===
 // PAGE_NARRATION — 對齊每頁 JPG 內容（2026-05-05 OCR 對齊修補 Bug #3）
 const PAGE_NARRATION = {
-  1: '歡迎嚟到第十六課簡報一：進入體積嘅像素世界！第 16 課 Part 1：認識 cm³ 與立方塊量度體積。今天 Steve 同 Alex 同你一齊學體積量度。',
+  1: '歡迎來到第十六課簡報一：進入體積的像素世界！第 16 課 Part 1：認識 cm³ 與立方塊量度體積。今天 Steve 同 Alex 同你一起學體積量度。',
   2: 'Quest 載入 — 任務目標 LO1 + LO2：認識 1 cm³ 標準單位，學識用立方塊量度體積。',
-  3: '最強大的基礎建材：認識 1 cm³ — 長 1 厘米、闊 1 厘米、高 1 厘米嘅正方體。1 cm 乘 1 cm 乘 1 cm 等如 1 cm³（立方厘米）。呢個就係量度體積嘅「標準數粒」！',
-  4: '基礎概念延續 — 1 cm³ 嘅意思係物件佔住 1 個邊長 1 厘米嘅小立方體咁多嘅空間，係體積嘅最基本單位。',
-  5: '任務一：量度立體 P 與 Q，誰比較大？立體 P 長闊高看起來很平均；立體 Q 看起來很扁但面積很大。不要被外表騙了，讓我哋拆解它們！',
-  6: '任務一思考 — 用 1 cm³ 數粒組成嘅立體，必須拆分計算先知體積。即使外表唔同，數粒總數先係真正嘅體積比較。',
-  7: 'Lv.1 新手村試煉 — 呢個簡單立體係由多少個 1 cm³ 數粒組成嘅？它嘅體積係多少？呢題太簡單了，全部都看得很清楚！',
-  8: 'Lv.1 解答 — 通過數每一個睇得到嘅 1 cm³ 方塊，將總數加埋就係立體嘅總體積。',
-  9: 'Lv.2 視線死角！呢個雙層立體嘅體積係多少 cm³？嗰啲撐起二樓嘅底層方塊藏喺哪裡？小心！只數你看得見嘅方塊會算錯喔！',
-  10: 'Lv.2 解答 — 計算雙層立體嘅體積，必須加埋撐起頂層嘅隱藏底層方塊，唔可以淨數可見方塊。',
-  11: 'Lv.3 不規則建築挑戰 — 遇到呢種高低不平嘅 L 型要怎麼算？系統提示：無法直接使用一層層嘅算法了！我哋需要新嘅工具。',
-  12: 'Lv.3 解答 — 不規則立體可以用「分割法」：將立體切成幾塊規則嘅長方體，分別計算體積後相加。',
-  13: 'Lv.MAX 終極挑戰：苦力怕嘅破壞！「我把你嘅完美長方體炸出咗一個大洞！」形狀變得殘缺不全了，你要怎麼算出剩下嘅體積？',
-  14: 'Lv.MAX 解答 — 用「填補法」：先計算原本完整長方體嘅體積，再減去苦力怕炸出嘅洞嘅體積，得出剩餘部分嘅體積。',
-  15: 'Quest Complete! 今日獲得嘅生存技能 — 1. 標準建材：認識 1 cm³ 同體積嘅絕對不可重疊性。2. 分層透視法：解決隱藏方塊嘅計算陷阱。3. 分割法（+）：切開複雜形狀，分塊相加。4. 填補法（-）：補全殘缺形狀，整體相減。存檔完畢，準備迎接下一次嘅建築挑戰！'
+  3: '最強大的基礎建材：認識 1 cm³ — 長 1 厘米、闊 1 厘米、高 1 厘米的正方體。1 cm 乘 1 cm 乘 1 cm 等於 1 cm³（立方厘米）。這個就是量度體積的「標準數粒」！',
+  4: '基礎概念延續 — 1 cm³ 的意思是物件佔住 1 個邊長 1 厘米的小立方體咁多的空間，是體積的最基本單位。',
+  5: '任務一：量度立體 P 與 Q，誰比較大？立體 P 長闊高看起來很平均；立體 Q 看起來很扁但面積很大。不要被外表騙了，讓我們拆解它們！',
+  6: '任務一思考 — 用 1 cm³ 數粒組成的立體，必須拆分計算先知體積。即使外表不同，數粒總數先是真正的體積比較。',
+  7: 'Lv.1 新手村試煉 — 這個簡單立體是由多少個 1 cm³ 數粒組成的？它的體積是多少？這題太簡單了，全部都看得很清楚！',
+  8: 'Lv.1 解答 — 通過數每一個睇得到的 1 cm³ 方塊，將總數加埋就是立體的總體積。',
+  9: 'Lv.2 視線死角！這個雙層立體的體積是多少 cm³？那些撐起二樓的底層方塊藏在哪裡？小心！只數你看得見的方塊會算錯喔！',
+  10: 'Lv.2 解答 — 計算雙層立體的體積，必須加埋撐起頂層的隱藏底層方塊，不可以淨數可見方塊。',
+  11: 'Lv.3 不規則建築挑戰 — 遇到這種高低不平的 L 型要怎麼算？系統提示：無法直接使用一層層的算法了！我們需要新的工具。',
+  12: 'Lv.3 解答 — 不規則立體可以用「分割法」：將立體切成幾塊規則的長方體，分別計算體積後相加。',
+  13: 'Lv.MAX 終極挑戰：苦力怕的破壞！「我把你的完美長方體炸出了一個大洞！」形狀變得殘缺不全了，你要怎麼算出剩下的體積？',
+  14: 'Lv.MAX 解答 — 用「填補法」：先計算原本完整長方體的體積，再減去苦力怕炸出的洞的體積，得出剩餘部分的體積。',
+  15: 'Quest Complete! 今日獲得的生存技能 — 1. 標準建材：認識 1 cm³ 同體積的絕對不可重疊性。2. 分層透視法：解決隱藏方塊的計算陷阱。3. 分割法（+）：切開複雜形狀，分塊相加。4. 填補法（-）：補全殘缺形狀，整體相減。存檔完畢，準備迎接下一次的建築挑戰！'
 };
 
 // ===== TTS Lecture System (廣東話自動講解 — opt-in 版本 2026-05-05) =====

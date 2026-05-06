@@ -3,7 +3,7 @@
 // ----------------------------------------------------------------
 // API:
 //   const result = await LWWFVoice.grade({
-//     transcript: '學生講嘅內容',
+//     transcript: '學生講的內容',
 //     question: '題目',
 //     rubric: '評分要點',
 //     modelAnswer: '參考答案',
@@ -104,7 +104,7 @@
   // ---------- grade(): transcript → POE → score + feedback ----------
   async function grade({ transcript, question, rubric, modelAnswer, chapter }) {
     if (!transcript || typeof transcript !== 'string') {
-      return { score: 0, feedback: '⚠️ 冇收到錄音內容', error: 'no-transcript' };
+      return { score: 0, feedback: '⚠️ 沒有收到錄音內容', error: 'no-transcript' };
     }
     try {
       const res = await fetch(`${WORKER_URL}/voice-grade`, {

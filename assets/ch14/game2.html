@@ -114,15 +114,15 @@
     </div>
     <style>@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }</style>
     <h2>氣球爆破挑戰</h2>
-    <p><b>60 秒內</b>篤爆 10 個正確答案嘅氣球！</p>
+    <p><b>60 秒內</b>篤爆 10 個正確答案的氣球！</p>
     <p style="background:#FFF8E1;padding:10px;border-radius:8px;border-left:4px solid #FFB300;font-size:0.9rem;text-align:left;">
       📖 <b>玩法</b>：<br>
       • 上面顯示算式（如 2.35 × 4）<br>
-      • 屏幕飄住幾個答案氣球<br>
-      • 篤爆<b>啱答案</b>嘅氣球 +10 分 ✅<br>
+      • 屏幕飄住多少個答案氣球<br>
+      • 篤爆<b>對答案</b>的氣球 +10 分 ✅<br>
       • 篤錯 -5 分 ❌<br>
       • 每爆一個氣球自動出下一條題<br>
-      • 篤 10 個啱 / 時間到 → 結算
+      • 篤 10 個對 / 時間到 → 結算
     </p>
     <button class="btn-big" onclick="startGame()">開始挑戰 🚀</button>
   </div>
@@ -281,7 +281,7 @@ function endGame() {
   document.getElementById('endWrongs').textContent = state.wrongs;
   let coins = 1, trophy = '🥉', msg = '👍 繼續努力，下次篤更多！';
   if (state.hits >= TARGET_HITS) { coins = 3; trophy = '🏆'; msg = '🌟 完成目標！口算達人！'; }
-  else if (state.hits >= 6) { coins = 2; trophy = '🥈'; msg = '💪 唔錯！多啲練習反應就會更快！'; }
+  else if (state.hits >= 6) { coins = 2; trophy = '🥈'; msg = '💪 不錯！多些練習反應就會更快！'; }
   document.getElementById('endTrophy').textContent = trophy;
   document.getElementById('endMsg').textContent = msg;
   document.getElementById('endTitle').textContent = state.hits >= TARGET_HITS ? '🎉 任務達成！' : '⏰ 時間到！';

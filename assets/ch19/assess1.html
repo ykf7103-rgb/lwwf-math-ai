@@ -136,7 +136,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答了先過 ▶</button>
       </div>
     </div>
   </div>
@@ -184,7 +184,7 @@ const Q = [
   { q: '挑戰二 · 動感超人金卡：「每包金卡有 T 張，我買了 3 包，一共得到 90 張！」哪個方程正確表示？', opts: ['A. T + 3 = 90','B. T ÷ 3 = 90','C. 3T = 90','D. 90 − T = 3'], a: 2, hint: '每包 T 張 × 3 包 = 90 張 → 3T = 90（C）。記住：3T 代表 3 乘以 T，不是 3 加 T！', pageQ: 3, pageA: 4 },
   { q: '挑戰三 · 小白的豪華大餐：一包重 u 克的狗糧，平均分成 5 份，剛好分盡。每份狗糧重 20 克。哪一道方程是正確的？', opts: ['A. 5 ÷ u = 20','B. u ÷ 5 = 20','C. u − 5 = 20','D. 5u = 20'], a: 1, hint: '總數 u ÷ 份數 5 = 每份 20 → u ÷ 5 = 20（B）。「分數即是除法」，所以 u/5 = 20。', pageQ: 5, pageA: 6 },
   { q: '挑戰四 · 小新的卡片分類難題：小新分不清「代數式」和「方程」。下列哪一張卡片寫的才是真正的「方程」？', opts: ['A. a + 7','B. 15 − 8 = 7','C. x − 4 = 10','D. 30 ÷ 5'], a: 2, hint: '方程必須同時具備：1) 含有未知數（如 x），2) 是等式（有等號）。(A) 沒有等號→代數式，(B) 沒有未知數，(D) 沒有等號 → 只有 (C) x − 4 = 10 兩個條件都符合。', pageQ: 7, pageA: 8 },
-  { q: '挑戰五 · 小新的超長算式：某數 (x) 乘以 4 再加 7 等於 39。下面哪一個才是正確的列式方法（避免等號錯誤）？', opts: ['A. 4x + 7 = 39 = (39 − 7) ÷ 4 = 8','B. x = (39 − 7) ÷ 4','C. 4x + 7 = 39','D. x × 4 + 7 = 39 = 32 ÷ 4 = 8'], a: 2, hint: '等號不是「計算下一步」的符號，等號是天平，只表示左右兩邊數值相等。正確寫法是一行只有一個等號 → C: 4x + 7 = 39（建立關係）。', pageQ: 9, pageA: 10 },
+  { q: '挑戰五 · 小新的超長算式：某數 (x) 乘以 4 再加 7 等於 39。下面哪一個才是正確的列式方法（避免等號錯誤）？', opts: ['A. 4x + 7 = 39 = (39 − 7) ÷ 4 = 8','B. x = (39 − 7) ÷ 4','C. 4x + 7 = 39','D. x × 4 + 7 = 39 = 32 ÷ 4 = 8'], a: 2, hint: '等號不是「計算下一步」的符號，等號是天平，只表示左右兩邊數值相等。正確寫法是一行只有一個等號 → C: 4x + 7 = 39（建立關是）。', pageQ: 9, pageA: 10 },
   { q: '挑戰六 · 解密巧克比：面對兩步計算的方程 4x − 12 = 28，想要找出未知數 x，第一步應該做什麼？', opts: ['A. 左右兩邊同時除以 4','B. 左邊的 12 和右邊的 28 相加','C. 左右兩邊同時減去 12','D. 左右兩邊同時加上 12'], a: 3, hint: '目標：讓 x 獨自留在等號的一邊。先處理獨立的數字「− 12」，左右兩邊同時加 12 抵消減法 → 4x = 40。然後再除以 4 得 x = 10。千萬不要先除以 4！', pageQ: 11, pageA: 12 }
 ];
 
@@ -259,7 +259,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！小新都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！小新都讚你叻！' : `❌ 你選了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>小新筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -271,7 +271,7 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答了先過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
     nb.textContent = '睇答案 ✓';
@@ -400,9 +400,9 @@ function showFinal(correct) {
   document.getElementById('finalScore').textContent = correct;
   let m, t;
   if (correct === Q_SHUFFLED.length) { m = '🌟 滿分！麥塊建造大師完美 cm³ 量度！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  else if (correct >= 5) { m = '💪 好勁！再溫下錯的就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題的提示'; t = '🥈'; }
+  else { m = '📖 多些溫習簡報 1，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

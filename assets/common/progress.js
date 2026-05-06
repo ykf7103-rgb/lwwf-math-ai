@@ -1,13 +1,13 @@
 // ============================================================
 // LWWF Math Progress Sync — Supabase + localStorage hybrid
 // ----------------------------------------------------------------
-// 解決學生反映嘅問題：
+// 解決學生反映的問題：
 //   1. 完成簡報/評估/遊戲沒有顯示完成 → cross-tab + cloud sync
 //   2. 完成後沒有派金幣 → unified computeCoins() rule
 //   3. 完成後下次回來又未完成 → Supabase = source of truth
 //   4. 不同課題畫面金幣數量不同 → consistent localStorage cache
 //
-// 點解掂：
+// 為什麼掂：
 //   • Hijack localStorage.setItem on `progress_ch*` keys → debounced
 //     auto-upsert to Supabase student_progress + student_scores
 //   • On page load, refreshFromCloud(chapter) merges cloud → local
@@ -15,7 +15,7 @@
 //     event drive UI re-render
 //   • visibilitychange/pagehide flushes pending writes
 //
-// 51 個既有 sub-page 唔需要改一行。Chapter index page 只需加：
+// 51 個既有 sub-page 不需要改一行。Chapter index page 只需加：
 //   window.addEventListener('lwwf-progress-changed', renderProgress);
 // ============================================================
 (function() {
@@ -60,8 +60,8 @@
   }
 
   // ---------- mergeBest: 「best of」semantics — 永遠保留最高分/最多金幣 ----------
-  // 解決 bug：學生重玩遊戲拎咗低分時，唔好用低分 overwrite 高分
-  // 同 cloud sync race condition：唔好用 stale cloud 數據 overwrite local 新分
+  // 解決 bug：學生重玩遊戲拎了低分時，不要用低分 overwrite 高分
+  // 同 cloud sync race condition：不要用 stale cloud 數據 overwrite local 新分
   const MAX_FIELDS = ['coins','score','correct','passed','total','attempts'];
   function mergeBest(oldP, newP) {
     if (!oldP || typeof oldP !== 'object') return newP;
@@ -97,7 +97,7 @@
   const origGetItem = Storage.prototype.getItem;
   Storage.prototype.setItem = function(key, value) {
     let finalValue = value;
-    // 🚨 Apply mergeBest BEFORE write — 防止 sub-page 嘅 markDone() overwrite 高分
+    // 🚨 Apply mergeBest BEFORE write — 防止 sub-page 的 markDone() overwrite 高分
     if (this === localStorage && !_isCloudLoading && typeof key === 'string') {
       const m = key.match(/^progress_ch(\d+)_([^_]+)_(.+)$/);
       if (m) {
@@ -123,7 +123,7 @@
         detail: { chapter, key, raw: finalValue, source: 'local' }
       }));
     } catch {}
-    // Debounced cloud sync — 用 finalValue（已 mergeBest）唔係 raw value
+    // Debounced cloud sync — 用 finalValue（已 mergeBest）不是 raw value
     clearTimeout(debouncedSync[key]);
     debouncedSync[key] = setTimeout(() => {
       delete debouncedSync[key];
@@ -189,7 +189,7 @@
           .eq('class', user.class).eq('student_number', user.number).eq('chapter', chapter),
       ]);
       // 🚨 Build cloud-side object first, THEN mergeBest with local — 確保
-      // 唔會用 stale cloud 數據 overwrite local 新分（race condition）
+      // 不會用 stale cloud 數據 overwrite local 新分（race condition）
       const cloudP = {};
       (progRes.data || []).forEach(r => {
         cloudP[r.step_id] = {
@@ -203,7 +203,7 @@
           r.data || {}
         );
       });
-      // mergeBest: 取 max 嘅 coins/score，保留最新 ts，done 一旦 true 永遠 true
+      // mergeBest: 取 max 的 coins/score，保留最新 ts，done 一旦 true 永遠 true
       const merged = mergeBest(local || {}, cloudP);
       // Write back without re-firing the hijack
       _isCloudLoading = true;
@@ -254,12 +254,12 @@
   }
 
   // Ch12 coin computation — UNIFIED single source of truth (rule #19, 2026-05-03 fix)
-  // 取代之前 root index 嘅 computeEarnedCoins（hardcoded list 漏 ch12_game2）
+  // 取代之前 root index 的 computeEarnedCoins（hardcoded list 漏 ch12_game2）
   // 同 getTotalCoinsAllChapters 之前 raw `coins||score`（quiz1 score=10 變 10 coins overdose）
   // Logic:
   //   - 任何 entry 有 coins 字段（含 ch12_game2 等 unusual key）→ 計入 v.coins
-  //   - quiz1 / quiz4 冇 coins 但有 score/total → 用 Math.min(2, round(score/total*2)) derivation
-  //   - 其他冇 coins 嘅 entry → 唔計（避免 raw score 過大）
+  //   - quiz1 / quiz4 沒有 coins 但有 score/total → 用 Math.min(2, round(score/total*2)) derivation
+  //   - 其他沒有 coins 的 entry → 不計（避免 raw score 過大）
   function computeCh12Coins(scores) {
     if (!scores || typeof scores !== 'object') return 0;
     let total = 0;
@@ -359,7 +359,7 @@
 
   // 🚨 Fire init event so chapter-header.js / chapter index pages can re-render
   // 用統一 computeCoins() 規則（解決首次 page load 用 legacy getTotalCoins
-  // 漏計 default coins 嘅 bug）
+  // 漏計 default coins 的 bug）
   try {
     window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
       detail: { source: 'init' }

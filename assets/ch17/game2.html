@@ -77,15 +77,15 @@
   </div>
   <div class="scene">
     <div class="start-screen" id="startScreen">
-      <h2>⚔️ 索隆嘅體積極速挑戰</h2>
-      <p>🏴‍☠️ 跟住索隆喺海賊船倉、武器箱量度物件！<br>每件物件 <b>5 秒</b>內揀啱範圍。<br>連對 +bonus，慢手或答錯就扣血。<br>連錯 5 次要重頭來過！</p>
+      <h2>⚔️ 索隆的體積極速挑戰</h2>
+      <p>🏴‍☠️ 跟住索隆在海賊船倉、武器箱量度物件！<br>每件物件 <b>5 秒</b>內選對範圍。<br>連對 +bonus，慢手或答錯就扣血。<br>連錯 5 次要重頭來過！</p>
       <button class="start-btn" onclick="startGame()">⚓ 開始挑戰</button>
     </div>
     <div class="play-screen" id="playScreen">
       <div class="timer-bar"><div class="timer-fill" id="timerFill"></div><div class="timer-text" id="timerText">5.0 秒</div></div>
       <div class="object-zoom" id="objE">📦</div>
       <div class="obj-name" id="objN">物件</div>
-      <div class="obj-prompt" id="objP">索隆量度緊呢件物件嘅體積，大約幾多？</div>
+      <div class="obj-prompt" id="objP">索隆量度緊這件物件的體積，大約多少？</div>
       <div class="ranges" id="rangesEl"></div>
       <div class="feedback" id="fb"></div>
     </div>
@@ -182,7 +182,7 @@ function answer(idx) {
     const gained = 10 + speedBonus + streakBonus;
     score += gained;
     els.fb.className = 'feedback right show';
-    els.fb.innerHTML = `✅ 啱晒！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
+    els.fb.innerHTML = `✅ 對晒！+${gained} 分（速度 +${speedBonus} · 連對 +${streakBonus}）<br>💡 ${q.h}`;
   } else {
     buttons[idx].classList.add('wrong');
     buttons[q.cor].classList.add('correct');
@@ -193,7 +193,7 @@ function answer(idx) {
     if (window.LWWFWrong) {
       window.LWWFWrong.record({
         chapter: CHAPTER,
-        question: `${q.n} 嘅體積範圍？`,
+        question: `${q.n} 的體積範圍？`,
         correct_answer: q.ranges[q.cor],
         student_answer: q.ranges[idx],
         source: 'game2',
@@ -230,7 +230,7 @@ function endGame(reason) {
   els.playScreen.classList.remove('active');
   els.endScreen.classList.add('active');
   if (reason === 'lock') {
-    els.endTitle.textContent = '🔒 連錯 5 次！索隆叫你重頭再嚟！';
+    els.endTitle.textContent = '🔒 連錯 5 次！索隆叫你重頭再來！';
   } else {
     els.endTitle.textContent = '🏴‍☠️ 寶藏到手！完成挑戰！';
   }

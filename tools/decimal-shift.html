@@ -273,9 +273,9 @@
   <h1>🔢 小數點移動工具</h1>
 
   <div class="card hint">
-    <p>📌 <b>玩法：</b>輸入一個數字，然後 <b style="color:#E91E63;">👆 撳</b>（手指或滑鼠）下面嘅空隙，小數點就會跳過去！</p>
-    <p>📌 跳到邊個位置，下面對應嘅 <b style="color:#F57F17;">×10 / ×0.1 按鈕就會亮燈</b> 💡</p>
-    <p>📌 如果位數唔夠，系統會自動 <b style="color:#FF6F00;">補零</b>！</p>
+    <p>📌 <b>玩法：</b>輸入一個數字，然後 <b style="color:#E91E63;">👆 撳</b>（手指或滑鼠）下面的空隙，小數點就會跳過去！</p>
+    <p>📌 跳到哪一個位置，下面對應的 <b style="color:#F57F17;">×10 / ×0.1 按鈕就會亮燈</b> 💡</p>
+    <p>📌 如果位數不夠，系統會自動 <b style="color:#FF6F00;">補零</b>！</p>
   </div>
 
   <div class="card input-row">
@@ -286,7 +286,7 @@
 
   <div class="card interactive-area">
     <div class="strip-label">
-      👆 <b>撳空隙嚟移動小數點（紅色）：</b>向右撳每次 ×10，向左撳每次 ÷10（即 ×0.1）
+      👆 <b>撳空隙來移動小數點（紅色）：</b>向右撳每次 ×10，向左撳每次 ÷10（即 ×0.1）
     </div>
     <div class="digit-strip" id="strip"></div>
     <div id="currentStatus" style="margin-top:8px;font-size:0.92rem;color:#666;min-height:20px;"></div>
@@ -302,27 +302,27 @@
   </div>
 
   <div id="answerBox" class="answer-box zero">
-    <div class="label">撳上面嘅空隙或按鈕開始</div>
+    <div class="label">撳上面的空隙或按鈕開始</div>
     <div class="value">—</div>
-    <div class="detail">小數點移動到邊個位置，下面嘅按鈕就會亮燈</div>
+    <div class="detail">小數點移動到哪一個位置，下面的按鈕就會亮燈</div>
   </div>
 
   <div class="legend">
-    <div class="legend-item"><span class="legend-dot" style="background:#0D47A1;"></span>原本嘅數字</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#E91E63;"></span>小數點（可撳嚟移動）</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#FF6F00;"></span>補嘅零</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#CCC;"></span>未用到嘅空位</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#0D47A1;"></span>原本的數字</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#E91E63;"></span>小數點（可撳來移動）</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#FF6F00;"></span>補的零</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#CCC;"></span>未用到的空位</div>
   </div>
 
   <div class="help-tip">
     💡 <b>記住：</b>乘 10 = 小數點向 <b style="color:#2E7D32;">→ 右</b> 移 1 位；乘 0.1 = 向 <b style="color:#C62828;">← 左</b> 移 1 位。
-    位數唔夠就要 <b style="color:#FF6F00;">補零</b>，後面（乘大數）或前面（乘細數）都可能要補。
+    位數不夠就要 <b style="color:#FF6F00;">補零</b>，後面（乘大數）或前面（乘細數）都可能要補。
   </div>
 
 </div>
 
 <!-- Sun Wukong mascot (fixed bottom-right) -->
-<div class="mascot-speech">嗨！我係悟空，陪你一齊學小數點移動 ✨</div>
+<div class="mascot-speech">嗨！我是悟空，陪你一起學小數點移動 ✨</div>
 <img class="mascot" src="images/monkey.png" alt="孫悟空">
 
 <script>
@@ -358,7 +358,7 @@
     const val = document.getElementById('numInput').value;
     const parsed = parseInput(val);
     if (!parsed) {
-      alert('請輸入正確嘅數字，例如 4.5 或 45');
+      alert('請輸入正確的數字，例如 4.5 或 45');
       return;
     }
     state.digits = parsed.digits;
@@ -488,9 +488,9 @@
     if (state.shift === 0) {
       box.classList.add('zero');
       box.innerHTML = `
-        <div class="label">撳上面嘅空隙或按鈕開始</div>
+        <div class="label">撳上面的空隙或按鈕開始</div>
         <div class="value">—</div>
-        <div class="detail">小數點移動到邊個位置，下面嘅按鈕就會亮燈</div>
+        <div class="detail">小數點移動到哪一個位置，下面的按鈕就會亮燈</div>
       `;
       return;
     }
@@ -501,10 +501,10 @@
     const direction = state.shift > 0 ? '→ 右' : '← 左';
     const dirColor = state.shift > 0 ? '#4CAF50' : '#EF5350';
     const padInfo = (result.padLeft > 0)
-      ? `前面補咗 <b style="color:#FFD54F;">${result.padLeft}</b> 個零（包括 <code>0.</code>）`
+      ? `前面補了 <b style="color:#FFD54F;">${result.padLeft}</b> 個零（包括 <code>0.</code>）`
       : (result.padRight > 0)
-      ? `後面補咗 <b style="color:#FFD54F;">${result.padRight}</b> 個零`
-      : `唔使補零`;
+      ? `後面補了 <b style="color:#FFD54F;">${result.padRight}</b> 個零`
+      : `不使補零`;
     const inputStr = parseInput(document.getElementById('numInput').value);
     const origStr = rebuildOriginalStr();
     box.innerHTML = `
@@ -517,14 +517,14 @@
   function renderStatus() {
     const el = document.getElementById('currentStatus');
     if (state.shift === 0) {
-      el.innerHTML = '📍 小數點喺原本嘅位置（撳左右嘅空隙去移動）';
+      el.innerHTML = '📍 小數點在原本的位置（撳左右的空隙去移動）';
       return;
     }
     const direction = state.shift > 0 ? '右' : '左';
     const absShift = Math.abs(state.shift);
     const factorName = state.shift > 0 ? `×${Math.pow(10, state.shift)}` :
                        state.shift === -1 ? '×0.1' : state.shift === -2 ? '×0.01' : '×0.001';
-    el.innerHTML = `📍 小數點向 <b style="color:${state.shift>0?'#2E7D32':'#C62828'}">${direction}</b> 移咗 <b>${absShift}</b> 位，相當於 <b>${factorName}</b>`;
+    el.innerHTML = `📍 小數點向 <b style="color:${state.shift>0?'#2E7D32':'#C62828'}">${direction}</b> 移了 <b>${absShift}</b> 位，相當於 <b>${factorName}</b>`;
   }
 
   function jumpToGap(gapIdx) {

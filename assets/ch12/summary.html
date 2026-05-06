@@ -49,20 +49,20 @@ body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-ser
 <div class="wrap">
   <div class="intro">
     <b>📋 第 12 課課程總結 — 有趣的乘法</b><br>
-    細閱下方資訊圖總結，然後用 <b>20-30 秒粵語</b>，講出你對呢課嘅理解。<br>
-    AI 老師會評分：<b>85 分以上 = 3 金幣 · 70 分以上 = 2 金幣 · 60 分以上 = 1 金幣 · 不足 60 分冇金幣</b>。
+    細閱下方資訊圖總結，然後用 <b>20-30 秒粵語</b>，講出你對這課的理解。<br>
+    AI 老師會評分：<b>85 分以上 = 3 金幣 · 70 分以上 = 2 金幣 · 60 分以上 = 1 金幣 · 不足 60 分沒有金幣</b>。
   </div>
 
   <img class="summary-img" id="summaryImg" src="images/summary.png" alt="第 12 課總結資訊圖" onclick="window.open(this.src,'_blank')">
 
   <div class="recorder" id="recorderPanel">
     <h2>🎤 錄音講解（粵語）</h2>
-    <p>請用粵語講出你對「有趣的乘法」嘅理解，例如：今課學到咩、有咩重要規則、可以舉一個例子。<b>講 20-30 秒</b>。</p>
+    <p>請用粵語講出你對「有趣的乘法」的理解，例如：今課學到咩、有咩重要規則、可以舉一個例子。<b>講 20-30 秒</b>。</p>
     <button class="btn-record" id="recordBtn" onclick="toggleRecord()">🎤 開始錄音</button>
-    <div class="transcript-box" id="transcript"><span class="placeholder">錄音之後，文字會顯示喺呢度...</span></div>
+    <div class="transcript-box" id="transcript"><span class="placeholder">錄音之後，文字會顯示在這裡...</span></div>
     <details style="margin-top:12px;">
       <summary style="cursor:pointer;color:#666;font-size:0.88rem;">🖋️ 不能錄音？改用打字</summary>
-      <textarea class="fallback-textarea" id="fallbackText" placeholder="如果錄音唔得，可以打字代替（最少 20 字）..."></textarea>
+      <textarea class="fallback-textarea" id="fallbackText" placeholder="如果錄音不可以，可以打字代替（最少 20 字）..."></textarea>
     </details>
     <button class="btn-submit" id="submitBtn" onclick="submitGrade()" disabled>✅ 提交評分</button>
   </div>
@@ -113,7 +113,7 @@ function setupRecognition() {
     document.getElementById('submitBtn').disabled = transcript.length < 10;
   };
   r.onend = () => {
-    if (isRecording) {  // user 唔小心停咗 → restart
+    if (isRecording) {  // user 不小心停了 → restart
       try { r.start(); } catch(e){}
     }
   };
@@ -134,7 +134,7 @@ function toggleRecord() {
 function startRecord() {
   if (!recognition) recognition = setupRecognition();
   if (!recognition) {
-    alert('你嘅瀏覽器唔支援錄音。請用打字代替（下方 textarea）。');
+    alert('你的瀏覽器不支援錄音。請用打字代替（下方 textarea）。');
     return;
   }
   transcript = '';
@@ -163,7 +163,7 @@ async function submitGrade() {
   const fallback = document.getElementById('fallbackText').value.trim();
   let finalTranscript = transcript || fallback;
   if (!finalTranscript || finalTranscript.length < 10) {
-    alert('請錄音或打字最少 10 個字嘅解釋');
+    alert('請錄音或打字最少 10 個字的解釋');
     return;
   }
   if (isRecording) stopRecord();
@@ -177,7 +177,7 @@ async function submitGrade() {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         transcript: finalTranscript,
-        question: `第 ${CHAPTER} 課課程總結 — 講解你對「${TITLE}」嘅理解`,
+        question: `第 ${CHAPTER} 課課程總結 — 講解你對「${TITLE}」的理解`,
         rubric: RUBRIC,
         modelAnswer: '',
         chapter: CHAPTER
@@ -228,10 +228,10 @@ function showResult(data, transcriptText) {
 
   let fbHtml = `<b>🤖 AI 老師回應：</b><br>${feedback}`;
   if (data.key_concepts_mentioned && data.key_concepts_mentioned.length) {
-    fbHtml += `<br><br><b>✓ 你提到嘅重點：</b>${data.key_concepts_mentioned.join('、')}`;
+    fbHtml += `<br><br><b>✓ 你提到的重點：</b>${data.key_concepts_mentioned.join('、')}`;
   }
   if (score < 60 && data.missing_concepts && data.missing_concepts.length) {
-    fbHtml += `<br><br><b>💡 提示（再諗下）：</b>建議覆蓋呢啲方向 — ${data.missing_concepts.join('、')}（記住唔好抄答案，要自己用粵語講）`;
+    fbHtml += `<br><br><b>💡 提示（再想下）：</b>建議覆蓋這些方向 — ${data.missing_concepts.join('、')}（記住不要抄答案，要自己用粵語講）`;
   }
   document.getElementById('feedbackBox').innerHTML = fbHtml;
 
@@ -259,7 +259,7 @@ function showResult(data, transcriptText) {
 
 function resetForRetry() {
   transcript = '';
-  document.getElementById('transcript').innerHTML = '<span class="placeholder">錄音之後，文字會顯示喺呢度...</span>';
+  document.getElementById('transcript').innerHTML = '<span class="placeholder">錄音之後，文字會顯示在這裡...</span>';
   document.getElementById('transcript').classList.remove('has-content');
   document.getElementById('fallbackText').value = '';
   document.getElementById('submitBtn').disabled = true;

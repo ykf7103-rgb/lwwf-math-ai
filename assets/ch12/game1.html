@@ -272,10 +272,10 @@ const QUESTIONS = [
   {category:'單位轉換',           text:'250 克 = ? 公斤',     options:['2.5','0.25','25','0.025'],correct:1,
    explain:'1 公斤 = 1000 克，250 ÷ 1000 = 0.25',
    monster:'demon_bone',name:'白骨精'},
-  {category:'應用題',             text:'一枝鉛筆 $3.5，買 100 枝要幾多錢？',options:['$35','$350','$3500','$0.35'],correct:1,
+  {category:'應用題',             text:'一枝鉛筆 $3.5，買 100 枝要多少錢？',options:['$35','$350','$3500','$0.35'],correct:1,
    explain:'3.5 × 100 = 350，小數點右移 2 位',
    monster:'demon_ox',name:'牛魔王'},
-  {category:'應用題',             text:'一瓶水 1.5 升，喝了 0.1 瓶，喝了幾多升？',options:['0.15','0.015','1.5','15'],correct:0,
+  {category:'應用題',             text:'一瓶水 1.5 升，喝了 0.1 瓶，喝了多少升？',options:['0.15','0.015','1.5','15'],correct:0,
    explain:'1.5 × 0.1 = 0.15，小數點左移 1 位',
    monster:'demon_bone',name:'白骨精'},
   {category:'混合',               text:'0.8 × 100 × 0.01 = ?',options:['0.08','0.8','8','80'],correct:1,
@@ -393,7 +393,7 @@ function answer(idx){
 
   // Explanation
   const exp = document.getElementById('explanation');
-  exp.textContent = (correct ? '✅ 答啱！' : '❌ 答錯咗 ') + q.explain;
+  exp.textContent = (correct ? '✅ 答對！' : '❌ 答錯了 ') + q.explain;
   exp.classList.add('show');
 
   // Next
@@ -431,7 +431,7 @@ function endGame(){
   });
 
   document.getElementById('stats').innerHTML =
-    '✅ 答啱：<b>'+state.correct+' / '+QUESTIONS.length+'</b> 題<br>' +
+    '✅ 答對：<b>'+state.correct+' / '+QUESTIONS.length+'</b> 題<br>' +
     '💯 分數：<b>'+state.score+' 分</b><br>' +
     '⏱️ 時間：<b>'+Math.floor(elapsed/60)+' 分 '+(elapsed%60)+' 秒</b><br>' +
     '🪙 金幣：<b>'+coins+' / 3 枚</b>';

@@ -141,7 +141,7 @@
 
       <div class="slide-nav">
         <button class="slide-btn" id="slidePrev" onclick="slidePrev()" disabled>◀ 上一題</button>
-        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答咗先過 ▶</button>
+        <button class="slide-btn next-btn" id="slideNext" onclick="slideNext()" disabled>答了先過 ▶</button>
       </div>
     </div>
   </div>
@@ -164,7 +164,7 @@
     <p id="finalMsg" style="margin:10px 0;"></p>
     <div style="background:linear-gradient(135deg,#FFE0B2,#FFCC80);border:3px solid #FF9800;border-radius:14px;padding:14px;margin:14px 0;text-align:left;">
       <div style="font-weight:800;color:#E65100;margin-bottom:6px;">🎤 加賽：粵語錄音解題（最多 +3 🪙）</div>
-      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你嘅理解，AI 老師即時評分。</div>
+      <div style="font-size:0.92rem;color:#555;line-height:1.6;margin-bottom:10px;">想再賺多 1-3 個金幣？去課程總結用粵語講解你的理解，AI 老師即時評分。</div>
       <a href="summary.html" class="btn" style="background:linear-gradient(135deg,#FF7043,#E64A19);color:white;">🎤 去課程總結錄音</a>
     </div>
     <div>
@@ -191,12 +191,12 @@ const CHAPTER = 15, DECK_KEY = 'assess3', IMG_PREFIX = 'assess3';
 // p01-p12 = 6 對 Q-A（Q 奇頁、A 偶頁）— 共 12 頁
 // 2026-05-03 polish：q 字段全部繁體中文書面語（rule #18）+ 清理 cp template 殘留
 const Q = [
-  { q: '謎題一：小夫的炫耀相簿（上）— 小夫話：「我的遙控飛機比遙控車大多了！」單憑這兩張分開拍攝的照片（照片 A 飛機、照片 B 車），能確定誰的體積大嗎？', opts: ['(A) 可以','(B) 不可以'], a: 1, hint: '哆啦A夢提示：兩張照片分開拍攝，拍攝距離可能唔同 — 近拍嘅物件睇起來大啲。所以分開拍嘅照片唔可以確定誰體積大。', pageQ: 1, pageA: 2 },
-  { q: '謎題二：小夫的炫耀相簿（下）— 那看這張合照總行了吧！看著這張照片（小夫和大雄站在玩具車和飛機旁），這次我們能比較出兩者的體積大小嗎？', opts: ['(A) 可以','(B) 不可以'], a: 0, hint: '哆啦A夢提示：合照入面所有物件喺同一個 perspective + 距離拍攝，相對大小真實反映實際體積，所以可以直接比較。', pageQ: 3, pageA: 4 },
-  { q: '謎題三：縮小電筒的魔法 — 哆啦A夢用縮小電筒影響兩塊銅鑼餅。這兩張照片（照片 A 大、照片 B 細，但都標 50%）能用來比較實際體積嗎？', opts: ['(A) 能','(B) 不能'], a: 1, hint: '哆啦A夢提示：照片可以放大或縮小（如標 50% 嘅 zoom），睇唔到實際大小 — 所以照片唔能用來比較實際體積。', pageQ: 5, pageA: 6 },
-  { q: '謎題四：四次元口袋的驚喜 — 哆啦A夢幫兩樣道具拍了獨照，它們在照片裡看起來一樣大。單看這兩張照片（照片 A 記憶吐司、照片 B 任意門），可以說「記憶吐司」和「任意門」的體積一樣大嗎？', opts: ['(A) 可以','(B) 絕對不行'], a: 1, hint: '哆啦A夢提示：分開拍嘅獨照可以調整 zoom 大小，看起來一樣大唔代表實際一樣 — 任意門係門咁大，記憶吐司係麵包，絕對不行話一樣大。', pageQ: 7, pageA: 8 },
-  { q: '謎題五：突破視覺限制的方法 — 既然照片常騙人，不同照片又不能拿來比，那我們要用什麼終極方法，才能最準確地紀錄和比較物體真實佔用的空間（體積）呢？', opts: ['(A) 畫得更精細的圖','(B) 使用標準的測量單位'], a: 1, hint: '哆啦A夢提示：再精細嘅圖都受 scale 影響，唯有用標準測量單位（如 cm³）先可以準確紀錄同比較體積 — 呢個就係第 16 課嘅 cm³！', pageQ: 9, pageA: 10 },
-  { q: '最終謎題：開啟第 16 課的終極密碼 — 總結今天的調查，下列哪一句話是通往新知識的終極密碼？', opts: ['(A) 照片看起來大，體積就一定大','(B) 同張照片可直接比，不同照片需靠公認單位來量度'], a: 1, hint: '哆啦A夢提示：呢個係本課嘅核心 — 同張照片內物件 perspective 相同，可以直接比；不同照片需要 cm³ 等公認單位來量度。下節將學習 cm³！', pageQ: 11, pageA: 12 }
+  { q: '謎題一：小夫的炫耀相簿（上）— 小夫話：「我的遙控飛機比遙控車大多了！」單憑這兩張分開拍攝的照片（照片 A 飛機、照片 B 車），能確定誰的體積大嗎？', opts: ['(A) 可以','(B) 不可以'], a: 1, hint: '哆啦A夢提示：兩張照片分開拍攝，拍攝距離可能不同 — 近拍的物件睇起來大些。所以分開拍的照片不可以確定誰體積大。', pageQ: 1, pageA: 2 },
+  { q: '謎題二：小夫的炫耀相簿（下）— 那看這張合照總行了吧！看著這張照片（小夫和大雄站在玩具車和飛機旁），這次我們能比較出兩者的體積大小嗎？', opts: ['(A) 可以','(B) 不可以'], a: 0, hint: '哆啦A夢提示：合照入面所有物件在同一個 perspective + 距離拍攝，相對大小真實反映實際體積，所以可以直接比較。', pageQ: 3, pageA: 4 },
+  { q: '謎題三：縮小電筒的魔法 — 哆啦A夢用縮小電筒影響兩塊銅鑼餅。這兩張照片（照片 A 大、照片 B 細，但都標 50%）能用來比較實際體積嗎？', opts: ['(A) 能','(B) 不能'], a: 1, hint: '哆啦A夢提示：照片可以放大或縮小（如標 50% 的 zoom），睇不到實際大小 — 所以照片不能用來比較實際體積。', pageQ: 5, pageA: 6 },
+  { q: '謎題四：四次元口袋的驚喜 — 哆啦A夢幫兩樣道具拍了獨照，它們在照片裡看起來一樣大。單看這兩張照片（照片 A 記憶吐司、照片 B 任意門），可以說「記憶吐司」和「任意門」的體積一樣大嗎？', opts: ['(A) 可以','(B) 絕對不行'], a: 1, hint: '哆啦A夢提示：分開拍的獨照可以調整 zoom 大小，看起來一樣大不代表實際一樣 — 任意門是門咁大，記憶吐司是麵包，絕對不行話一樣大。', pageQ: 7, pageA: 8 },
+  { q: '謎題五：突破視覺限制的方法 — 既然照片常騙人，不同照片又不能拿來比，那我們要用什麼終極方法，才能最準確地紀錄和比較物體真實佔用的空間（體積）這？', opts: ['(A) 畫得更精細的圖','(B) 使用標準的測量單位'], a: 1, hint: '哆啦A夢提示：再精細的圖都受 scale 影響，唯有用標準測量單位（如 cm³）先可以準確紀錄同比較體積 — 這個就是第 16 課的 cm³！', pageQ: 9, pageA: 10 },
+  { q: '最終謎題：開啟第 16 課的終極密碼 — 總結今天的調查，下列哪一句話是通往新知識的終極密碼？', opts: ['(A) 照片看起來大，體積就一定大','(B) 同張照片可直接比，不同照片需靠公認單位來量度'], a: 1, hint: '哆啦A夢提示：這個是本課的核心 — 同張照片內物件 perspective 相同，可以直接比；不同照片需要 cm³ 等公認單位來量度。下節將學習 cm³！', pageQ: 11, pageA: 12 }
 ];
 
 // 2026-05-04 fix: 答案隨機化 — 每次 render 將 opts 位置 shuffle，但 logic 仍記住正確答案 text
@@ -288,7 +288,7 @@ function renderSlide() {
     explain.style.display = 'block';
     const correct = chosen === q.a;
     explain.className = 'slide-explain ' + (correct ? 'correct-box' : 'wrong-box');
-    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答啱！大聖都讚你叻！' : `❌ 你揀咗 ${['A','B','C','D'][chosen]}，正解係 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
+    document.getElementById('slideExplainTitle').textContent = correct ? '✅ 答對！大聖都讚你叻！' : `❌ 你選了 ${['A','B','C','D'][chosen]}，正解是 ${['A','B','C','D'][q.a]}. ${q.opts[q.a]}`;
     document.getElementById('slideExplainBody').innerHTML = `💡 <b>大聖筆記：</b>${q.hint}`;
   } else {
     explain.style.display = 'none';
@@ -300,7 +300,7 @@ function renderSlide() {
   nb.className = 'slide-btn next-btn';
   if (chosen === null) {
     nb.disabled = true;
-    nb.textContent = '答咗先過 ▶';
+    nb.textContent = '答了先過 ▶';
   } else if (slidePhase === 'question') {
     nb.disabled = false;
     nb.textContent = '睇答案 ✓';
@@ -429,9 +429,9 @@ function showFinal(correct) {
   document.getElementById('finalScore').textContent = correct;
   let m, t;
   if (correct === Q_SHUFFLED.length) { m = '🌟 滿分！你完全掌握一位小數乘整數！'; t = '🏆'; }
-  else if (correct >= 5) { m = '💪 好勁！再溫下錯嘅就完美'; t = '🥇'; }
-  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題嘅提示'; t = '🥈'; }
-  else { m = '📖 多啲溫習簡報 1，再嚟挑戰'; t = '📚'; }
+  else if (correct >= 5) { m = '💪 好勁！再溫下錯的就完美'; t = '🥇'; }
+  else if (correct >= 3) { m = '👍 不錯，記得睇下錯題的提示'; t = '🥈'; }
+  else { m = '📖 多些溫習簡報 1，再來挑戰'; t = '📚'; }
   document.getElementById('finalMsg').textContent = m;
   document.getElementById('finalTrophy').textContent = t;
   f.scrollIntoView({behavior:'smooth', block:'start'});

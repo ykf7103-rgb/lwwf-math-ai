@@ -51,11 +51,11 @@
     <div class="stage-head">📊 第 1 區：三態都有體積</div>
     <img src="images/info1.png" alt="三態都有體積" class="info-img">
     <div class="quiz-box">
-      <div class="q-text" id="q1text">睇完上面，邊個正確？</div>
+      <div class="q-text" id="q1text">睇完上面，哪一個正確？</div>
       <div class="opts" id="q1opts"></div>
       <div class="feedback" id="q1fb"></div>
     </div>
-    <div class="lock-overlay">🔒 答啱上一區先解鎖</div>
+    <div class="lock-overlay">🔒 答對上一區先解鎖</div>
   </div>
   <div class="stage" id="s2" data-locked="true">
     <div class="stage-head">📊 第 2 區：直觀比較秘訣</div>
@@ -65,7 +65,7 @@
       <div class="opts" id="q2opts"></div>
       <div class="feedback" id="q2fb"></div>
     </div>
-    <div class="lock-overlay">🔒 答啱第 1 區先解鎖</div>
+    <div class="lock-overlay">🔒 答對第 1 區先解鎖</div>
   </div>
   <div class="stage" id="s3" data-locked="true">
     <div class="stage-head">📊 第 3 區：快速自測</div>
@@ -75,7 +75,7 @@
       <div class="opts" id="q3opts"></div>
       <div class="feedback" id="q3fb"></div>
     </div>
-    <div class="lock-overlay">🔒 答啱第 2 區先解鎖</div>
+    <div class="lock-overlay">🔒 答對第 2 區先解鎖</div>
   </div>
   <div class="done-banner" id="doneBanner">🎉 預習完成！哆啦A夢覺得你準備好上課啦！<br><a href="slides1.html" style="color:white;background:#7B1FA2;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:8px">📗 開始第 1 課簡報</a></div>
 </div>
@@ -83,15 +83,15 @@
   <div class="lock-box">
     <div class="big">🔒</div>
     <h2>哆啦A夢話：要重頭預習！</h2>
-    <p>你已經錯咗 5 次。要由第 1 區重頭睇。</p>
-    <button onclick="restart()">🔁 重頭再嚟</button>
+    <p>你已經錯了 5 次。要由第 1 區重頭睇。</p>
+    <button onclick="restart()">🔁 重頭再來</button>
   </div>
 </div>
 <script>
 const QS = [
-  { text:'三態都有體積：邊一個**唔啱**？', opts:['影子有體積','固體有體積','液體有體積','氣體有體積'], correct:0, hint:'影子冇體積！只係光被擋住嘅暗區。固/液/氣 3 種狀態先有體積。' },
-  { text:'兩個一樣嘅瓶仔，葡萄汁水位高過橙汁。邊個體積大？', opts:['葡萄汁','橙汁','一樣','睇唔到'], correct:0, hint:'瓶仔一樣 → 水位高 = 液體佔嘅空間多 → 葡萄汁體積大。直觀觀察就得，唔需要單位。' },
-  { text:'唔同距離拍嘅相，可唔可以直接比體積？', opts:['不可以','可以','要看光線','要量度'], correct:0, hint:'拍攝距離影響相片入面物件嘅大細表現 → 唔可以直接比。第15課重點！' }
+  { text:'三態都有體積：邊一個**不對**？', opts:['影子有體積','固體有體積','液體有體積','氣體有體積'], correct:0, hint:'影子沒有體積！只是光被擋住的暗區。固/液/氣 3 種狀態先有體積。' },
+  { text:'兩個一樣的瓶仔，葡萄汁水位高過橙汁。哪一個體積大？', opts:['葡萄汁','橙汁','一樣','睇不到'], correct:0, hint:'瓶仔一樣 → 水位高 = 液體佔的空間多 → 葡萄汁體積大。直觀觀察就得，不需要單位。' },
+  { text:'不同距離拍的相，可不可以直接比體積？', opts:['不可以','可以','要看光線','要量度'], correct:0, hint:'拍攝距離影響相片入面物件的大細表現 → 不可以直接比。第15課重點！' }
 ];
 let wrongTotal = 0;
 QS.forEach((q, i) => {
