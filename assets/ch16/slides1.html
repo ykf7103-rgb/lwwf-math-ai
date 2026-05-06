@@ -213,6 +213,7 @@ function buildThumbs(){
 
 function render(){
   img.src = `pages/${PREFIX}_p${pad(idx+1)}.jpg`;
+  __preloadAdjacent();
   img.alt = `第 ${idx+1} 頁`;
   ind.textContent = `${idx+1} / ${TOTAL}`;
   prevBtn.disabled = idx === 0;
@@ -420,7 +421,7 @@ function goBackToStart() {
   lockModal.classList.remove('show');
   idx = 0;
   render();
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo(0, 0);
 }
 
 function autoAdvance(pageNum) {
@@ -433,7 +434,7 @@ function autoAdvance(pageNum) {
         if (idx < TOTAL-1) {
           idx++;
           render();
-          window.scrollTo({top:0, behavior:'smooth'});
+          window.scrollTo(0, 0);
           setTimeout(() => {
             const newQ = getUnansweredQ(idx+1);
             if (newQ) showQuiz(idx+1);
@@ -447,14 +448,30 @@ function autoAdvance(pageNum) {
   }, 250);
 }
 
+// 2026-05-05 fix: 翻頁防誤觸 + preload
+let __navLock = false;
+function __navUnlock(){ __navLock = false; }
+function __preloadAdjacent(){
+  const fmt = (n) => String(n).padStart(2, '0');
+  for (const offset of [1, -1, 2]) {
+    const target = idx + offset + 1;  // page numbers are 1-indexed
+    if (target < 1 || target > TOTAL) continue;
+    const pre = new Image();
+    pre.src = `pages/${PREFIX}_p${fmt(target)}.jpg`;
+  }
+}
+
 function next(){
+  if (__navLock) return;
+  __navLock = true;
+  setTimeout(__navUnlock, 600);
   const pageNum = idx + 1;
   const uq = getUnansweredQ(pageNum);
   if (uq) {
     showQuiz(pageNum);
     return;
   }
-  if (idx < TOTAL-1) { idx++; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+  if (idx < TOTAL-1) { idx++; render(); window.scrollTo(0, 0); }
   else {
     // Already at last page and all answered
     doneBanner.classList.add('show');
@@ -462,7 +479,10 @@ function next(){
   }
 }
 function prev(){
-  if (idx > 0) { idx--; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+  if (__navLock) return;
+  __navLock = true;
+  setTimeout(__navUnlock, 600);
+  if (idx > 0) { idx--; render(); window.scrollTo(0, 0); }
 }
 function goto(i) {
   // Allow going back freely, but when advancing, check each intermediate page for unanswered quiz
@@ -504,7 +524,7 @@ document.querySelector('.viewer').addEventListener('touchstart', e=>{
 document.querySelector('.viewer').addEventListener('touchend', e=>{
   const dx = e.changedTouches[0].screenX - touchX;
   const dy = e.changedTouches[0].screenY - touchY;
-  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+  if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
     if (dx < 0) next(); else prev();
   }
 }, {passive:true});
