@@ -6244,7 +6244,28 @@ function openAssessViewer(num) {
 function updateAssessView() {
     const pad = String(currentAssessIndex + 1).padStart(2, '0');
     const img = document.getElementById('assessImage');
-    img.src = `${ASSET_BASE}/assess${currentAssessNum}/p${pad}.jpg`;
+    const newSrc = `${ASSET_BASE}/assess${currentAssessNum}/p${pad}.jpg`;
+
+    // 2026-05-06 fix: defensive image loading + visible error state
+    if (!img.__assessHandlersWired) {
+        img.__assessHandlersWired = true;
+        img.addEventListener('error', () => {
+            console.error('[assess] image failed to load:', img.src);
+            img.alt = '⚠️ 圖片載入失敗：' + img.src;
+            img.style.background = '#fff3e0';
+            img.style.minHeight = '200px';
+            img.style.display = 'block';
+            img.style.padding = '20px';
+            img.style.textAlign = 'center';
+        });
+        img.addEventListener('load', () => {
+            img.style.background = '';
+            img.style.minHeight = '';
+        });
+    }
+    img.src = newSrc;
+    console.log('[assess] loading:', newSrc, '| ASSET_BASE=', ASSET_BASE, '| CHAPTER=', CHAPTER, '| num=', currentAssessNum, '| idx=', currentAssessIndex);
+
     document.querySelectorAll('#assessDots .slide-dot').forEach((d, i) => d.classList.toggle('active', i === currentAssessIndex));
 
     // Update side arrows
