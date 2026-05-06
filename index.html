@@ -1754,6 +1754,18 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (u · 🎤 大改 — 每課加 3 條對應簡報嘅錄音題 + AI 自動整理錄音重複)</span>
+            <ul>
+                <li>🎤 <b>第 12-16 課全部新增 3 條錄音題（共 15 條）</b>：簡報 1↔評估 1↔錄音題 1 一一對應；每條錄音題有橫向資訊圖、學習目標、AI 整合 + 評分；每題最多 3 🪙</li>
+                <li>🤖 <b>修「錄音題太苛刻」(用戶投訴) — 後端 worker.js 加 transcript consolidation step</b>：學生口齒不清／句子重複都會由 LLM 先整理成一句流暢句子（保持原意，唔加學生冇講嘅內容），再俾 Gemini Flash 評分</li>
+                <li>📊 <b>評分標準寬鬆化</b>：60-69 分（嘗試答+涉及主題）、70-84 分（答對方向+1 個關鍵字）、85+（答案清晰+2 個原理）；唔再因為學生表達唔流暢扣分</li>
+                <li>🪙 <b>STEP_KEYS 加 voice1/voice2/voice3 entries</b>（ch13-16）：每課由 9 步 → 12 步進度；prior 學生金幣 100% 保留（mergeBest）</li>
+                <li>🎨 <b>UI 升級</b>：voice page 紫色主題（區別簡報藍、評估橙、總結綠）；學生睇到 AI 整理後嘅自己回答（透明度 + 增加學習成效）</li>
+                <li>⚠️ <b>需要 user 跑 wrangler deploy</b> 將 worker.js consolidation 上 Cloudflare 才能生效</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (t · 🎉 ch15/16 全 6 簡報 PAGE_NARRATION 完工 — 12-16 課全部 OCR 對齊)</span>
             <ul>
                 <li>🎤 <b>第 15 課全 3 簡報共 45 條 narration</b> OCR 對齊每頁 JPG（簡報 1 哆啦A夢科學教室 — 固液氣三態；簡報 2 數學秘寶誰的體積大 — 直觀比較挑戰賽；簡報 3 哆啦A夢偵探照片陷阱 — 偵探法則三條黃金守則）</li>
@@ -2415,6 +2427,35 @@ body::before {
                             <div style="margin-top:8px;" id="assessStatus3"><span class="progression-step-badge active">最多 3 <img src="assets/ch12/images/coin_new.png" style="width:14px;height:14px;vertical-align:middle;"></span></div>
                         </div>
                     </div>
+                </div>
+
+                <!-- 錄音題簡報（每個簡報對應 1 條錄音題，用粵語答學習目標）-->
+                <div style="font-size:0.92rem;font-weight:700;color:#7B1FA2;margin:18px 4px 10px;">🎤 錄音回答區（3 個簡報嘅錄音題 · AI 自動整理重複句子 · 每題最多 3 🪙）</div>
+                <div class="cards-grid">
+                    <a href="assets/ch12/voice1.html" class="card" style="position:relative;cursor:pointer;text-decoration:none;color:inherit;display:block;border:2px solid #CE93D8;background:linear-gradient(135deg,#ffffff,#F3E5F5);">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
+                        <div class="card-header">
+                            <div class="card-icon" style="background:linear-gradient(135deg,#CE93D8,#7B1FA2);color:white;">🎤</div>
+                            <div><div class="card-title" style="color:#6A1B9A;">錄音題 1</div><div class="card-subtitle">×10/×100/×1000 · 對應簡報 1</div></div>
+                        </div>
+                        <div class="card-body">用粵語講出乘以 10、100、1000 嘅口訣，舉一個例子。AI 整理重複後評分。</div>
+                    </a>
+                    <a href="assets/ch12/voice2.html" class="card" style="position:relative;cursor:pointer;text-decoration:none;color:inherit;display:block;border:2px solid #CE93D8;background:linear-gradient(135deg,#ffffff,#F3E5F5);">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
+                        <div class="card-header">
+                            <div class="card-icon" style="background:linear-gradient(135deg,#CE93D8,#7B1FA2);color:white;">🎤</div>
+                            <div><div class="card-title" style="color:#6A1B9A;">錄音題 2</div><div class="card-subtitle">×0.1/×0.01/×0.001 · 對應簡報 2</div></div>
+                        </div>
+                        <div class="card-body">用粵語講出乘以 0.1、0.01、0.001 嘅口訣，舉一個例子。</div>
+                    </a>
+                    <a href="assets/ch12/voice3.html" class="card" style="position:relative;cursor:pointer;text-decoration:none;color:inherit;display:block;border:2px solid #CE93D8;background:linear-gradient(135deg,#ffffff,#F3E5F5);">
+                        <div class="coin-badge" style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#FFD54F,#FF8F00);color:white;padding:3px 10px;border-radius:14px;font-size:0.78rem;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,0.15);">+3 🪙</div>
+                        <div class="card-header">
+                            <div class="card-icon" style="background:linear-gradient(135deg,#CE93D8,#7B1FA2);color:white;">🎤</div>
+                            <div><div class="card-title" style="color:#6A1B9A;">錄音題 3</div><div class="card-subtitle">單位換算 · 對應簡報 3</div></div>
+                        </div>
+                        <div class="card-body">用粵語講出公斤↔克 / 米↔厘米嘅換算同生活例子。</div>
+                    </a>
                 </div>
 
                 <!-- MC Quiz Area (machinery preserved · MC card removed from dashboard but quiz handlers kept for prior progress / direct calls) -->

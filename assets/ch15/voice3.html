@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 15 課 · 錄音題 3</title>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FFF9F0, #FFE5D0); min-height: 100vh; color: #222; }
+.wrap { max-width: 880px; margin: 0 auto; padding: 18px; }
+.intro { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-left: 5px solid #FB8C00; padding: 16px 20px; border-radius: 12px; margin-bottom: 14px; line-height: 1.7; color: #0D47A1; }
+.intro b { color: #FB8C00; }
+.lo-panel { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-left: 5px solid #FF8F00; padding: 14px 18px; border-radius: 10px; margin-bottom: 14px; line-height: 1.7; color: #5D4037; }
+.lo-panel h3 { margin: 0 0 6px; color: #E65100; font-size: 1.05rem; }
+.summary-img { width: 100%; max-width: 880px; border-radius: 16px; box-shadow: 0 6px 22px rgba(0,0,0,0.12); margin-bottom: 18px; cursor: zoom-in; transition: transform 0.3s; }
+.summary-img:hover { transform: scale(1.01); }
+.recorder { background: white; border-radius: 16px; padding: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border: 3px solid #FFB74D; margin-bottom: 14px; }
+.recorder h2 { margin: 0 0 10px; color: #E65100; font-size: 1.15rem; }
+.recorder p { color: #666; margin: 4px 0 14px; font-size: 0.92rem; line-height: 1.6; }
+.btn-record { padding: 14px 28px; background: linear-gradient(135deg, #FF7043, #E64A19); color: white; border: none; border-radius: 28px; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(229,73,25,0.3); display: inline-flex; align-items: center; gap: 8px; }
+.btn-record:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(229,73,25,0.4); }
+.btn-record.recording { background: linear-gradient(135deg, #C62828, #B71C1C); animation: pulse 1.2s infinite; }
+.btn-record:disabled { opacity: 0.5; cursor: not-allowed; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.transcript-box { margin-top: 14px; padding: 12px 16px; background: #F5F5F5; border-radius: 10px; min-height: 60px; font-size: 0.95rem; color: #333; line-height: 1.6; border: 2px dashed #BDBDBD; }
+.transcript-box.has-content { border-color: #4CAF50; background: #E8F5E9; color: #1B5E20; }
+.transcript-box .placeholder { color: #999; font-style: italic; }
+.consolidated-box { margin-top: 12px; padding: 12px 16px; background: linear-gradient(135deg, #E1F5FE, #B3E5FC); border-radius: 10px; border-left: 4px solid #0288D1; font-size: 0.95rem; color: #01579B; line-height: 1.6; }
+.consolidated-box b { color: #0277BD; display: block; margin-bottom: 4px; }
+.btn-submit { margin-top: 12px; padding: 12px 28px; background: linear-gradient(135deg, #43A047, #2E7D32); color: white; border: none; border-radius: 24px; font-size: 0.98rem; font-weight: 800; cursor: pointer; }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.fallback-textarea { margin-top: 12px; width: 100%; min-height: 80px; padding: 10px 12px; border: 2px solid #BDBDBD; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; }
+.result { display: none; background: white; border-radius: 16px; padding: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.result.show { display: block; animation: slideDown 0.4s; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+.score-big { font-size: 3.4rem; font-weight: 900; text-align: center; margin: 8px 0; }
+.score-big.tier-3 { color: #2E7D32; }
+.score-big.tier-2 { color: #F57C00; }
+.score-big.tier-1 { color: #1976D2; }
+.score-big.tier-0 { color: #C62828; }
+.coin-reward { text-align: center; font-size: 1.4rem; font-weight: 800; margin: 10px 0; }
+.feedback-box { background: linear-gradient(135deg, #FFF8E1, #FFECB3); padding: 14px 18px; border-radius: 10px; margin: 12px 0; border-left: 5px solid #FFB300; line-height: 1.7; color: #5D4037; }
+.tier-info { background: #F3E5F5; padding: 12px 16px; border-radius: 10px; font-size: 0.85rem; color: #4A148C; margin: 12px 0; }
+.tier-info table { width: 100%; }
+.tier-info td { padding: 4px 8px; }
+.btn-back { margin-top: 14px; padding: 10px 24px; background: linear-gradient(135deg, #1565C0, #0D47A1); color: white; border: none; border-radius: 22px; text-decoration: none; font-weight: 800; display: inline-block; }
+.loading { color: #666; font-style: italic; }
+</style>
+</head>
+<body>
+<script src="../common/chapter-header.js?v=20260505t" data-current-ch="15"></script>
+
+<div class="wrap">
+  <div class="intro">
+    <b>🎤 第 15 課 錄音題 3 — 體積概念認識</b><br>
+    細閱下方資訊圖總結，然後用 <b>20-30 秒粵語</b>回答問題。<br>
+    AI 老師會 <b>自動整理你嘅錄音句子</b>（去重複），再俾分。<b>85+ = 3 金幣 · 70+ = 2 金幣 · 60+ = 1 金幣</b>。
+  </div>
+
+  <div class="lo-panel">
+    <h3>🎯 學習目標</h3>
+    <div>簡報 3 — 照片限制（為何需要單位）</div>
+  </div>
+
+  <img class="summary-img" id="summaryImg" src="images/info3.png" alt="第 15 課 簡報 3 資訊圖" onerror="this.onerror=null;this.src='images/summary.png';" onclick="window.open(this.src,'_blank')">
+
+  <div class="recorder" id="recorderPanel">
+    <h2>🎤 錄音回答（粵語 · 20-30 秒）</h2>
+    <p><b>問題：</b>請用粵語解釋為什麼唔同照片嘅物件唔可以直接比較體積，要用咩嘢（單位）先可以準確比較。</p>
+    <button class="btn-record" id="recordBtn" onclick="toggleRecord()">🎤 開始錄音</button>
+    <div class="transcript-box" id="transcript"><span class="placeholder">錄音之後，文字會顯示喺呢度...</span></div>
+    <details style="margin-top:12px;">
+      <summary style="cursor:pointer;color:#666;font-size:0.88rem;">🖋️ 不能錄音？改用打字</summary>
+      <textarea class="fallback-textarea" id="fallbackText" placeholder="如果錄音唔得，可以打字代替（最少 20 字）..."></textarea>
+    </details>
+    <button class="btn-submit" id="submitBtn" onclick="submitGrade()" disabled>✅ 提交評分</button>
+  </div>
+
+  <div class="tier-info">
+    <table>
+      <tr><td>🏆 <b>85-100 分</b></td><td>= 3 金幣（極佳！清晰理解 + 例子）</td></tr>
+      <tr><td>⭐ <b>70-84 分</b></td><td>= 2 金幣（不錯！主要概念清楚）</td></tr>
+      <tr><td>👍 <b>60-69 分</b></td><td>= 1 金幣（合格！再進步）</td></tr>
+      <tr><td>💪 <b>0-59 分</b></td><td>= 0 金幣（再嘗試，AI 會比提示）</td></tr>
+    </table>
+    <div style="margin-top:8px;font-size:0.82rem;color:#7B1FA2;">💡 AI 會自動整理你嘅錄音重複句子，唔使擔心口齒不清。</div>
+  </div>
+
+  <div class="result" id="resultPanel">
+    <div class="score-big" id="scoreBig">--</div>
+    <div class="coin-reward" id="coinReward"></div>
+    <div class="consolidated-box" id="consolidatedBox" style="display:none;">
+      <b>📝 AI 整理後嘅你嘅回答（保持原意，去除重複）：</b>
+      <div id="consolidatedText"></div>
+    </div>
+    <div class="feedback-box" id="feedbackBox"></div>
+    <a class="btn-back" href="index.html">← 返回課題</a>
+    <button class="btn-submit" onclick="resetForRetry()" style="margin-left:8px;background:linear-gradient(135deg,#7B1FA2,#4A148C);">🔁 再試一次</button>
+  </div>
+</div>
+
+<script>
+const CHAPTER = 15;
+const VOICE_NUM = 3;
+const TITLE = '體積概念認識';
+const QUESTION = `請用粵語解釋為什麼唔同照片嘅物件唔可以直接比較體積，要用咩嘢（單位）先可以準確比較。`;
+const RUBRIC = `唔同照片有唔同拍攝距離同角度，照片裡嘅大細唔等於實際體積（例：黃豆特寫睇起嚟比西瓜田大）。要準確比較必須用標準單位（如下一課嘅 cm³）。學生應講出原因 + 用單位嘅必要性。`;
+const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
+let recognition = null, isRecording = false, transcript = '';
+
+function getUser(){ try { return JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); } catch(e){ return null; } }
+
+function setupRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.lang = 'yue-Hant-HK';
+  r.continuous = true;
+  r.interimResults = true;
+  r.onresult = (ev) => {
+    let final = '', interim = '';
+    for (let i = ev.resultIndex; i < ev.results.length; i++) {
+      const txt = ev.results[i][0].transcript;
+      if (ev.results[i].isFinal) final += txt; else interim += txt;
+    }
+    transcript = (transcript + final).trim();
+    document.getElementById('transcript').innerHTML = (transcript || '') + '<span style="color:#999;">' + interim + '</span>';
+    document.getElementById('transcript').classList.toggle('has-content', !!transcript);
+    document.getElementById('submitBtn').disabled = transcript.length < 10;
+  };
+  r.onend = () => {
+    if (isRecording) { try { r.start(); } catch(e){} }
+  };
+  r.onerror = (e) => {
+    console.warn('STT error:', e.error);
+    if (e.error === 'not-allowed') { alert('請允許 microphone 權限。或用打字代替。'); stopRecord(); }
+  };
+  return r;
+}
+
+function toggleRecord() { if (isRecording) stopRecord(); else startRecord(); }
+
+function startRecord() {
+  if (!recognition) recognition = setupRecognition();
+  if (!recognition) { alert('你嘅瀏覽器唔支援錄音。請用打字代替（下方 textarea）。'); return; }
+  transcript = '';
+  document.getElementById('transcript').innerHTML = '<span class="placeholder">聽緊...</span>';
+  document.getElementById('transcript').classList.remove('has-content');
+  document.getElementById('submitBtn').disabled = true;
+  isRecording = true;
+  document.getElementById('recordBtn').textContent = '⏹️ 停止錄音';
+  document.getElementById('recordBtn').classList.add('recording');
+  try { recognition.start(); } catch(e){ console.warn(e); }
+}
+
+function stopRecord() {
+  isRecording = false;
+  document.getElementById('recordBtn').textContent = '🎤 重新錄音';
+  document.getElementById('recordBtn').classList.remove('recording');
+  if (recognition) try { recognition.stop(); } catch(e){}
+  const fallback = document.getElementById('fallbackText').value.trim();
+  if (!transcript && fallback.length >= 10) transcript = fallback;
+  document.getElementById('submitBtn').disabled = transcript.length < 10;
+}
+
+async function submitGrade() {
+  const fallback = document.getElementById('fallbackText').value.trim();
+  let finalTranscript = transcript || fallback;
+  if (!finalTranscript || finalTranscript.length < 10) { alert('請錄音或打字最少 10 個字嘅解釋'); return; }
+  if (isRecording) stopRecord();
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loading">⏳ AI 整理錄音中... 評分中...</span>';
+
+  try {
+    const resp = await fetch(`${WORKER_URL}/voice-grade`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        transcript: finalTranscript,
+        question: `第 ${CHAPTER} 課 簡報 ${VOICE_NUM} 錄音題：${QUESTION}`,
+        rubric: RUBRIC,
+        modelAnswer: '',
+        chapter: CHAPTER
+      })
+    });
+    const data = await resp.json();
+    showResult(data, finalTranscript);
+  } catch(e) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '✅ 提交評分';
+    alert('網絡錯誤，請再試：' + e.message);
+  }
+}
+
+function scoreToCoins(s) {
+  if (s >= 85) return 3;
+  if (s >= 70) return 2;
+  if (s >= 60) return 1;
+  return 0;
+}
+
+function tierClass(s) {
+  if (s >= 85) return 'tier-3';
+  if (s >= 70) return 'tier-2';
+  if (s >= 60) return 'tier-1';
+  return 'tier-0';
+}
+
+function showResult(data, transcriptText) {
+  const score = data.score || 0;
+  const feedback = data.feedback || '繼續努力！';
+  const consolidated = data.consolidated_transcript || transcriptText;
+  const coins = scoreToCoins(score);
+
+  document.getElementById('recorderPanel').style.display = 'none';
+  const panel = document.getElementById('resultPanel');
+  panel.classList.add('show');
+
+  const sb = document.getElementById('scoreBig');
+  sb.textContent = score + ' 分';
+  sb.className = 'score-big ' + tierClass(score);
+
+  const cr = document.getElementById('coinReward');
+  if (coins > 0) {
+    cr.innerHTML = `🪙 獲得 <b style="color:#F57C00;font-size:1.6rem;">${coins}</b> 個金幣！`;
+  } else {
+    cr.innerHTML = `💪 未夠 60 分 — <b style="color:#C62828;">未獲得金幣</b>，可以再試一次！`;
+  }
+
+  // Show AI consolidated transcript (if different from raw)
+  if (consolidated && consolidated !== transcriptText) {
+    document.getElementById('consolidatedText').textContent = consolidated;
+    document.getElementById('consolidatedBox').style.display = 'block';
+  }
+
+  let fbHtml = `<b>🤖 AI 老師回應：</b><br>${feedback}`;
+  if (data.key_concepts_mentioned && data.key_concepts_mentioned.length) {
+    fbHtml += `<br><br><b>✓ 你提到嘅重點：</b>${data.key_concepts_mentioned.join('、')}`;
+  }
+  if (score < 70 && data.missing_concepts && data.missing_concepts.length) {
+    fbHtml += `<br><br><b>💡 提示：</b>建議覆蓋呢啲方向 — ${data.missing_concepts.join('、')}（記住唔好抄答案，要自己用粵語講）`;
+  }
+  document.getElementById('feedbackBox').innerHTML = fbHtml;
+
+  // Sync progress (rule #19) — voice3 key
+  const u = getUser();
+  if (u && u.class && u.number && coins > 0) {
+    const k = `progress_ch${CHAPTER}_${u.class}_${u.number}`;
+    let p = {};
+    try { p = JSON.parse(localStorage.getItem(k) || '{}'); } catch(e){}
+    const voiceKey = `voice${VOICE_NUM}`;
+    p[voiceKey] = {
+      done: true,
+      score: score,
+      coins: coins,
+      ts: Date.now(),
+      transcript: transcriptText.slice(0, 200),
+      consolidated: consolidated.slice(0, 200),
+      feedback: feedback.slice(0, 200)
+    };
+    localStorage.setItem(k, JSON.stringify(p));
+    window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
+      detail: { key: k, action: voiceKey + '-done', score, coins }
+    }));
+  }
+}
+
+function resetForRetry() {
+  transcript = '';
+  document.getElementById('transcript').innerHTML = '<span class="placeholder">錄音之後，文字會顯示喺呢度...</span>';
+  document.getElementById('transcript').classList.remove('has-content');
+  document.getElementById('fallbackText').value = '';
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').innerHTML = '✅ 提交評分';
+  document.getElementById('recordBtn').textContent = '🎤 開始錄音';
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('recorderPanel').style.display = '';
+  document.getElementById('consolidatedBox').style.display = 'none';
+}
+</script>
+<script src="../common/feedback.js"></script>
+</body>
+</html>
