@@ -2923,8 +2923,13 @@ try {
         setTimeout(() => { const sel = document.getElementById('teacherChapterFilter'); if (sel) sel.value = String(saved); }, 100);
     }
 } catch(e) {}
-const CHAPTER_ID = 'ch' + CHAPTER;
-const ASSET_BASE = 'assets/' + CHAPTER_ID;
+// 2026-05-06 critical fix: 學生 view assets 永遠 from ch12（root index.html = ch12 page）
+// 之前 bug：teacher view 個 chapter dropdown 改 global CHAPTER + 存 localStorage
+// → 學生再開時 CHAPTER 被覆蓋成 13 → 評估／簡報全部 load ch13 路徑 → 404
+// 而家：student-side ASSET_BASE 鎖死 ch12，CHAPTER 只用嚟 teacher dashboard filter
+const STUDENT_CHAPTER_ID = 'ch12';
+const CHAPTER_ID = STUDENT_CHAPTER_ID;
+const ASSET_BASE = 'assets/' + STUDENT_CHAPTER_ID;
 const COMMON_BASE = 'assets/common';
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
