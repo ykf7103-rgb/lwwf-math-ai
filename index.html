@@ -1754,6 +1754,16 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (r · ch15 評估 OCR 對齊 + ch13/slides1 講解對齊)</span>
+            <ul>
+                <li>🔧 <b>修復「ch15 評估題目同頁面唔對應」嚴重 bug</b>：ch15/assess1/2/3 全部 18 條題目經 OCR 對齊重寫 — 之前 Q array 講「火龍果 vs 奇異果」但 image 顯示完全唔同題目；學生點 [B] 時被判錯</li>
+                <li>📋 <b>ch15/assess1/2/3 重寫主題</b>：assess1（固液氣三態）、assess2（直觀比較大細）、assess3（照片限制 + 量度單位）— 全部 q text + opts + correct 對齊 NLM 生成嘅 JPG</li>
+                <li>🎤 <b>ch13/slides1 PAGE_NARRATION OCR 對齊</b>（15 頁 narration）：之前 narration 講 0.6×7 但 image 講 2.5×3，學生收到錯資訊；新 narration 對齊每頁實際內容（蝙蝠妖／筋斗雲／蟠桃／香蕉／蜘蛛精）</li>
+                <li>⏳ <b>仍待修</b>：ch13/slides2-3、ch14/15/16/slides1-3（共 14 個簡報 ~196 條 narration）— 需後續 session 繼續</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (q · 嚴重 bug 修補：評估跳轉 + 提示洩答案 + 遊戲 BGM)</span>
             <ul>
                 <li>🔧 <b>修復「第 12 課評估簡報一睇就跳轉」嚴重 bug</b>：assessViewer 之前喺區域 1 region-section 內，當 viewer 開啟時被 __hideRegionsForViewer() 同步隱藏。已將 viewer 移出 region-section，學生可正常做評估</li>
