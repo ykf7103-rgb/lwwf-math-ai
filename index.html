@@ -1756,6 +1756,17 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (w · 🎤 錄音題大改：所有機都可錄音 + 評分大放寬)</span>
+            <ul>
+                <li>📱 <b>所有機都可以錄音</b>：23 個錄音頁面（8 summary + 15 voice）加 MediaRecorder fallback。Web Speech API 不支援嘅機（Firefox / 部分 Android / 學校 WebView）會自動切換到「AI 識別模式」 — 學生錄音 → 後端用 Cloudflare Whisper STT 自動識別文字</li>
+                <li>📊 <b>評分大幅放寬</b>：threshold 由 60/70/85 → 50/65/80（學生只要嘗試答 + 涉及主題就有金幣）</li>
+                <li>💝 <b>System prompt 寬鬆友善</b>：講到任何相關概念就 65+；用詞口語、句子破碎、文法錯都不扣分；對小五學生加 5-10 分 bonus；絕對禁止用中學生標準</li>
+                <li>🎁 <b>新評分區間</b>：80+ = 3 金幣 / 65+ = 2 金幣 / 50+ = 1 金幣 / &lt;50 = 0 金幣</li>
+                <li>✅ <b>Worker.js 已 deploy</b>（Cloudflare Version 6375139a）— /voice-grade endpoint 接受 audio blob，自動 Whisper STT</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (v · 全網站書面中文化 + 修簡報翻頁返回 bug)</span>
             <ul>
                 <li>📝 <b>全網站語言改為繁體中文書面語</b>：137 個 HTML/JS/MD 文件，超過 100 萬字元自動轉換（嘅→的、咗→了、喺→在、唔→不、冇→沒有、啱→對、嗰→那、嚟→來、嘢→東西、揀→選、諗→想、佢→他、哋→們等）</li>

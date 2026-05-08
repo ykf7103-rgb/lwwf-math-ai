@@ -110,9 +110,54 @@ let recognition = null, isRecording = false, transcript = '';
 
 function getUser(){ try { return JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); } catch(e){ return null; } }
 
+// 2026-05-05 fix: MediaRecorder fallback (Web Speech API 不支援嘅機都可以錄音)
+let __mediaRecorder = null;
+let __audioChunks = [];
+let __useMediaRecorder = false;  // toggled if Web Speech 不支援
+
+async function startMediaRecorder() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    __audioChunks = [];
+    __mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+    __mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) __audioChunks.push(e.data); };
+    __mediaRecorder.onstop = () => stream.getTracks().forEach(t => t.stop());
+    __mediaRecorder.start(1000);  // 每秒 chunk
+    return true;
+  } catch (e) {
+    console.error('MediaRecorder failed:', e.message);
+    alert('錄音失敗：請允許 microphone 權限，或者改用打字。');
+    return false;
+  }
+}
+
+async function stopMediaRecorderAndGetBlob() {
+  return new Promise((resolve) => {
+    if (!__mediaRecorder) return resolve(null);
+    __mediaRecorder.onstop = () => {
+      const blob = new Blob(__audioChunks, { type: 'audio/webm' });
+      resolve(blob);
+    };
+    __mediaRecorder.stop();
+  });
+}
+
+async function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);  // strip data:... prefix
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 function setupRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return null;
+  if (!SR) {
+    // 2026-05-05 fix: 不支援 Web Speech → 自動切換 MediaRecorder
+    __useMediaRecorder = true;
+    return null;
+  }
   const r = new SR();
   r.lang = 'yue-Hant-HK';
   r.continuous = true;
@@ -158,9 +203,17 @@ function stopRecord() {
   document.getElementById('recordBtn').textContent = '🎤 重新錄音';
   document.getElementById('recordBtn').classList.remove('recording');
   if (recognition) try { recognition.stop(); } catch(e){}
+  // MediaRecorder 模式停止後，blob 會喺 submitGrade() 內 upload
+  if (__mediaRecorder && __mediaRecorder.state === 'recording') {
+    try { __mediaRecorder.stop(); } catch(e){}
+    document.getElementById('transcript').innerHTML = '<span style="color:#1565C0;">✅ 錄音完成！按「提交評分」上傳俾 AI 識別。</span>';
+  }
   const fallback = document.getElementById('fallbackText').value.trim();
   if (!transcript && fallback.length >= 10) transcript = fallback;
-  document.getElementById('submitBtn').disabled = transcript.length < 10;
+  // MediaRecorder 模式 submit 永遠可按
+  if (!__useMediaRecorder) {
+    document.getElementById('submitBtn').disabled = transcript.length < 10;
+  }
 }
 
 async function submitGrade() {
@@ -194,9 +247,10 @@ async function submitGrade() {
 }
 
 function scoreToCoins(s) {
-  if (s >= 85) return 3;
-  if (s >= 70) return 2;
-  if (s >= 60) return 1;
+  // 2026-05-05 大幅放寬: 50+ = 1 / 65+ = 2 / 80+ = 3
+  if (s >= 80) return 3;
+  if (s >= 65) return 2;
+  if (s >= 50) return 1;
   return 0;
 }
 
