@@ -352,8 +352,9 @@
       ? window.LWWFProgress.getTotalCoinsAllChapters(user)
       : getTotalCoins(user);
     const edx = getEdx(user);
-    const avatarChar = (user.name || '測').trim().charAt(0) || '測';
-    const nameStr = user.name ? `${user.class || ''} ${user.number || ''} ${user.name}` : `${user.class || ''} ${user.number || ''}`;
+    // 2026-05-05 PII 移除：只顯示班別 + 學號，不顯示真實姓名
+    const avatarChar = ((user.class || '').charAt(1) || '👤').trim();
+    const nameStr = `${user.class || ''} ${user.number || ''} 號`;
     right.innerHTML = `
       <button class="tb-btn-action" onclick="window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k','_blank')" title="AI 問功課" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;">🤖 AI問功課</button>
       <button class="tb-btn-action" onclick="location.href='../../index.html#scores'" title="我的成績" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.3);white-space:nowrap;">🏆 我的成績</button>

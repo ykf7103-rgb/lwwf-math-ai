@@ -1756,6 +1756,17 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-05 (x · 🔒 移除學生姓名 PII — 登入只顯示班別 + 學號)</span>
+            <ul>
+                <li>🔒 <b>學生私隱保護</b>：移除 STUDENTS array 內 110 個學生姓名（包括 5A/5B/5C/5D 4 個班 + 測試帳號），公開 GitHub repo 不再含真實姓名</li>
+                <li>📝 <b>登入下拉只顯示班別 + 學號</b>：例「5A 01 號」/「5B 15 號」（不再顯示真實姓名）</li>
+                <li>👤 <b>用戶顯示改為班學號</b>：avatar 顯示班別字（A/B/C/D），名字「{班別} {學號} 號」</li>
+                <li>📋 <b>教師 CSV 匯出</b>：移除「姓名」欄位，改用「代號」</li>
+                <li>⚠️ <b>後續建議</b>：(1) 用 BFG Repo-Cleaner 重寫 git history 清除過去 commits 的姓名 (2) Rotate 學生密碼 (3) 將 STUDENTS 移至 Cloudflare KV / D1 後端比對</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-05 (w · 🎤 錄音題大改：所有機都可錄音 + 評分大放寬)</span>
             <ul>
                 <li>📱 <b>所有機都可以錄音</b>：23 個錄音頁面（8 summary + 15 voice）加 MediaRecorder fallback。Web Speech API 不支援嘅機（Firefox / 部分 Android / 學校 WebView）會自動切換到「AI 識別模式」 — 學生錄音 → 後端用 Cloudflare Whisper STT 自動識別文字</li>
