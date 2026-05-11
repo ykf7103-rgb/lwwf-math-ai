@@ -1756,6 +1756,18 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-11 (ab · 🛡️ Supabase 三重保護 — 學生資料永不丟失)</span>
+            <ul>
+                <li>🔒 <b>後端 RLS 鎖死</b>：student_progress / student_scores / student_edx 由 anon key 嚴格限制 — <b>永遠不可 DELETE</b>。Hard Rule #1 由「frontend 自律」升級為「DB 強制」。</li>
+                <li>📈 <b>mergeBest 觸發器</b>：任何 UPDATE 都自動取 max(舊分, 新分)。即使前端有 bug 寫低分，DB 都會擋住，學生金幣永不減少。</li>
+                <li>💾 <b>每日自動快照</b>：每日香港時間 11:00 自動 snapshot 全部學生進度 + 分數 + EDX，保留 90 日。任何問題都可以還原。</li>
+                <li>🔁 <b>離線重試 + 進度 toast</b>：學生網絡不穩時，progress.js 自動重試 3 次、暫存 localStorage、有 banner 提示「進度暫存本機，稍後自動上傳」，網絡恢復自動補回。</li>
+                <li>💓 <b>每小時心跳監測</b>：pg_cron 每小時寫一筆 heartbeat，加上學生端寫低 sync_health_log，老師可以一眼睇出 Supabase 同步狀態。</li>
+                <li>🗄️ <b>新表</b>：progress_snapshots（備份）+ sync_health_log（監測）。Unique constraints 防 race condition 重複資料。</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-11 (aa · 🚨 緊急修補：第20課完成簡報冇加金幣 + 唔顯示完成)</span>
             <ul>
                 <li>🚨 <b>問題</b>：同學反映完成第20課簡報後冇加金幣、亦冇顯示「完成簡報」。原因是第20課嘅 deck-viewer.js 完全冇 markDone() 機制，遊戲又用咗錯誤嘅 localStorage key（<code>ch20_game1_score</code> 唔配合 progress 系統）。</li>

@@ -131,44 +131,167 @@
     }, DEBOUNCE_MS);
   };
 
-  // ---------- Cloud sync ----------
-  async function syncToCloud(chapter, cls, num, raw) {
-    let p;
-    try { p = JSON.parse(raw || '{}'); } catch { return; }
-    if (!p || typeof p !== 'object') return;
-    const sb = await ensureSupabase();
-    const progRows = [];
-    const scoreRows = [];
-    Object.entries(p).forEach(([stepId, val]) => {
-      if (!val || typeof val !== 'object' || !val.done) return;
-      progRows.push({ class: cls, student_number: num, chapter, step_id: stepId });
-      const detail = {};
-      SCORE_FIELDS.forEach(k => { if (val[k] !== undefined) detail[k] = val[k]; });
-      if (Object.keys(detail).length > 0) {
-        scoreRows.push({
-          class: cls, student_number: num, chapter,
-          activity_key: stepId, data: detail
-        });
-      }
-    });
-    const tasks = [];
-    if (progRows.length > 0) {
-      tasks.push(sb.from('student_progress').upsert(progRows, {
-        onConflict: 'class,student_number,chapter,step_id'
-      }));
-    }
-    if (scoreRows.length > 0) {
-      tasks.push(sb.from('student_scores').upsert(scoreRows, {
-        onConflict: 'class,student_number,chapter,activity_key'
-      }));
-    }
+  // ---------- Health log + offline queue (2026-05-11 hardening) ----------
+  const OFFLINE_QUEUE_KEY = 'lwwf_sync_offline_queue';
+  const MAX_RETRY = 3;
+  const RETRY_DELAY_MS = [1000, 3000, 8000];  // exponential-ish backoff
+
+  async function logHealth(eventType, details) {
     try {
+      const sb = await ensureSupabase();
+      const u = getUser();
+      const row = {
+        class: u && u.class ? u.class : null,
+        student_number: u && u.number ? u.number : null,
+        chapter: (details && details.chapter) || null,
+        event_type: eventType,
+        error_msg: (details && details.error) ? String(details.error).slice(0, 1000) : null,
+        latency_ms: (details && typeof details.latencyMs === 'number') ? details.latencyMs : null,
+        user_agent: (navigator.userAgent || '').slice(0, 200),
+      };
+      // Best effort: no await on outer, no toast on failure (avoid recursion)
+      sb.from('sync_health_log').insert(row).then(() => {}, () => {});
+    } catch (e) {}
+  }
+
+  function queueOffline(chapter, cls, num, raw) {
+    try {
+      const q = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+      q.push({ chapter, cls, num, raw, queued_at: Date.now() });
+      // Cap queue at 50 entries (drop oldest)
+      const trimmed = q.slice(-50);
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(trimmed));
+      logHealth('offline_queue', { chapter });
+    } catch (e) {}
+  }
+
+  async function flushOfflineQueue() {
+    let q;
+    try { q = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]'); }
+    catch { return; }
+    if (!q.length) return;
+    const remain = [];
+    for (const item of q) {
+      const ok = await syncToCloud(item.chapter, item.cls, item.num, item.raw, 0, true);
+      if (!ok) remain.push(item);
+    }
+    try { localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(remain)); } catch {}
+    if (q.length > remain.length) {
+      logHealth('offline_flush', { chapter: q[0].chapter, latencyMs: q.length - remain.length });
+      try { showSyncToast(`✅ 補回 ${q.length - remain.length} 筆離線進度`, 'ok'); } catch {}
+    }
+  }
+
+  // Toast UI for sync feedback (non-blocking, auto-dismiss)
+  function showSyncToast(msg, kind) {
+    try {
+      if (!document.body) return;
+      let el = document.getElementById('__lwwfSyncToast');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = '__lwwfSyncToast';
+        el.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#333;color:white;padding:10px 16px;border-radius:10px;font-size:0.88rem;font-weight:700;z-index:99998;box-shadow:0 4px 14px rgba(0,0,0,0.25);opacity:0;transition:opacity 0.3s;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;max-width:280px;line-height:1.4;';
+        document.body.appendChild(el);
+      }
+      el.style.background = kind === 'fail' ? 'linear-gradient(135deg,#E53935,#B71C1C)' :
+                            kind === 'ok'   ? 'linear-gradient(135deg,#4CAF50,#2E7D32)' :
+                                              'linear-gradient(135deg,#1565C0,#0D47A1)';
+      el.textContent = msg;
+      el.style.opacity = '1';
+      clearTimeout(el.__hideTimer);
+      el.__hideTimer = setTimeout(() => { el.style.opacity = '0'; }, 3500);
+    } catch (e) {}
+  }
+
+  // ---------- Cloud sync (with retry + offline queue) ----------
+  // attempt: current retry count (0 = first try)
+  // isReplay: true when called from offline queue (don't re-queue on fail)
+  async function syncToCloud(chapter, cls, num, raw, attempt, isReplay) {
+    attempt = attempt || 0;
+    let p;
+    try { p = JSON.parse(raw || '{}'); } catch { return false; }
+    if (!p || typeof p !== 'object') return false;
+    const start = Date.now();
+    try {
+      const sb = await ensureSupabase();
+      const progRows = [];
+      const scoreRows = [];
+      Object.entries(p).forEach(([stepId, val]) => {
+        if (!val || typeof val !== 'object' || !val.done) return;
+        progRows.push({ class: cls, student_number: num, chapter, step_id: stepId });
+        const detail = {};
+        SCORE_FIELDS.forEach(k => { if (val[k] !== undefined) detail[k] = val[k]; });
+        if (Object.keys(detail).length > 0) {
+          scoreRows.push({
+            class: cls, student_number: num, chapter,
+            activity_key: stepId, data: detail
+          });
+        }
+      });
+      const tasks = [];
+      if (progRows.length > 0) {
+        tasks.push(sb.from('student_progress').upsert(progRows, {
+          onConflict: 'class,student_number,chapter,step_id'
+        }));
+      }
+      if (scoreRows.length > 0) {
+        tasks.push(sb.from('student_scores').upsert(scoreRows, {
+          onConflict: 'class,student_number,chapter,activity_key'
+        }));
+      }
       const results = await Promise.all(tasks);
       const err = results.find(r => r && r.error);
-      if (err && err.error) console.warn('[lwwf-progress] sync partial fail:', err.error);
-    } catch(e) {
+      const latency = Date.now() - start;
+      if (err && err.error) {
+        // Soft error from Supabase — retry if attempts left
+        if (attempt < MAX_RETRY) {
+          logHealth('sync_retry', { chapter, error: err.error.message, latencyMs: latency });
+          setTimeout(() => syncToCloud(chapter, cls, num, raw, attempt + 1, isReplay),
+                     RETRY_DELAY_MS[attempt] || 8000);
+          return false;
+        }
+        console.warn('[lwwf-progress] sync failed after retries:', err.error);
+        logHealth('sync_fail', { chapter, error: err.error.message, latencyMs: latency });
+        if (!isReplay) {
+          queueOffline(chapter, cls, num, raw);
+          showSyncToast('⚠️ 進度暫存本機，稍後自動上傳', 'fail');
+        }
+        return false;
+      }
+      logHealth('sync_ok', { chapter, latencyMs: latency });
+      return true;
+    } catch (e) {
+      const latency = Date.now() - start;
       console.warn('[lwwf-progress] sync exception:', e);
+      // Network error → retry
+      if (attempt < MAX_RETRY) {
+        logHealth('sync_retry', { chapter, error: String(e), latencyMs: latency });
+        setTimeout(() => syncToCloud(chapter, cls, num, raw, attempt + 1, isReplay),
+                   RETRY_DELAY_MS[attempt] || 8000);
+        return false;
+      }
+      logHealth('sync_fail', { chapter, error: String(e), latencyMs: latency });
+      if (!isReplay) {
+        queueOffline(chapter, cls, num, raw);
+        showSyncToast('⚠️ 網絡未穩，進度暫存本機', 'fail');
+      }
+      return false;
     }
+  }
+
+  // Try flushing offline queue on page load + every 30s + on visibility
+  function startOfflineQueueFlusher() {
+    flushOfflineQueue().catch(() => {});
+    setInterval(() => flushOfflineQueue().catch(() => {}), 30000);
+    window.addEventListener('online', () => flushOfflineQueue().catch(() => {}));
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') flushOfflineQueue().catch(() => {});
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startOfflineQueueFlusher);
+  } else {
+    setTimeout(startOfflineQueueFlusher, 100);
   }
 
   // Pull from Supabase → merge into localStorage (preserves any local-only data)
@@ -349,6 +472,9 @@
     getUser,
     refreshFromCloud,
     syncToCloud,
+    flushOfflineQueue,
+    logHealth,
+    showSyncToast,
     computeCoins,
     computeCh12Coins,                    // NEW 2026-05-03: unified ch12 coin logic
     getTotalCoinsAllChapters,
