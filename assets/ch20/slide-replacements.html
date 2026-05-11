@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第20課 簡報 QA 修正頁</title>
+<style>
+:root{--primary:#1565C0;--primary-light:#1E88E5;--primary-dark:#0D47A1;--gold:#FFC107;--gold-light:#FFD54F;--success:#4CAF50;--bg:#F5F7FA;--card:#fff;--text:#263238;--muted:#546E7A;--line:#E0E7EE;--shadow:0 4px 20px rgba(0,0,0,.08);--shadow-hover:0 8px 30px rgba(0,0,0,.15)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;position:relative}
+body::before{content:"";position:fixed;inset:0;background:url("../common/images/school_bg.jpg") center top/cover no-repeat;opacity:.08;z-index:-2}
+body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,rgba(21,101,192,.09),rgba(255,193,7,.12));z-index:-1;pointer-events:none}
+.wrap{width:min(1160px,100%);margin:auto;padding:18px 14px 44px}.back{display:inline-flex;align-items:center;gap:8px;color:var(--primary);background:#fff;text-decoration:none;font-weight:900;border:2px solid #D7E8FB;border-radius:999px;padding:9px 14px;box-shadow:var(--shadow)}
+.hero{margin:18px 0;background:linear-gradient(135deg,var(--primary-dark),var(--primary) 58%,var(--primary-light));color:#fff;border-radius:22px;padding:26px 22px;box-shadow:0 14px 34px rgba(13,71,161,.26);position:relative;overflow:hidden}
+.hero::after{content:"QA";position:absolute;right:22px;top:18px;font-size:6rem;font-weight:900;color:rgba(255,255,255,.13);line-height:1}
+h1{margin:0 0 8px;font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:0}.hero p{margin:0;line-height:1.75;color:rgba(255,255,255,.92);max-width:850px}
+.summary{background:#E8F5E9;color:#1B5E20;border-left:6px solid var(--success);border-radius:14px;padding:14px 16px;margin-bottom:18px;line-height:1.7;font-weight:700}
+.grid{display:grid;gap:18px}.card{background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.meta{padding:16px 18px}.meta h2{margin:0 0 8px;font-size:1.2rem;color:var(--primary-dark)}.meta p{line-height:1.65;margin:7px 0;color:var(--muted)}.meta b{color:#E65100}
+.card img{width:100%;display:block;background:#fff;border-top:1px solid var(--line)}.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.links a{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;text-decoration:none;border-radius:12px;padding:9px 12px;font-weight:900}.links a.alt{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#3E2A00}
+@media(max-width:720px){.wrap{padding-inline:12px}.hero{padding:22px 18px}.hero::after{font-size:4rem}.meta{padding:14px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="index.html">← 返回第20課</a>
+  <section class="hero">
+    <h1>簡報 QA 修正頁</h1>
+    <p>已逐頁檢查第20課教學及評估簡報。以下 8 頁被標記為內容或文字品質問題，已用修正版底圖再疊上清晰繁體中文和方程內容，翻頁器中的對應頁面亦已同步替換。</p>
+  </section>
+  <div class="summary">
+    已修正：slides1 p03、slides2 p12、slides2 p14、slides3 p07、slides3 p13、assess2 p07、assess2 p08、assess3 p10。
+  </div>
+  <section class="grid">
+    <article class="card">
+      <div class="meta"><h2>教學簡報1 · 第3頁</h2><p><b>問題：</b>天平右盤標示 60 克，但砝碼視覺數量不一致。</p><p><b>修正：</b>重做 `3r = 60 → r = 20`，清楚寫出同除以 3 和驗算。</p><div class="links"><a href="slides1.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/slides1_p03.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_slides1_p03_replacement.png" alt="教學簡報1 第3頁修正版">
+    </article>
+    <article class="card">
+      <div class="meta"><h2>教學簡報2 · 第12頁</h2><p><b>問題：</b>原頁用了 `4x + 7 = 39` 兩步方程，超出第20課一步方程範圍。</p><p><b>修正：</b>改用 `13 + M = 60` 和 `5a = 20`，重點放在依題意驗算。</p><div class="links"><a href="slides2.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/slides2_p12.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_slides2_p12_replacement.png" alt="教學簡報2 第12頁修正版">
+    </article>
+    <article class="card">
+      <div class="meta"><h2>教學簡報2 · 第14頁</h2><p><b>問題：</b>原頁題目包含「乘以4再加7」，屬兩步方程。</p><p><b>修正：</b>改成「某數乘以4的結果是20」，列 `4x = 20`。</p><div class="links"><a href="slides2.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/slides2_p14.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_slides2_p14_replacement.png" alt="教學簡報2 第14頁修正版">
+    </article>
+    <article class="card">
+      <div class="meta"><h2>教學簡報3 · 第7頁</h2><p><b>問題：</b>原頁以兩步方程示範假驗算，偏離本課學習目標。</p><p><b>修正：</b>改用 `u + 3 = 12` 被錯列成 `u - 3 = 12` 的一步方程例子。</p><div class="links"><a href="slides3.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/slides3_p07.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_slides3_p07_replacement.png" alt="教學簡報3 第7頁修正版">
+    </article>
+    <article class="card">
+      <div class="meta"><h2>教學簡報3 · 第13頁</h2><p><b>問題：</b>原頁門票題屬兩步應用題。</p><p><b>修正：</b>改為吸塵機原價一步應用題：`a - 150 = 399`。</p><div class="links"><a href="slides3.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/slides3_p13.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_slides3_p13_replacement.png" alt="教學簡報3 第13頁修正版">
+    </article>
+    <article class="card">
+      <div class="meta"><h2>評估簡報2 · 第7頁</h2><p><b>問題：</b>原頁引入負數，不適合第20課代表題型。</p><p><b>修正：</b>改用正數錯式案例：`u + 3 = 12` 被錯列成 `u - 3 = 12`。</p><div class="links"><a href="assess2.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/assess2_p07.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_assess2_p07_replacement.png" alt="評估簡報2 第7頁修正版">
+    </article>
+    <article class="card">
+      <div class="meta"><h2>評估簡報2 · 第8頁</h2><p><b>問題：</b>原頁用「吃掉 -8 顆」作反例，焦點偏離。</p><p><b>修正：</b>改為回到「u 加 3 的結果是 12」檢查答案。</p><div class="links"><a href="assess2.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/assess2_p08.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_assess2_p08_replacement.png" alt="評估簡報2 第8頁修正版">
+    </article>
+    <article class="card">
+      <div class="meta"><h2>評估簡報3 · 第10頁</h2><p><b>問題：</b>原頁出現疑似簡體/殘缺背景字。</p><p><b>修正：</b>重做吸塵機減價題，使用清晰繁體題幹和 `a - 150 = 399`。</p><div class="links"><a href="assess3.html">查看翻頁器</a><a class="alt" href="replacement_pages/original_flagged_pages/assess3_p10.jpg">原頁備份</a></div></div>
+      <img src="replacement_pages/第20課_assess3_p10_replacement.png" alt="評估簡報3 第10頁修正版">
+    </article>
+  </section>
+</main>
+</body>
+</html>

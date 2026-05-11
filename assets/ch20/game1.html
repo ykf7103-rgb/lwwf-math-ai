@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第20課 遊戲1：戰鬥力方程訓練</title>
+<style>
+:root{--primary:#1565C0;--primary-light:#1E88E5;--primary-dark:#0D47A1;--gold:#FFC107;--gold-light:#FFD54F;--success:#4CAF50;--error:#E53935;--bg:#F5F7FA;--card:#fff;--text:#263238;--muted:#546E7A;--line:#E0E7EE;--shadow:0 4px 20px rgba(0,0,0,.08);--shadow-hover:0 8px 30px rgba(0,0,0,.15)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;position:relative}
+body::before{content:"";position:fixed;inset:0;background:url("../common/images/school_bg.jpg") center top/cover no-repeat;opacity:.08;z-index:-2}
+body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,rgba(21,101,192,.09),rgba(255,193,7,.13));z-index:-1}
+.top{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.94);position:sticky;top:0;z-index:5;box-shadow:0 2px 12px rgba(0,0,0,.08);backdrop-filter:blur(12px)}
+.top a{color:var(--primary);text-decoration:none;font-weight:900}.meter{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{background:linear-gradient(135deg,#FFF8E1,#FFE082);color:#7A4B00;border:2px solid rgba(255,193,7,.48);border-radius:999px;padding:7px 11px;font-weight:900}
+.wrap{width:min(980px,100%);margin:auto;padding:22px 14px 40px}
+.hero-card{background:linear-gradient(135deg,var(--primary-dark),var(--primary) 58%,var(--primary-light));color:#fff;border-radius:22px;padding:28px 22px;box-shadow:0 14px 34px rgba(13,71,161,.26);position:relative;overflow:hidden}
+.hero-card::after{content:"3r";position:absolute;right:24px;top:18px;font-size:6.5rem;font-weight:900;color:rgba(255,255,255,.13);line-height:1}
+.hero-card h1,.end h1{margin:0 0 10px;font-size:clamp(1.7rem,4.6vw,3rem);line-height:1.1;letter-spacing:0;font-weight:900}
+.lead{color:rgba(255,255,255,.92);line-height:1.75;max-width:760px;margin:0}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:stretch;margin-top:18px}
+.box{background:var(--card);color:var(--text);border:2px solid #D7E8FB;border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.asset{background:#fff;border:2px solid #D7E8FB;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--shadow)}
+.asset img{width:100%;height:100%;object-fit:cover}
+.qno{font-weight:900;color:var(--primary);letter-spacing:.04em;text-transform:uppercase}.question{font-size:clamp(1.35rem,4vw,2.3rem);font-weight:900;line-height:1.25;margin:14px 0;color:var(--primary-dark)}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.choice{border:2px solid var(--line);background:#fff;color:var(--text);border-radius:14px;padding:14px;font-size:1.08rem;font-weight:900;cursor:pointer;min-height:58px;transition:.18s}.choice:hover{border-color:var(--primary-light);background:#E3F2FD;transform:translateY(-1px)}.choice.correct{background:#E8F5E9;border-color:var(--success);color:#1B5E20}.choice.wrong{background:#FFEBEE;border-color:var(--error);color:#B71C1C}
+.feedback{margin-top:14px;padding:13px;border-radius:12px;background:#E3F2FD;border-left:5px solid var(--primary);line-height:1.65;display:none;color:var(--text)}.feedback.show{display:block}
+.next{margin-top:14px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:0;border-radius:12px;padding:12px 18px;font-weight:900;cursor:pointer;display:none;box-shadow:0 4px 14px rgba(21,101,192,.25)}.next.show{display:inline-block}
+.start,.end{text-align:center}.start .btn{margin-top:18px}.btn{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:0;border-radius:12px;padding:13px 22px;font-size:1.05rem;font-weight:900;cursor:pointer;text-decoration:none;display:inline-block;box-shadow:0 4px 14px rgba(21,101,192,.25)}.btn.alt{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#3E2A00}
+.hide{display:none}.bar{height:12px;background:#E0E7EE;border-radius:999px;overflow:hidden;margin:16px 0}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary-light),var(--gold));transition:.25s}
+.end{background:#fff;border:2px solid #D7E8FB;border-radius:22px;padding:28px 20px;box-shadow:var(--shadow)}.end .lead{color:var(--muted)}
+@media(max-width:760px){.stage{grid-template-columns:1fr}.asset{min-height:220px}.choices{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="top">
+  <a href="index.html">← 第20課</a>
+  <div class="meter">
+    <span class="pill">能量 <b id="scoreTop">0</b></span>
+    <span class="pill">連擊 <b id="comboTop">0</b></span>
+    <span class="pill">第 <b id="stepTop">0</b>/10 關</span>
+  </div>
+</nav>
+<main class="wrap">
+  <section id="start" class="start hero-card">
+    <h1>戰鬥力方程訓練</h1>
+    <p class="lead" style="margin:auto">解開乘除一步方程，累積能量。記住：<b>乘法方程同除，除法方程同乘</b>。</p>
+    <div class="bar"><div class="fill" style="width:100%"></div></div>
+    <button class="btn alt" onclick="startGame()">開始修煉</button>
+  </section>
+
+  <section id="game" class="stage hide">
+    <div class="box">
+      <div class="qno" id="qno"></div>
+      <div class="question" id="question"></div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next" id="nextBtn" onclick="nextQuestion()">下一關</button>
+      <div class="bar"><div class="fill" id="progressFill"></div></div>
+    </div>
+    <aside class="asset"><img src="images/mission_assets.png" alt="原創修煉者與能量道具"></aside>
+  </section>
+
+  <section id="end" class="end hide">
+    <h1 id="endTitle">修煉完成</h1>
+    <p class="lead" id="endText" style="margin:auto"></p>
+    <p><a class="btn alt" href="game1.html">再玩一次</a> <a class="btn" href="index.html">返回入口</a></p>
+  </section>
+</main>
+<script>
+const questions=[
+  {q:"3r = 60，r = ?",a:"20",choices:["18","20","57","180"],ex:"等號兩邊同時除以3：r = 60 ÷ 3 = 20。"},
+  {q:"4u = 28，u = ?",a:"7",choices:["7","24","32","112"],ex:"乘法方程要同除：u = 28 ÷ 4 = 7。"},
+  {q:"96 = 16w，w = ?",a:"6",choices:["6","12","80","1536"],ex:"未知數在右邊也一樣：96 ÷ 16 = 6，所以 w = 6。"},
+  {q:"f ÷ 2 = 30，f = ?",a:"60",choices:["15","28","60","32"],ex:"除法方程要同乘：f = 30 × 2 = 60。"},
+  {q:"x ÷ 5 = 10，x = ?",a:"50",choices:["2","15","50","500"],ex:"等號兩邊同時乘以5：x = 10 × 5 = 50。"},
+  {q:"20 = v ÷ 7，v = ?",a:"140",choices:["27","120","140","3"],ex:"先想 v ÷ 7 = 20，所以 v = 20 × 7 = 140。"},
+  {q:"5A = 60，A = ?",a:"12",choices:["12","55","65","300"],ex:"A = 60 ÷ 5 = 12。"},
+  {q:"S ÷ 6 = 6，S = ?",a:"36",choices:["1","12","36","66"],ex:"S = 6 × 6 = 36。"},
+  {q:"以下哪一步是解 3c = 60 的正確做法？",a:"兩邊同除以3",choices:["兩邊同減3","兩邊同除以3","左邊除以3右邊乘以3","兩邊同加3"],ex:"3c 表示 3 × c，所以要用相反運算：兩邊同除以3。"},
+  {q:"以下哪一步是解 h ÷ 5 = 15 的正確做法？",a:"兩邊同乘以5",choices:["兩邊同乘以5","兩邊同除以5","兩邊同減5","只把左邊乘以5"],ex:"h ÷ 5 要還原成 h，兩邊必須同乘以5。"}
+];
+let idx=0,score=0,combo=0,locked=false;
+function startGame(){document.getElementById("start").classList.add("hide");document.getElementById("game").classList.remove("hide");render();}
+function render(){locked=false;const item=questions[idx];document.getElementById("qno").textContent=`Training ${idx+1}`;document.getElementById("question").textContent=item.q;document.getElementById("stepTop").textContent=idx+1;document.getElementById("scoreTop").textContent=score;document.getElementById("comboTop").textContent=combo;document.getElementById("progressFill").style.width=`${idx/questions.length*100}%`;document.getElementById("feedback").className="feedback";document.getElementById("feedback").textContent="";document.getElementById("nextBtn").className="next";document.getElementById("choices").innerHTML=item.choices.map(c=>`<button class="choice" onclick="answer(this,'${c.replace(/'/g,"\\'")}')">${c}</button>`).join("");}
+function answer(btn,value){if(locked)return;locked=true;const item=questions[idx];const ok=value===item.a;document.querySelectorAll(".choice").forEach(b=>{if(b.textContent===item.a)b.classList.add("correct");});if(!ok)btn.classList.add("wrong");combo=ok?combo+1:0;score+=ok?100+combo*20:20;document.getElementById("scoreTop").textContent=score;document.getElementById("comboTop").textContent=combo;const fb=document.getElementById("feedback");fb.className="feedback show";fb.innerHTML=`<b>${ok?"答對！能量上升。":"未中，看看正確做法。"}</b><br>${item.ex}`;document.getElementById("nextBtn").className="next show";}
+function nextQuestion(){idx++;if(idx>=questions.length)return finish();render();}
+function finish(){document.getElementById("game").classList.add("hide");document.getElementById("end").classList.remove("hide");document.getElementById("progressFill").style.width="100%";document.getElementById("endText").textContent=`你的最終能量是 ${score}。能準確選擇相反運算，就是解乘除方程的核心。`;localStorage.setItem("ch20_game1_score",String(score));}
+</script>
+</body>
+</html>
