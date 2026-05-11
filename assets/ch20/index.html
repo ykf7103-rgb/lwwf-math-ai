@@ -154,5 +154,40 @@ footer{color:#78909C;text-align:center;font-size:.86rem;line-height:1.6;margin-t
 
   <footer>樂善堂梁黃蕙芳紀念學校 · 數學 AI 學習區 · 第20課</footer>
 </main>
+<script src="../common/chapter-header.js?v=20260510fix" data-current-ch="20"></script>
+<script>
+// 顯示每個 step 嘅完成狀態（mirror ch13-19 pattern）
+(function renderCh20Status(){
+  function getUser(){try{return JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");}catch(e){return null;}}
+  function getProgress(){
+    const u=getUser();
+    if(!u||!u.class||!u.number) return {};
+    const key=`progress_ch20_${u.class}_${u.number}`;
+    try{return JSON.parse(localStorage.getItem(key)||"{}");}catch(e){return {};}
+  }
+  function markCard(href, p){
+    const card=document.querySelector(`a.card[href="${href}"]`);
+    if(!card) return;
+    const stepId=href.replace(".html","");
+    const entry=p[stepId];
+    if(entry&&entry.done){
+      if(!card.querySelector(".done-mark")){
+        const mark=document.createElement("span");
+        mark.className="done-mark";
+        mark.textContent="✅ 已完成";
+        mark.style.cssText="position:absolute;top:8px;right:10px;background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;padding:3px 9px;border-radius:12px;font-size:0.72rem;font-weight:800;";
+        card.appendChild(mark);
+      }
+    }
+  }
+  function render(){
+    const p=getProgress();
+    ["slides1","slides2","slides3","assess1","assess2","assess3","game1","game2","flashcards"].forEach(s=>markCard(s+".html",p));
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",render);
+  else render();
+  window.addEventListener("lwwf-progress-changed",render);
+})();
+</script>
 </body>
 </html>

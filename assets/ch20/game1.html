@@ -84,7 +84,19 @@ function startGame(){document.getElementById("start").classList.add("hide");docu
 function render(){locked=false;const item=questions[idx];document.getElementById("qno").textContent=`Training ${idx+1}`;document.getElementById("question").textContent=item.q;document.getElementById("stepTop").textContent=idx+1;document.getElementById("scoreTop").textContent=score;document.getElementById("comboTop").textContent=combo;document.getElementById("progressFill").style.width=`${idx/questions.length*100}%`;document.getElementById("feedback").className="feedback";document.getElementById("feedback").textContent="";document.getElementById("nextBtn").className="next";document.getElementById("choices").innerHTML=item.choices.map(c=>`<button class="choice" onclick="answer(this,'${c.replace(/'/g,"\\'")}')">${c}</button>`).join("");}
 function answer(btn,value){if(locked)return;locked=true;const item=questions[idx];const ok=value===item.a;document.querySelectorAll(".choice").forEach(b=>{if(b.textContent===item.a)b.classList.add("correct");});if(!ok)btn.classList.add("wrong");combo=ok?combo+1:0;score+=ok?100+combo*20:20;document.getElementById("scoreTop").textContent=score;document.getElementById("comboTop").textContent=combo;const fb=document.getElementById("feedback");fb.className="feedback show";fb.innerHTML=`<b>${ok?"答對！能量上升。":"未中，看看正確做法。"}</b><br>${item.ex}`;document.getElementById("nextBtn").className="next show";}
 function nextQuestion(){idx++;if(idx>=questions.length)return finish();render();}
-function finish(){document.getElementById("game").classList.add("hide");document.getElementById("end").classList.remove("hide");document.getElementById("progressFill").style.width="100%";document.getElementById("endText").textContent=`你的最終能量是 ${score}。能準確選擇相反運算，就是解乘除方程的核心。`;localStorage.setItem("ch20_game1_score",String(score));}
+function finish(){document.getElementById("game").classList.add("hide");document.getElementById("end").classList.remove("hide");document.getElementById("progressFill").style.width="100%";document.getElementById("endText").textContent=`你的最終能量是 ${score}。能準確選擇相反運算，就是解乘除方程的核心。`;markGameDone(1, score, questions.length);}
+function markGameDone(gameNum, scoreVal, totalQs){
+  try{
+    const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");
+    const key=(u&&u.class&&u.number)?`progress_ch20_${u.class}_${u.number}`:`progress_ch20`;
+    const p=JSON.parse(localStorage.getItem(key)||"{}");
+    const stepKey=`game${gameNum}`;
+    const prev=p[stepKey]||{};
+    p[stepKey]=Object.assign({},prev,{done:true,score:scoreVal,total:totalQs,coins:3,ts:Date.now()});
+    localStorage.setItem(key,JSON.stringify(p));
+  }catch(e){}
+}
 </script>
+<script src="../common/chapter-header.js?v=20260510fix" data-current-ch="20"></script>
 </body>
 </html>

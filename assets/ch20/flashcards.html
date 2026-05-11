@@ -2015,6 +2015,20 @@ var mJ=class{constructor(){this.matchMedia=C(hJ);this.document=C(I);this.i=this.
 (async function(a,b,c){c=c?.uu;b=[...Ut,...(b?.hb??[])];Ug(8);try{let e=c?.ea??os(Tt),f=[cs(),yk,...(b||[])],g=new qi({hb:f,parent:e,Uh:"",bo:!1});var d=gs({Vn:g.ea,Rn:e,Zn:a})}catch(e){d=Promise.reject(e)}finally{Ug(9)}return d})(fJ,{hb:[[nJ,jJ,{ta:Jy,Fd:function(){return window.notebookAppApi||null}},{ta:hJ,Fd:()=>window.matchMedia.bind(window)},{ta:iJ,Fd:function(a){return a?new lJ:new mJ},sf:[Jy]},{ta:Qy,Fd:function(){var a=document.querySelector("app-root")?.getAttribute("data-client-experiment-payload");return a?
 (a=Qa(a),new Ns(a.length?new $a(new Uint8Array(a),Xa):Ya())):new Py}},{Ue:[{ta:sy,Ed:gJ,sf:[Jy]},{ta:ty,Ed:uy}].concat([{ta:Dy,Fd:function(a,b,c,d){if(a.Xs)return Dy.instance||(Dy.instance=new Dy(b,c,d)),Dy.instance},sf:[Ey,qy,I,M]},{ta:Ey,Za:{Xs:!0}}])}],tv]},void 0).catch(a=>{console.error(a)});}).call(this);
 </script>
-
+<script src="../common/chapter-header.js?v=20260510fix" data-current-ch="20"></script>
+<script>
+(function markFlashcardsDone(){
+  setTimeout(function(){
+    try{
+      var u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");
+      var key=(u&&u.class&&u.number)?("progress_ch20_"+u.class+"_"+u.number):"progress_ch20";
+      var p=JSON.parse(localStorage.getItem(key)||"{}");
+      var prev=p["flashcards"]||{};
+      p["flashcards"]=Object.assign({},prev,{done:true,coins:2,ts:Date.now()});
+      localStorage.setItem(key,JSON.stringify(p));
+    }catch(e){}
+  },5000);
+})();
+</script>
   </body>
 </html>

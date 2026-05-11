@@ -79,7 +79,19 @@ function startGame(){document.getElementById("start").classList.add("hide");docu
 function render(){locked=false;const m=missions[i];document.getElementById("stepTop").textContent=i+1;document.getElementById("scoreTop").textContent=score;document.getElementById("stageLabel").textContent=m.type;document.getElementById("stageStep").textContent=`Mission ${i+1}`;document.getElementById("mission").textContent=m.text;document.getElementById("fill").style.width=`${i/missions.length*100}%`;document.getElementById("feedback").className="feedback";document.getElementById("nextBtn").className="next";document.getElementById("choices").innerHTML=m.choices.map(c=>`<button class="choice" onclick="pick(this,'${c.replace(/'/g,"\\'")}')">${c}</button>`).join("");}
 function pick(btn,val){if(locked)return;locked=true;const m=missions[i];const ok=val===m.a;document.querySelectorAll(".choice").forEach(b=>{if(b.textContent===m.a)b.classList.add("correct")});if(!ok)btn.classList.add("wrong");score+=ok?120:30;document.getElementById("scoreTop").textContent=score;const fb=document.getElementById("feedback");fb.className="feedback show";fb.innerHTML=`<b>${ok?"能量門開啟！":"未開門，但你已找到關鍵。"}</b><br>${m.ex}`;document.getElementById("nextBtn").className="next show";}
 function nextMission(){i++;if(i>=missions.length)return finish();render();}
-function finish(){document.getElementById("game").classList.add("hide");document.getElementById("end").classList.remove("hide");document.getElementById("endText").textContent=`你的任務能量是 ${score}。最重要是：先看題意，才列方程；驗算也要回到題意。`;localStorage.setItem("ch20_game2_score",String(score));}
+function finish(){document.getElementById("game").classList.add("hide");document.getElementById("end").classList.remove("hide");document.getElementById("endText").textContent=`你的任務能量是 ${score}。最重要是：先看題意，才列方程；驗算也要回到題意。`;markGameDone(2, score, missions.length);}
+function markGameDone(gameNum, scoreVal, totalQs){
+  try{
+    const u=JSON.parse(localStorage.getItem("lwwf_auth_user")||"null");
+    const key=(u&&u.class&&u.number)?`progress_ch20_${u.class}_${u.number}`:`progress_ch20`;
+    const p=JSON.parse(localStorage.getItem(key)||"{}");
+    const stepKey=`game${gameNum}`;
+    const prev=p[stepKey]||{};
+    p[stepKey]=Object.assign({},prev,{done:true,score:scoreVal,total:totalQs,coins:3,ts:Date.now()});
+    localStorage.setItem(key,JSON.stringify(p));
+  }catch(e){}
+}
 </script>
+<script src="../common/chapter-header.js?v=20260510fix" data-current-ch="20"></script>
 </body>
 </html>

@@ -1756,6 +1756,18 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-11 (aa · 🚨 緊急修補：第20課完成簡報冇加金幣 + 唔顯示完成)</span>
+            <ul>
+                <li>🚨 <b>問題</b>：同學反映完成第20課簡報後冇加金幣、亦冇顯示「完成簡報」。原因是第20課嘅 deck-viewer.js 完全冇 markDone() 機制，遊戲又用咗錯誤嘅 localStorage key（<code>ch20_game1_score</code> 唔配合 progress 系統）。</li>
+                <li>✅ <b>deck-viewer.js</b>：所有 slides1-3 + assess1-3 揭到最後一頁會自動 markDone()，彈出綠色「✅ 已完成」橫幅，並同步金幣。</li>
+                <li>✅ <b>game1/game2</b>：改用統一 <code>progress_ch20_{class}_{number}</code> key，每完成一局自動 +3 金幣同記錄分數。</li>
+                <li>✅ <b>flashcards.html</b>：開啟後 5 秒自動標記完成，加 2 金幣。</li>
+                <li>✅ <b>第20課主頁</b>：補返 chapter-header 同顯示每張卡嘅「✅ 已完成」標記，金幣即時同步。</li>
+                <li>🛡️ <b>學生原本金幣保護</b>：mergeBest semantics 自動保留學生之前嘅最高分，唔會因為今次補丁而減少。</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-11 (z · 第20課教學簡報改為 30% 講解 / 70% 練習)</span>
             <ul>
                 <li>📝 <b>第20課三份教學簡報重整</b>：每份統一為 15 頁標準格式，先用 3 頁講解核心概念，之後用 5 組「題目頁 → 答案頁」交替練習。</li>
