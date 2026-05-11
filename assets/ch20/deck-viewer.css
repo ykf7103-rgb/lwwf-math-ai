@@ -1,0 +1,23 @@
+:root{
+  --primary:#1565C0;
+  --primary-light:#1E88E5;
+  --primary-dark:#0D47A1;
+  --gold:#FFC107;
+  --gold-light:#FFD54F;
+  --bg:#F5F7FA;
+  --text:#263238;
+  --muted:#546E7A;
+  --line:#E0E7EE;
+  --shadow:0 4px 20px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;position:relative}
+body::before{content:"";position:fixed;inset:0;background:url("../common/images/school_bg.jpg") center top/cover no-repeat;opacity:.08;z-index:-2}
+body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,rgba(21,101,192,.09),rgba(255,193,7,.12));z-index:-1;pointer-events:none}
+.top{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.94);position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(0,0,0,.08);backdrop-filter:blur(12px)}
+.top a{color:var(--primary);text-decoration:none;font-weight:900;background:#E3F2FD;border-radius:999px;padding:8px 12px}.title{font-weight:900;text-align:center;color:var(--primary-dark)}.counter{background:linear-gradient(135deg,#FFF8E1,#FFE082);color:#7A4B00;border:2px solid rgba(255,193,7,.5);border-radius:999px;padding:7px 12px;font-weight:900}
+.wrap{width:min(1180px,100%);margin:auto;padding:18px 12px 32px}.slide-shell{background:white;border:2px solid #D7E8FB;border-radius:18px;padding:10px;box-shadow:var(--shadow)}
+.slide-img{display:block;width:100%;height:auto;border-radius:10px;background:#fff;border:1px solid var(--line)}
+.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:14px 0}.controls button{border:0;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;font-weight:900;padding:12px 18px;cursor:pointer;box-shadow:0 4px 14px rgba(21,101,192,.25)}.controls button:disabled{opacity:.45;cursor:not-allowed}.controls .gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#3E2A00}
+.hint{text-align:center;color:var(--muted);font-size:.9rem;line-height:1.6}
+@media(max-width:640px){.top{align-items:flex-start;flex-direction:column}.title{text-align:left}.controls button{flex:1}}

@@ -3920,8 +3920,8 @@ async function saveQuizScore() {
 // ============================================================
 // 每課最大金幣（根據 STEP_KEYS × default coin rules）
 // ch12 = 39 (legacy hardcoded with iq_quiz/quiz1/etc.)
-// ch13-19 = 12 steps（3 prelearn×2 + 3 slides×2 + 3 assess×2 + 3 game×3 = 6+6+6+9 = 27）
-const CHAPTER_MAX_COINS = { 12: 39, 13: 27, 14: 27, 15: 27, 16: 27, 17: 27, 18: 27, 19: 27 };
+// ch13-20 = 12 steps（3 prelearn×2 + 3 slides×2 + 3 assess×2 + 3 game×3 = 6+6+6+9 = 27）
+const CHAPTER_MAX_COINS = { 12: 39, 13: 27, 14: 27, 15: 27, 16: 27, 17: 27, 18: 27, 19: 27, 20: 27 };
 // Note: 用 existing 全局 AVAILABLE_CHAPTERS（line ~3870 已 declared）— 不再 redeclare（syntax error）
 
 // Compute earned coins for a single chapter (uses unified LWWFProgress logic)
@@ -3963,12 +3963,12 @@ function renderScores() {
     const coinImg = `${ASSET_BASE}/images/coin_new.png`;
     // Per-chapter progress cards (NEW 2026-05-03 — 用戶要求每課顯示完成進度)
     // 注：用 inline chapter list 避免同 existing AVAILABLE_CHAPTERS（line 3870 array of objects）衝突
-    const chapterCardsHtml = [12, 13, 14, 15, 16, 17, 18, 19].map(ch => {
+    const chapterCardsHtml = [12, 13, 14, 15, 16, 17, 18, 19, 20].map(ch => {
         const earned = getChapterCoins(ch);
         const max = CHAPTER_MAX_COINS[ch] || 27;
         const pct = Math.min(100, Math.round(earned / max * 100));
-        const titleMap = { 12:'有趣的乘法', 13:'小數乘法（一）', 14:'小數乘法（二）', 15:'體積概念認識', 16:'體積的量度', 17:'長正方體體積', 18:'立體圖形體積', 19:'簡易方程（一）' };
-        const emojiMap = { 12:'📚', 13:'📘', 14:'🥟', 15:'📦', 16:'🎯', 17:'🏴‍☠️', 18:'⚡', 19:'🖍️' };
+        const titleMap = { 12:'有趣的乘法', 13:'小數乘法（一）', 14:'小數乘法（二）', 15:'體積概念認識', 16:'體積的量度', 17:'長正方體體積', 18:'立體圖形體積', 19:'簡易方程（一）', 20:'簡易方程（二）' };
+        const emojiMap = { 12:'📚', 13:'📘', 14:'🥟', 15:'📦', 16:'🎯', 17:'🏴‍☠️', 18:'⚡', 19:'🖍️', 20:'🔢' };
         const barColor = pct >= 100 ? '#4CAF50' : (pct >= 50 ? '#FF9800' : '#90CAF9');
         return `
         <div style="background:white;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-left:4px solid ${barColor};">
@@ -4240,7 +4240,7 @@ const AVAILABLE_CHAPTERS = [
     { num: 18, title: '立體圖形的體積',      desc: '寶可夢 · 分割填補 · 摺紙圖樣 · 排疊盛載',         status: 'active' },
     // 單元六：簡易方程
     { num: 19, title: '簡易方程（一）',       desc: '蠟筆小新 · 方程概念 · 解 x±b=c',             status: 'active' },
-    { num: 20, title: '簡易方程（二）',       desc: '解方程 · 移項技巧',               status: 'coming' },
+    { num: 20, title: '簡易方程（二）',       desc: '乘除一步方程 · 文字題 · 應用題',     status: 'active' },
     { num: 21, title: '簡易方程（三）',       desc: '方程應用題 · 綜合練習',           status: 'coming' },
 ];
 

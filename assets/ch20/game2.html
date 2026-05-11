@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第20課 遊戲2：密碼樂園任務</title>
+<style>
+:root{--primary:#1565C0;--primary-light:#1E88E5;--primary-dark:#0D47A1;--gold:#FFC107;--gold-light:#FFD54F;--success:#4CAF50;--error:#E53935;--bg:#F5F7FA;--card:#fff;--text:#263238;--muted:#546E7A;--line:#E0E7EE;--shadow:0 4px 20px rgba(0,0,0,.08);--shadow-hover:0 8px 30px rgba(0,0,0,.15)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;position:relative}
+body::before{content:"";position:fixed;inset:0;background:url("../common/images/school_bg.jpg") center top/cover no-repeat;opacity:.08;z-index:-2}
+body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,rgba(21,101,192,.09),rgba(255,193,7,.13));z-index:-1}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.94);position:sticky;top:0;z-index:3;box-shadow:0 2px 12px rgba(0,0,0,.08);backdrop-filter:blur(12px)}
+.nav a{color:var(--primary);text-decoration:none;font-weight:900}.badge{background:linear-gradient(135deg,#FFF8E1,#FFE082);color:#7A4B00;border:2px solid rgba(255,193,7,.48);border-radius:999px;padding:7px 11px;font-weight:900;display:inline-flex;margin:2px}
+.wrap{width:min(980px,100%);margin:auto;padding:22px 14px 42px}
+.intro-card{background:linear-gradient(135deg,var(--primary-dark),var(--primary) 58%,var(--primary-light));color:#fff;border-radius:22px;padding:28px 22px;box-shadow:0 14px 34px rgba(13,71,161,.26);position:relative;overflow:hidden}
+.intro-card::after{content:"?";position:absolute;right:28px;top:20px;font-size:6.5rem;font-weight:900;color:rgba(255,255,255,.13);line-height:1}
+.intro{max-width:760px}.intro h1,.end h1{font-size:clamp(1.8rem,5vw,3.2rem);margin:0 0 10px;line-height:1.1;font-weight:900;letter-spacing:0}.intro p{line-height:1.75;color:rgba(255,255,255,.92);margin:0}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:16px;margin-top:18px}.art{background:#fff;border:2px solid #D7E8FB;border-radius:18px;overflow:hidden;min-height:420px;box-shadow:var(--shadow)}.art img{width:100%;height:100%;object-fit:cover}
+.card{background:var(--card);color:var(--text);border:2px solid #D7E8FB;border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.mission{font-size:1.15rem;line-height:1.65;background:#E3F2FD;border-left:5px solid var(--primary);border-radius:12px;padding:14px;margin:10px 0 14px;color:var(--text)}
+.label{font-weight:900;color:var(--primary);letter-spacing:.04em;text-transform:uppercase}.step{font-size:.9rem;color:var(--muted)}
+.choices{display:grid;gap:10px}.choice{border:2px solid var(--line);background:#fff;border-radius:14px;padding:12px;text-align:left;font-size:1rem;line-height:1.45;cursor:pointer;font-weight:800;color:var(--text);transition:.18s}.choice:hover{border-color:var(--primary-light);background:#E3F2FD;transform:translateY(-1px)}.choice.correct{background:#E8F5E9;border-color:var(--success);color:#1B5E20}.choice.wrong{background:#FFEBEE;border-color:var(--error);color:#B71C1C}
+.feedback{display:none;margin-top:12px;line-height:1.65;background:#E3F2FD;border-left:5px solid var(--primary);border-radius:12px;padding:12px}.feedback.show{display:block}
+.next{display:none;margin-top:14px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;font-weight:900;padding:12px 18px;cursor:pointer;box-shadow:0 4px 14px rgba(21,101,192,.25)}.next.show{display:inline-block}.hide{display:none}
+.progress{height:12px;background:#E0E7EE;border-radius:999px;overflow:hidden;margin:16px 0}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary-light),var(--gold));transition:.25s}
+.start,.end{text-align:center}.btn{border:0;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;font-weight:900;padding:13px 22px;text-decoration:none;display:inline-block;cursor:pointer;box-shadow:0 4px 14px rgba(21,101,192,.25)}.btn.alt{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#3E2A00}.start .btn{margin-top:18px}
+.end{background:#fff;border:2px solid #D7E8FB;border-radius:22px;padding:28px 20px;box-shadow:var(--shadow)}.end .intro{color:var(--muted)}
+@media(max-width:780px){.layout{grid-template-columns:1fr}.art{min-height:240px}.nav{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html">← 第20課</a>
+  <div><span class="badge">任務 <b id="stepTop">0</b>/8</span> <span class="badge">能量門 <b id="scoreTop">0</b></span></div>
+</nav>
+<main class="wrap">
+  <section id="start" class="start intro-card">
+    <div class="intro" style="margin:auto">
+      <h1>密碼樂園任務</h1>
+      <p>讀懂題意，選出正確方程，再找出未知數。這關專攻文字題、應用題和依題意驗算。</p>
+    </div>
+    <button class="btn alt" onclick="startGame()">進入樂園</button>
+  </section>
+
+  <section id="game" class="layout hide">
+    <aside class="art"><img src="images/mission_assets.png" alt="任務素材"></aside>
+    <div class="card">
+      <div class="label" id="stageLabel"></div>
+      <div class="step" id="stageStep"></div>
+      <div class="mission" id="mission"></div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next" id="nextBtn" onclick="nextMission()">下一道門</button>
+      <div class="progress"><div class="fill" id="fill"></div></div>
+    </div>
+  </section>
+
+  <section id="end" class="end hide">
+    <h1>能量門全部開啟</h1>
+    <p class="intro" id="endText" style="margin:auto 0 18px;line-height:1.7"></p>
+    <a class="btn alt" href="game2.html">再玩一次</a>
+    <a class="btn" href="index.html">返回入口</a>
+  </section>
+</main>
+<script>
+const missions=[
+  {type:"選方程",text:"u 加 3 的結果是 12。u 是多少？",a:"u + 3 = 12",choices:["u + 3 = 12","u - 3 = 12","3u = 12","u ÷ 3 = 12"],ex:"「加3」要寫成 u + 3，「結果是12」即等於12。"},
+  {type:"求未知數",text:"t 減 3 的結果是 5。已列方程 t - 3 = 5，t 是多少？",a:"8",choices:["2","5","8","15"],ex:"兩邊同加3，t = 8。依題意驗算：8 - 3 = 5。"},
+  {type:"選方程",text:"r 乘以 4 的結果是 8。r 是多少？",a:"4r = 8",choices:["r + 4 = 8","r - 4 = 8","4r = 8","r ÷ 4 = 8"],ex:"「乘以4」可寫成 4r。"},
+  {type:"依題意驗算",text:"有人把「u 加3的結果是12」誤列成 u - 3 = 12，解得 u = 15。為甚麼只代回 u - 3 = 12 不夠？",a:"因為方程可能一開始已列錯",choices:["因為方程可能一開始已列錯","因為15不是整數","因為不可驗算","因為未知數不能用u"],ex:"代回錯方程只證明答案符合錯方程，仍要回到題意：15 + 3 不等於12。"},
+  {type:"設定未知數",text:"一場表演中有男演員若干個和女演員10個，共26個。應怎樣設定未知數？",a:"設男演員有 y 個",choices:["設男演員有 y 個","設女演員有 y 個","設總人數有 y 個","不用設定未知數"],ex:"題目問男演員有多少個，所以設男演員有 y 個。"},
+  {type:"選方程",text:"機動遊戲有8條機械臂，每條座位數相同，共32個座位。設每條有 H 個座位。正確方程是？",a:"8H = 32",choices:["8H = 32","32H = 8","32 ÷ H = 8","H - 8 = 32"],ex:"8條 × 每條H個 = 32個，所以 8H = 32。不要列分母是未知數的方程。"},
+  {type:"求未知數",text:"黃老師買了 e 個海豚匙扣，平均分給5班，每班28個。e ÷ 5 = 28，e 是多少？",a:"140",choices:["23","33","140","280"],ex:"兩邊同乘以5，e = 28 × 5 = 140。"},
+  {type:"應用題",text:"吸塵機減價150元後售399元。設原價 a 元。下列哪一組最合理？",a:"a - 150 = 399，a = 549",choices:["a - 150 = 399，a = 549","a + 150 = 399，a = 249","150a = 399，a = 249","a ÷ 150 = 399，a = 549"],ex:"原價減150元才是售價：a - 150 = 399，所以 a = 549。"}
+];
+let i=0,score=0,locked=false;
+function startGame(){document.getElementById("start").classList.add("hide");document.getElementById("game").classList.remove("hide");render();}
+function render(){locked=false;const m=missions[i];document.getElementById("stepTop").textContent=i+1;document.getElementById("scoreTop").textContent=score;document.getElementById("stageLabel").textContent=m.type;document.getElementById("stageStep").textContent=`Mission ${i+1}`;document.getElementById("mission").textContent=m.text;document.getElementById("fill").style.width=`${i/missions.length*100}%`;document.getElementById("feedback").className="feedback";document.getElementById("nextBtn").className="next";document.getElementById("choices").innerHTML=m.choices.map(c=>`<button class="choice" onclick="pick(this,'${c.replace(/'/g,"\\'")}')">${c}</button>`).join("");}
+function pick(btn,val){if(locked)return;locked=true;const m=missions[i];const ok=val===m.a;document.querySelectorAll(".choice").forEach(b=>{if(b.textContent===m.a)b.classList.add("correct")});if(!ok)btn.classList.add("wrong");score+=ok?120:30;document.getElementById("scoreTop").textContent=score;const fb=document.getElementById("feedback");fb.className="feedback show";fb.innerHTML=`<b>${ok?"能量門開啟！":"未開門，但你已找到關鍵。"}</b><br>${m.ex}`;document.getElementById("nextBtn").className="next show";}
+function nextMission(){i++;if(i>=missions.length)return finish();render();}
+function finish(){document.getElementById("game").classList.add("hide");document.getElementById("end").classList.remove("hide");document.getElementById("endText").textContent=`你的任務能量是 ${score}。最重要是：先看題意，才列方程；驗算也要回到題意。`;localStorage.setItem("ch20_game2_score",String(score));}
+</script>
+</body>
+</html>
