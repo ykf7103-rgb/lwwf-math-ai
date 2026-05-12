@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<title>第21課 · 預習資訊圖（Marvel 復仇者）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;margin:0;padding:0;background:linear-gradient(135deg,#FFF9C4 0%,#FFF59D 50%,#FFF176 100%);min-height:100vh}
+  header{background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  header h1{margin:0;font-size:1.05rem;font-weight:800}
+  header .back{background:rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700}
+  .wrap{max-width:920px;margin:0 auto;padding:14px}
+  .stage{background:white;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.1);margin-bottom:14px}
+  .stage-head{font-weight:900;color:#1565C0;font-size:1.1rem;margin-bottom:10px}
+  .info-img{width:100%;border-radius:12px;border:2px solid #E0E0E0;display:block}
+  .quiz-box{margin-top:14px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);border:3px solid #FFB300;border-radius:14px;padding:14px}
+  .q-text{font-weight:900;color:#333;line-height:1.5;margin-bottom:10px}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:520px){.opts{grid-template-columns:1fr}}
+  .opt{padding:12px;background:white;border:2px solid #FFB74D;border-radius:10px;font-weight:700;cursor:pointer;text-align:left;font-size:.95rem}
+  .opt:hover:not(:disabled){background:#FFF3E0}
+  .opt.correct{background:#C8E6C9;border-color:#2E7D32}
+  .opt.wrong{background:#FFCDD2;border-color:#C62828;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .feedback{margin-top:10px;padding:8px 12px;border-radius:8px;font-weight:700;display:none;line-height:1.55}
+  .feedback.show{display:block}
+  .feedback.right{background:#E8F5E9;color:#2E7D32}
+  .feedback.wrong{background:#FFEBEE;color:#C62828}
+  .stage[data-locked="true"] {filter:grayscale(0.5) opacity(0.5);pointer-events:none}
+  .lock-overlay{display:none;text-align:center;padding:20px;color:#999;font-size:1rem}
+  .stage[data-locked="true"] .lock-overlay{display:block}
+  .stage[data-locked="true"] .info-img,.stage[data-locked="true"] .quiz-box{display:none}
+  .done-banner{background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;padding:14px 18px;border-radius:14px;text-align:center;font-weight:900;display:none;margin-top:12px}
+  .done-banner.show{display:block;animation:pop .5s}
+  @keyframes pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+  .lock-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+  .lock-modal.show{display:flex}
+  .lock-box{background:linear-gradient(135deg,#FF5252,#C62828);color:white;padding:28px 22px;border-radius:18px;max-width:420px;text-align:center}
+  .lock-box .big{font-size:3.5rem}
+  .lock-box button{background:white;color:#C62828;border:none;padding:12px 24px;border-radius:12px;font-weight:900;cursor:pointer;font-size:1rem;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 第21課 · 預習資訊圖</h1>
+  <a href="index.html" class="back">← 返回</a>
+</header>
+<div class="wrap">
+  <div class="stage" id="s1" data-locked="false">
+    <div class="stage-head">⚙️ 第 1 區：代數式建立（鋼鐵俠）</div>
+    <img src="images/info1.png" alt="速算技巧 · 代數式與兩步方程" class="info-img">
+    <div class="quiz-box">
+      <div class="q-text" id="q1text">睇完上面，哪一個正確？</div>
+      <div class="opts" id="q1opts"></div>
+      <div class="feedback" id="q1fb"></div>
+    </div>
+    <div class="lock-overlay">🔒 答對上一區先解鎖</div>
+  </div>
+  <div class="stage" id="s2" data-locked="true">
+    <div class="stage-head">🕷️ 第 2 區：解兩步方程（蜘蛛俠）</div>
+    <img src="images/info2.png" alt="應用延伸 · 兩步方程平衡解法" class="info-img">
+    <div class="quiz-box">
+      <div class="q-text" id="q2text"></div>
+      <div class="opts" id="q2opts"></div>
+      <div class="feedback" id="q2fb"></div>
+    </div>
+    <div class="lock-overlay">🔒 答對第 1 區先解鎖</div>
+  </div>
+  <div class="stage" id="s3" data-locked="true">
+    <div class="stage-head">⚡ 第 3 區：列方程解應用題（雷神）</div>
+    <img src="images/info3.png" alt="快速自測 · 列方程解應用題" class="info-img">
+    <div class="quiz-box">
+      <div class="q-text" id="q3text"></div>
+      <div class="opts" id="q3opts"></div>
+      <div class="feedback" id="q3fb"></div>
+    </div>
+    <div class="lock-overlay">🔒 答對第 2 區先解鎖</div>
+  </div>
+  <div class="done-banner" id="doneBanner">🎉 預習完成！復仇者三英雄一致認為你準備好上方程課堂！<br><a href="slides1.html" style="color:white;background:#C62828;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:900;display:inline-block;margin-top:8px">⚙️ 開始第 1 課簡報（鋼鐵俠代數式）</a></div>
+</div>
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box">
+    <div class="big">🔒</div>
+    <h2>Marvel 戰術手冊：要重頭預習！</h2>
+    <p>你已經錯了 5 次。要由第 1 區重頭睇。</p>
+    <button onclick="restart()">🔁 重頭再來</button>
+  </div>
+</div>
+<script>
+const QS = [
+  { text:'買 2 盒 A 元的顏色筆 + 1 本 14 元的畫冊，總價代數式應寫為：', opts:['2A + 14','A + 14','2 + A + 14','14A + 2'], correct:0, hint:'2 盒每盒 A 元 = 2A 元，再加畫冊 14 元，所以是 2A + 14 元。' },
+  { text:'解方程 4M − 12 = 8 的第一步是：', opts:['兩邊同時加 12','兩邊同時除以 4','兩邊同時減 12','兩邊同時乘以 4'], correct:0, hint:'先消去加減項：兩邊同時加 12 → 4M = 20。再兩邊除 4 → M = 5。' },
+  { text:'諾言星期一至三每天看 k 頁，星期四看 7 頁，共看 43 頁。方程應是：', opts:['3k + 7 = 43','k + 7 = 43','3k − 7 = 43','7k + 3 = 43'], correct:0, hint:'星期一至三共 3 天，每天 k 頁 → 3k 頁；加埋星期四 7 頁 = 共 43 頁。所以 3k + 7 = 43。' }
+];
+let wrongTotal = 0;
+QS.forEach((q, i) => {
+  const idx = i+1;
+  document.getElementById('q'+idx+'text').textContent = q.text;
+  const optsEl = document.getElementById('q'+idx+'opts');
+  q.opts.forEach((opt, oi) => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = `${['A','B','C','D'][oi]}. ${opt}`;
+    b.onclick = () => check(idx, oi, b);
+    optsEl.appendChild(b);
+  });
+});
+function check(idx, oi, btn) {
+  const q = QS[idx-1];
+  const fb = document.getElementById('q'+idx+'fb');
+  const opts = document.querySelectorAll('#q'+idx+'opts .opt');
+  if (oi === q.correct) {
+    btn.classList.add('correct');
+    opts.forEach(b => b.disabled = true);
+    fb.className = 'feedback right show';
+    fb.innerHTML = `✅ 正確！${q.hint}`;
+    if (idx < 3) document.getElementById('s'+(idx+1)).setAttribute('data-locked','false');
+    else { document.getElementById('doneBanner').classList.add('show'); }
+  } else {
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    fb.className = 'feedback wrong show';
+    fb.innerHTML = `❌ 再試！💡 ${q.hint}`;
+    wrongTotal++;
+    if (wrongTotal >= 5) document.getElementById('lockModal').classList.add('show');
+  }
+}
+function restart() {
+  wrongTotal = 0;
+  document.getElementById('lockModal').classList.remove('show');
+  document.getElementById('doneBanner').classList.remove('show');
+  ['s1','s2','s3'].forEach((id,i) => {
+    document.getElementById(id).setAttribute('data-locked', i === 0 ? 'false' : 'true');
+    const fb = document.getElementById('q'+(i+1)+'fb'); fb.classList.remove('show');
+    document.querySelectorAll('#q'+(i+1)+'opts .opt').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+  });
+}
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js?v=20260512a" data-current-ch="21"></script>
+</body></html>

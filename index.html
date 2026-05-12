@@ -1756,6 +1756,24 @@ body::before {
         <h3>📢 最新更新</h3>
 
         <div class="update-entry">
+            <span class="update-date">2026-05-12 (b) · ⚡ 第21課《簡易方程（三）》Marvel 主題重做完成！</span>
+            <ul>
+                <li>🦸 <b>Marvel 復仇者主題</b>：鋼鐵俠（代數式）／蜘蛛俠（兩步方程）／雷神（應用題）三英雄協作示範。</li>
+                <li>📚 <b>13 步驟學習</b>：3 簡報＋3 評估＋3 錄音題＋3 遊戲＋1 課程總結。</li>
+                <li>🎤 <b>3 條全新錄音題</b>：學生用粵語講解代數式組裝、解 4M−12=8、列方程解諾言看書應用題。</li>
+                <li>🔓 <b>章節已 active</b>：學生可從主頁點入第 21 課（之前係 coming 鎖住）。</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
+            <span class="update-date">2026-05-12 · 🪙 修正 EDX 換取按鈕「金幣不足」誤判</span>
+            <ul>
+                <li>🐛 <b>Bug 修補</b>：之前 topbar 同「我的成績」顯示嘅金幣係跨課累計（例如 14 個），但 click「換取 EDX」按鈕時，後台只計第 12 課嘅金幣 → 即使夠分都會彈出「金幣不足」。</li>
+                <li>✅ <b>修正</b>：換取邏輯改用同 topbar / 我的成績一致嘅 cross-chapter total（rule #19 single source of truth），10 / 50 / 100 金幣換取一律準確。</li>
+            </ul>
+        </div>
+
+        <div class="update-entry">
             <span class="update-date">2026-05-11 (ab · 🛡️ Supabase 三重保護 — 學生資料永不丟失)</span>
             <ul>
                 <li>🔒 <b>後端 RLS 鎖死</b>：student_progress / student_scores / student_edx 由 anon key 嚴格限制 — <b>永遠不可 DELETE</b>。Hard Rule #1 由「frontend 自律」升級為「DB 強制」。</li>
@@ -2762,6 +2780,7 @@ body::before {
                 <option value="18">⚡ 第18課 立體圖形的體積</option>
                 <option value="19">🖍️ 第19課 簡易方程（一）</option>
                 <option value="20">🔢 第20課 簡易方程（二）</option>
+                <option value="21">⚡ 第21課 簡易方程（三）</option>
             </select>
             <button class="btn btn-sm btn-outline" onclick="exportCSV()">📥 匯出 CSV</button>
             <button class="btn btn-sm btn-outline" onclick="renderTeacherData()">🔄 刷新數據</button>
@@ -3565,12 +3584,28 @@ window.addEventListener('lwwf-progress-changed', () => {
 async function exchangeEdx(rateIdx) {
     if (!currentUser) return;
     const rate = EDX_RATES[rateIdx];
-    const scoreKey = `scores_${currentUser.class}_${currentUser.number}`;
-    const scores = JSON.parse(localStorage.getItem(scoreKey) || '{}');
-    const earned = computeEarnedCoins(scores);
+    // 2026-05-12 fix：使用同 updateCoinDisplay / renderScores 一樣嘅 cross-chapter total（rule #19 single source of truth）
+    // 之前 bug：呢度用 computeEarnedCoins(scores) 只計 ch12，但 topbar 同 button 顯示 cross-chapter total → mismatch → 「金幣不足」誤判
+    let earned;
+    if (window.LWWFProgress && typeof window.LWWFProgress.getTotalCoinsAllChapters === 'function') {
+        earned = window.LWWFProgress.getTotalCoinsAllChapters(currentUser);
+    } else {
+        const scoreKey = `scores_${currentUser.class}_${currentUser.number}`;
+        const scores = JSON.parse(localStorage.getItem(scoreKey) || '{}');
+        earned = computeEarnedCoins(scores);
+        if (window.LWWFProgress && typeof window.LWWFProgress.computeCoins === 'function') {
+            for (let ch = 13; ch <= 21; ch++) {
+                try {
+                    const pk = `progress_ch${ch}_${currentUser.class}_${currentUser.number}`;
+                    const p = JSON.parse(localStorage.getItem(pk) || '{}');
+                    earned += window.LWWFProgress.computeCoins(p);
+                } catch(e) {}
+            }
+        }
+    }
     const edxHistory = window.currentEdxHistory || [];
     const spent = edxHistory.reduce((s, r) => s + r.coins_spent, 0);
-    const spendable = earned - spent;
+    const spendable = Math.max(0, earned - spent);
 
     if (spendable < rate.coins) {
         alert(`金幣不足！你有 ${spendable} 金幣，需要 ${rate.coins} 金幣。`);
@@ -4278,7 +4313,7 @@ const AVAILABLE_CHAPTERS = [
     // 單元六：簡易方程
     { num: 19, title: '簡易方程（一）',       desc: '蠟筆小新 · 方程概念 · 解 x±b=c',             status: 'active' },
     { num: 20, title: '簡易方程（二）',       desc: '乘除一步方程 · 文字題 · 應用題',     status: 'active' },
-    { num: 21, title: '簡易方程（三）',       desc: '方程應用題 · 綜合練習',           status: 'coming' },
+    { num: 21, title: '簡易方程（三）',       desc: 'Marvel 復仇者 · 代數式 · 兩步方程 · 列方程解應用題',           status: 'active' },
 ];
 
 function showChapterSelector() {

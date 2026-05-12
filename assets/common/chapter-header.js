@@ -32,6 +32,7 @@
     { id: '18', title: 'Ch.18 立體圖形的體積', emoji: '⚡', href: '../ch18/index.html' },
     { id: '19', title: 'Ch.19 簡易方程（一）', emoji: '🖍️', href: '../ch19/index.html' },
     { id: '20', title: 'Ch.20 簡易方程（二）', emoji: '🔢', href: '../ch20/index.html' },
+    { id: '21', title: 'Ch.21 簡易方程（三）', emoji: '⚡', href: '../ch21/index.html' },
   ];
 
   function buildHref(targetCh) {

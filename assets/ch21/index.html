@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第21課 簡易方程（三） — 學習入口</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif; margin: 0; padding: 12px; background: linear-gradient(135deg, #FFF5F5 0%, #FFE8E8 40%, #FFDDD5 100%); min-height: 100vh; color: #333; position: relative; }
+  body::before { content: ''; position: absolute; inset: 0; background-image: url('../common/images/school_bg.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; opacity: 0.08; z-index: -1; pointer-events: none; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 8px; }
+
+  /* ==== HERO (Marvel Iron Man Red+Gold) ==== */
+  .hero {
+    background: linear-gradient(135deg, #8B0000 0%, #DC143C 40%, #FFD700 100%);
+    color: white; padding: 28px 24px; border-radius: 22px;
+    margin-bottom: 18px; box-shadow: 0 10px 30px rgba(220,20,60,0.35);
+    position: relative; overflow: hidden;
+  }
+  .hero::before { content: '⚡'; position: absolute; font-size: 8rem; opacity: 0.18; top: 50%; right: 20px; transform: translateY(-50%); pointer-events: none; }
+  .hero h1 { margin: 0 0 6px; font-size: 1.9rem; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); letter-spacing: 0.5px; }
+  .hero .subtitle { color: rgba(255,255,255,0.95); font-size: 1rem; margin: 4px 0 10px; font-weight: 500; }
+  .hero .progress-bar { background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; height: 10px; margin-top: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+  .hero .progress-fill { background: linear-gradient(90deg, #FFF8E1, #FFE082, #FFC107); height: 100%; width: 0%; transition: width 0.6s ease; box-shadow: 0 0 8px rgba(255,193,7,0.6); }
+  .hero .progress-label { font-size: 0.82rem; color: rgba(255,255,255,0.92); margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .hero .coin-tag { display: inline-flex; align-items: center; gap: 5px; background: linear-gradient(135deg, #FFF8E1, #FFE082); color: #8B0000; padding: 4px 12px; border-radius: 16px; font-weight: 800; font-size: 0.85rem; border: 2px solid rgba(255,255,255,0.6); }
+  @media (max-width: 600px) { .hero { padding: 22px 18px; } .hero h1 { font-size: 1.5rem; } .hero::before { font-size: 6rem; right: 10px; } }
+
+  .back { display: none; }
+
+  /* ==== Region Section ==== */
+  .region-section { margin: 18px 0 22px; }
+  .region-title {
+    color: white; padding: 14px 18px; border-radius: 12px;
+    font-weight: 800; margin-bottom: 14px; font-size: 1.05rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .region-title.r1 { background: linear-gradient(135deg, #1565C0, #0D47A1); }
+  .region-title.r2 { background: linear-gradient(135deg, #2E7D32, #1B5E20); }
+  .region-title.r3 { background: linear-gradient(135deg, #C62828, #8B0000); }
+  .region-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .region-content.r2-grid { grid-template-columns: repeat(2, 1fr); }
+  .region-content.r3-grid { grid-template-columns: repeat(2, 1fr); }
+  .region-content.games-grid { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 600px) {
+    .region-content,
+    .region-content.r2-grid,
+    .region-content.r3-grid,
+    .region-content.games-grid { grid-template-columns: 1fr; }
+  }
+
+  .subgroup-label {
+    grid-column: 1 / -1;
+    font-weight: 800; color: #1565C0; font-size: 0.92rem;
+    padding: 6px 10px; background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border-radius: 8px; margin-top: 4px;
+  }
+  .subgroup-label.assess-label { color: #E65100; background: linear-gradient(135deg, #FFF3E0, #FFE0B2); }
+
+  /* ==== Card ==== */
+  .card {
+    background: white; border: 2px solid #E0E7EE; border-radius: 16px;
+    padding: 18px 12px; text-decoration: none; color: #333;
+    transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+    display: flex; flex-direction: column; gap: 6px; text-align: center;
+    min-height: 150px; position: relative; justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  }
+  .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 12px 28px rgba(0,0,0,0.15); }
+  .coin-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: linear-gradient(135deg, #FFD54F, #FF8F00);
+    color: white; padding: 3px 10px; border-radius: 14px;
+    font-size: 0.78rem; font-weight: 900;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .card .arrow {
+    position: absolute; bottom: 8px; right: 10px;
+    color: #C62828; font-size: 1.2rem; pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(198,40,40,0.3));
+  }
+  .card-emoji { font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+  .card-title { font-size: 1rem; font-weight: 900; line-height: 1.3; letter-spacing: 0.3px; }
+  .card-desc { font-size: 0.78rem; color: #666; line-height: 1.4; padding: 0 4px; }
+  .card.slides { border-color: #BBDEFB; background: linear-gradient(135deg, #ffffff 0%, #E3F2FD 100%); } .card.slides .card-title { color: #1565C0; }
+  .card.assess { border-color: #FFE0B2; background: linear-gradient(135deg, #ffffff 0%, #FFF3E0 100%); } .card.assess .card-title { color: #E65100; }
+  .card.voice { border-color: #CE93D8; background: linear-gradient(135deg, #ffffff 0%, #F3E5F5 100%); } .card.voice .card-title { color: #6A1B9A; }
+  .card.summary { border-color: #C8E6C9; background: linear-gradient(135deg, #ffffff 0%, #E8F5E9 100%); } .card.summary .card-title { color: #2E7D32; }
+  .card.fun { border-color: #FFCDD2; background: linear-gradient(135deg, #ffffff 0%, #FFEBEE 100%); } .card.fun .card-title { color: #C62828; }
+  .card .done-badge { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg,#66BB6A,#388E3C); color: white; font-size: 0.68rem; padding: 3px 8px; border-radius: 10px; font-weight: 900; display: none; box-shadow: 0 2px 6px rgba(56,142,60,0.4); }
+  .card.done .done-badge { display: inline-block; }
+  .card.done { background: linear-gradient(135deg, #C8E6C9 0%, #F1F8E9 100%); border-color: #4CAF50; }
+
+  @media (max-width: 700px) { h1 { font-size: 1.35rem; } .card { padding: 12px 8px; min-height: 120px; } .card-emoji { font-size: 1.6rem; } .card-title { font-size: 0.88rem; } .card-desc { font-size: 0.72rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- ======== Hero Banner ======== -->
+  <div class="hero">
+    <h1>⚡ 第 21 課 · 簡易方程（三）</h1>
+    <div class="subtitle">代數式 · 兩步方程 · 列方程解應用題 · Marvel 復仇者主題</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+      <span class="coin-tag"><img src="images/coin_new.png" style="width:14px;height:14px;onerror=this.style.display='none'"> 最多可賺 35 金幣</span>
+      <span class="coin-tag" style="background:linear-gradient(135deg,#FFE082,#FFB300);color:#5D4037;">⚙️ 代數方程</span>
+      <span class="coin-tag" style="background:linear-gradient(135deg,#C8E6C9,#A5D6A7);color:#1B5E20;">🦸 Marvel</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="heroFill"></div></div>
+    <div class="progress-label">
+      <span>📈 本課完成度</span>
+      <span><b id="heroPct">0</b>% · <span id="heroDone">0</span>/13 步驟</span>
+    </div>
+  </div>
+
+  <!-- ======== 區域 1 · 自學區 ======== -->
+  <div class="region-section">
+    <div class="region-title r1">📚 區域 1：自學區（簡報 + 評估 + 錄音題）</div>
+    <div class="subgroup-label">🎯 簡報部分（3 個簡報）</div>
+    <div class="region-content">
+      <a href="slides1.html" class="card slides" data-key="slides1">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">⚙️</div>
+        <div class="card-title">簡報 1</div>
+        <div class="card-desc">鋼鐵俠 · 由情境建立代數式</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="slides2.html" class="card slides" data-key="slides2">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🕷️</div>
+        <div class="card-title">簡報 2</div>
+        <div class="card-desc">蜘蛛俠 · 解兩步方程</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="slides3.html" class="card slides" data-key="slides3">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">⚡</div>
+        <div class="card-title">簡報 3</div>
+        <div class="card-desc">雷神 · 列方程解應用題</div>
+        <span class="arrow">▶</span>
+      </a>
+    </div>
+    <div class="subgroup-label assess-label" style="margin-top:14px;">✏️ 評估部分（3 個評估 · 每份 6 題）</div>
+    <div class="region-content">
+      <a href="assess1.html" class="card assess" data-key="assess1">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📊</div>
+        <div class="card-title">評估 1</div>
+        <div class="card-desc">6 題 · 代數式與列方程</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="assess2.html" class="card assess" data-key="assess2">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📊</div>
+        <div class="card-title">評估 2</div>
+        <div class="card-desc">6 題 · 解兩步方程</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="assess3.html" class="card assess" data-key="assess3">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📊</div>
+        <div class="card-title">評估 3</div>
+        <div class="card-desc">6 題 · 列方程解應用題</div>
+        <span class="arrow">▶</span>
+      </a>
+    </div>
+    <div class="subgroup-label" style="margin-top:14px;color:#7B1FA2;background:linear-gradient(135deg,#F3E5F5,#E1BEE7);">🎤 錄音回答區（3 個簡報的錄音題 · 每題最多 3 🪙）</div>
+    <div class="region-content">
+      <a href="voice1.html" class="card voice" data-key="voice1">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎤</div>
+        <div class="card-title">錄音題 1</div>
+        <div class="card-desc">解釋代數式 · 對應簡報 1</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="voice2.html" class="card voice" data-key="voice2">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎤</div>
+        <div class="card-title">錄音題 2</div>
+        <div class="card-desc">解釋解方程步驟 · 對應簡報 2</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="voice3.html" class="card voice" data-key="voice3">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎤</div>
+        <div class="card-title">錄音題 3</div>
+        <div class="card-desc">解釋應用題思路 · 對應簡報 3</div>
+        <span class="arrow">▶</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ======== 區域 2 · 總結區 ======== -->
+  <div class="region-section">
+    <div class="region-title r2">📋 區域 2：總結區（資訊圖總覽 + 學習卡）</div>
+    <div class="region-content r2-grid">
+      <a href="summary.html" class="card summary" data-key="summary">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📋</div>
+        <div class="card-title">課程總結</div>
+        <div class="card-desc">資訊圖總覽 + 錄音 AI 評分</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="flashcards.html" class="card summary" data-key="flashcards">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">📚</div>
+        <div class="card-title">學習卡</div>
+        <div class="card-desc">Marvel 學習卡 · 翻牌記重點</div>
+        <span class="arrow">▶</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ======== 區域 3 · 趣味區 ======== -->
+  <div class="region-section">
+    <div class="region-title r3">🎮 區域 3：趣味區（廣東話歌 + 3 個 Marvel 遊戲）</div>
+    <div class="region-content r3-grid" style="margin-bottom:12px;">
+      <a href="song.html" class="card fun" data-key="song">
+        <div class="coin-badge">+2 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🎵</div>
+        <div class="card-title">廣東話溫習歌</div>
+        <div class="card-desc">Suno 粵語 · 邊聽邊記方程口訣</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="ai-help.html" class="card fun" data-key="ai-help">
+        <div class="coin-badge">+1 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🤖</div>
+        <div class="card-title">AI 助教</div>
+        <div class="card-desc">問問題 · 拍題目 · 錯題重練</div>
+        <span class="arrow">▶</span>
+      </a>
+    </div>
+    <div class="region-content games-grid">
+      <a href="game1.html" class="card fun" data-key="game1">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🏗️</div>
+        <div class="card-title">英雄基地建造</div>
+        <div class="card-desc">City Builder · 用代數式建造</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="game2.html" class="card fun" data-key="game2">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🔗</div>
+        <div class="card-title">方程連線</div>
+        <div class="card-desc">Connect Dots · 連等號兩邊</div>
+        <span class="arrow">▶</span>
+      </a>
+      <a href="game3.html" class="card fun" data-key="game3">
+        <div class="coin-badge">+3 🪙</div>
+        <span class="done-badge">✓</span>
+        <div class="card-emoji">🔍</div>
+        <div class="card-title">謎題偵探</div>
+        <div class="card-desc">Riddle Solver · 應用題推理</div>
+        <span class="arrow">▶</span>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function _ch21Key() {
+    try {
+      const u = JSON.parse(localStorage.getItem('lwwf_auth_user') || 'null');
+      if (u && u.class && u.number) return `progress_ch21_${u.class}_${u.number}`;
+    } catch(e) {}
+    return 'progress_ch21';
+  }
+
+  const STEP_KEYS = [
+    { k: 'slides1', n: '簡報 1', emoji: '⚙️' },
+    { k: 'assess1', n: '評估 1', emoji: '✏️' },
+    { k: 'slides2', n: '簡報 2', emoji: '🕷️' },
+    { k: 'assess2', n: '評估 2', emoji: '✏️' },
+    { k: 'slides3', n: '簡報 3', emoji: '⚡' },
+    { k: 'assess3', n: '評估 3', emoji: '✏️' },
+    { k: 'voice1', n: '錄音題 1', emoji: '🎤' },
+    { k: 'voice2', n: '錄音題 2', emoji: '🎤' },
+    { k: 'voice3', n: '錄音題 3', emoji: '🎤' },
+    { k: 'game1', n: '英雄基地建造', emoji: '🏗️' },
+    { k: 'game2', n: '方程連線', emoji: '🔗' },
+    { k: 'game3', n: '謎題偵探', emoji: '🔍' },
+    { k: 'summary', n: '課程總結', emoji: '📋' },
+  ];
+
+  function renderProgress() {
+    try {
+      const p = JSON.parse(localStorage.getItem(_ch21Key()) || '{}');
+      document.querySelectorAll('[data-key]').forEach(el => {
+        const k = el.dataset.key;
+        if (p[k]?.done) el.classList.add('done');
+        else el.classList.remove('done');
+      });
+      const done = STEP_KEYS.filter(s => p[s.k]?.done).length;
+      const pct = Math.round(done / STEP_KEYS.length * 100);
+      const fill = document.getElementById('heroFill'); if (fill) fill.style.width = pct + '%';
+      const pctEl = document.getElementById('heroPct'); if (pctEl) pctEl.textContent = pct;
+      const doneEl = document.getElementById('heroDone'); if (doneEl) doneEl.textContent = done;
+    } catch(e) {}
+  }
+
+  renderProgress();
+  window.addEventListener('lwwf-progress-changed', renderProgress);
+</script>
+<script src="../common/feedback.js"></script>
+<script src="../common/chapter-header.js?v=20260512a" data-current-ch="21"></script>
+</body>
+</html>

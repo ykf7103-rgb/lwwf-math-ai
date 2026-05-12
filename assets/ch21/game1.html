@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第21課 遊戲：電子支付代數式配對</title>
+<style>
+:root{--primary:#1565C0;--primary-light:#1E88E5;--primary-dark:#0D47A1;--gold:#FFC107;--success:#4CAF50;--error:#E53935;--bg:#F5F7FA;--card:#fff;--text:#263238;--muted:#546E7A;--line:#E0E7EE;--shadow:0 4px 20px rgba(0,0,0,.08)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:"";position:fixed;inset:0;background:url("../common/images/school_bg.jpg") center/cover no-repeat;opacity:.08;z-index:-2}
+body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,rgba(21,101,192,.09),rgba(255,193,7,.13));z-index:-1}
+.top{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.95);position:sticky;top:0;z-index:5;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.top a{color:var(--primary);text-decoration:none;font-weight:900}.meter{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{background:#FFF8E1;color:#7A4B00;border:2px solid rgba(255,193,7,.48);border-radius:999px;padding:7px 11px;font-weight:900}
+.wrap{width:min(980px,100%);margin:auto;padding:22px 14px 40px}
+.hero-card{background:linear-gradient(135deg,var(--primary-dark),var(--primary) 58%,var(--primary-light));color:#fff;border-radius:22px;padding:28px 22px;box-shadow:0 14px 34px rgba(13,71,161,.26);position:relative;overflow:hidden}
+.hero-card::after{content:"2A";position:absolute;right:24px;top:18px;font-size:5rem;font-weight:900;color:rgba(255,255,255,.14);line-height:1}
+h1{margin:0 0 10px;font-size:clamp(1.7rem,4.6vw,3rem);line-height:1.1;letter-spacing:0;font-weight:900}
+.lead{color:rgba(255,255,255,.92);line-height:1.75;max-width:760px;margin:0}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:stretch;margin-top:18px}
+.box{background:var(--card);color:var(--text);border:2px solid #D7E8FB;border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.asset{background:#fff;border:2px solid #D7E8FB;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--shadow)}.asset img{width:100%;height:100%;object-fit:cover}
+.qno{font-weight:900;color:var(--primary);letter-spacing:.04em;text-transform:uppercase}.question{font-size:clamp(1.25rem,3.6vw,2.05rem);font-weight:900;line-height:1.35;margin:14px 0;color:var(--primary-dark)}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.choice{border:2px solid var(--line);background:#fff;color:var(--text);border-radius:14px;padding:14px;font-size:1.02rem;font-weight:900;cursor:pointer;min-height:58px;transition:.18s}.choice:hover{border-color:var(--primary-light);background:#E3F2FD;transform:translateY(-1px)}.choice.correct{background:#E8F5E9;border-color:var(--success);color:#1B5E20}.choice.wrong{background:#FFEBEE;border-color:var(--error);color:#B71C1C}
+.feedback{margin-top:14px;padding:13px;border-radius:12px;background:#E3F2FD;border-left:5px solid var(--primary);line-height:1.65;display:none;color:var(--text)}.feedback.show{display:block}
+.next,.btn{margin-top:14px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:0;border-radius:12px;padding:12px 18px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-block;box-shadow:0 4px 14px rgba(21,101,192,.25)}.next{display:none}.next.show{display:inline-block}.btn.alt{background:linear-gradient(135deg,var(--gold),#FFD54F);color:#3E2A00}
+.start,.end{text-align:center}.hide{display:none}.bar{height:12px;background:#E0E7EE;border-radius:999px;overflow:hidden;margin:16px 0}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary-light),var(--gold));transition:.25s}
+.end{background:#fff;border:2px solid #D7E8FB;border-radius:22px;padding:28px 20px;box-shadow:var(--shadow)}.end .lead{color:var(--muted);margin:auto}
+@media(max-width:760px){.stage{grid-template-columns:1fr}.asset{min-height:220px}.choices{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="top"><a href="index.html">← 第21課</a><div class="meter"><span class="pill">分數 <b id="scoreTop">0</b></span><span class="pill">連擊 <b id="comboTop">0</b></span><span class="pill">第 <b id="stepTop">0</b>/10 關</span></div></nav>
+<main class="wrap">
+<section id="start" class="start hero-card"><h1>電子支付代數式配對</h1><p class="lead" style="margin:auto">把購物情境轉成代數式或方程。</p><div class="bar"><div class="fill" style="width:100%"></div></div><button class="btn alt" onclick="startGame()">開始挑戰</button></section>
+<section id="game" class="stage hide"><div class="box"><div class="qno" id="qno"></div><div class="question" id="question"></div><div class="choices" id="choices"></div><div class="feedback" id="feedback"></div><button class="next" id="nextBtn" onclick="nextQuestion()">下一關</button><div class="bar"><div class="fill" id="progressFill"></div></div></div><aside class="asset"><img src="images/ai_checkout_clerk.png" alt=""></aside></section>
+<section id="end" class="end hide"><h1>任務完成</h1><p class="lead" id="endText"></p><p><a class="btn alt" href="game1.html">再玩一次</a> <a class="btn" href="index.html">返回入口</a></p></section>
+</main>
+<script>
+const questions=[{"q": "2 盒每盒 A 元的顏色筆，加 1 本 14 元畫冊，總價是多少？", "a": "2A + 14", "choices": ["2A + 14", "A + 14", "2 + A + 14", "14A + 2"], "ex": "2 盒顏色筆是 2A 元，再加 14 元。"}, {"q": "4 套每套 c 元的兒童服裝，減 50 元，應表示為？", "a": "4c - 50", "choices": ["4c - 50", "c - 50", "4c + 50", "50c - 4"], "ex": "4 套服裝共 4c 元，獲減 50 元。"}, {"q": "果仁曲奇原價 d 元，半價後再買 30 元牛油曲奇，共付多少？", "a": "d/2 + 30", "choices": ["d/2 + 30", "2d + 30", "d + 30/2", "d - 30"], "ex": "半價即 d 除以 2，再加 30。"}, {"q": "3 排乳酸飲品共 n 元，買 1 排並扣減 10 元，實付多少？", "a": "n/3 - 10", "choices": ["n/3 - 10", "3n - 10", "n - 10/3", "n/3 + 10"], "ex": "每排售 n/3 元，再扣減 10 元。"}, {"q": "每份午餐 H 元，買 3 份和 8 元甜品，共付 98 元。方程是？", "a": "3H + 8 = 98", "choices": ["3H + 8 = 98", "H + 3 + 8 = 98", "3H - 8 = 98", "98H = 3 + 8"], "ex": "3 份午餐是 3H 元，再加甜品 8 元。"}, {"q": "r 張手工紙平均分成 3 份，其中一份用去 2 張後餘 1 張。方程是？", "a": "r/3 - 2 = 1", "choices": ["r/3 - 2 = 1", "3r - 2 = 1", "r/2 - 3 = 1", "r/3 + 2 = 1"], "ex": "其中一份是 r/3 張，用去 2 張後剩 1 張。"}, {"q": "k 乘以 6 後加 13 的結果是 19。方程是？", "a": "6k + 13 = 19", "choices": ["6k + 13 = 19", "6 + k + 13 = 19", "6k - 13 = 19", "k/6 + 13 = 19"], "ex": "「乘以 6 後加 13」就是 6k + 13。"}, {"q": "F 除以 8 後減 1 的結果是 10。方程是？", "a": "F/8 - 1 = 10", "choices": ["F/8 - 1 = 10", "8F - 1 = 10", "F/8 + 1 = 10", "F - 8 - 1 = 10"], "ex": "先除以 8，再減 1。"}, {"q": "家中原有旅遊書 5 本，爸爸再用 a 元買書，每本 50 元，現有 15 本。方程是？", "a": "5 + a/50 = 15", "choices": ["5 + a/50 = 15", "5 + 50a = 15", "a/5 + 50 = 15", "5a + 50 = 15"], "ex": "a 元可買 a/50 本，再加原有 5 本。"}, {"q": "n 張餐桌拼起來可放 2n + 6 張椅子，共放 28 張。方程是？", "a": "2n + 6 = 28", "choices": ["2n + 6 = 28", "n + 6 = 28", "2n - 6 = 28", "28n = 2 + 6"], "ex": "題目已給出通項 2n + 6，等於總椅子數 28。"}];
+let idx=0,score=0,combo=0,locked=false;
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function startGame(){document.getElementById("start").classList.add("hide");document.getElementById("game").classList.remove("hide");render();}
+function render(){locked=false;const item=questions[idx];document.getElementById("qno").textContent=`Question ${idx+1}`;document.getElementById("question").textContent=item.q;document.getElementById("stepTop").textContent=idx+1;document.getElementById("scoreTop").textContent=score;document.getElementById("comboTop").textContent=combo;document.getElementById("progressFill").style.width=`${idx/questions.length*100}%`;document.getElementById("feedback").className="feedback";document.getElementById("feedback").textContent="";document.getElementById("nextBtn").className="next";document.getElementById("choices").innerHTML=item.choices.map(c=>`<button class="choice" data-choice="${esc(c)}">${esc(c)}</button>`).join("");document.querySelectorAll(".choice").forEach(btn=>btn.addEventListener("click",()=>answer(btn,btn.textContent)));}
+function answer(btn,value){if(locked)return;locked=true;const item=questions[idx];const ok=value===item.a;document.querySelectorAll(".choice").forEach(b=>{if(b.textContent===item.a)b.classList.add("correct");});if(!ok)btn.classList.add("wrong");combo=ok?combo+1:0;score+=ok?100+combo*20:20;document.getElementById("scoreTop").textContent=score;document.getElementById("comboTop").textContent=combo;const fb=document.getElementById("feedback");fb.className="feedback show";fb.innerHTML=`<b>${ok?"答對！":"未中，看看正確做法。"}</b><br>${esc(item.ex)}`;document.getElementById("nextBtn").className="next show";}
+function nextQuestion(){idx++;if(idx>=questions.length)return finish();render();}
+function finish(){document.getElementById("game").classList.add("hide");document.getElementById("end").classList.remove("hide");document.getElementById("endText").textContent=`你的分數是 ${score}。能把題意轉成方程，再按步驟解題，就是第21課的核心。`;localStorage.setItem("ch21_game1_score",String(score));}
+</script>
+</body></html>
