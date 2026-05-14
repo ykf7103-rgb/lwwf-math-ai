@@ -26,6 +26,15 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,
 .progress{height:12px;background:#E0E7EE;border-radius:999px;overflow:hidden;margin:16px 0}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary-light),var(--gold));transition:.25s}
 .start,.end{text-align:center}.btn{border:0;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;font-weight:900;padding:13px 22px;text-decoration:none;display:inline-block;cursor:pointer;box-shadow:0 4px 14px rgba(21,101,192,.25)}.btn.alt{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#3E2A00}.start .btn{margin-top:18px}
 .end{background:#fff;border:2px solid #D7E8FB;border-radius:22px;padding:28px 20px;box-shadow:var(--shadow)}.end .intro{color:var(--muted)}
+.intro-figs{display:flex;gap:14px;justify-content:center;align-items:flex-end;margin:8px 0 4px;flex-wrap:wrap}
+.intro-figs img{filter:drop-shadow(0 6px 14px rgba(0,0,0,.32))}
+.intro-figs .lead-fig{width:min(180px,40vw)}
+.intro-figs .side-fig{width:min(116px,27vw)}
+.art-stack{display:flex;flex-direction:column;gap:14px}
+.art-people{background:#fff url("images/training_field_bg.png") center/cover;border:2px solid #D7E8FB;border-radius:18px;padding:14px 10px;display:flex;justify-content:space-around;align-items:flex-end;box-shadow:var(--shadow)}
+.art-people img{filter:drop-shadow(0 5px 12px rgba(0,0,0,.4))}
+.art-people .mentor-fig{width:min(140px,38vw)}
+.art-people .orb-fig{width:min(74px,20vw)}
 @media(max-width:780px){.layout{grid-template-columns:1fr}.art{min-height:240px}.nav{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
@@ -40,11 +49,23 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,
       <h1>密碼樂園任務</h1>
       <p>讀懂題意，選出正確方程，再找出未知數。這關專攻文字題、應用題和依題意驗算。</p>
     </div>
+    <div class="intro-figs">
+      <img class="side-fig" src="images/rival_challenger.png" alt="修煉挑戰者" onerror="this.style.display='none'">
+      <img class="lead-fig" src="images/trainer_hero.png" alt="熱血少年修煉者主角" onerror="this.style.display='none'">
+      <img class="side-fig" src="images/master_mentor.png" alt="修煉導師" onerror="this.style.display='none'">
+    </div>
     <button class="btn alt" onclick="startGame()">進入樂園</button>
   </section>
 
   <section id="game" class="layout hide">
-    <aside class="art"><img src="images/mission_assets.png" alt="任務素材"></aside>
+    <aside class="art-stack">
+      <div class="art"><img src="images/mission_assets.png" alt="任務素材"></div>
+      <div class="art-people">
+        <img class="orb-fig" src="images/energy_orb.png" alt="發光能量球道具" onerror="this.style.display='none'">
+        <img class="mentor-fig" src="images/master_mentor.png" alt="修煉導師講解任務" onerror="this.style.display='none'">
+        <img class="orb-fig" src="images/energy_orb.png" alt="發光能量球道具" onerror="this.style.display='none'">
+      </div>
+    </aside>
     <div class="card">
       <div class="label" id="stageLabel"></div>
       <div class="step" id="stageStep"></div>

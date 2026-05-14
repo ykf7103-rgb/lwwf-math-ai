@@ -110,12 +110,39 @@ footer{color:#78909C;text-align:center;font-size:.86rem;line-height:1.6;margin-t
   <section class="section">
     <div class="section-head">
       <h2 class="section-title">遊戲任務</h2>
-      <span class="pill">藍金校本版面</span>
+      <span class="pill">3 個原創修煉小遊戲</span>
     </div>
     <div class="grid">
       <a class="card game" href="game1.html"><span class="kind">Game 1</span><h3>戰鬥力方程訓練</h3><p>限時解乘除一步方程，練熟相反運算。</p></a>
       <a class="card game" href="game2.html"><span class="kind">Game 2</span><h3>密碼樂園任務</h3><p>讀題意、選方程、求未知數，打開能量門。</p></a>
-      <a class="card extra" href="slide-replacements.html"><span class="kind">QA</span><h3>簡報修正頁</h3><p>列出 8 張已用修正版替換的簡報頁面與原因。</p></a>
+      <a class="card game" href="game3.html"><span class="kind">Game 3</span><h3>修煉導師天平挑戰</h3><p>用天平原理解乘除一步方程，每題附驗算。</p></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">預習 · 錄音題 · AI 助教</h2>
+      <span class="pill">粵語 Feynman 講解</span>
+    </div>
+    <div class="grid">
+      <a class="card slides" href="infographic.html"><span class="kind">預習</span><h3>預習資訊圖</h3><p>3 張資訊圖 + 3 條 MC 預習題，上課前熱身。</p></a>
+      <a class="card extra" href="voice1.html"><span class="kind">錄音 1</span><h3>錄音題 1 · 解乘除一步方程</h3><p>用粵語教同學點解 5x = 35，AI 即時評分。</p></a>
+      <a class="card extra" href="voice2.html"><span class="kind">錄音 2</span><h3>錄音題 2 · 文字題列方程</h3><p>把文字題翻譯成一步方程並講解。</p></a>
+      <a class="card extra" href="voice3.html"><span class="kind">錄音 3</span><h3>錄音題 3 · 應用題列方程</h3><p>講出設未知數→列方程→解→驗算四步驟。</p></a>
+      <a class="card assess" href="summary.html"><span class="kind">總結</span><h3>課程總結錄音</h3><p>用粵語總結全課重點，AI 寬鬆友善評分。</p></a>
+      <a class="card slides" href="ai-help.html"><span class="kind">AI</span><h3>AI 問功課</h3><p>數學小老師即時解答簡易方程（二）疑難。</p></a>
+      <a class="card slides" href="../../tools/equation-balance.html" target="_blank"><span class="kind">工具</span><h3>天平方程工具</h3><p>用天平原理練解 ax=b 同 x/a=b 一步方程，附驗算。</p></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">廣東話溫習歌</h2>
+      <span class="pill">邊聽邊記口訣</span>
+    </div>
+    <div class="grid">
+      <a class="card extra" href="song.html"><span class="kind">Song</span><h3>廣東話溫習歌 ×2</h3><p>相反運算解方程 + 列方程解應用題口訣歌。</p></a>
+      <a class="card extra" href="slide-replacements.html"><span class="kind">QA</span><h3>簡報修正頁</h3><p>列出已用修正版替換的簡報頁面與原因。</p></a>
     </div>
   </section>
 
@@ -182,7 +209,7 @@ footer{color:#78909C;text-align:center;font-size:.86rem;line-height:1.6;margin-t
   }
   function render(){
     const p=getProgress();
-    ["slides1","slides2","slides3","assess1","assess2","assess3","game1","game2","flashcards"].forEach(s=>markCard(s+".html",p));
+    ["slides1","slides2","slides3","assess1","assess2","assess3","game1","game2","game3","infographic","voice1","voice2","voice3","summary","flashcards"].forEach(s=>markCard(s+".html",p));
   }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",render);
   else render();

@@ -28,6 +28,15 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,
 .start,.end{text-align:center}.start .btn{margin-top:18px}.btn{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:0;border-radius:12px;padding:13px 22px;font-size:1.05rem;font-weight:900;cursor:pointer;text-decoration:none;display:inline-block;box-shadow:0 4px 14px rgba(21,101,192,.25)}.btn.alt{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#3E2A00}
 .hide{display:none}.bar{height:12px;background:#E0E7EE;border-radius:999px;overflow:hidden;margin:16px 0}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary-light),var(--gold));transition:.25s}
 .end{background:#fff;border:2px solid #D7E8FB;border-radius:22px;padding:28px 20px;box-shadow:var(--shadow)}.end .lead{color:var(--muted)}
+.hero-figs{display:flex;gap:14px;justify-content:center;align-items:flex-end;margin:8px 0 4px;flex-wrap:wrap}
+.hero-figs img{filter:drop-shadow(0 6px 14px rgba(0,0,0,.32))}
+.hero-figs .lead-fig{width:min(190px,42vw)}
+.hero-figs .side-fig{width:min(120px,28vw)}
+.asset-stack{display:flex;flex-direction:column;gap:12px}
+.asset-people{display:flex;justify-content:space-around;align-items:flex-end;background:#fff url("images/training_field_bg.png") center/cover;border:2px solid #D7E8FB;border-radius:18px;padding:14px 10px;box-shadow:var(--shadow)}
+.asset-people img{filter:drop-shadow(0 5px 12px rgba(0,0,0,.4))}
+.asset-people .mentor-fig{width:min(150px,40vw)}
+.asset-people .orb-fig{width:min(80px,22vw)}
 @media(max-width:760px){.stage{grid-template-columns:1fr}.asset{min-height:220px}.choices{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
@@ -44,6 +53,11 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,
   <section id="start" class="start hero-card">
     <h1>戰鬥力方程訓練</h1>
     <p class="lead" style="margin:auto">解開乘除一步方程，累積能量。記住：<b>乘法方程同除，除法方程同乘</b>。</p>
+    <div class="hero-figs">
+      <img class="side-fig" src="images/master_mentor.png" alt="修煉導師" onerror="this.style.display='none'">
+      <img class="lead-fig" src="images/trainer_hero.png" alt="熱血少年修煉者主角" onerror="this.style.display='none'">
+      <img class="side-fig" src="images/rival_challenger.png" alt="修煉挑戰者" onerror="this.style.display='none'">
+    </div>
     <div class="bar"><div class="fill" style="width:100%"></div></div>
     <button class="btn alt" onclick="startGame()">開始修煉</button>
   </section>
@@ -57,7 +71,14 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(135deg,
       <button class="next" id="nextBtn" onclick="nextQuestion()">下一關</button>
       <div class="bar"><div class="fill" id="progressFill"></div></div>
     </div>
-    <aside class="asset"><img src="images/mission_assets.png" alt="原創修煉者與能量道具"></aside>
+    <aside class="asset-stack">
+      <div class="asset"><img src="images/mission_assets.png" alt="原創修煉者與能量道具"></div>
+      <div class="asset-people">
+        <img class="orb-fig" src="images/energy_orb.png" alt="發光能量球道具" onerror="this.style.display='none'">
+        <img class="mentor-fig" src="images/master_mentor.png" alt="修煉導師於修煉場指導" onerror="this.style.display='none'">
+        <img class="orb-fig" src="images/energy_orb.png" alt="發光能量球道具" onerror="this.style.display='none'">
+      </div>
+    </aside>
   </section>
 
   <section id="end" class="end hide">

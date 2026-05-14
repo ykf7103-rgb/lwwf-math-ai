@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>⚖️ 天平方程工具 — 解乘除一步方程</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    margin: 0; padding: 16px;
+    background: linear-gradient(135deg, #E3F2FD 0%, #E1F5FE 50%, #E0F7FA 100%);
+    min-height: 100vh; color: #333;
+    overflow-x: hidden; position: relative;
+  }
+  body::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('../assets/common/images/school_bg.jpg');
+    background-size: cover; background-position: center top; background-repeat: no-repeat;
+    opacity: 0.30; z-index: -1; pointer-events: none;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  h1 {
+    text-align: center; color: #1565C0; font-size: 1.55rem;
+    margin: 8px 0 14px; line-height: 1.3;
+  }
+  .card {
+    background: white; padding: 14px 16px; border-radius: 14px;
+    margin-bottom: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  }
+  .hint { font-size: 0.92rem; line-height: 1.6; }
+  .hint p { margin: 4px 0; }
+
+  /* Preset buttons */
+  .preset-label { font-weight: 700; color: #1565C0; margin-bottom: 8px; font-size: 1rem; text-align: center; }
+  .preset-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  }
+  .preset-btn {
+    padding: 12px 8px; font-size: 1.05rem; font-weight: 900;
+    border: 3px solid #90CAF9; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB); color: #0D47A1;
+    font-family: 'Menlo','Consolas',monospace; transition: all 0.2s;
+  }
+  .preset-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(21,101,192,0.25); }
+  .preset-btn.active {
+    background: linear-gradient(135deg, #42A5F5, #1976D2); color: white;
+    border-color: #FFC107; box-shadow: 0 0 0 3px white, 0 0 14px 2px rgba(255,193,7,0.7);
+  }
+
+  /* Balance scale */
+  .scale-area { text-align: center; }
+  .scale {
+    position: relative; height: 230px; margin: 6px auto 0;
+    max-width: 560px;
+  }
+  .beam {
+    position: absolute; top: 40px; left: 50%; width: 440px; height: 12px;
+    background: linear-gradient(180deg, #FFB74D, #F57C00);
+    border-radius: 6px; transform: translateX(-50%) rotate(0deg);
+    transform-origin: center center;
+    transition: transform 0.6s cubic-bezier(0.34,1.2,0.64,1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .beam.tip-left  { transform: translateX(-50%) rotate(-7deg); }
+  .beam.tip-right { transform: translateX(-50%) rotate(7deg); }
+  .pivot {
+    position: absolute; top: 46px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 26px solid transparent;
+    border-right: 26px solid transparent; border-bottom: 90px solid #8D6E63;
+    z-index: 1;
+  }
+  .pivot-base {
+    position: absolute; top: 134px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 16px; background: #6D4C41; border-radius: 8px;
+  }
+  .pan {
+    position: absolute; top: 52px; width: 150px;
+    display: flex; flex-direction: column; align-items: center;
+    transition: top 0.6s cubic-bezier(0.34,1.2,0.64,1);
+  }
+  .pan.left  { left: 28px; }
+  .pan.right { right: 28px; }
+  .pan.up   { top: 28px; }
+  .pan.down { top: 78px; }
+  .string {
+    width: 2px; height: 30px; background: #A1887F;
+  }
+  .dish {
+    width: 140px; min-height: 70px; padding: 8px 6px;
+    background: linear-gradient(180deg, #FFE082, #FFCA28);
+    border: 3px solid #F57C00; border-radius: 0 0 70px 70px;
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 4px;
+  }
+  .pan-content {
+    font-family: 'Menlo','Consolas',monospace; font-weight: 900;
+    font-size: 1.7rem; color: #0D47A1; display: flex;
+    flex-wrap: wrap; justify-content: center; align-items: center; gap: 3px;
+  }
+  /* energy orb */
+  .orb {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, #80D8FF, #2979FF 70%, #1565C0);
+    box-shadow: 0 0 8px rgba(41,121,255,0.7), inset 0 -3px 4px rgba(0,0,0,0.25);
+    display: inline-block; animation: orbPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes orbPulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.12); box-shadow: 0 0 14px rgba(41,121,255,0.95), inset 0 -3px 4px rgba(0,0,0,0.25); }
+  }
+  .orb.fade { animation: orbFade 0.55s ease forwards; }
+  @keyframes orbFade {
+    to { opacity: 0; transform: scale(0.2); }
+  }
+  .orb-group {
+    display: inline-flex; flex-wrap: wrap; max-width: 110px;
+    justify-content: center; gap: 3px; padding: 2px;
+    border-radius: 10px;
+  }
+  .orb-group.boxed {
+    border: 2px dashed #1976D2; background: rgba(187,222,251,0.5);
+  }
+  .xlabel {
+    font-size: 1.5rem; color: #C62828; font-weight: 900;
+  }
+  .num-chip {
+    font-size: 1.6rem; color: #2E7D32; font-weight: 900;
+  }
+
+  /* Operation buttons */
+  .op-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+  .op-btn {
+    padding: 14px 22px; font-size: 1.1rem; font-weight: 900;
+    border: none; border-radius: 12px; cursor: pointer;
+    color: white; font-family: inherit; transition: all 0.2s;
+    background: linear-gradient(135deg, #43A047, #2E7D32);
+    box-shadow: 0 4px 12px rgba(46,125,50,0.3);
+  }
+  .op-btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .op-btn:active:not(:disabled) { transform: translateY(1px); }
+  .op-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5); }
+  .op-btn.reset {
+    background: linear-gradient(135deg, #78909C, #455A64);
+    box-shadow: 0 4px 12px rgba(69,90,100,0.3);
+  }
+
+  .eq-display {
+    text-align: center; font-family: 'Menlo','Consolas',monospace;
+    font-size: 1.9rem; font-weight: 900; color: #0D47A1;
+    margin: 4px 0 10px; min-height: 40px; letter-spacing: 1px;
+  }
+  .eq-display .op-tag {
+    display: block; font-size: 0.95rem; color: #E65100; font-weight: 700;
+    margin-top: 2px; font-family: inherit;
+  }
+
+  /* status / steps */
+  .step-line {
+    font-size: 0.95rem; line-height: 1.6; padding: 8px 12px;
+    background: #FFF3E0; border-radius: 8px; border-left: 4px solid #FF9800;
+    margin-top: 8px; min-height: 22px;
+  }
+  .step-line b { color: #E65100; }
+
+  .answer-box {
+    background: linear-gradient(135deg, #2E7D32, #388E3C);
+    color: white; padding: 16px; border-radius: 14px;
+    text-align: center; margin-top: 12px; transition: all 0.3s ease;
+  }
+  .answer-box.idle { background: linear-gradient(135deg, #90A4AE, #607D8B); }
+  .answer-box .label { font-size: 0.92rem; opacity: 0.92; margin-bottom: 4px; }
+  .answer-box .value {
+    font-size: 2.2rem; font-weight: 900;
+    font-family: 'Menlo','Consolas',monospace; letter-spacing: 2px; margin: 6px 0;
+  }
+  .answer-box .check {
+    font-size: 0.95rem; opacity: 0.97; line-height: 1.5; margin-top: 6px;
+    background: rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 10px;
+  }
+
+  .tip-box {
+    margin-top: 10px; padding: 12px 14px;
+    background: #E1F5FE; border-radius: 10px;
+    border-left: 4px solid #0288D1; font-size: 0.9rem;
+    color: #01579B; line-height: 1.6;
+  }
+  .tip-box b { color: #E65100; }
+
+  /* Mascot */
+  .mascot {
+    position: fixed; bottom: 16px; right: 16px; width: 120px; height: auto;
+    z-index: 100; pointer-events: none;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+    animation: bob 3s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(-3deg); }
+  }
+  .mascot-speech {
+    position: fixed; bottom: 142px; right: 16px; width: 142px;
+    background: white; padding: 8px 12px; border-radius: 12px;
+    border: 2px solid #1565C0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 0.8rem; color: #0D47A1; z-index: 99; pointer-events: none;
+    line-height: 1.35; animation: bobDelay 3s ease-in-out infinite;
+  }
+  .mascot-speech::after {
+    content: ''; position: absolute; bottom: -10px; right: 30px;
+    width: 0; height: 0; border-left: 10px solid transparent;
+    border-right: 10px solid transparent; border-top: 10px solid white;
+    filter: drop-shadow(0 2px 0 #1565C0);
+  }
+  @keyframes bobDelay {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @media (max-width: 500px) {
+    h1 { font-size: 1.25rem; }
+    .scale { height: 200px; }
+    .beam { width: 320px; }
+    .pan.left { left: 6px; } .pan.right { right: 6px; }
+    .pan { width: 120px; }
+    .dish { width: 110px; }
+    .pan-content { font-size: 1.35rem; }
+    .orb { width: 19px; height: 19px; }
+    .orb-group { max-width: 86px; }
+    .eq-display { font-size: 1.45rem; }
+    .op-btn { padding: 12px 14px; font-size: 0.98rem; }
+    .preset-btn { font-size: 0.92rem; }
+    .mascot { width: 84px; bottom: 8px; right: 8px; }
+    .mascot-speech { width: 116px; bottom: 96px; right: 8px; font-size: 0.72rem; padding: 6px 8px; }
+    .mascot-speech::after { right: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>⚖️ 天平方程工具 — 解乘除一步方程</h1>
+
+  <div class="card hint">
+    <p>📌 <b>玩法：</b>選一條方程，左邊有一堆 <b style="color:#2979FF;">能量球</b>（代表未知數 x），右邊是數字。天平兩邊一定要 <b style="color:#E65100;">平衡</b>！</p>
+    <p>📌 撳 <b style="color:#2E7D32;">「兩邊同時 ÷／×」</b>按鈕，左右兩邊會一齊變，最後得出 <b style="color:#C62828;">x = ?</b></p>
+    <p>📌 解完之後會做 <b style="color:#E65100;">驗算</b>，確認天平依然平衡。</p>
+  </div>
+
+  <div class="card">
+    <div class="preset-label">① 選一條方程</div>
+    <div class="preset-grid" id="presetGrid"></div>
+  </div>
+
+  <div class="card scale-area">
+    <div class="eq-display" id="eqDisplay">5x = 35</div>
+    <div class="scale">
+      <div class="beam" id="beam"></div>
+      <div class="pivot"></div>
+      <div class="pivot-base"></div>
+      <div class="pan left" id="panLeft">
+        <div class="string"></div>
+        <div class="dish"><div class="pan-content" id="leftContent"></div></div>
+      </div>
+      <div class="pan right" id="panRight">
+        <div class="string"></div>
+        <div class="dish"><div class="pan-content" id="rightContent"></div></div>
+      </div>
+    </div>
+    <div class="op-row">
+      <button class="op-btn" id="opBtn" onclick="doOp()">兩邊同時 ÷5</button>
+      <button class="op-btn reset" onclick="resetEq()">↺ 重做</button>
+    </div>
+    <div class="step-line" id="stepLine">📍 撳上面的按鈕，把兩邊同時運算。</div>
+  </div>
+
+  <div class="answer-box idle" id="answerBox">
+    <div class="label">解出 x 後會顯示答案同驗算</div>
+    <div class="value">x = ?</div>
+  </div>
+
+  <div class="tip-box">
+    💡 <b>規律發現：</b>要把 x「分離」出來，就用 <b>相反運算</b>。<br>
+    x 前面是 <b>乘</b>幾（例 5x） → 兩邊同時 <b>除</b>以幾；<br>
+    x 前面是 <b>除</b>幾（例 x ÷ 4） → 兩邊同時 <b>乘</b>幾。<br>
+    天平兩邊做相同的事，就會一直保持平衡。
+  </div>
+
+</div>
+
+<div class="mascot-speech">嗨！記住天平兩邊要做相同的事，先會平衡 ⚖️</div>
+<img class="mascot" src="images/monkey.png" alt="吉祥物">
+
+<script>
+(function(){
+  'use strict';
+
+  // type: 'mul' => a*x = b ;  'div' => x/a = b
+  const PRESETS = [
+    { id:0, type:'mul', a:5, b:35, varName:'x' },   // 5x = 35  -> x = 7
+    { id:1, type:'div', a:4, b:12, varName:'x' },   // x ÷ 4 = 12 -> x = 48
+    { id:2, type:'mul', a:8, b:56, varName:'x' },   // 8x = 56  -> x = 7
+    { id:3, type:'div', a:6, b:9,  varName:'x' },   // x ÷ 6 = 9 -> x = 54
+  ];
+
+  const state = { preset: PRESETS[0], solved: false };
+
+  function eqText(p) {
+    return p.type === 'mul'
+      ? `${p.a}${p.varName} = ${p.b}`
+      : `${p.varName} ÷ ${p.a} = ${p.b}`;
+  }
+  function answerOf(p) {
+    return p.type === 'mul' ? p.b / p.a : p.b * p.a;
+  }
+  function opLabel(p) {
+    return p.type === 'mul' ? `兩邊同時 ÷${p.a}` : `兩邊同時 ×${p.a}`;
+  }
+
+  function buildPresets() {
+    const grid = document.getElementById('presetGrid');
+    grid.innerHTML = '';
+    PRESETS.forEach(p => {
+      const b = document.createElement('button');
+      b.className = 'preset-btn' + (p.id === state.preset.id ? ' active' : '');
+      b.textContent = eqText(p);
+      b.onclick = () => { selectPreset(p); };
+      grid.appendChild(b);
+    });
+  }
+
+  function selectPreset(p) {
+    state.preset = p;
+    state.solved = false;
+    buildPresets();
+    render();
+  }
+
+  function resetEq() {
+    state.solved = false;
+    render();
+  }
+
+  // build orbs html
+  function orbs(n) {
+    let s = '';
+    for (let i = 0; i < n; i++) s += '<span class="orb"></span>';
+    return s;
+  }
+
+  function render() {
+    const p = state.preset;
+    const ans = answerOf(p);
+    document.getElementById('eqDisplay').textContent = eqText(p);
+
+    const left = document.getElementById('leftContent');
+    const right = document.getElementById('rightContent');
+    const beam = document.getElementById('beam');
+    const panL = document.getElementById('panLeft');
+    const panR = document.getElementById('panRight');
+    const opBtn = document.getElementById('opBtn');
+    const stepLine = document.getElementById('stepLine');
+    const answerBox = document.getElementById('answerBox');
+
+    beam.className = 'beam';
+    panL.className = 'pan left';
+    panR.className = 'pan right';
+
+    if (!state.solved) {
+      // show un-solved state
+      if (p.type === 'mul') {
+        // left = a groups of x  -> show "a · x" with a orbs
+        left.innerHTML =
+          `<span class="orb-group boxed">${orbs(p.a)}</span><span class="xlabel">= ${p.a}${p.varName}</span>`;
+      } else {
+        // x / a -> one big x split into a parts; show x label over /a
+        left.innerHTML =
+          `<span class="xlabel">${p.varName} ÷ ${p.a}</span>`;
+      }
+      right.innerHTML = `<span class="num-chip">${p.b}</span>`;
+      opBtn.textContent = opLabel(p);
+      opBtn.disabled = false;
+      stepLine.innerHTML = p.type === 'mul'
+        ? `📍 <b>${p.varName}</b> 前面是 <b>乘 ${p.a}</b>（${p.a}${p.varName}）→ 用相反運算 <b>除 ${p.a}</b>。撳按鈕兩邊同時除以 ${p.a}。`
+        : `📍 <b>${p.varName}</b> 前面是 <b>除 ${p.a}</b>（${p.varName} ÷ ${p.a}）→ 用相反運算 <b>乘 ${p.a}</b>。撳按鈕兩邊同時乘 ${p.a}。`;
+      answerBox.className = 'answer-box idle';
+      answerBox.innerHTML =
+        `<div class="label">解出 ${p.varName} 後會顯示答案同驗算</div><div class="value">${p.varName} = ?</div>`;
+    } else {
+      // solved state -> left = x (1 orb-ish), right = answer
+      left.innerHTML = `<span class="xlabel">${p.varName}</span>`;
+      right.innerHTML = `<span class="num-chip">${ans}</span>`;
+      opBtn.textContent = opLabel(p);
+      opBtn.disabled = true;
+      const opWord = p.type === 'mul' ? `÷ ${p.a}` : `× ${p.a}`;
+      const rhsWork = p.type === 'mul' ? `${p.b} ÷ ${p.a} = ${ans}` : `${p.b} × ${p.a} = ${ans}`;
+      stepLine.innerHTML =
+        `✅ 兩邊同時 <b>${opWord}</b>：左邊剩低 <b style="color:#C62828;">${p.varName}</b>，右邊 <b>${rhsWork}</b>。`;
+      // verification
+      const checkWork = p.type === 'mul'
+        ? `${p.a} × ${ans} = ${p.a * ans}`
+        : `${ans} ÷ ${p.a} = ${ans / p.a}`;
+      answerBox.className = 'answer-box';
+      answerBox.innerHTML =
+        `<div class="label">天平平衡，解得</div>` +
+        `<div class="value">${p.varName} = ${ans}</div>` +
+        `<div class="check">🔍 驗算：把 ${p.varName} = ${ans} 代入原方程 → ${checkWork} = ${p.b} ✔ 兩邊相等</div>`;
+    }
+  }
+
+  function doOp() {
+    if (state.solved) return;
+    const p = state.preset;
+    const beam = document.getElementById('beam');
+    const panL = document.getElementById('panLeft');
+    const panR = document.getElementById('panRight');
+    const stepLine = document.getElementById('stepLine');
+
+    // tiny wobble animation, then settle solved
+    beam.className = 'beam tip-left';
+    panL.className = 'pan left down';
+    panR.className = 'pan right up';
+    stepLine.innerHTML = `⚙️ 兩邊同時運算中⋯ 保持平衡！`;
+
+    setTimeout(() => {
+      beam.className = 'beam tip-right';
+      panL.className = 'pan left up';
+      panR.className = 'pan right down';
+    }, 320);
+
+    setTimeout(() => {
+      state.solved = true;
+      render();
+    }, 680);
+  }
+
+  window.doOp = doOp;
+  window.resetEq = resetEq;
+
+  window.addEventListener('load', () => {
+    buildPresets();
+    render();
+  });
+})();
+</script>
+</body>
+</html>

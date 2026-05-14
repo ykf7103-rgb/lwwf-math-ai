@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>🔧 兩步方程工具 — 先加減後乘除</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    margin: 0; padding: 16px;
+    background: linear-gradient(135deg, #EDE7F6 0%, #E8EAF6 50%, #E3F2FD 100%);
+    min-height: 100vh; color: #333;
+    overflow-x: hidden; position: relative;
+  }
+  body::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('../assets/common/images/school_bg.jpg');
+    background-size: cover; background-position: center top; background-repeat: no-repeat;
+    opacity: 0.30; z-index: -1; pointer-events: none;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  h1 {
+    text-align: center; color: #4527A0; font-size: 1.55rem;
+    margin: 8px 0 14px; line-height: 1.3;
+  }
+  .card {
+    background: white; padding: 14px 16px; border-radius: 14px;
+    margin-bottom: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  }
+  .hint { font-size: 0.92rem; line-height: 1.6; }
+  .hint p { margin: 4px 0; }
+
+  .preset-label { font-weight: 700; color: #4527A0; margin-bottom: 8px; font-size: 1rem; text-align: center; }
+  .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .preset-btn {
+    padding: 12px 8px; font-size: 1.05rem; font-weight: 900;
+    border: 3px solid #B39DDB; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(135deg, #EDE7F6, #D1C4E9); color: #311B92;
+    font-family: 'Menlo','Consolas',monospace; transition: all 0.2s;
+  }
+  .preset-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(69,39,160,0.25); }
+  .preset-btn.active {
+    background: linear-gradient(135deg, #7E57C2, #512DA8); color: white;
+    border-color: #FFC107; box-shadow: 0 0 0 3px white, 0 0 14px 2px rgba(255,193,7,0.7);
+  }
+
+  /* Equation ladder */
+  .ladder { text-align: center; }
+  .eq-row {
+    display: flex; justify-content: center; align-items: center;
+    gap: 10px; margin: 8px 0; flex-wrap: wrap;
+  }
+  .eq-box {
+    font-family: 'Menlo','Consolas',monospace; font-weight: 900;
+    font-size: 1.95rem; letter-spacing: 1px;
+    padding: 10px 18px; border-radius: 12px;
+    background: linear-gradient(180deg, #F3E5F5, #E1BEE7);
+    border: 3px solid #BA68C8; color: #4A148C;
+    transition: all 0.4s cubic-bezier(0.34,1.4,0.64,1);
+  }
+  .eq-box.current {
+    background: linear-gradient(180deg, #FFF3E0, #FFE0B2);
+    border-color: #FB8C00; color: #E65100;
+    box-shadow: 0 0 0 3px white, 0 0 16px 3px rgba(251,140,0,0.55);
+  }
+  .eq-box.done {
+    background: linear-gradient(180deg, #E8F5E9, #C8E6C9);
+    border-color: #66BB6A; color: #1B5E20;
+  }
+  .eq-box.pop { animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.4) translateY(-12px); }
+    60% { transform: scale(1.12); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .op-tag {
+    font-family: 'Menlo','Consolas',monospace; font-weight: 800;
+    font-size: 0.95rem; color: #C62828;
+    padding: 4px 10px; background: #FFEBEE; border-radius: 8px;
+    border: 1px dashed #EF9A9A;
+  }
+  .op-tag.green { color: #2E7D32; background: #E8F5E9; border-color: #A5D6A7; }
+  .arrow-down { font-size: 1.4rem; color: #7E57C2; line-height: 1; }
+
+  /* Step buttons */
+  .step-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 6px; }
+  .step-btn {
+    padding: 14px 18px; font-size: 1.02rem; font-weight: 900;
+    border: none; border-radius: 12px; cursor: pointer;
+    color: white; font-family: inherit; transition: all 0.2s;
+    position: relative;
+  }
+  .step-btn .num {
+    display: inline-block; width: 22px; height: 22px; line-height: 22px;
+    background: rgba(255,255,255,0.35); border-radius: 50%;
+    margin-right: 6px; font-size: 0.9rem;
+  }
+  .step-btn.s1 { background: linear-gradient(135deg, #EF5350, #C62828); box-shadow: 0 4px 12px rgba(198,40,40,0.3); }
+  .step-btn.s2 { background: linear-gradient(135deg, #42A5F5, #1565C0); box-shadow: 0 4px 12px rgba(21,101,192,0.3); }
+  .step-btn.reset { background: linear-gradient(135deg, #78909C, #455A64); box-shadow: 0 4px 12px rgba(69,90,100,0.3); }
+  .step-btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .step-btn:active:not(:disabled) { transform: translateY(1px); }
+  .step-btn:disabled { opacity: 0.38; cursor: not-allowed; filter: grayscale(0.55); }
+  .step-btn.ready { animation: glow 1.2s ease-in-out infinite alternate; }
+  @keyframes glow {
+    from { box-shadow: 0 0 8px 1px rgba(255,193,7,0.5), 0 4px 12px rgba(0,0,0,0.2); }
+    to { box-shadow: 0 0 18px 4px rgba(255,193,7,0.9), 0 6px 16px rgba(0,0,0,0.25); }
+  }
+
+  .step-line {
+    font-size: 0.95rem; line-height: 1.6; padding: 8px 12px;
+    background: #FFF3E0; border-radius: 8px; border-left: 4px solid #FF9800;
+    margin-top: 10px; min-height: 22px;
+  }
+  .step-line b { color: #E65100; }
+  .step-line.warn { background: #FFEBEE; border-left-color: #E53935; }
+  .step-line.warn b { color: #C62828; }
+
+  .answer-box {
+    background: linear-gradient(135deg, #2E7D32, #388E3C);
+    color: white; padding: 16px; border-radius: 14px;
+    text-align: center; margin-top: 12px; transition: all 0.3s ease;
+  }
+  .answer-box.idle { background: linear-gradient(135deg, #9575CD, #673AB7); }
+  .answer-box .label { font-size: 0.92rem; opacity: 0.92; margin-bottom: 4px; }
+  .answer-box .value {
+    font-size: 2.2rem; font-weight: 900;
+    font-family: 'Menlo','Consolas',monospace; letter-spacing: 2px; margin: 6px 0;
+  }
+  .answer-box .check {
+    font-size: 0.95rem; opacity: 0.97; line-height: 1.5; margin-top: 6px;
+    background: rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 10px;
+  }
+
+  .tip-box {
+    margin-top: 10px; padding: 12px 14px;
+    background: #E1F5FE; border-radius: 10px;
+    border-left: 4px solid #0288D1; font-size: 0.9rem;
+    color: #01579B; line-height: 1.6;
+  }
+  .tip-box b { color: #E65100; }
+
+  /* Mascot */
+  .mascot {
+    position: fixed; bottom: 16px; right: 16px; width: 120px; height: auto;
+    z-index: 100; pointer-events: none;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+    animation: bob 3s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(-3deg); }
+  }
+  .mascot-speech {
+    position: fixed; bottom: 142px; right: 16px; width: 142px;
+    background: white; padding: 8px 12px; border-radius: 12px;
+    border: 2px solid #4527A0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 0.8rem; color: #311B92; z-index: 99; pointer-events: none;
+    line-height: 1.35; animation: bobDelay 3s ease-in-out infinite;
+  }
+  .mascot-speech::after {
+    content: ''; position: absolute; bottom: -10px; right: 30px;
+    width: 0; height: 0; border-left: 10px solid transparent;
+    border-right: 10px solid transparent; border-top: 10px solid white;
+    filter: drop-shadow(0 2px 0 #4527A0);
+  }
+  @keyframes bobDelay {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @media (max-width: 500px) {
+    h1 { font-size: 1.25rem; }
+    .eq-box { font-size: 1.5rem; padding: 8px 12px; }
+    .op-tag { font-size: 0.82rem; }
+    .step-btn { padding: 12px 12px; font-size: 0.92rem; }
+    .preset-btn { font-size: 0.92rem; }
+    .mascot { width: 84px; bottom: 8px; right: 8px; }
+    .mascot-speech { width: 116px; bottom: 96px; right: 8px; font-size: 0.72rem; padding: 6px 8px; }
+    .mascot-speech::after { right: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>🔧 兩步方程工具 — 先加減後乘除</h1>
+
+  <div class="card hint">
+    <p>📌 <b>玩法：</b>選一條兩步方程（例 <code>4M + 12 = 40</code>）。要分兩步解：</p>
+    <p>📌 <b style="color:#C62828;">第一步</b>：先處理 <b>加／減</b> 的數，把它移走。</p>
+    <p>📌 <b style="color:#1565C0;">第二步</b>：再處理 <b>乘／除</b>，得出未知數。<b style="color:#E65100;">次序不可調轉！</b></p>
+    <p>📌 解完之後做 <b style="color:#E65100;">驗算</b>，代返入原方程確認。</p>
+  </div>
+
+  <div class="card">
+    <div class="preset-label">① 選一條方程</div>
+    <div class="preset-grid" id="presetGrid"></div>
+  </div>
+
+  <div class="card ladder">
+    <div class="eq-row">
+      <div class="eq-box current" id="eq0">4M + 12 = 40</div>
+    </div>
+    <div class="eq-row" id="row1" style="display:none;">
+      <span class="op-tag" id="opTag1">－ 12</span>
+      <span class="arrow-down">▼</span>
+      <div class="eq-box" id="eq1"></div>
+    </div>
+    <div class="eq-row" id="row2" style="display:none;">
+      <span class="op-tag green" id="opTag2">÷ 4</span>
+      <span class="arrow-down">▼</span>
+      <div class="eq-box" id="eq2"></div>
+    </div>
+
+    <div class="step-btns">
+      <button class="step-btn s1 ready" id="btn1" onclick="doStep1()">
+        <span class="num">1</span><span id="btn1Label">兩邊同時減 12</span>
+      </button>
+      <button class="step-btn s2" id="btn2" onclick="doStep2()" disabled>
+        <span class="num">2</span><span id="btn2Label">兩邊同時除以 4</span>
+      </button>
+      <button class="step-btn reset" onclick="resetEq()">↺ 重做</button>
+    </div>
+
+    <div class="step-line" id="stepLine">📍 先撳 <b>第一步</b>：把常數項移走。</div>
+  </div>
+
+  <div class="answer-box idle" id="answerBox">
+    <div class="label">完成兩步後會顯示答案同驗算</div>
+    <div class="value">? = ?</div>
+  </div>
+
+  <div class="tip-box">
+    💡 <b>規律發現：</b>兩步方程的解題次序，剛好同「先乘除後加減」<b>相反</b>。<br>
+    因為加／減離未知數最遠，所以 <b>先用相反運算除去加減</b>；<br>
+    最後才用相反運算處理乘除。每一步都「兩邊做相同的事」，等式才不變。
+  </div>
+
+</div>
+
+<div class="mascot-speech">嗨！兩步方程要先加減、後乘除，唔好心急 🔧</div>
+<img class="mascot" src="images/monkey.png" alt="吉祥物">
+
+<script>
+(function(){
+  'use strict';
+
+  // op: 'add' => aX + b = c ; 'sub' => aX - b = c
+  const PRESETS = [
+    { id:0, op:'add', a:4, b:12, c:40, varName:'M' },  // 4M+12=40 -> 4M=28 -> M=7
+    { id:1, op:'sub', a:3, b:6,  c:9,  varName:'y' },  // 3y-6=9   -> 3y=15 -> y=5
+    { id:2, op:'add', a:2, b:7,  c:19, varName:'k' },  // 2k+7=19  -> 2k=12 -> k=6
+    { id:3, op:'sub', a:5, b:10, c:25, varName:'n' },  // 5n-10=25 -> 5n=35 -> n=7
+  ];
+
+  const state = { preset: PRESETS[0], step: 0 }; // step: 0 none, 1 done step1, 2 done step2
+
+  function eq0Text(p) {
+    const sign = p.op === 'add' ? '+' : '−';
+    return `${p.a}${p.varName} ${sign} ${p.b} = ${p.c}`;
+  }
+  // after step1: aX = c2
+  function c2Of(p) { return p.op === 'add' ? p.c - p.b : p.c + p.b; }
+  function eq1Text(p) { return `${p.a}${p.varName} = ${c2Of(p)}`; }
+  // after step2
+  function answerOf(p) { return c2Of(p) / p.a; }
+  function eq2Text(p) { return `${p.varName} = ${answerOf(p)}`; }
+
+  function step1Label(p) {
+    return p.op === 'add' ? `兩邊同時減 ${p.b}` : `兩邊同時加 ${p.b}`;
+  }
+  function step1Tag(p) {
+    return p.op === 'add' ? `－ ${p.b}` : `＋ ${p.b}`;
+  }
+  function step2Label(p) { return `兩邊同時除以 ${p.a}`; }
+
+  function buildPresets() {
+    const grid = document.getElementById('presetGrid');
+    grid.innerHTML = '';
+    PRESETS.forEach(p => {
+      const b = document.createElement('button');
+      b.className = 'preset-btn' + (p.id === state.preset.id ? ' active' : '');
+      b.textContent = eq0Text(p);
+      b.onclick = () => selectPreset(p);
+      grid.appendChild(b);
+    });
+  }
+
+  function selectPreset(p) {
+    state.preset = p;
+    state.step = 0;
+    buildPresets();
+    render();
+  }
+  function resetEq() {
+    state.step = 0;
+    render();
+  }
+
+  function render() {
+    const p = state.preset;
+
+    // eq0
+    const eq0 = document.getElementById('eq0');
+    eq0.textContent = eq0Text(p);
+    eq0.className = 'eq-box ' + (state.step === 0 ? 'current' : 'done');
+
+    // row1
+    const row1 = document.getElementById('row1');
+    const eq1 = document.getElementById('eq1');
+    const opTag1 = document.getElementById('opTag1');
+    opTag1.textContent = step1Tag(p);
+    if (state.step >= 1) {
+      row1.style.display = 'flex';
+      eq1.textContent = eq1Text(p);
+      eq1.className = 'eq-box ' + (state.step === 1 ? 'current pop' : 'done');
+    } else {
+      row1.style.display = 'none';
+    }
+
+    // row2
+    const row2 = document.getElementById('row2');
+    const eq2 = document.getElementById('eq2');
+    const opTag2 = document.getElementById('opTag2');
+    opTag2.textContent = `÷ ${p.a}`;
+    if (state.step >= 2) {
+      row2.style.display = 'flex';
+      eq2.textContent = eq2Text(p);
+      eq2.className = 'eq-box done pop';
+    } else {
+      row2.style.display = 'none';
+    }
+
+    // buttons
+    const btn1 = document.getElementById('btn1');
+    const btn2 = document.getElementById('btn2');
+    document.getElementById('btn1Label').textContent = step1Label(p);
+    document.getElementById('btn2Label').textContent = step2Label(p);
+    btn1.disabled = state.step >= 1;
+    btn1.classList.toggle('ready', state.step === 0);
+    btn2.disabled = state.step !== 1;
+    btn2.classList.toggle('ready', state.step === 1);
+
+    // step line
+    const stepLine = document.getElementById('stepLine');
+    stepLine.className = 'step-line';
+    if (state.step === 0) {
+      const word = p.op === 'add' ? `減 ${p.b}` : `加 ${p.b}`;
+      stepLine.innerHTML = `📍 <b>第一步</b>：方程有 <b>${p.op==='add'?'+':'−'} ${p.b}</b>，用相反運算 → 兩邊同時 <b>${word}</b>。`;
+    } else if (state.step === 1) {
+      const c2 = c2Of(p);
+      const work = p.op === 'add' ? `${p.c} − ${p.b} = ${c2}` : `${p.c} + ${p.b} = ${c2}`;
+      stepLine.innerHTML = `✅ 第一步完成：右邊 ${work}，得 <b>${eq1Text(p)}</b>。<br>📍 <b>第二步</b>：${p.varName} 前面乘 ${p.a} → 兩邊同時 <b>除以 ${p.a}</b>。`;
+    } else {
+      const c2 = c2Of(p), ans = answerOf(p);
+      stepLine.innerHTML = `✅ 第二步完成：${c2} ÷ ${p.a} = <b>${ans}</b>。兩步都做齊了！`;
+    }
+
+    // answer box
+    const answerBox = document.getElementById('answerBox');
+    if (state.step < 2) {
+      answerBox.className = 'answer-box idle';
+      answerBox.innerHTML =
+        `<div class="label">完成兩步後會顯示答案同驗算</div><div class="value">${p.varName} = ?</div>`;
+    } else {
+      const ans = answerOf(p);
+      const sign = p.op === 'add' ? '+' : '−';
+      const ax = p.a * ans;
+      const lhs = p.op === 'add' ? `${ax} + ${p.b}` : `${ax} − ${p.b}`;
+      answerBox.className = 'answer-box';
+      answerBox.innerHTML =
+        `<div class="label">解得</div>` +
+        `<div class="value">${p.varName} = ${ans}</div>` +
+        `<div class="check">🔍 驗算：把 ${p.varName} = ${ans} 代入原方程 → ` +
+        `${p.a} × ${ans} ${sign} ${p.b} = ${lhs} = ${p.c} ✔ 兩邊相等</div>`;
+    }
+  }
+
+  function doStep1() {
+    if (state.step !== 0) return;
+    state.step = 1;
+    render();
+  }
+  function doStep2() {
+    if (state.step !== 1) {
+      // guard: trying to skip ahead
+      const sl = document.getElementById('stepLine');
+      sl.className = 'step-line warn';
+      sl.innerHTML = `⚠️ <b>要先做第一步！</b>未處理加／減的數，就不能除。`;
+      return;
+    }
+    state.step = 2;
+    render();
+  }
+
+  window.doStep1 = doStep1;
+  window.doStep2 = doStep2;
+  window.resetEq = resetEq;
+
+  window.addEventListener('load', () => {
+    buildPresets();
+    render();
+  });
+})();
+</script>
+</body>
+</html>
