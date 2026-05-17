@@ -1,0 +1,265 @@
+{
+  "title": "Equation Quiz",
+  "questions": [
+    {
+      "question": "Which algebraic equation represents the sentence: '$e$ divided by 11 and then added to 6 results in 9'?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{e}{11} + 6 = 9$",
+          "isCorrect": true,
+          "rationale": "This correctly identifies the division of the variable by the constant followed by the addition of the second constant."
+        },
+        {
+          "text": "$11e + 6 = 9$",
+          "isCorrect": false,
+          "rationale": "This expression uses multiplication instead of division for the relationship between the variable and the first constant."
+        },
+        {
+          "text": "$\\frac{e + 6}{11} = 9$",
+          "isCorrect": false,
+          "rationale": "This suggests that the addition should happen before the division, which contradicts the 'then added to' sequence."
+        },
+        {
+          "text": "$\\frac{11}{e} + 6 = 9$",
+          "isCorrect": false,
+          "rationale": "This incorrectly places the variable in the denominator, which results in a different type of equation not covered in this level."
+        }
+      ],
+      "hint": "Focus on the order of operations described and ensure the variable is being divided, not doing the dividing."
+    },
+    {
+      "question": "仲謙 (Zhong Qian) bought 1 pack of nut cookies originally priced at $d$ dollars at half price, and 1 pack of butter cookies for $30$ dollars. If the total paid was $55$ dollars, which equation is correct?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{d}{2} + 30 = 55$",
+          "isCorrect": true,
+          "rationale": "The term 'half price' requires dividing the original price by 2, and the total is the sum of the cookies' costs."
+        },
+        {
+          "text": "$2d + 30 = 55$",
+          "isCorrect": false,
+          "rationale": "This mistakenly multiplies the original price by 2 instead of taking half of it."
+        },
+        {
+          "text": "$\\frac{d + 30}{2} = 55$",
+          "isCorrect": false,
+          "rationale": "This implies that the total cost of both items was halved, rather than just the nut cookies."
+        },
+        {
+          "text": "$d - 30 = 55$",
+          "isCorrect": false,
+          "rationale": "This ignores the halving of the price and incorrectly uses subtraction for the total cost."
+        }
+      ],
+      "hint": "Consider which specific item is at half price and how to mathematically represent a 50% discount."
+    },
+    {
+      "question": "Represent the following as an equation: 'The result of multiplying $m$ by 5 and then subtracting 22 is 58.'",
+      "answerOptions": [
+        {
+          "text": "$5m - 22 = 58$",
+          "isCorrect": true,
+          "rationale": "This follows the logical sequence of multiplying the variable first and then subtracting the constant."
+        },
+        {
+          "text": "$5(m - 22) = 58$",
+          "isCorrect": false,
+          "rationale": "This incorrectly applies the multiplier to the result of the subtraction rather than just the variable."
+        },
+        {
+          "text": "$\\frac{m}{5} - 22 = 58$",
+          "isCorrect": false,
+          "rationale": "This uses division instead of multiplication for the first step of the problem."
+        },
+        {
+          "text": "$22 - 5m = 58$",
+          "isCorrect": false,
+          "rationale": "This reverses the subtraction order, which would lead to a negative result if $5m$ is smaller than 22."
+        }
+      ],
+      "hint": "Identify the operation associated with the word 'multiplying' and ensure it applies only to the variable."
+    },
+    {
+      "question": "Solve the equation: $5P + 3 = 28$. What is the value of $P$?",
+      "answerOptions": [
+        {
+          "text": "$P = 5$",
+          "isCorrect": true,
+          "rationale": "Subtracting 3 from both sides gives $5P = 25$, and then dividing both sides by 5 yields the correct result."
+        },
+        {
+          "text": "$P = 6.2$",
+          "isCorrect": false,
+          "rationale": "This error occurs if 3 is added to 28 instead of subtracted when moving it to the other side."
+        },
+        {
+          "text": "$P = 125$",
+          "isCorrect": false,
+          "rationale": "This results from correctly subtracting 3 but then multiplying 25 by 5 instead of dividing."
+        },
+        {
+          "text": "$P = 5.6$",
+          "isCorrect": false,
+          "rationale": "This mistake happens if you divide 28 by 5 before accounting for the added constant 3."
+        }
+      ],
+      "hint": "Try reversing the operations: first eliminate the addition by subtracting, then eliminate the multiplication."
+    },
+    {
+      "question": "Solve for $K$ in the equation: $22 + \\frac{K}{2} = 30$.",
+      "answerOptions": [
+        {
+          "text": "$K = 16$",
+          "isCorrect": true,
+          "rationale": "Subtracting 22 from 30 leaves 8, and multiplying both sides of $\\frac{K}{2} = 8$ by 2 results in 16."
+        },
+        {
+          "text": "$K = 4$",
+          "isCorrect": false,
+          "rationale": "This value is obtained if you divide 8 by 2 instead of multiplying during the final step."
+        },
+        {
+          "text": "$K = 104$",
+          "isCorrect": false,
+          "rationale": "This error occurs if 22 is added to 30 instead of subtracted before multiplying by 2."
+        },
+        {
+          "text": "$K = 26$",
+          "isCorrect": false,
+          "rationale": "This result might occur from subtracting 22 from 30 but forgetting to perform the multiplication step correctly."
+        }
+      ],
+      "hint": "Start by isolating the term containing the variable by subtracting the standalone constant from both sides."
+    },
+    {
+      "question": "What is the solution for $w$ in the equation $72 + 6w = 90$?",
+      "answerOptions": [
+        {
+          "text": "$w = 3$",
+          "isCorrect": true,
+          "rationale": "Subtracting 72 from 90 gives 18, and 18 divided by 6 is 3."
+        },
+        {
+          "text": "$w = 27$",
+          "isCorrect": false,
+          "rationale": "This calculation error results from adding 72 and 90 together before dividing by 6."
+        },
+        {
+          "text": "$w = 108$",
+          "isCorrect": false,
+          "rationale": "This happens if you correctly find the difference is 18 but then multiply it by 6 instead of dividing."
+        },
+        {
+          "text": "$w = 15$",
+          "isCorrect": false,
+          "rationale": "This is the result if you divide 90 by 6 but completely ignore the constant 72."
+        }
+      ],
+      "hint": "First, find out what $6w$ must equal by looking at the difference between 90 and 72."
+    },
+    {
+      "question": "Find the value of $n$ for the equation: $\\frac{n}{4} - 1 = 4$.",
+      "answerOptions": [
+        {
+          "text": "$n = 20$",
+          "isCorrect": true,
+          "rationale": "Adding 1 to both sides gives $\\frac{n}{4} = 5$, and multiplying 5 by 4 results in 20."
+        },
+        {
+          "text": "$n = 12$",
+          "isCorrect": false,
+          "rationale": "This occurs if 1 is subtracted from 4 instead of added before multiplying by 4."
+        },
+        {
+          "text": "$n = 1.25$",
+          "isCorrect": false,
+          "rationale": "This result is obtained if the sum of 5 is divided by 4 instead of multiplied."
+        },
+        {
+          "text": "$n = 16$",
+          "isCorrect": false,
+          "rationale": "This error happens if the subtraction of 1 is ignored and 4 is multiplied by 4 directly."
+        }
+      ],
+      "hint": "When removing a subtraction from one side, you must perform addition on both sides."
+    },
+    {
+      "question": "A cousin is $h$ years old. An aunt's current age is 5 times the cousin's age. If the aunt was 35 years old 10 years ago, which equation correctly models the cousin's current age?",
+      "answerOptions": [
+        {
+          "text": "$5h - 10 = 35$",
+          "isCorrect": true,
+          "rationale": "The aunt's current age is $5h$, and subtracting 10 years from that current age equals 35."
+        },
+        {
+          "text": "$5h + 10 = 35$",
+          "isCorrect": false,
+          "rationale": "This equation implies the aunt was 35 years old 10 years in the future, not in the past."
+        },
+        {
+          "text": "$h + 5 - 10 = 35$",
+          "isCorrect": false,
+          "rationale": "This mistakenly uses addition for '5 times' and fails to relate the multiplier correctly to the variable."
+        },
+        {
+          "text": "$\\frac{h}{5} - 10 = 35$",
+          "isCorrect": false,
+          "rationale": "This uses division, implying the cousin is older than the aunt, which is logically incorrect."
+        }
+      ],
+      "hint": "Express the aunt's current age using $h$ first, then subtract the years passed to reach the historical age."
+    },
+    {
+      "question": "There were originally several packs of chrysanthemum tea at home, with 6 boxes per pack. After drinking 15 boxes, 21 boxes remained. How many packs ($y$) were there originally?",
+      "answerOptions": [
+        {
+          "text": "$y = 6$",
+          "isCorrect": true,
+          "rationale": "The equation $6y - 15 = 21$ leads to $6y = 36$, and dividing 36 by 6 gives 6 packs."
+        },
+        {
+          "text": "$y = 1$",
+          "isCorrect": false,
+          "rationale": "This value is calculated if 15 is subtracted from 21 instead of added when solving for $6y$."
+        },
+        {
+          "text": "$y = 216$",
+          "isCorrect": false,
+          "rationale": "This results from multiplying the intermediate sum of 36 by 6 instead of dividing by it."
+        },
+        {
+          "text": "$y = 36$",
+          "isCorrect": false,
+          "rationale": "This represents the total number of boxes, but the question specifically asks for the number of packs."
+        }
+      ],
+      "hint": "Identify the total number of boxes originally by adding the remaining boxes to the ones consumed, then divide by the amount per pack."
+    },
+    {
+      "question": "At a clothing store, 4 sets of children's clothing priced at $c$ dollars each were purchased with a total discount of $50$ dollars. If the final amount paid was $550$ dollars, what is the price of one set?",
+      "answerOptions": [
+        {
+          "text": "$c = 150$",
+          "isCorrect": true,
+          "rationale": "The equation $4c - 50 = 550$ simplifies to $4c = 600$, and $600$ divided by 4 equals $150$."
+        },
+        {
+          "text": "$c = 125$",
+          "isCorrect": false,
+          "rationale": "This occurs if the discount of 50 is subtracted from 550 instead of added when isolating the variable term."
+        },
+        {
+          "text": "$c = 2400$",
+          "isCorrect": false,
+          "rationale": "This extreme value results from multiplying the total cost of 600 by 4 instead of dividing."
+        },
+        {
+          "text": "$c = 137.5$",
+          "isCorrect": false,
+          "rationale": "This happens if 550 is divided by 4 first, and then the discount is incorrectly handled afterward."
+        }
+      ],
+      "hint": "Before finding the price of one set, determine what the total cost would have been without the discount."
+    }
+  ]
+}

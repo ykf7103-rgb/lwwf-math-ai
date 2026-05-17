@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第21課 · NLM 額外測驗</title>
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; margin:0; padding:0; background:linear-gradient(135deg,#FFF9F0,#FFE5D0); min-height:100vh; color:#222; }
+header { background:linear-gradient(135deg,#00897B,#00695C); color:white; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.15); }
+header h1 { margin:0; font-size:1.05rem; font-weight:800; }
+header .back { background:rgba(255,255,255,0.2); color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:0.82rem; font-weight:700; border:1px solid rgba(255,255,255,0.4); }
+.wrap { max-width:860px; margin:0 auto; padding:14px; }
+.intro { background:linear-gradient(135deg,#E0F2F1,#B2DFDB); border-left:5px solid #00897B; padding:14px 18px; border-radius:10px; margin-bottom:14px; line-height:1.65; color:#004D40; }
+.stats { display:flex; gap:8px; margin-bottom:14px; }
+.stat { flex:1; padding:10px; border-radius:10px; background:white; box-shadow:0 2px 6px rgba(0,0,0,0.06); text-align:center; }
+.stat .label { font-size:0.72rem; color:#999; }
+.stat .val { font-size:1.4rem; font-weight:900; color:#00695C; }
+.progress { height:8px; background:#E0E0E0; border-radius:4px; overflow:hidden; margin-bottom:14px; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#00897B,#26A69A); width:0%; transition:width 0.4s; }
+.q-card { background:white; border-radius:16px; padding:18px; box-shadow:0 4px 12px rgba(0,0,0,0.08); border-left:5px solid #00897B; }
+.q-num { font-size:0.78rem; color:#00695C; font-weight:800; margin-bottom:4px; }
+.q-text { font-size:1.05rem; font-weight:800; color:#222; margin-bottom:14px; line-height:1.6; }
+.opts { display:grid; grid-template-columns:1fr; gap:10px; }
+.opt { padding:13px; background:#FAFAFA; border:2px solid #E0E0E0; border-radius:10px; cursor:pointer; font-weight:700; color:#333; font-size:0.95rem; text-align:left; display:flex; align-items:center; gap:10px; font-family:inherit; }
+.opt .letter { background:#E0F2F1; color:#00695C; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0; }
+.opt:hover:not(:disabled) { border-color:#26A69A; background:#E0F2F1; }
+.opt.correct { background:#C8E6C9; border-color:#4CAF50; color:#2E7D32; }
+.opt.correct .letter { background:#4CAF50; color:white; }
+.opt.wrong { background:#FFCDD2; border-color:#F44336; color:#C62828; animation:shake 0.4s; }
+.opt.wrong .letter { background:#F44336; color:white; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.rationale { margin-top:12px; padding:12px 14px; border-radius:10px; line-height:1.6; font-size:0.93rem; display:none; }
+.rationale.show { display:block; animation:fade 0.3s; }
+@keyframes fade { from{opacity:0} to{opacity:1} }
+.rationale.right { background:linear-gradient(135deg,#E8F5E9,#C8E6C9); border-left:5px solid #4CAF50; color:#1B5E20; }
+.rationale.wrong { background:linear-gradient(135deg,#FFEBEE,#FFCDD2); border-left:5px solid #F44336; color:#B71C1C; }
+.hint-box { margin-top:10px; padding:10px 14px; background:linear-gradient(135deg,#FFF8E1,#FFECB3); border-left:4px solid #FFB300; border-radius:8px; font-size:0.88rem; color:#5D4037; }
+.nav { display:flex; justify-content:space-between; gap:10px; margin-top:14px; }
+.btn { padding:11px 22px; border:none; border-radius:12px; font-weight:800; cursor:pointer; font-family:inherit; font-size:0.95rem; }
+.btn.next { background:linear-gradient(135deg,#00897B,#00695C); color:white; }
+.btn.next:disabled { opacity:0.4; cursor:not-allowed; }
+.btn.hint { background:linear-gradient(135deg,#FFB300,#FF8F00); color:white; }
+.final { background:linear-gradient(135deg,#4CAF50,#2E7D32); color:white; padding:28px 20px; border-radius:20px; text-align:center; margin-top:18px; display:none; }
+.final.show { display:block; animation:pop 0.5s; }
+@keyframes pop { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+.final .trophy { font-size:3.4rem; }
+.final .score-big { font-size:2.6rem; font-weight:900; margin:8px 0; }
+.final a.btn-back, .final button.btn-back { display:inline-block; margin:6px; padding:11px 22px; background:white; color:#2E7D32; border-radius:12px; text-decoration:none; font-weight:900; border:none; cursor:pointer; font-family:inherit; font-size:0.95rem; }
+.loading { text-align:center; padding:40px; color:#666; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 第21課 · NLM 額外測驗</h1>
+  <a class="back" href="index.html">← 返回</a>
+</header>
+<script src="../common/chapter-header.js?v=20260512a" data-current-ch="21"></script>
+
+<div class="wrap">
+  <div class="intro">
+    <b>📝 NLM 自動出題</b> · 答錯有詳細解釋 · 全部完成可賺 <b>2 金幣</b>。
+  </div>
+  <div id="quizArea" class="loading">⏳ 載入測驗中...</div>
+</div>
+
+<script>
+const CHAPTER = 21;
+const QUIZ_KEY = 'bonusQuiz';
+let questions = [], idx = 0, correct = 0, answered = [], shuffledOpts = [];
+
+async function loadQuiz() {
+  try {
+    const r = await fetch('quiz.json');
+    const data = await r.json();
+    questions = data.questions || [];
+    answered = new Array(questions.length).fill(null);
+    shuffledOpts = questions.map(q => shuffle(q.answerOptions.map((o,i)=>({...o, origIdx:i}))));
+    renderQuiz();
+  } catch(e) {
+    document.getElementById('quizArea').innerHTML = '<div style="color:#C62828;padding:20px;">⚠️ 載入測驗失敗：' + e.message + '</div>';
+  }
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderQuiz() {
+  const area = document.getElementById('quizArea');
+  if (idx >= questions.length) { showFinal(); return; }
+  const q = questions[idx];
+  const opts = shuffledOpts[idx];
+  const userAnswer = answered[idx];
+  const correctOptIdx = opts.findIndex(o => o.isCorrect);
+  const letters = ['A','B','C','D'];
+
+  area.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="label">題目</div><div class="val">${idx+1} / ${questions.length}</div></div>
+      <div class="stat"><div class="label">答對</div><div class="val" style="color:#2E7D32">${correct}</div></div>
+      <div class="stat"><div class="label">餘下</div><div class="val" style="color:#C62828">${questions.length - idx - 1}</div></div>
+    </div>
+    <div class="progress"><div class="progress-fill" style="width:${Math.round(((idx+1)/questions.length)*100)}%"></div></div>
+    <div class="q-card">
+      <div class="q-num">第 ${idx+1} 題</div>
+      <div class="q-text">${q.question}</div>
+      <div class="opts" id="opts"></div>
+      <div class="rationale" id="rationale"></div>
+      <div class="hint-box" id="hintBox" style="display:none;">💡 <b>提示：</b><span id="hintText"></span></div>
+      <div class="nav">
+        <button class="btn hint" id="hintBtn" onclick="showHint()">💡 提示</button>
+        <button class="btn next" id="nextBtn" onclick="nextQ()" disabled>${idx === questions.length - 1 ? '🎉 完成測驗' : '下一題 ▶'}</button>
+      </div>
+    </div>`;
+
+  document.getElementById('hintText').textContent = q.hint || '';
+
+  const optsDiv = document.getElementById('opts');
+  opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${o.text}</span>`;
+    if (userAnswer !== null) {
+      btn.disabled = true;
+      if (i === correctOptIdx) btn.classList.add('correct');
+      else if (i === userAnswer) btn.classList.add('wrong');
+    } else {
+      btn.onclick = () => pick(i);
+    }
+    optsDiv.appendChild(btn);
+  });
+
+  if (userAnswer !== null) {
+    const isRight = userAnswer === correctOptIdx;
+    const r = document.getElementById('rationale');
+    r.className = 'rationale show ' + (isRight ? 'right' : 'wrong');
+    const chosenOpt = opts[userAnswer];
+    const correctOpt = opts[correctOptIdx];
+    let html = isRight
+      ? `<b>✅ 答對！</b><br>${correctOpt.rationale || ''}`
+      : `<b>❌ 你選了 ${letters[userAnswer]}．</b>正解係 ${letters[correctOptIdx]}：<br><br><b>👉 解釋：</b>${correctOpt.rationale || ''}<br><br><b>你選的錯處：</b>${chosenOpt.rationale || ''}`;
+    r.innerHTML = html;
+    document.getElementById('nextBtn').disabled = false;
+  }
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([area]);
+}
+
+function pick(i) {
+  if (answered[idx] !== null) return;
+  answered[idx] = i;
+  const correctOptIdx = shuffledOpts[idx].findIndex(o => o.isCorrect);
+  if (i === correctOptIdx) correct++;
+  renderQuiz();
+}
+
+function showHint() {
+  document.getElementById('hintBox').style.display = 'block';
+  document.getElementById('hintBtn').disabled = true;
+}
+
+function nextQ() { idx++; renderQuiz(); window.scrollTo({top:0, behavior:'smooth'}); }
+
+function showFinal() {
+  const area = document.getElementById('quizArea');
+  const pct = Math.round((correct / questions.length) * 100);
+  let trophy = '📚', msg = '再溫多陣，挑戰多次！';
+  if (pct >= 90) { trophy = '🏆'; msg = '滿分極佳！你完全掌握本課！'; }
+  else if (pct >= 70) { trophy = '🥇'; msg = '好勁！再睇下錯題就完美。'; }
+  else if (pct >= 50) { trophy = '🥈'; msg = '不錯，繼續努力！'; }
+  area.innerHTML = `<div class="final show">
+    <div class="trophy">${trophy}</div>
+    <div>NLM 額外測驗完成！</div>
+    <div class="score-big">${correct} / ${questions.length} (${pct}%)</div>
+    <p style="margin:10px 0;">${msg}</p>
+    <button class="btn-back" onclick="restart()">🔁 再做一次</button>
+    <a class="btn-back" href="index.html">🏠 返入口</a>
+  </div>`;
+  try {
+    const u = JSON.parse(localStorage.getItem('lwwf_auth_user') || 'null');
+    const k = (u && u.class && u.number) ? `progress_ch${CHAPTER}_${u.class}_${u.number}` : `progress_ch${CHAPTER}`;
+    const p = JSON.parse(localStorage.getItem(k) || '{}');
+    p[QUIZ_KEY] = { done: true, score: correct, total: questions.length, ts: Date.now() };
+    localStorage.setItem(k, JSON.stringify(p));
+    window.dispatchEvent(new CustomEvent('lwwf-progress-changed', { detail: { key: k, action: 'bonusquiz-done', score: correct, total: questions.length } }));
+  } catch(e) {}
+}
+
+function restart() { idx = 0; correct = 0; answered.fill(null); shuffledOpts = questions.map(q => shuffle(q.answerOptions.map((o,i)=>({...o, origIdx:i})))); renderQuiz(); window.scrollTo({top:0, behavior:'smooth'}); }
+
+loadQuiz();
+</script>
+</body>
+</html>

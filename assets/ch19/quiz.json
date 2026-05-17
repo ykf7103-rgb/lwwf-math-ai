@@ -1,0 +1,265 @@
+{
+  "title": "Equations Quiz",
+  "questions": [
+    {
+      "question": "Which of the following mathematical statements is classified as an equation?",
+      "answerOptions": [
+        {
+          "text": "$72 - 38 = 34$",
+          "isCorrect": false,
+          "rationale": "While this is a true numerical statement, it lacks an unknown variable, which is a requirement for an algebraic equation."
+        },
+        {
+          "text": "$49 + B = 80$",
+          "isCorrect": true,
+          "rationale": "An equation must contain both an equals sign and at least one unknown variable representing a number."
+        },
+        {
+          "text": "$3a + 9$",
+          "isCorrect": false,
+          "rationale": "This is an algebraic expression rather than an equation because it does not contain an equals sign to show a relationship of equality."
+        },
+        {
+          "text": "$9E$",
+          "isCorrect": false,
+          "rationale": "This is a single algebraic term and lacks the equality relationship required to be an equation."
+        }
+      ],
+      "hint": "Look for a statement that includes both an equals sign and a letter representing an unknown value."
+    },
+    {
+      "question": "To solve the equation $x + 15 = 42$ using the balance principle, which step should be performed first?",
+      "answerOptions": [
+        {
+          "text": "Add $15$ to both sides of the equation.",
+          "isCorrect": false,
+          "rationale": "Adding $15$ would result in $x + 30$ on the left side, which does not help isolate the variable $x$."
+        },
+        {
+          "text": "Subtract $15$ from only the left side of the equation.",
+          "isCorrect": false,
+          "rationale": "Performing an operation on only one side violates the balance principle and changes the equality of the statement."
+        },
+        {
+          "text": "Subtract $15$ from both sides of the equation.",
+          "isCorrect": true,
+          "rationale": "Subtracting the same value from both sides maintains equality while successfully isolating the variable $x$."
+        },
+        {
+          "text": "Subtract $42$ from both sides of the equation.",
+          "isCorrect": false,
+          "rationale": "While this maintains equality, it leaves the variable $x$ mixed with other numbers, failing to simplify the search for the solution."
+        }
+      ],
+      "hint": "Consider what operation would 'cancel out' the addition of $15$ to leave the variable alone."
+    },
+    {
+      "question": "A student solves the equation $k - 9 = 5$ and concludes that $k = 4$. Based on common procedural errors, what most likely caused this mistake?",
+      "answerOptions": [
+        {
+          "text": "The student added $9$ to both sides of the equation.",
+          "isCorrect": false,
+          "rationale": "If they had added $9$ to both sides, they would have correctly arrived at $k = 14$."
+        },
+        {
+          "text": "The student subtracted $9$ from the right side instead of adding it.",
+          "isCorrect": true,
+          "rationale": "Calculating $5 - 9$ (or $9 - 5$) instead of $5 + 9$ is a common error where the inverse operation is applied incorrectly."
+        },
+        {
+          "text": "The student correctly applied the balance principle.",
+          "isCorrect": false,
+          "rationale": "Applying the principle correctly would involve adding $9$ to both sides to isolate $k$."
+        },
+        {
+          "text": "The student multiplied $5$ by $9$.",
+          "isCorrect": false,
+          "rationale": "Multiplying the values would lead to $45$, which does not match the result of $4$."
+        }
+      ],
+      "hint": "Think about whether the student used addition or subtraction to move the constant term."
+    },
+    {
+      "question": "When verifying the solution $d = 13$ for the equation $d + 8 = 21$, which process correctly follows the formal checking procedure?",
+      "answerOptions": [
+        {
+          "text": "Calculate $21 - 8 = 13$.",
+          "isCorrect": false,
+          "rationale": "This is a way to solve the equation but does not demonstrate the verification of the found solution in the original statement."
+        },
+        {
+          "text": "Substitute $13$ for $d$ in the left side to see if it equals the right side.",
+          "isCorrect": true,
+          "rationale": "Formal verification involves showing that the Left Side ($13 + 8$) results in a value equal to the Right Side ($21$)."
+        },
+        {
+          "text": "Check if $13$ is a whole number.",
+          "isCorrect": false,
+          "rationale": "Being a whole number is a property of the value but does not prove it is the correct solution to the equation."
+        },
+        {
+          "text": "Assume the solution is correct if the steps were followed.",
+          "isCorrect": false,
+          "rationale": "Verification is a separate, required step to ensure no calculation or procedural errors occurred during solving."
+        }
+      ],
+      "hint": "The goal of checking is to prove that the value of the 'Left Side' is identical to the 'Right Side'."
+    },
+    {
+      "question": "If $Q + 29 = 59$, what is the value of the algebraic expression $2Q$?",
+      "answerOptions": [
+        {
+          "text": "$30$",
+          "isCorrect": false,
+          "rationale": "This is only the value of $Q$; the question asks for $2Q$."
+        },
+        {
+          "text": "$60$",
+          "isCorrect": true,
+          "rationale": "First, solving $Q + 29 = 59$ gives $Q = 30$. Then, $2 \\times 30 = 60$."
+        },
+        {
+          "text": "$118$",
+          "isCorrect": false,
+          "rationale": "This is the result of doubling the constant $59$ instead of doubling the solution for $Q$."
+        },
+        {
+          "text": "$88$",
+          "isCorrect": false,
+          "rationale": "This value results from adding the two numbers in the equation ($59 + 29$) rather than solving it."
+        }
+      ],
+      "hint": "First determine the value of the unknown variable, then double it."
+    },
+    {
+      "question": "Which of the following equations has the same solution as $x - 10 = 5$?",
+      "answerOptions": [
+        {
+          "text": "$x + 5 = 20$",
+          "isCorrect": true,
+          "rationale": "The solution to $x - 10 = 5$ is $x = 15$. Substituting $15$ into $x + 5 = 20$ makes it true ($15 + 5 = 20$)."
+        },
+        {
+          "text": "$x - 5 = 20$",
+          "isCorrect": false,
+          "rationale": "The solution here is $x = 25$, which is different from the target solution of $x = 15$."
+        },
+        {
+          "text": "$2x = 10$",
+          "isCorrect": false,
+          "rationale": "The solution here is $x = 5$, which is different from the target solution of $x = 15$."
+        },
+        {
+          "text": "$x + 10 = 5$",
+          "isCorrect": false,
+          "rationale": "This equation has no positive whole number solution, as $x$ would need to be $-5$."
+        }
+      ],
+      "hint": "Find the value of $x$ that satisfies the first equation and test it in the choices."
+    },
+    {
+      "question": "In the equation $100 = 28 + f$, what is the value of the unknown $f$?",
+      "answerOptions": [
+        {
+          "text": "$128$",
+          "isCorrect": false,
+          "rationale": "This is the result of adding the numbers together instead of subtracting $28$ to isolate $f$."
+        },
+        {
+          "text": "$72$",
+          "isCorrect": true,
+          "rationale": "By subtracting $28$ from both sides ($100 - 28 = 28 + f - 28$), we find $f = 72$."
+        },
+        {
+          "text": "$82$",
+          "isCorrect": false,
+          "rationale": "This is likely a basic subtraction error during calculation ($100 - 28$)."
+        },
+        {
+          "text": "$100$",
+          "isCorrect": false,
+          "rationale": "The unknown $f$ cannot be $100$ because $28 + 100$ would be $128$, not $100$."
+        }
+      ],
+      "hint": "The unknown is on the right side, so subtract the constant from both sides to find its value."
+    },
+    {
+      "question": "Given that $u + 15 = 20$ and $k - 5 = 20$, find the value of $k - u$.",
+      "answerOptions": [
+        {
+          "text": "$5$",
+          "isCorrect": false,
+          "rationale": "This is the value of $u$, not the difference between $k$ and $u$."
+        },
+        {
+          "text": "$20$",
+          "isCorrect": true,
+          "rationale": "Solving for $u$ gives $5$. Solving for $k$ gives $25$. The difference $k - u$ is $25 - 5 = 20$."
+        },
+        {
+          "text": "$25$",
+          "isCorrect": false,
+          "rationale": "This is the value of $k$, not the final difference requested."
+        },
+        {
+          "text": "$15$",
+          "isCorrect": false,
+          "rationale": "This value might arise from a calculation error when finding $k$ or $u$."
+        }
+      ],
+      "hint": "Calculate the individual solutions for both variables first, then subtract the smaller from the larger."
+    },
+    {
+      "question": "Which statement about the Balance Principle is FALSE according to the principles of solving equations?",
+      "answerOptions": [
+        {
+          "text": "Equality is maintained if the same number is added to both sides.",
+          "isCorrect": false,
+          "rationale": "This is a true and fundamental part of the balance principle used in solving addition-based equations."
+        },
+        {
+          "text": "Equality is maintained if the same number is subtracted from both sides.",
+          "isCorrect": false,
+          "rationale": "This is a true statement and the primary method for solving equations of the type $x + b = c$."
+        },
+        {
+          "text": "Equality is maintained if you only perform an operation on the side with the variable.",
+          "isCorrect": true,
+          "rationale": "The principle requires operations to be performed on both sides simultaneously; otherwise, the 'balance' is lost."
+        },
+        {
+          "text": "The values on the left and right remain equal as long as changes are identical on both sides.",
+          "isCorrect": false,
+          "rationale": "This is the core definition of the balance principle."
+        }
+      ],
+      "hint": "Think about why a balance scale stays level only when weights are changed exactly the same way on both sides."
+    },
+    {
+      "question": "Solve the equation $w - 36 = 40$ and identify the correct solution for $w$.",
+      "answerOptions": [
+        {
+          "text": "$4$",
+          "isCorrect": false,
+          "rationale": "This is the result of subtracting $36$ from $40$, which is the wrong operation to isolate $w$ in this case."
+        },
+        {
+          "text": "$76$",
+          "isCorrect": true,
+          "rationale": "By adding $36$ to both sides ($w - 36 + 36 = 40 + 36$), we find that $w = 76$."
+        },
+        {
+          "text": "$36$",
+          "isCorrect": false,
+          "rationale": "Choosing $36$ suggests a misunderstanding of how the variable relates to the constant on its side."
+        },
+        {
+          "text": "$80$",
+          "isCorrect": false,
+          "rationale": "This may result from incorrectly doubling the constant $40$ rather than using the balance principle."
+        }
+      ],
+      "hint": "To 'undo' the subtraction of $36$, you must use the opposite mathematical operation."
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "title": "Equation Quiz",
+  "questions": [
+    {
+      "question": "Given the equation $14y = 126$, what is the correct procedural step to solve for $y$ and the resulting value?",
+      "answerOptions": [
+        {
+          "text": "Divide both sides by $14$, resulting in $y = 9$.",
+          "isCorrect": true,
+          "rationale": "To isolate the unknown in a multiplication equation, you must apply the inverse operation by dividing both sides by the coefficient."
+        },
+        {
+          "text": "Subtract $14$ from both sides, resulting in $y = 112$.",
+          "isCorrect": false,
+          "rationale": "This reflects a common error where the student confuses a multiplicative relationship with an additive one."
+        },
+        {
+          "text": "Multiply both sides by $14$, resulting in $y = 1764$.",
+          "isCorrect": false,
+          "rationale": "The student has applied the same operation as the equation rather than the inverse operation needed to isolate the variable."
+        },
+        {
+          "text": "Divide both sides by $126$, resulting in $y = \\frac{1}{9}$.",
+          "isCorrect": false,
+          "rationale": "This error occurs when a student tries to move the larger value to the side of the variable instead of isolating the variable itself."
+        }
+      ],
+      "hint": "Think about the inverse operation of multiplication needed to leave the unknown by itself on one side of the equals sign."
+    },
+    {
+      "question": "Which of the following describes the correct logic for solving the equation $\\frac{x}{8} = 12$?",
+      "answerOptions": [
+        {
+          "text": "Since $x$ is divided by $8$, multiply both sides by $8$ to find that $x = 96$.",
+          "isCorrect": true,
+          "rationale": "Multiplying by the divisor on both sides maintains the balance of the equation while isolating the unknown."
+        },
+        {
+          "text": "Since $12$ is on the right, divide $12$ by $8$ to find that $x = 1.5$.",
+          "isCorrect": false,
+          "rationale": "This mistake stems from a procedural misunderstanding often caused by associating the numbers present with division regardless of their position."
+        },
+        {
+          "text": "Since the unknown is on the left, multiply $12$ by itself to find that $x = 144$.",
+          "isCorrect": false,
+          "rationale": "This logic is unrelated to the operations shown in the equation and reflects a lack of understanding of the balance principle."
+        },
+        {
+          "text": "Since $8$ is the divisor, subtract $8$ from $12$ to find that $x = 4$.",
+          "isCorrect": false,
+          "rationale": "This reflects a common student error of applying subtraction as the 'opposite' of any operation on the left side."
+        }
+      ],
+      "hint": "The goal is to maintain the 'balance' of the scales by performing the same inverse operation on both sides."
+    },
+    {
+      "question": "Solve the equation $125 = 5k$ and determine the correct verification method.",
+      "answerOptions": [
+        {
+          "text": "$k = 25$; Verify by substituting $25$ into $5 \\times 25$ to check if it equals $125$.",
+          "isCorrect": true,
+          "rationale": "Isolating $k$ involves division, and verification is correctly performed by substituting the value back into the original algebraic expression."
+        },
+        {
+          "text": "$k = 625$; Verify by checking if $625 \\div 5 = 125$.",
+          "isCorrect": false,
+          "rationale": "The student has incorrectly multiplied to solve for $k$ and then used a circular verification that confirms their arithmetic but not the solution."
+        },
+        {
+          "text": "$k = 25$; Verify by subtracting $5$ from $125$ to get $120$.",
+          "isCorrect": false,
+          "rationale": "While the answer is correct, the verification method is logically unrelated to checking the validity of a multiplication equation."
+        },
+        {
+          "text": "$k = 120$; Verify by adding $5$ to $120$ to get $125$.",
+          "isCorrect": false,
+          "rationale": "The student treated the equation as $k + 5 = 125$, failing to recognize the implicit multiplication in $5k$."
+        }
+      ],
+      "hint": "First use division to find the value of the unknown, then plug that value back into the side containing the variable."
+    },
+    {
+      "question": "A mathematical word problem states: 'A number $n$ is divided by $7$, and the result is $21$.' Which equation correctly represents this statement?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{n}{7} = 21$",
+          "isCorrect": true,
+          "rationale": "The phrase 'divided by' directly translates to the division operator, and 'the result is' translates to the equals sign."
+        },
+        {
+          "text": "$7n = 21$",
+          "isCorrect": false,
+          "rationale": "This would represent '7 times a number n is 21', confusing multiplication with division."
+        },
+        {
+          "text": "$\\frac{7}{n} = 21$",
+          "isCorrect": false,
+          "rationale": "This indicates that 7 is being divided by $n$, which reverses the order of the divisor and the dividend described in the text."
+        },
+        {
+          "text": "$n - 7 = 21$",
+          "isCorrect": false,
+          "rationale": "The student has substituted the subtraction operation for division, possibly due to a vague association between 'reduction' and division."
+        }
+      ],
+      "hint": "Identify which number is the dividend (the one being split) and which is the divisor based on the order in the sentence."
+    },
+    {
+      "question": "Translate the following into an equation: 'The product of $9$ and a number $w$ is equal to $108$.'",
+      "answerOptions": [
+        {
+          "text": "$9w = 108$",
+          "isCorrect": true,
+          "rationale": "In algebraic notation, a number placed directly next to a variable represents a 'product' or multiplication."
+        },
+        {
+          "text": "$w + 9 = 108$",
+          "isCorrect": false,
+          "rationale": "This represents the 'sum' of 9 and $w$, not the product."
+        },
+        {
+          "text": "$\\frac{w}{9} = 108$",
+          "isCorrect": false,
+          "rationale": "This represents the 'quotient' of $w$ and 9, not the product."
+        },
+        {
+          "text": "$w^9 = 108$",
+          "isCorrect": false,
+          "rationale": "The student has confused multiplication (product) with exponentiation."
+        }
+      ],
+      "hint": "The term 'product' is a mathematical keyword indicating a specific arithmetic operation between two values."
+    },
+    {
+      "question": "A teacher asks students to write an equation for: 'Reducing $x$ by $15$ results in $40$.' Which equation is correct?",
+      "answerOptions": [
+        {
+          "text": "$x - 15 = 40$",
+          "isCorrect": true,
+          "rationale": "The term 'reducing by' denotes subtraction from the original quantity $x$."
+        },
+        {
+          "text": "$15 - x = 40$",
+          "isCorrect": false,
+          "rationale": "This equation implies that $x$ is being subtracted from 15, which contradicts the wording of the problem."
+        },
+        {
+          "text": "$\\frac{x}{15} = 40$",
+          "isCorrect": false,
+          "rationale": "The student may have confused 'reducing' (subtraction) with 'dividing' (partitioning)."
+        },
+        {
+          "text": "$x + 15 = 40$",
+          "isCorrect": false,
+          "rationale": "This represents an increase rather than a reduction."
+        }
+      ],
+      "hint": "Consider which value is being taken away from the other."
+    },
+    {
+      "question": "There are $3$ identical bags of flour with a total weight of $45\\text{ kg}$. If the weight of each bag is $f$, which equation and solution find the weight of one bag?",
+      "answerOptions": [
+        {
+          "text": "$3f = 45$; $f = 15$",
+          "isCorrect": true,
+          "rationale": "Since there are 3 identical bags, their combined weight is 3 times the weight of one bag, and dividing 45 by 3 gives the unit weight."
+        },
+        {
+          "text": "$\\frac{f}{3} = 45$; $f = 135$",
+          "isCorrect": false,
+          "rationale": "This equation incorrectly suggests that one-third of a single bag weighs 45 kg."
+        },
+        {
+          "text": "$f + 3 = 45$; $f = 42$",
+          "isCorrect": false,
+          "rationale": "This treats the number of bags as an additive constant rather than a multiplier for the unknown weight."
+        },
+        {
+          "text": "$3f = 45$; $f = 42$",
+          "isCorrect": false,
+          "rationale": "The equation is correctly identified, but the student performed subtraction instead of division to solve it."
+        }
+      ],
+      "hint": "The total weight is composed of multiple identical units; think about how to represent 'three of something' algebraically."
+    },
+    {
+      "question": "A piece of string of length $L\\text{ cm}$ is cut into $5$ equal segments. Each segment is $12\\text{ cm}$ long. How do you find the original length?",
+      "answerOptions": [
+        {
+          "text": "Set up the equation $\\frac{L}{5} = 12$ and multiply both sides by $5$ to get $L = 60$.",
+          "isCorrect": true,
+          "rationale": "The original length $L$ is divided into 5 parts to equal the length of one segment; multiplying reverses this division."
+        },
+        {
+          "text": "Set up the equation $5L = 12$ and divide both sides by $5$ to get $L = 2.4$.",
+          "isCorrect": false,
+          "rationale": "This incorrectly implies that 5 total lengths of the string equal 12 cm, resulting in a length shorter than a single segment."
+        },
+        {
+          "text": "Set up the equation $L - 5 = 12$ and add $5$ to both sides to get $L = 17$.",
+          "isCorrect": false,
+          "rationale": "This error treats 'cutting into segments' as subtracting a constant value rather than partitioning the whole."
+        },
+        {
+          "text": "Set up the equation $\\frac{L}{12} = 5$ and multiply to get $L = 60$.",
+          "isCorrect": false,
+          "rationale": "While the final answer is correct, the equation logic is slightly flawed as it swaps the segment length and the number of segments."
+        }
+      ],
+      "hint": "The total length is the 'whole' that is being divided into 'parts'."
+    },
+    {
+      "question": "A shopkeeper has a box of $M$ mangoes. After selling $24$ mangoes, $56$ mangoes remain in the box. What was the initial number of mangoes?",
+      "answerOptions": [
+        {
+          "text": "$M = 80$; found by solving $M - 24 = 56$.",
+          "isCorrect": true,
+          "rationale": "The remaining amount is the initial amount minus the amount removed; adding the two known values identifies the original total."
+        },
+        {
+          "text": "$M = 32$; found by solving $M + 24 = 56$.",
+          "isCorrect": false,
+          "rationale": "This error treats the starting amount as the sum of the remainder and the sold amount incorrectly, essentially calculating the difference between the remainder and the sold amount."
+        },
+        {
+          "text": "$M = 1344$; found by solving $\\frac{M}{24} = 56$.",
+          "isCorrect": false,
+          "rationale": "The student has used multiplication/division logic for an additive/subtractive scenario."
+        },
+        {
+          "text": "$M = 80$; found by solving $M = 56 - 24$.",
+          "isCorrect": false,
+          "rationale": "The numerical answer is correct, but the underlying equation logic is flawed as it suggests the total is smaller than the remainder."
+        }
+      ],
+      "hint": "Think about the relationship between the original total, the amount taken away, and what is left over."
+    },
+    {
+      "question": "Why does the teacher's manual emphasize verifying application problems by 'checking against the original problem' rather than just 'checking the equation'?",
+      "answerOptions": [
+        {
+          "text": "Because the initial equation established might be incorrect even if the calculation is performed perfectly.",
+          "isCorrect": true,
+          "rationale": "Verifying against the problem text ensures that the model (the equation) actually matches the real-world situation described."
+        },
+        {
+          "text": "Because checking the equation is only necessary for two-step equations.",
+          "isCorrect": false,
+          "rationale": "Verification is essential for all types of equations to ensure accuracy."
+        },
+        {
+          "text": "Because substituting the value into the equation is mathematically impossible in application problems.",
+          "isCorrect": false,
+          "rationale": "Substitution is always possible; the manual simply suggests it is insufficient for detecting modeling errors."
+        },
+        {
+          "text": "Because application problems do not always have a single 'correct' numerical answer.",
+          "isCorrect": false,
+          "rationale": "Most school-level math application problems have a specific correct answer derived from the given data."
+        }
+      ],
+      "hint": "Consider what happens if you solve the equation $x - 5 = 10$ perfectly, but the actual problem said 'x plus 5'."
+    }
+  ]
+}
