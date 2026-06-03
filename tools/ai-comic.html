@@ -341,8 +341,29 @@ function fitImageCover(ctx, img, x, y, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
+function roundedRect(ctx, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+  ctx.lineTo(x + radius, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
 function ensureScript(script) {
   const defaults = ['讀懂題目', '找出方法', '逐步計算', '檢查答案'];
+  const dialogues = [
+    '線索藏在題目裏！',
+    '方法出場，掌聲鼓勵！',
+    '計算列車準時到站！',
+    '代回檢查，答案站穩！',
+  ];
   const panels = Array.isArray(script?.panels) ? script.panels.slice(0, 4) : [];
   while (panels.length < 4) panels.push({});
   return {
@@ -351,6 +372,7 @@ function ensureScript(script) {
     answer: script?.answer || '',
     panels: panels.map((p, i) => ({
       title: p.title || defaults[i],
+      dialogue: p.dialogue || p.speech || dialogues[i],
       text: p.text || '把這一步用自己的說話講一次。',
       math: p.math || '',
     })),
@@ -398,16 +420,41 @@ async function renderComic(data) {
     const x = col * panelW;
     const y = headerH + row * panelH;
     const pad = 28;
+    const bubbleX = x + pad;
+    const bubbleY = y + 30;
+    const bubbleW = panelW - pad * 2;
+    const bubbleH = 110;
     const boxX = x + pad;
     const boxW = panelW - pad * 2;
-    const boxH = 206;
+    const boxH = 232;
     const boxY = y + panelH - boxH - 24;
 
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    roundedRect(ctx, bubbleX, bubbleY, bubbleW, bubbleH, 22);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(13,71,161,.9)';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(bubbleX + 68, bubbleY + bubbleH - 2);
+    ctx.lineTo(bubbleX + 102, bubbleY + bubbleH + 28);
+    ctx.lineTo(bubbleX + 130, bubbleY + bubbleH - 2);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(13,71,161,.9)';
+    ctx.stroke();
+
+    ctx.fillStyle = '#0D47A1';
+    ctx.font = '900 31px "Microsoft JhengHei", sans-serif';
+    drawWrappedText(ctx, `「${panel.dialogue}」`, bubbleX + 22, bubbleY + 44, bubbleW - 44, 36, 2);
+
     ctx.fillStyle = 'rgba(255,255,255,.92)';
-    ctx.fillRect(boxX, boxY, boxW, boxH);
+    roundedRect(ctx, boxX, boxY, boxW, boxH, 16);
+    ctx.fill();
     ctx.strokeStyle = 'rgba(38,50,56,.82)';
     ctx.lineWidth = 3;
-    ctx.strokeRect(boxX, boxY, boxW, boxH);
+    ctx.stroke();
 
     ctx.fillStyle = '#C62828';
     ctx.font = '900 32px "Microsoft JhengHei", sans-serif';
@@ -422,7 +469,7 @@ async function renderComic(data) {
     }
     ctx.fillStyle = '#263238';
     ctx.font = '700 26px "Microsoft JhengHei", sans-serif';
-    drawWrappedText(ctx, panel.text, boxX + 18, textY, boxW - 36, 32, panel.math ? 3 : 4);
+    drawWrappedText(ctx, panel.text, boxX + 18, textY, boxW - 36, 32, panel.math ? 4 : 5);
   });
 
   ctx.fillStyle = '#E8F5E9';
@@ -438,7 +485,7 @@ async function renderComic(data) {
   downloadLink.href = dataUrl;
   downloadLink.style.display = 'inline-block';
   metaBox.style.display = 'block';
-  metaBox.textContent = `生成來源：${data.provider?.script || 'script'} / ${data.provider?.image || 'image'}；圖片品質：${data.quality || 'low'}`;
+  metaBox.textContent = `生成來源：${data.provider?.script || 'script'} / ${data.provider?.image || 'image'}；模型：${data.requested_model || '未回傳'}；圖片品質：${data.quality || 'low'}；中文由網頁字體疊加。`;
 }
 
 async function generateComic() {
