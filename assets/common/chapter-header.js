@@ -154,7 +154,7 @@
       border-radius: 0 0 12px 12px;
     }
     .mathai-topbar .tb-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-    .mathai-topbar .tb-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .mathai-topbar .tb-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .mathai-topbar .tb-logo {
       font-size: 1.05rem;
       font-weight: 800;
@@ -360,6 +360,7 @@
     const nameStr = `${user.class || ''} ${user.number || ''} 號`;
     right.innerHTML = `
       <button class="tb-btn-action" onclick="window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k','_blank')" title="AI 問功課" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;">🤖 AI問功課</button>
+      <button class="tb-btn-action" onclick="location.href='../../tools/ai-comic.html?from=ch${currentCh}'" title="AI 四格漫畫" style="background:linear-gradient(135deg,#00897B,#F9A825);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,137,123,0.3);white-space:nowrap;">🎨 AI四格漫畫</button>
       <button class="tb-btn-action" onclick="location.href='../../index.html#scores'" title="我的成績" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.3);white-space:nowrap;">🏆 我的成績</button>
       <div class="tb-coin" title="金幣（可換 EDX）"><img src="${coinImg}" onerror="this.src='${coinFallback}'"><span>${coins}</span></div>
       <div class="tb-edx" title="已換取的 EDX 分"><span>🏅</span><span>${edx}</span></div>

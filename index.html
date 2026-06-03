@@ -253,6 +253,14 @@ body::before {
     margin-bottom: 36px;
 }
 
+.login-crest {
+    width: 86px;
+    height: 96px;
+    object-fit: contain;
+    margin: 0 auto 14px;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.16));
+}
+
 .login-header h1 {
     font-size: 1.6rem;
     font-weight: 700;
@@ -431,6 +439,14 @@ body::before {
     gap: 12px;
 }
 
+.topbar-crest {
+    width: 50px;
+    height: 56px;
+    object-fit: contain;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .18));
+}
+
 .topbar-logo {
     font-size: 1.1rem;
     font-weight: 700;
@@ -585,6 +601,8 @@ body::before {
     display: flex;
     align-items: center;
     gap: 16px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .user-info {
@@ -1704,6 +1722,7 @@ body::before {
 <div id="loginPage" class="page active">
     <div class="login-container">
         <div class="login-header">
+            <img class="login-crest" src="assets/common/images/LWWFPNG.png" alt="樂善堂梁黃蕙芳紀念學校校徽">
             <h1>樂善堂梁黃蕙芳紀念學校</h1>
             <h2>數學AI學習區</h2>
             <p class="subtitle">多課題互動學習平台</p>
@@ -2332,6 +2351,7 @@ body::before {
 <div id="studentPage" class="page">
     <div class="topbar">
         <div class="topbar-left">
+            <img class="topbar-crest" src="assets/common/images/LWWFPNG.png" alt="樂善堂梁黃蕙芳紀念學校校徽">
             <span class="topbar-logo">數學AI學習區</span>
             <button class="topbar-chapter-btn" onclick="showChapterSelector()" title="切換課題">
                 <span id="currentChapterLabel">📚 Ch.12 有趣的乘法</span>
@@ -2341,6 +2361,7 @@ body::before {
         <div class="topbar-right">
             <!-- 2026-05-05 用戶要求：long-term sticky buttons -->
             <button class="topbar-action-btn" onclick="window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k','_blank')" title="AI 問功課" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;">🤖 AI問功課</button>
+            <button class="topbar-action-btn" onclick="location.href='tools/ai-comic.html?from=home'" title="AI 四格漫畫" style="background:linear-gradient(135deg,#00897B,#F9A825);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,137,123,0.3);white-space:nowrap;">🎨 AI四格漫畫</button>
             <button class="topbar-action-btn" onclick="switchTab('scores')" title="我的成績" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.3);white-space:nowrap;">🏆 我的成績</button>
             <div id="coinDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFE082);padding:4px 12px;border-radius:20px;font-weight:700;color:#F57F17;font-size:0.9rem;box-shadow:0 2px 8px rgba(255,193,7,0.3);" title="金幣（可換 EDX）">
                 <img src="assets/ch12/images/coin_new.png" style="width:20px;height:20px;"><span id="coinCount">0</span>
@@ -2778,6 +2799,7 @@ body::before {
 <div id="teacherPage" class="page">
     <div class="topbar">
         <div class="topbar-left">
+            <img class="topbar-crest" src="assets/common/images/LWWFPNG.png" alt="樂善堂梁黃蕙芳紀念學校校徽">
             <span class="topbar-logo">數學AI學習區</span>
             <span class="topbar-chapter">教師管理面板</span>
         </div>

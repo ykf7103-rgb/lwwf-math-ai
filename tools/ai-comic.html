@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 四格漫畫</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    color: #263238;
+    background:
+      linear-gradient(135deg, rgba(255,248,225,.92), rgba(227,242,253,.92) 44%, rgba(232,245,233,.92)),
+      url('../assets/common/images/school_bg.jpg') center top / cover fixed;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 18px; }
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    background: rgba(255,255,255,.9);
+    border: 1px solid #CFD8DC;
+    border-radius: 8px;
+    padding: 5px;
+    flex: 0 0 auto;
+  }
+  h1 { margin: 0; font-size: clamp(1.35rem, 3.8vw, 2.1rem); color: #0D47A1; line-height: 1.15; }
+  .subtitle { margin-top: 4px; color: #546E7A; font-size: .95rem; line-height: 1.45; }
+  .back {
+    color: white;
+    background: linear-gradient(135deg, #1565C0, #00897B);
+    text-decoration: none;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 10px 16px;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(21,101,192,.28);
+  }
+  .grid { display: grid; grid-template-columns: minmax(0, 390px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .panel {
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(69,90,100,.16);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 6px 20px rgba(38,50,56,.12);
+  }
+  .panel h2 { margin: 0 0 12px; color: #00695C; font-size: 1.1rem; }
+  .upload {
+    border: 3px dashed #00897B;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #E0F2F1, #F1F8E9);
+    padding: 24px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform .18s, border-color .18s, background .18s;
+  }
+  .upload:hover { transform: translateY(-2px); border-color: #1565C0; background: #E3F2FD; }
+  .upload .icon { font-size: 2.6rem; line-height: 1; margin-bottom: 8px; }
+  .upload strong { color: #00695C; display: block; margin-bottom: 4px; }
+  .upload span { color: #607D8B; font-size: .9rem; }
+  #previewImg {
+    display: none;
+    width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    margin-top: 12px;
+    border-radius: 8px;
+    background: #ECEFF1;
+    border: 1px solid #CFD8DC;
+  }
+  label { display: block; margin: 14px 0 6px; color: #37474F; font-weight: 800; font-size: .92rem; }
+  select, textarea {
+    width: 100%;
+    border: 2px solid #CFD8DC;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font: inherit;
+    background: white;
+    color: #263238;
+    outline: none;
+  }
+  textarea { resize: vertical; min-height: 78px; line-height: 1.45; }
+  select:focus, textarea:focus { border-color: #1565C0; box-shadow: 0 0 0 3px rgba(21,101,192,.12); }
+  .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  button, .download {
+    border: none;
+    border-radius: 9px;
+    padding: 12px 16px;
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+  }
+  #generateBtn { flex: 1; color: white; background: linear-gradient(135deg, #C62828, #F9A825); }
+  #clearBtn { color: #455A64; background: #ECEFF1; }
+  .download { display: none; color: white; background: linear-gradient(135deg, #2E7D32, #00897B); }
+  button:disabled { opacity: .55; cursor: progress; }
+  .status {
+    min-height: 44px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #F5F7FA;
+    color: #546E7A;
+    font-size: .92rem;
+    line-height: 1.5;
+  }
+  .status.error { background: #FFEBEE; color: #B71C1C; }
+  .status.ok { background: #E8F5E9; color: #1B5E20; }
+  .result {
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .result-empty {
+    flex: 1;
+    min-height: 500px;
+    border: 2px dashed #B0BEC5;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #607D8B;
+    padding: 24px;
+    background: rgba(236,239,241,.55);
+  }
+  #comicCanvas {
+    display: none;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(38,50,56,.18);
+    background: white;
+  }
+  .meta {
+    display: none;
+    color: #546E7A;
+    font-size: .86rem;
+    line-height: 1.5;
+  }
+  @media (max-width: 820px) {
+    .wrap { padding: 12px; }
+    .top { align-items: flex-start; }
+    .grid { grid-template-columns: 1fr; }
+    .result { min-height: auto; }
+    .result-empty { min-height: 320px; }
+  }
+  @media (max-width: 520px) {
+    .top { flex-direction: column; }
+    .back { align-self: flex-start; }
+    .actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <img src="../assets/common/images/LWWFPNG.png" alt="樂善堂梁黃蕙芳紀念學校校徽">
+      <div>
+        <h1>AI 四格漫畫</h1>
+        <div class="subtitle">拍攝題目，選擇漫畫類型，生成一幅四格解題圖。</div>
+      </div>
+    </div>
+    <a class="back" id="backLink" href="../index.html">返回數學 AI 學習區</a>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>製作設定</h2>
+      <div class="upload" id="uploadBox">
+        <div class="icon">📷</div>
+        <strong>上載或拍攝題目</strong>
+        <span>支援相片、截圖、工作紙圖片</span>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" capture="environment" hidden>
+      <img id="previewImg" alt="題目預覽">
+
+      <label for="styleSelect">漫畫類型</label>
+      <select id="styleSelect">
+        <option value="shonen">少年冒險漫畫</option>
+        <option value="chibi">Q版校園漫畫</option>
+        <option value="fantasy">奇幻魔法漫畫</option>
+        <option value="mecha">科幻機甲漫畫</option>
+        <option value="watercolor">水彩療癒漫畫</option>
+        <option value="manga_bw">黑白分鏡漫畫</option>
+      </select>
+
+      <label for="noteInput">補充資料</label>
+      <textarea id="noteInput" placeholder="例如：請用小五程度解釋、這題是分數除法、學生卡在列式。"></textarea>
+
+      <div class="actions">
+        <button id="generateBtn" disabled>生成四格漫畫</button>
+        <button id="clearBtn" type="button">清除</button>
+      </div>
+      <div class="status" id="statusBox">請先上載一張題目圖片。</div>
+    </section>
+
+    <section class="panel result">
+      <h2>漫畫預覽</h2>
+      <div class="result-empty" id="emptyResult">
+        完成後，四格漫畫會在這裡顯示。
+      </div>
+      <canvas id="comicCanvas" width="1400" height="1600"></canvas>
+      <div class="meta" id="metaBox"></div>
+      <a class="download" id="downloadLink" download="ai-four-panel-comic.jpg">下載漫畫圖片</a>
+    </section>
+  </div>
+</div>
+
+<script>
+const DEFAULT_WORKER = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
+const params = new URLSearchParams(location.search);
+const WORKER = (params.get('worker') || DEFAULT_WORKER).replace(/\/$/, '');
+
+const fileInput = document.getElementById('fileInput');
+const uploadBox = document.getElementById('uploadBox');
+const previewImg = document.getElementById('previewImg');
+const generateBtn = document.getElementById('generateBtn');
+const clearBtn = document.getElementById('clearBtn');
+const styleSelect = document.getElementById('styleSelect');
+const noteInput = document.getElementById('noteInput');
+const statusBox = document.getElementById('statusBox');
+const canvas = document.getElementById('comicCanvas');
+const emptyResult = document.getElementById('emptyResult');
+const downloadLink = document.getElementById('downloadLink');
+const metaBox = document.getElementById('metaBox');
+const backLink = document.getElementById('backLink');
+
+let uploadedDataUrl = '';
+
+function setupBackLink() {
+  const from = params.get('from') || '';
+  if (/^ch\d{2}$/.test(from)) {
+    backLink.href = `../assets/${from}/index.html`;
+    backLink.textContent = '返回課題';
+  }
+}
+
+function setStatus(text, type) {
+  statusBox.textContent = text;
+  statusBox.className = 'status' + (type ? ` ${type}` : '');
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function fileToDataUrl(file) {
+  const raw = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+  const img = await loadImage(raw);
+  const maxSide = 1400;
+  const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+  const w = Math.max(1, Math.round(img.width * scale));
+  const h = Math.max(1, Math.round(img.height * scale));
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(img, 0, 0, w, h);
+  return c.toDataURL('image/jpeg', 0.86);
+}
+
+async function handleFile(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    setStatus('請選擇圖片檔案。', 'error');
+    return;
+  }
+  setStatus('正在讀取圖片...');
+  try {
+    uploadedDataUrl = await fileToDataUrl(file);
+    previewImg.src = uploadedDataUrl;
+    previewImg.style.display = 'block';
+    generateBtn.disabled = false;
+    setStatus('已讀取圖片，可以生成四格漫畫。', 'ok');
+  } catch (err) {
+    uploadedDataUrl = '';
+    generateBtn.disabled = true;
+    setStatus('圖片讀取失敗，請換一張較清晰的圖片。', 'error');
+  }
+}
+
+function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const chars = Array.from(String(text || ''));
+  let line = '';
+  let lines = 0;
+  for (let i = 0; i < chars.length; i++) {
+    const test = line + chars[i];
+    if (ctx.measureText(test).width > maxWidth && line) {
+      if (lines + 1 >= maxLines) {
+        while (ctx.measureText(line + '…').width > maxWidth && line.length > 0) line = line.slice(0, -1);
+        ctx.fillText(line + '…', x, y);
+        return y + lineHeight;
+      }
+      ctx.fillText(line, x, y);
+      y += lineHeight;
+      lines++;
+      line = chars[i];
+    } else {
+      line = test;
+    }
+  }
+  if (line && lines < maxLines) {
+    ctx.fillText(line, x, y);
+    y += lineHeight;
+  }
+  return y;
+}
+
+function fitImageCover(ctx, img, x, y, w, h) {
+  const scale = Math.max(w / img.width, h / img.height);
+  const sw = w / scale;
+  const sh = h / scale;
+  const sx = (img.width - sw) / 2;
+  const sy = (img.height - sh) / 2;
+  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+}
+
+function ensureScript(script) {
+  const defaults = ['讀懂題目', '找出方法', '逐步計算', '檢查答案'];
+  const panels = Array.isArray(script?.panels) ? script.panels.slice(0, 4) : [];
+  while (panels.length < 4) panels.push({});
+  return {
+    problem: script?.problem || '數學題目',
+    key_idea: script?.key_idea || '按步驟理解題意與計算。',
+    answer: script?.answer || '',
+    panels: panels.map((p, i) => ({
+      title: p.title || defaults[i],
+      text: p.text || '把這一步用自己的說話講一次。',
+      math: p.math || '',
+    })),
+  };
+}
+
+async function renderComic(data) {
+  const script = ensureScript(data.script);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  const headerH = 126;
+  const footerH = 56;
+  const artH = H - headerH - footerH;
+  const panelW = W / 2;
+  const panelH = artH / 2;
+
+  ctx.fillStyle = '#FFFDF7';
+  ctx.fillRect(0, 0, W, H);
+
+  const imgSrc = `data:${data.image_mime || 'image/png'};base64,${data.image}`;
+  const art = await loadImage(imgSrc);
+  fitImageCover(ctx, art, 0, headerH, W, artH);
+
+  ctx.fillStyle = '#0D47A1';
+  ctx.font = '900 42px "Microsoft JhengHei", sans-serif';
+  ctx.fillText('AI 四格漫畫', 44, 58);
+  ctx.fillStyle = '#37474F';
+  ctx.font = '700 24px "Microsoft JhengHei", sans-serif';
+  drawWrappedText(ctx, `題目：${script.problem}`, 44, 94, W - 88, 28, 1);
+
+  ctx.strokeStyle = '#263238';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(0, headerH, W, artH);
+  ctx.beginPath();
+  ctx.moveTo(panelW, headerH);
+  ctx.lineTo(panelW, headerH + artH);
+  ctx.moveTo(0, headerH + panelH);
+  ctx.lineTo(W, headerH + panelH);
+  ctx.stroke();
+
+  script.panels.forEach((panel, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const x = col * panelW;
+    const y = headerH + row * panelH;
+    const pad = 28;
+    const boxX = x + pad;
+    const boxW = panelW - pad * 2;
+    const boxH = 206;
+    const boxY = y + panelH - boxH - 24;
+
+    ctx.fillStyle = 'rgba(255,255,255,.92)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = 'rgba(38,50,56,.82)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    ctx.fillStyle = '#C62828';
+    ctx.font = '900 32px "Microsoft JhengHei", sans-serif';
+    ctx.fillText(`${i + 1}. ${panel.title}`, boxX + 18, boxY + 44);
+
+    let textY = boxY + 86;
+    if (panel.math) {
+      ctx.fillStyle = '#0D47A1';
+      ctx.font = '900 30px "Consolas", "Microsoft JhengHei", sans-serif';
+      textY = drawWrappedText(ctx, panel.math, boxX + 18, textY, boxW - 36, 34, 1);
+      textY += 4;
+    }
+    ctx.fillStyle = '#263238';
+    ctx.font = '700 26px "Microsoft JhengHei", sans-serif';
+    drawWrappedText(ctx, panel.text, boxX + 18, textY, boxW - 36, 32, panel.math ? 3 : 4);
+  });
+
+  ctx.fillStyle = '#E8F5E9';
+  ctx.fillRect(0, H - footerH, W, footerH);
+  ctx.fillStyle = '#1B5E20';
+  ctx.font = '800 23px "Microsoft JhengHei", sans-serif';
+  const footer = script.answer ? `答案：${script.answer}　｜　重點：${script.key_idea}` : `重點：${script.key_idea}`;
+  drawWrappedText(ctx, footer, 44, H - 20, W - 88, 26, 1);
+
+  emptyResult.style.display = 'none';
+  canvas.style.display = 'block';
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+  downloadLink.href = dataUrl;
+  downloadLink.style.display = 'inline-block';
+  metaBox.style.display = 'block';
+  metaBox.textContent = `生成來源：${data.provider?.script || 'script'} / ${data.provider?.image || 'image'}；圖片品質：${data.quality || 'low'}`;
+}
+
+async function generateComic() {
+  if (!uploadedDataUrl) {
+    setStatus('請先上載題目圖片。', 'error');
+    return;
+  }
+  generateBtn.disabled = true;
+  downloadLink.style.display = 'none';
+  metaBox.style.display = 'none';
+  setStatus('正在辨識題目並設計四格腳本，請稍候...');
+
+  try {
+    const res = await fetch(`${WORKER}/math-comic`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        image: uploadedDataUrl,
+        style: styleSelect.value,
+        note: noteInput.value.trim(),
+        chapter: params.get('chapter') || '',
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.image) {
+      throw new Error(data.detail || data.error || `HTTP ${res.status}`);
+    }
+    setStatus('正在把正確文字疊加到四格漫畫...');
+    await renderComic(data);
+    setStatus('已完成四格漫畫。文字由網頁程式疊加，方便保持步驟與公式正確。', 'ok');
+  } catch (err) {
+    setStatus(`生成失敗：${err.message || '請稍後再試。'}`, 'error');
+  } finally {
+    generateBtn.disabled = !uploadedDataUrl;
+  }
+}
+
+function clearAll() {
+  uploadedDataUrl = '';
+  fileInput.value = '';
+  previewImg.removeAttribute('src');
+  previewImg.style.display = 'none';
+  generateBtn.disabled = true;
+  emptyResult.style.display = 'flex';
+  canvas.style.display = 'none';
+  downloadLink.style.display = 'none';
+  metaBox.style.display = 'none';
+  setStatus('請先上載一張題目圖片。');
+}
+
+setupBackLink();
+uploadBox.addEventListener('click', () => fileInput.click());
+uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.style.borderColor = '#C62828'; });
+uploadBox.addEventListener('dragleave', () => { uploadBox.style.borderColor = '#00897B'; });
+uploadBox.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadBox.style.borderColor = '#00897B';
+  handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+generateBtn.addEventListener('click', generateComic);
+clearBtn.addEventListener('click', clearAll);
+</script>
+</body>
+</html>
