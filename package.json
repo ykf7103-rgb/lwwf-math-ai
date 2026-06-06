@@ -1,0 +1,16 @@
+{
+  "name": "lwwf-math-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check public/tools/fraction-kitchen.js",
+    "build": "npm run check",
+    "test": "npm run test:smoke",
+    "test:smoke": "playwright test",
+    "qa": "npm run check && npm run test:smoke"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

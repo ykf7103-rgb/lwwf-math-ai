@@ -9,6 +9,10 @@ cloudflare-worker/
 Thumbs.db
 *.tmp
 *.bak
+*.pid
 .env
 .env.*
+node_modules/
+test-results/
+playwright-report/
 tools/images/*.json
