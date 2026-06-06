@@ -22,6 +22,9 @@
   'use strict';
   if (window.LWWFProgress) return;  // 已 load
 
+  const progressScriptEl = document.currentScript;
+  loadPassportBridge();
+
   const SUPABASE_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHN2d3VnaHFzdHVid3hoem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMTM3NzUsImV4cCI6MjA5MTg4OTc3NX0.DBsx2945F0Vdfhptx-Tr9mVqaa2i9jE4tMQIvjffvII';
   const DEBOUNCE_MS = 600;
@@ -30,6 +33,14 @@
   let sb = null;
   let _isCloudLoading = false;     // suppress hijack while we write cloud→local
   const debouncedSync = {};        // key → timeout id
+
+  function loadPassportBridge() {
+    if (window.LWWFMathPassportBridge || !progressScriptEl || !progressScriptEl.src) return;
+    const bridge = document.createElement('script');
+    bridge.src = progressScriptEl.src.replace('progress.js', 'passport-bridge.js').replace(/\?v=[^&]*/, '') + '?v=20260606a';
+    bridge.defer = true;
+    document.head.appendChild(bridge);
+  }
 
   function getUser() {
     try {

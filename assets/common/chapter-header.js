@@ -22,6 +22,14 @@
     document.head.appendChild(ps);
   }
 
+
+  if (!window.LWWFMathPassportBridge && scriptEl && scriptEl.src) {
+    const bridge = document.createElement('script');
+    bridge.src = scriptEl.src.replace('chapter-header.js', 'passport-bridge.js').replace(/\?v=[^&]*/, '') + '?v=20260606a';
+    bridge.defer = true;
+    document.head.appendChild(bridge);
+  }
+
   const CHAPTERS = [
     { id: '12', title: 'Ch.12 有趣的乘法', emoji: '📚', href: '../../index.html?ch=12' },
     { id: '13', title: 'Ch.13 小數乘法（一）', emoji: '📘', href: '../ch13/index.html' },
@@ -346,7 +354,7 @@
     const right = bar.querySelector('#mathaiTbRight');
     right.innerHTML = '';
     if (!user || (!user.class && !user.number)) {
-      right.innerHTML = `<button class="tb-btn-login" onclick="window.__mathaiLoginOpen()">👤 登入</button>`;
+      right.innerHTML = `<button class="tb-btn-login" onclick="window.__mathaiGoPassport()">??????</button>`;
       return;
     }
     // Prefer unified LWWFProgress.getTotalCoinsAllChapters when available
@@ -412,7 +420,7 @@
   `;
   loginOv.addEventListener('click', () => window.__mathaiLoginClose());
   document.body.appendChild(loginOv);
-
+  window.__mathaiGoPassport = () => { location.href = 'https://lwwf-learning-passport.lwwfaiteams.workers.dev/'; };
   window.__mathaiLoginOpen = () => { loginOv.classList.add('show'); setTimeout(() => document.getElementById('mathaiLoginCls')?.focus(), 100); };
   window.__mathaiLoginClose = () => loginOv.classList.remove('show');
   window.__mathaiLoginSubmit = () => {
