@@ -62,9 +62,9 @@
 | Premium tool audit | 通過，`Ready for premium claim: True` |
 | 正式依賴安全檢查 | `npm audit --omit=dev` 通過，0 vulnerabilities |
 | 內置瀏覽器本機抽查 | 通過，桌面無壞圖、canvas 非空、舊連結導向新版、390px 手機寬度無橫向溢出 |
-| 部署 | 待提交及推送後由 GitHub Pages 更新 |
+| 部署 | 已推送 `a5ea089 Add volume architect learning tool`，GitHub Pages run `27478331620` 成功 |
 
-## 2026-06-13 體積建築師本機驗收摘要
+## 2026-06-13 體積建築師本機與正式站驗收摘要
 
 | 驗證 | 結果 |
 |---|---|
@@ -75,3 +75,4 @@
 | 手機 | 390px 寬度 scrollWidth = clientWidth，無橫向溢出 |
 | Debug | `siteId=lwwf-math-volume-architect`、`passportSiteId=lwwf-math-ai`、`route=volume-builder` |
 | 學習流程 | Playwright 已覆蓋 1 cm³ 任務、缺口任務、Learning Passport mock metadata |
+| 正式站 | `https://ykf7103-rgb.github.io/lwwf-math-ai/tools/volume-architect.html` HTTP 200；桌面與 390px 手機瀏覽器抽查通過，控制台錯誤 0 |
