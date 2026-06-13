@@ -89,3 +89,49 @@ window.__TOOL_DEBUG__
 | 安全 metadata | 只送出工具 ID、分數目標、學生切出的分數、完成數、嘗試數、準確率、策略類型與視覺模型，不包含 token、password、API key、provider 或學生姓名 |
 
 畫面新增 `passport-pill` 狀態：`護照未連線`、`護照已連線`、`護照記錄中`、`護照已記錄`、`護照暫未同步`。
+
+## 8. 體積建築師
+
+更新日期：2026-06-13
+
+**體積建築師 `tools/volume-architect.html`** 是 P5 體積操作型學習工具。它保留舊工具 `tools/volume-builder.html` 的連結入口，但舊頁會導向新版，避免打斷第 16 / 17 課已存在的章節連結。
+
+### 學習任務
+
+| 任務 | 學習重點 |
+|---|---|
+| 一個 1 cm³ 方塊 | 建立體積單位量感 |
+| 建立長方體 | 理解一層數量 × 層數 |
+| 不同形狀，同一體積 | 形狀不同，體積可以相同 |
+| 補回缺口 | 完整長方體減去移走方塊 |
+| 1000 cm³ 的量感 | 連接 1000 cm³ 與 1 L |
+
+### Debug Contract
+
+體積建築師的 debug ID 是 `lwwf-math-volume-architect`，必要欄位包括：
+
+| 欄位 | 用途 |
+|---|---|
+| `dimensions` | 目前長、闊、高 |
+| `removedBlocks` | 已移走方塊數 |
+| `baseArea` | 一層方塊數 |
+| `volume` / `targetVolume` | 目前體積與任務目標 |
+| `viewMode` | 立體模型、分層觀察或補回缺口 |
+| `canvasNonBlank` | 等角方塊畫布是否有內容 |
+| `passportSiteId` / `apiStatus` | Learning Passport 連線及保存狀態 |
+
+不可包含學生姓名、完整帳號、密碼、token、API key、provider 或 Supabase service-role 資料。
+
+### Learning Passport
+
+體積建築師已加入 Learning Passport SDK，正式護照站點 ID 使用 `lwwf-math-ai`。
+
+| 項目 | 設計 |
+|---|---|
+| 進度觸發 | 學生答對每一道體積任務後觸發 |
+| taskId | `volume-architect-[challengeId]` |
+| taskTitle | `體積建築師：任務名稱` |
+| score | 答對任務記錄為 100 |
+| coins | 每道挑戰 6 金幣 |
+| 離線備援 | 未由護照進入時仍保存本機進度 |
+| 安全 metadata | 只送出工具 ID、任務 ID、長闊高、底面積、移走方塊、體積、完成數、嘗試數、準確率、策略類型與視覺模型 |

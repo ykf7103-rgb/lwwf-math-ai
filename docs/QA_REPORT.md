@@ -44,3 +44,34 @@
 | 正式依賴安全檢查 | `npm audit --omit=dev` 通過，0 vulnerabilities |
 
 部署狀態：本機與測試已準備好；正式 GitHub Pages 目前仍需提交及推送後才會出現分數料理台頁面。
+
+## 2026-06-13 體積建築師更新
+
+| 項目 | 結果 |
+|---|---|
+| 新工具頁 | 已新增 `tools/volume-architect.html` |
+| 舊連結 | `tools/volume-builder.html` 已導向新版工具，保留既有章節入口 |
+| 前端邏輯 | 已新增 `public/tools/volume-architect.js` |
+| 主頁入口 | 登入頁及學生 topbar 已加入「體積建築師」入口 |
+| 核心學習 | 1 cm³ 單位、長方體體積、一層數量 × 層數、同體積不同形狀、缺口修正、1000 cm³ = 1 L |
+| Debug contract | 已新增 `window.__TOOL_DEBUG__` 與 `data-tool-debug`，包含長闊高、移走方塊、底面積、體積、目標體積、canvas 狀態與護照狀態 |
+| Learning Passport | 答對任務後會送出 `volume-architect-[challengeId]` 安全 metadata |
+| Playwright | 已新增 `tests/volume-architect.spec.mjs` |
+| `npm run check` | 通過，分數料理台與體積建築師腳本語法正確 |
+| `npm run qa` | 通過，13/13 Playwright tests passed |
+| Premium tool audit | 通過，`Ready for premium claim: True` |
+| 正式依賴安全檢查 | `npm audit --omit=dev` 通過，0 vulnerabilities |
+| 內置瀏覽器本機抽查 | 通過，桌面無壞圖、canvas 非空、舊連結導向新版、390px 手機寬度無橫向溢出 |
+| 部署 | 待提交及推送後由 GitHub Pages 更新 |
+
+## 2026-06-13 體積建築師本機驗收摘要
+
+| 驗證 | 結果 |
+|---|---|
+| 桌面載入 | `體積建築師` 標題、任務一、目標 `1 cm³`、初始體積 `12 cm³` 均正常 |
+| Canvas | Debug `canvasNonBlank=true` |
+| 圖片 | 壞圖 0 |
+| 舊 URL | `/tools/volume-builder.html` 會導向 `/tools/volume-architect.html` |
+| 手機 | 390px 寬度 scrollWidth = clientWidth，無橫向溢出 |
+| Debug | `siteId=lwwf-math-volume-architect`、`passportSiteId=lwwf-math-ai`、`route=volume-builder` |
+| 學習流程 | Playwright 已覆蓋 1 cm³ 任務、缺口任務、Learning Passport mock metadata |

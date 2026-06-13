@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>體積建築師 | LWWF 數學 AI 學習區</title>
+  <style>
+    :root {
+      --ink: #13231f;
+      --muted: #5d6b68;
+      --paper: #f7fbf9;
+      --panel: rgba(255, 255, 255, .95);
+      --line: rgba(19, 35, 31, .14);
+      --teal: #167a72;
+      --blue: #2566a8;
+      --coral: #c95f48;
+      --gold: #c89122;
+      --green: #427d54;
+      --violet: #7256a5;
+      --shadow: 0 18px 42px rgba(18, 34, 31, .15);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(22, 122, 114, .14), rgba(255, 255, 255, .78) 36%),
+        linear-gradient(225deg, rgba(37, 102, 168, .12), transparent 44%),
+        var(--paper);
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: url("../assets/common/images/school_bg.jpg") center top / cover no-repeat;
+      opacity: .13;
+      z-index: -1;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .shell {
+      width: min(1240px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 30px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand img {
+      width: 50px;
+      height: 56px;
+      object-fit: contain;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, .14));
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1.05;
+    }
+
+    .status-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .82);
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .tool-layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.2fr) minmax(310px, .8fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .target-box {
+      min-width: 190px;
+      border: 2px solid rgba(200, 145, 34, .36);
+      border-radius: 8px;
+      background: #fff7df;
+      padding: 12px;
+    }
+
+    .target-box strong {
+      display: block;
+      color: #7f5200;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .canvas-wrap {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .model-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mode-btn {
+      flex: 1 1 130px;
+      border: 1px solid rgba(37, 102, 168, .2);
+      background: #edf4fb;
+      color: var(--blue);
+      padding: 10px 12px;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(180deg, #5ea7e8, var(--blue));
+      color: white;
+    }
+
+    .volume-canvas {
+      width: 100%;
+      height: 430px;
+      border: 1px solid rgba(37, 102, 168, .18);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(232, 244, 251, .95), rgba(244, 251, 248, .98));
+      display: block;
+    }
+
+    .calc-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .calc-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 10px;
+    }
+
+    .calc-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .calc-card strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 64px 1fr 76px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .range-row label {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .range-row input {
+      width: 100%;
+      accent-color: var(--teal);
+    }
+
+    .range-value {
+      min-height: 36px;
+      border-radius: 8px;
+      background: #eef8f6;
+      color: var(--teal);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .feedback {
+      min-height: 76px;
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      background: #edf4fb;
+      padding: 12px;
+      color: #244d76;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .feedback.success {
+      border-color: var(--green);
+      background: #eef8ef;
+      color: #255736;
+    }
+
+    .feedback.retry {
+      border-color: var(--coral);
+      background: #fff1ed;
+      color: #7d321f;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .primary {
+      flex: 1 1 170px;
+      background: linear-gradient(180deg, #ffe08a, var(--gold));
+      color: #302203;
+      padding: 12px 16px;
+    }
+
+    .secondary {
+      flex: 1 1 130px;
+      border: 1px solid rgba(37, 102, 168, .22);
+      background: #eef4fb;
+      color: var(--blue);
+      padding: 12px 16px;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .mission-list,
+    .lesson-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mission-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fbfa;
+    }
+
+    .mission-index {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--blue);
+      color: white;
+      font-weight: 900;
+    }
+
+    .mission-item.done .mission-index {
+      background: var(--green);
+    }
+
+    .mission-item.current {
+      border-color: rgba(200, 145, 34, .52);
+      background: #fff8df;
+    }
+
+    .mission-item strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .mission-item span:last-child,
+    .lesson-list p,
+    .debug-note {
+      color: var(--muted);
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .lesson-list p {
+      margin: 0;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge-row span {
+      border-radius: 999px;
+      background: rgba(114, 86, 165, .12);
+      color: var(--violet);
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 920px) {
+      .tool-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .volume-canvas {
+        height: 380px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .shell {
+        width: min(100% - 18px, 1240px);
+      }
+
+      .topbar,
+      .stage-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .status-strip {
+        justify-content: flex-start;
+      }
+
+      .target-box {
+        min-width: 0;
+      }
+
+      .calc-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .range-row {
+        grid-template-columns: 52px 1fr 64px;
+        gap: 8px;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="../assets/common/images/LWWFPNG.png" alt="LWWF 校章">
+        <div>
+          <p class="eyebrow">LWWF Math Manipulative</p>
+          <h1>體積建築師</h1>
+        </div>
+      </div>
+      <div class="status-strip" aria-label="學習狀態">
+        <span class="pill" data-testid="score-pill">完成 0/5</span>
+        <span class="pill" data-testid="accuracy-pill">準確率 0%</span>
+        <span class="pill" data-testid="passport-pill">護照未連線</span>
+      </div>
+    </header>
+
+    <div class="tool-layout">
+      <section class="panel" aria-label="體積操作區">
+        <div class="stage-head">
+          <div>
+            <p class="eyebrow">任務</p>
+            <h2 data-testid="challenge-title">用 1 cm³ 方塊建成立體</h2>
+            <p data-testid="challenge-prompt">調整長、闊、高，觀察一層有多少方塊，再乘以層數。</p>
+          </div>
+          <div class="target-box">
+            <span>目標</span>
+            <strong data-testid="target-volume">1 cm³</strong>
+          </div>
+        </div>
+
+        <div class="model-toolbar" aria-label="視圖模式">
+          <button class="mode-btn active" type="button" data-view="solid" data-testid="view-solid">立體模型</button>
+          <button class="mode-btn" type="button" data-view="layers" data-testid="view-layers">分層觀察</button>
+          <button class="mode-btn" type="button" data-view="missing" data-testid="view-missing">補回缺口</button>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas class="volume-canvas" width="920" height="520" data-testid="volume-canvas" aria-label="等角方塊體積模型"></canvas>
+          <div class="calc-strip">
+            <div class="calc-card"><span>長 × 闊</span><strong data-testid="base-area">3 × 2 = 6</strong></div>
+            <div class="calc-card"><span>層數</span><strong data-testid="height-readout">2 層</strong></div>
+            <div class="calc-card"><span>缺少方塊</span><strong data-testid="removed-readout">0</strong></div>
+            <div class="calc-card"><span>總體積</span><strong data-testid="volume-readout">12 cm³</strong></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="range-row">
+            <label for="lengthRange">長</label>
+            <input id="lengthRange" data-testid="length-range" type="range" min="1" max="10" value="3">
+            <span class="range-value" data-testid="length-value">3 cm</span>
+          </div>
+          <div class="range-row">
+            <label for="widthRange">闊</label>
+            <input id="widthRange" data-testid="width-range" type="range" min="1" max="10" value="2">
+            <span class="range-value" data-testid="width-value">2 cm</span>
+          </div>
+          <div class="range-row">
+            <label for="heightRange">高</label>
+            <input id="heightRange" data-testid="height-range" type="range" min="1" max="10" value="2">
+            <span class="range-value" data-testid="height-value">2 cm</span>
+          </div>
+          <div class="range-row">
+            <label for="removedRange">移走</label>
+            <input id="removedRange" data-testid="removed-range" type="range" min="0" max="30" value="0">
+            <span class="range-value" data-testid="removed-value">0 個</span>
+          </div>
+
+          <div class="feedback" data-testid="feedback" aria-live="polite">
+            先調整方塊模型，再檢查是否完成任務。
+          </div>
+
+          <div class="action-row">
+            <button class="primary" type="button" data-testid="check-answer">檢查體積</button>
+            <button class="secondary" type="button" data-testid="next-challenge">下一任務</button>
+            <button class="secondary" type="button" data-testid="reset-tool">重設</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="panel">
+          <p class="eyebrow">任務章</p>
+          <h2>由數方塊到用公式</h2>
+          <div class="mission-list" data-testid="mission-list"></div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">觀察重點</p>
+          <h2>學生是否真的理解</h2>
+          <div class="lesson-list">
+            <p>先看底層：長 × 闊 是一層有多少個 1 cm³ 方塊。</p>
+            <p>再看高度：每多一層，就多一整層相同數量的方塊。</p>
+            <p>有缺口時，用完整長方體減去移走方塊，避免只數看得見的面。</p>
+          </div>
+          <div class="badge-row" aria-label="學習策略">
+            <span>一層數量</span>
+            <span>層數</span>
+            <span>缺口修正</span>
+            <span>單位判斷</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Debug</p>
+          <p class="debug-note">本頁提供安全 `window.__TOOL_DEBUG__`，只含模型、任務、進度和護照狀態，不含學生姓名、密碼、token 或任何密鑰。</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script
+    src="https://lwwf-learning-passport.lwwfaiteams.workers.dev/lwwf-passport-sdk.js"
+    data-auto-init="true"
+    data-site-id="lwwf-math-ai"></script>
+  <script src="../public/tools/volume-architect.js"></script>
+</body>
+</html>
