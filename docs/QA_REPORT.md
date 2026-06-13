@@ -76,3 +76,21 @@
 | Debug | `siteId=lwwf-math-volume-architect`、`passportSiteId=lwwf-math-ai`、`route=volume-builder` |
 | 學習流程 | Playwright 已覆蓋 1 cm³ 任務、缺口任務、Learning Passport mock metadata |
 | 正式站 | `https://ykf7103-rgb.github.io/lwwf-math-ai/tools/volume-architect.html` HTTP 200；桌面與 390px 手機瀏覽器抽查通過，控制台錯誤 0 |
+
+## 2026-06-13 面積周界診斷室更新
+
+| 項目 | 結果 |
+|---|---|
+| 新工具頁 | 已新增 `tools/area-perimeter-lab.html` |
+| 前端邏輯 | 已新增 `public/tools/area-perimeter-lab.js` |
+| 主頁入口 | 登入頁及學生 topbar 已加入「面積周界診斷室」入口 |
+| 核心學習 | 分辨「鋪滿」與「圍邊」、面積與周界公式、同面積不同周界、固定周界最大面積、文字題量度判斷 |
+| Debug contract | 已新增 `window.__TOOL_DEBUG__` 與 `data-tool-debug`，包含長闊、學生選擇量度、任務要求量度、面積、周界、目標與護照狀態 |
+| Learning Passport | 答對任務後會送出 `area-perimeter-[challengeId]` 安全 metadata |
+| Playwright | 已新增 `tests/area-perimeter-lab.spec.mjs` |
+| `npm run check` | 通過，三個工具腳本語法正確 |
+| `npm run qa` | 通過，19/19 Playwright tests passed |
+| Premium tool audit | 通過，`Ready for premium claim: True` |
+| 正式依賴安全檢查 | `npm audit --omit=dev` 通過，0 vulnerabilities |
+| 內置瀏覽器本機抽查 | 通過，桌面無壞圖、無橫向溢出；可完成 4 × 3 周界任務；375px 手機寬度無橫向溢出 |
+| 部署 | 尚未推送；需只提交本輪相關檔案，避免夾帶既有章節頁未提交變更 |

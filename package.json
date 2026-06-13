@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check public/tools/fraction-kitchen.js && node --check public/tools/volume-architect.js",
+    "check": "node --check public/tools/fraction-kitchen.js && node --check public/tools/volume-architect.js && node --check public/tools/area-perimeter-lab.js",
     "build": "npm run check",
     "test": "npm run test:smoke",
     "test:smoke": "playwright test",

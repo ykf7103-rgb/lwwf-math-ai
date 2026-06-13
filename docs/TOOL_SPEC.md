@@ -135,3 +135,45 @@ window.__TOOL_DEBUG__
 | coins | 每道挑戰 6 金幣 |
 | 離線備援 | 未由護照進入時仍保存本機進度 |
 | 安全 metadata | 只送出工具 ID、任務 ID、長闊高、底面積、移走方塊、體積、完成數、嘗試數、準確率、策略類型與視覺模型 |
+
+## 9. 面積周界診斷室
+
+更新日期：2026-06-13
+
+**面積周界診斷室 `tools/area-perimeter-lab.html`** 是 P4-P5 幾何概念診斷工具，目標是處理學生常見的「面積與周界混淆」。學生要先判斷題目是「鋪滿」還是「圍邊」，再調整長方形並檢查答案。
+
+### 學習任務
+
+| 任務 | 學習重點 |
+|---|---|
+| 圍欄要看周界 | 見到圍邊、繩、框、欄，要計算四條邊總長 |
+| 鋪地磚要看面積 | 見到鋪滿、塗色、地磚，要計算覆蓋大小 |
+| 同一面積，不同周界 | 同一面積可以有不同形狀與不同周界 |
+| 固定周界找最大面積 | 固定周界下，接近正方形時面積較大 |
+| 文字題先判斷量度 | 先讀語境，再決定用面積或周界 |
+
+### Debug Contract
+
+面積周界診斷室的 debug ID 是 `lwwf-math-area-perimeter-lab`，必要欄位包括：
+
+| 欄位 | 用途 |
+|---|---|
+| `dimensions` | 目前長與闊 |
+| `selectedMeasure` / `requiredMeasure` | 學生選擇的量度與任務要求 |
+| `area` / `perimeter` | 目前面積與周界 |
+| `targetArea` / `targetPerimeter` | 任務目標 |
+| `passportSiteId` / `apiStatus` | Learning Passport 連線及保存狀態 |
+
+不可包含學生姓名、完整帳號、密碼、token、API key、provider 或 Supabase service-role 資料。
+
+### Learning Passport
+
+| 項目 | 設計 |
+|---|---|
+| 進度觸發 | 學生答對每一道面積周界診斷任務後觸發 |
+| taskId | `area-perimeter-[challengeId]` |
+| taskTitle | `面積周界診斷室：任務名稱` |
+| score | 答對任務記錄為 100 |
+| coins | 每道挑戰 5 金幣 |
+| 離線備援 | 未由護照進入時仍保存本機進度 |
+| 安全 metadata | 只送出工具 ID、任務 ID、長闊、學生選擇量度、面積、周界、目標、完成數、嘗試數、準確率、策略類型與視覺模型 |

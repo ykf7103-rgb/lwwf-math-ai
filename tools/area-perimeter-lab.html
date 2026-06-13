@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>面積周界診斷室 | LWWF 數學 AI 學習區</title>
+  <style>
+    :root {
+      --ink: #18231f;
+      --muted: #596963;
+      --paper: #f8fbf6;
+      --panel: rgba(255, 255, 255, .95);
+      --line: rgba(24, 35, 31, .14);
+      --teal: #167a72;
+      --blue: #2566a8;
+      --coral: #c85f48;
+      --gold: #c89122;
+      --green: #3f7d53;
+      --shadow: 0 18px 42px rgba(18, 34, 31, .15);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(22, 122, 114, .16), rgba(255, 255, 255, .78) 36%),
+        linear-gradient(225deg, rgba(200, 95, 72, .12), transparent 42%),
+        var(--paper);
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: url("../assets/common/images/school_bg.jpg") center top / cover no-repeat;
+      opacity: .13;
+      z-index: -1;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .shell {
+      width: min(1240px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 30px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 50px;
+      height: 56px;
+      object-fit: contain;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, .14));
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1.05;
+    }
+
+    .status-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .84);
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .tool-layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.15fr) minmax(310px, .85fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .target-box {
+      min-width: 210px;
+      border: 2px solid rgba(200, 145, 34, .36);
+      border-radius: 8px;
+      background: #fff7df;
+      padding: 12px;
+    }
+
+    .target-box strong {
+      display: block;
+      color: #7f5200;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .measure-switch {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .measure-btn {
+      border: 1px solid rgba(37, 102, 168, .2);
+      background: #eef5fb;
+      color: var(--blue);
+      padding: 10px 12px;
+    }
+
+    .measure-btn.active {
+      background: linear-gradient(180deg, #58a4df, var(--blue));
+      color: white;
+    }
+
+    .model-wrap {
+      display: grid;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .grid-frame {
+      border: 1px solid rgba(22, 122, 114, .18);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(239, 248, 245, .96), rgba(255, 255, 255, .96));
+      padding: 16px;
+    }
+
+    .grid-board {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+      gap: 4px;
+      padding: 10px;
+      border: 5px solid rgba(200, 95, 72, .22);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px rgba(24, 35, 31, .08);
+    }
+
+    .grid-board.measure-perimeter {
+      border-color: var(--coral);
+      box-shadow: inset 0 0 0 2px rgba(200, 95, 72, .25);
+    }
+
+    .grid-board.measure-area {
+      border-color: rgba(63, 125, 83, .55);
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      border-radius: 5px;
+      border: 1px solid rgba(24, 35, 31, .12);
+      background: #e6f1ed;
+      min-width: 0;
+    }
+
+    .measure-area .cell {
+      background: linear-gradient(180deg, #bfe0c6, #8fc69d);
+    }
+
+    .measure-perimeter .cell {
+      background: #eef5f2;
+    }
+
+    .measure-perimeter .cell.edge {
+      background: linear-gradient(180deg, #f6b29d, #d97862);
+      border-color: rgba(142, 55, 39, .4);
+    }
+
+    .calc-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .calc-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 10px;
+    }
+
+    .calc-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .calc-card strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 70px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .range-row label {
+      font-weight: 900;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal);
+    }
+
+    .range-value {
+      color: var(--muted);
+      font-weight: 900;
+      text-align: right;
+    }
+
+    .feedback {
+      border-radius: 8px;
+      background: #eef6f5;
+      border: 1px solid rgba(22, 122, 114, .18);
+      padding: 12px;
+      color: var(--teal);
+      font-weight: 850;
+      line-height: 1.55;
+    }
+
+    .feedback.success {
+      background: #edf8ef;
+      border-color: rgba(63, 125, 83, .24);
+      color: var(--green);
+    }
+
+    .feedback.retry {
+      background: #fff3ea;
+      border-color: rgba(200, 95, 72, .26);
+      color: #a24531;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .primary {
+      flex: 1 1 160px;
+      color: white;
+      background: linear-gradient(180deg, #2aa39a, var(--teal));
+      box-shadow: 0 10px 18px rgba(22, 122, 114, .2);
+      padding: 10px 14px;
+    }
+
+    .secondary {
+      flex: 1 1 120px;
+      color: var(--ink);
+      background: #eef2f1;
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .mission-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .mission-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .mission-item strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .mission-item span:first-child {
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #eef5fb;
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .mission-item.done {
+      border-color: rgba(63, 125, 83, .38);
+      background: #f2fbf4;
+    }
+
+    .mission-item.done span:first-child {
+      background: var(--green);
+      color: white;
+    }
+
+    .lesson-list {
+      display: grid;
+      gap: 10px;
+      line-height: 1.55;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .badge-row span {
+      border-radius: 999px;
+      background: #eef6f5;
+      color: var(--teal);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .debug-note {
+      color: var(--muted);
+      font-weight: 750;
+      line-height: 1.55;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 920px) {
+      .topbar,
+      .stage-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .status-strip {
+        justify-content: flex-start;
+      }
+
+      .tool-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .target-box {
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .shell {
+        width: min(100% - 18px, 1180px);
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .measure-switch,
+      .calc-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .range-row {
+        grid-template-columns: 38px minmax(0, 1fr) 62px;
+      }
+
+      .grid-frame {
+        padding: 10px;
+      }
+
+      .grid-board {
+        gap: 3px;
+        padding: 7px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="../assets/common/images/LWWFPNG.png" alt="LWWF 校章">
+        <div>
+          <p class="eyebrow">LWWF Math Diagnostic Lab</p>
+          <h1>面積周界診斷室</h1>
+        </div>
+      </div>
+      <div class="status-strip" aria-label="學習狀態">
+        <span class="pill" data-testid="score-pill">完成 0/5</span>
+        <span class="pill" data-testid="accuracy-pill">準確率 0%</span>
+        <span class="pill" data-testid="passport-pill">護照未連線</span>
+      </div>
+    </header>
+
+    <div class="tool-layout">
+      <section class="panel" aria-label="面積周界操作區">
+        <div class="stage-head">
+          <div>
+            <p class="eyebrow">任務</p>
+            <h2 data-testid="challenge-title">分清鋪滿和圍邊</h2>
+            <p data-testid="challenge-prompt">調整長方形，選擇應該計算面積還是周界。</p>
+          </div>
+          <div class="target-box">
+            <span>目標</span>
+            <strong data-testid="target-readout">周界 14 cm</strong>
+          </div>
+        </div>
+
+        <div class="measure-switch" aria-label="選擇量度">
+          <button class="measure-btn active" type="button" data-measure="area" data-testid="measure-area">鋪滿：面積</button>
+          <button class="measure-btn" type="button" data-measure="perimeter" data-testid="measure-perimeter">圍邊：周界</button>
+        </div>
+
+        <div class="model-wrap">
+          <div class="grid-frame">
+            <div class="grid-board measure-area" data-testid="grid-board" aria-label="長方形方格模型"></div>
+          </div>
+          <div class="calc-strip">
+            <div class="calc-card"><span>長 × 闊</span><strong data-testid="dimension-readout">3 × 3</strong></div>
+            <div class="calc-card"><span>面積</span><strong data-testid="area-readout">9 cm²</strong></div>
+            <div class="calc-card"><span>周界</span><strong data-testid="perimeter-readout">12 cm</strong></div>
+            <div class="calc-card"><span>正在判斷</span><strong data-testid="selected-measure-readout">面積</strong></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="range-row">
+            <label for="lengthRange">長</label>
+            <input id="lengthRange" data-testid="length-range" type="range" min="1" max="10" value="3">
+            <span class="range-value" data-testid="length-value">3 cm</span>
+          </div>
+          <div class="range-row">
+            <label for="widthRange">闊</label>
+            <input id="widthRange" data-testid="width-range" type="range" min="1" max="10" value="3">
+            <span class="range-value" data-testid="width-value">3 cm</span>
+          </div>
+
+          <div class="feedback" data-testid="feedback" aria-live="polite">
+            先看題目是「鋪滿」還是「圍邊」，再調整長方形。
+          </div>
+
+          <div class="action-row">
+            <button class="primary" type="button" data-testid="check-answer">檢查判斷</button>
+            <button class="secondary" type="button" data-testid="next-challenge">下一任務</button>
+            <button class="secondary" type="button" data-testid="reset-tool">重設</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="panel">
+          <p class="eyebrow">任務章</p>
+          <h2>由概念到解題</h2>
+          <div class="mission-list" data-testid="mission-list"></div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">教師提示</p>
+          <h2>觀察錯因</h2>
+          <div class="lesson-list">
+            <p>學生見到「圍欄、邊、框、繩」時，應該想周界。</p>
+            <p>學生見到「鋪滿、塗色、地磚、面」時，應該想面積。</p>
+            <p>同一周界可以有不同面積，正方形通常能在固定周界下得到較大面積。</p>
+          </div>
+          <div class="badge-row" aria-label="學習策略">
+            <span>鋪滿</span>
+            <span>圍邊</span>
+            <span>同面積比較</span>
+            <span>最大面積</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Debug</p>
+          <p class="debug-note">本頁提供安全 `window.__TOOL_DEBUG__`，只含尺寸、任務、進度和護照狀態，不含學生姓名、密碼、token 或任何密鑰。</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script
+    src="https://lwwf-learning-passport.lwwfaiteams.workers.dev/lwwf-passport-sdk.js"
+    data-auto-init="true"
+    data-site-id="lwwf-math-ai"></script>
+  <script src="../public/tools/area-perimeter-lab.js"></script>
+</body>
+</html>
