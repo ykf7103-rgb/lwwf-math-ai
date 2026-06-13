@@ -93,4 +93,18 @@
 | Premium tool audit | 通過，`Ready for premium claim: True` |
 | 正式依賴安全檢查 | `npm audit --omit=dev` 通過，0 vulnerabilities |
 | 內置瀏覽器本機抽查 | 通過，桌面無壞圖、無橫向溢出；可完成 4 × 3 周界任務；375px 手機寬度無橫向溢出 |
-| 部署 | 尚未推送；需只提交本輪相關檔案，避免夾帶既有章節頁未提交變更 |
+| 部署 | 已推送 `6c0ca54 Add area perimeter diagnostic learning tool`，GitHub Pages run `27481818881` 成功 |
+
+## 2026-06-13 面積周界診斷室本機與正式站驗收摘要
+
+| 驗證 | 結果 |
+|---|---|
+| 本機 QA | `npm run qa` 通過，19/19 Playwright tests passed |
+| Premium audit | `Ready for premium claim: True` |
+| 正式依賴安全檢查 | `npm audit --omit=dev` 通過，0 vulnerabilities |
+| 正式 HTML | `https://ykf7103-rgb.github.io/lwwf-math-ai/tools/area-perimeter-lab.html` HTTP 200，含頁面標題與工具腳本 |
+| 正式 JS | `/public/tools/area-perimeter-lab.js` HTTP 200，含 debug ID `lwwf-math-area-perimeter-lab` |
+| 正式站桌面 | 標題、任務一、debug、圖片載入正常；4 × 3 選周界後完成 1/5 |
+| 正式站手機 | 375px 寬度 scrollWidth = clientWidth，無橫向溢出，無壞圖 |
+| 安全 | 正式站 debug 不含 token、password、API key、provider 或 secret |
+| GitHub Pages 注意 | run `27481818881` 成功，但 GitHub Actions 提示 Node.js 20 actions 將於 2026-09-16 移除；屬 workflow 依賴提醒，不影響本次部署 |
