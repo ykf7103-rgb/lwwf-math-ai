@@ -1,505 +1,350 @@
-// ============================================================
-// LWWF Math Progress Sync — Supabase + localStorage hybrid
-// ----------------------------------------------------------------
-// 解決學生反映的問題：
-//   1. 完成簡報/評估/遊戲沒有顯示完成 → cross-tab + cloud sync
-//   2. 完成後沒有派金幣 → unified computeCoins() rule
-//   3. 完成後下次回來又未完成 → Supabase = source of truth
-//   4. 不同課題畫面金幣數量不同 → consistent localStorage cache
-//
-// 為什麼掂：
-//   • Hijack localStorage.setItem on `progress_ch*` keys → debounced
-//     auto-upsert to Supabase student_progress + student_scores
-//   • On page load, refreshFromCloud(chapter) merges cloud → local
-//   • Cross-tab `storage` event + same-tab `lwwf-progress-changed`
-//     event drive UI re-render
-//   • visibilitychange/pagehide flushes pending writes
-//
-// 51 個既有 sub-page 不需要改一行。Chapter index page 只需加：
-//   window.addEventListener('lwwf-progress-changed', renderProgress);
-// ============================================================
-(function() {
-  'use strict';
-  if (window.LWWFProgress) return;  // 已 load
+// LWWF Math progress adapter.
+// Identity and remote writes are owned by the Learning Passport SDK. Teacher
+// preview uses the Passport bridge's in-memory storage and never calls a remote API.
+(function () {
+  "use strict";
+  if (window.LWWFProgress) return;
 
-  const progressScriptEl = document.currentScript;
-  loadPassportBridge();
+  const scriptElement = document.currentScript;
+  const pending = new Map();
+  const sent = new Map();
+  let syncTimer = null;
 
-  const SUPABASE_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHN2d3VnaHFzdHVid3hoem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMTM3NzUsImV4cCI6MjA5MTg4OTc3NX0.DBsx2945F0Vdfhptx-Tr9mVqaa2i9jE4tMQIvjffvII';
-  const DEBOUNCE_MS = 600;
-  const SCORE_FIELDS = ['score','total','coins','correct','wrong','attempts','passed','duration_sec','items','extras_coins'];
+  function bridge() {
+    return window.LWWFMathPassportBridge || null;
+  }
 
-  let sb = null;
-  let _isCloudLoading = false;     // suppress hijack while we write cloud→local
-  const debouncedSync = {};        // key → timeout id
+  function ensureBridge() {
+    if (bridge()) return bridge().init();
+    return new Promise(function (resolve) {
+      if (!scriptElement || !scriptElement.src) {
+        resolve({ ready: false });
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = scriptElement.src
+        .replace("progress.js", "passport-runtime.js")
+        .replace(/\?v=[^&]*/, "") + "?v=20260822";
+      script.async = false;
+      script.referrerPolicy = "no-referrer";
+      script.onload = function () {
+        bridge().init().then(resolve).catch(function () { resolve({ ready: false }); });
+      };
+      script.onerror = function () { resolve({ ready: false }); };
+      document.head.appendChild(script);
+    });
+  }
 
-  function loadPassportBridge() {
-    if (window.LWWFMathPassportBridge || !progressScriptEl || !progressScriptEl.src) return;
-    const bridge = document.createElement('script');
-    bridge.src = progressScriptEl.src.replace('progress.js', 'passport-bridge.js').replace(/\?v=[^&]*/, '') + '?v=20260606a';
-    bridge.defer = true;
-    document.head.appendChild(bridge);
+  function storage() {
+    return bridge() && bridge().storage;
   }
 
   function getUser() {
-    try {
-      const raw = localStorage.getItem('lwwf_auth_user')
-                || localStorage.getItem('mathai_user')
-                || sessionStorage.getItem('lwwf_auth_user')
-                || sessionStorage.getItem('mathai_user');
-      if (!raw) return null;
-      const u = JSON.parse(raw);
-      return (u && u.class && u.number) ? u : null;
-    } catch { return null; }
+    return bridge() && bridge().getUser();
   }
 
-  async function ensureSupabase() {
-    if (sb) return sb;
-    if (!window.supabase) {
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-        s.onload = resolve;
-        s.onerror = () => reject(new Error('Supabase CDN load failed'));
-        document.head.appendChild(s);
-      });
-    }
-    if (!window.supabase) throw new Error('Supabase global missing after CDN load');
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    return sb;
-  }
-
-  // ---------- mergeBest: 「best of」semantics — 永遠保留最高分/最多金幣 ----------
-  // 解決 bug：學生重玩遊戲拎了低分時，不要用低分 overwrite 高分
-  // 同 cloud sync race condition：不要用 stale cloud 數據 overwrite local 新分
-  const MAX_FIELDS = ['coins','score','correct','passed','total','attempts'];
-  function mergeBest(oldP, newP) {
-    if (!oldP || typeof oldP !== 'object') return newP;
-    if (!newP || typeof newP !== 'object') return oldP;
-    const merged = { ...oldP };
-    Object.entries(newP).forEach(([stepId, freshVal]) => {
-      const oldVal = merged[stepId];
-      if (!oldVal || typeof oldVal !== 'object' || !freshVal || typeof freshVal !== 'object') {
-        merged[stepId] = freshVal;
+  const MAX_FIELDS = ["coins", "score", "correct", "passed", "total", "attempts"];
+  function mergeBest(oldValue, newValue) {
+    if (!oldValue || typeof oldValue !== "object") return newValue || {};
+    if (!newValue || typeof newValue !== "object") return oldValue || {};
+    const merged = Object.assign({}, oldValue);
+    Object.entries(newValue).forEach(function (entry) {
+      const stepId = entry[0];
+      const fresh = entry[1];
+      const old = merged[stepId];
+      if (!old || typeof old !== "object" || !fresh || typeof fresh !== "object") {
+        merged[stepId] = fresh;
         return;
       }
-      // Both are objects: shallow merge with MAX-semantics on numeric fields
-      const out = { ...oldVal, ...freshVal };
-      MAX_FIELDS.forEach(k => {
-        const oldNum = typeof oldVal[k] === 'number' ? oldVal[k] : null;
-        const newNum = typeof freshVal[k] === 'number' ? freshVal[k] : null;
-        if (oldNum !== null && newNum !== null) out[k] = Math.max(oldNum, newNum);
-        else if (oldNum !== null && newNum === null) out[k] = oldNum;  // preserve old if new missing
+      const value = Object.assign({}, old, fresh);
+      MAX_FIELDS.forEach(function (field) {
+        const oldNumber = typeof old[field] === "number" ? old[field] : null;
+        const newNumber = typeof fresh[field] === "number" ? fresh[field] : null;
+        if (oldNumber !== null && newNumber !== null) value[field] = Math.max(oldNumber, newNumber);
+        else if (oldNumber !== null) value[field] = oldNumber;
       });
-      // done: sticky true (once done, always done)
-      if (oldVal.done || freshVal.done) out.done = true;
-      // ts: take latest
-      if (typeof oldVal.ts === 'number' && typeof freshVal.ts === 'number') {
-        out.ts = Math.max(oldVal.ts, freshVal.ts);
-      }
-      merged[stepId] = out;
+      if (old.done || fresh.done) value.done = true;
+      if (typeof old.ts === "number" && typeof fresh.ts === "number") value.ts = Math.max(old.ts, fresh.ts);
+      merged[stepId] = value;
     });
     return merged;
   }
 
-  // ---------- localStorage.setItem hijack ----------
-  const origSetItem = Storage.prototype.setItem;
-  const origGetItem = Storage.prototype.getItem;
-  Storage.prototype.setItem = function(key, value) {
-    let finalValue = value;
-    // 🚨 Apply mergeBest BEFORE write — 防止 sub-page 的 markDone() overwrite 高分
-    if (this === localStorage && !_isCloudLoading && typeof key === 'string') {
-      const m = key.match(/^progress_ch(\d+)_([^_]+)_(.+)$/);
-      if (m) {
-        try {
-          const oldRaw = origGetItem.call(this, key);
-          const oldP = JSON.parse(oldRaw || '{}');
-          const newP = JSON.parse(value || '{}');
-          finalValue = JSON.stringify(mergeBest(oldP, newP));
-        } catch(e) {}
-      }
-    }
-    origSetItem.call(this, key, finalValue);
-    if (this !== localStorage || _isCloudLoading) return;
-    if (typeof key !== 'string') return;
-    // Only watch progress_ch{N}_{class}_{num} (per-user). Anonymous progress_chN ignored.
-    const m = key.match(/^progress_ch(\d+)_([^_]+)_(.+)$/);
-    if (!m) return;
-    const chapter = parseInt(m[1]);
-    const cls = m[2], num = m[3];
-    // Same-tab event for chapter index UI updates
+  function readObject(raw) {
     try {
-      window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
-        detail: { chapter, key, raw: finalValue, source: 'local' }
-      }));
-    } catch {}
-    // Debounced cloud sync — 用 finalValue（已 mergeBest）不是 raw value
-    clearTimeout(debouncedSync[key]);
-    debouncedSync[key] = setTimeout(() => {
-      delete debouncedSync[key];
-      syncToCloud(chapter, cls, num, finalValue).catch(() => {});
-    }, DEBOUNCE_MS);
-  };
-
-  // ---------- Health log + offline queue (2026-05-11 hardening) ----------
-  const OFFLINE_QUEUE_KEY = 'lwwf_sync_offline_queue';
-  const MAX_RETRY = 3;
-  const RETRY_DELAY_MS = [1000, 3000, 8000];  // exponential-ish backoff
-
-  async function logHealth(eventType, details) {
-    try {
-      const sb = await ensureSupabase();
-      const u = getUser();
-      const row = {
-        class: u && u.class ? u.class : null,
-        student_number: u && u.number ? u.number : null,
-        chapter: (details && details.chapter) || null,
-        event_type: eventType,
-        error_msg: (details && details.error) ? String(details.error).slice(0, 1000) : null,
-        latency_ms: (details && typeof details.latencyMs === 'number') ? details.latencyMs : null,
-        user_agent: (navigator.userAgent || '').slice(0, 200),
-      };
-      // Best effort: no await on outer, no toast on failure (avoid recursion)
-      sb.from('sync_health_log').insert(row).then(() => {}, () => {});
-    } catch (e) {}
-  }
-
-  function queueOffline(chapter, cls, num, raw) {
-    try {
-      const q = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
-      q.push({ chapter, cls, num, raw, queued_at: Date.now() });
-      // Cap queue at 50 entries (drop oldest)
-      const trimmed = q.slice(-50);
-      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(trimmed));
-      logHealth('offline_queue', { chapter });
-    } catch (e) {}
-  }
-
-  async function flushOfflineQueue() {
-    let q;
-    try { q = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]'); }
-    catch { return; }
-    if (!q.length) return;
-    const remain = [];
-    for (const item of q) {
-      const ok = await syncToCloud(item.chapter, item.cls, item.num, item.raw, 0, true);
-      if (!ok) remain.push(item);
-    }
-    try { localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(remain)); } catch {}
-    if (q.length > remain.length) {
-      logHealth('offline_flush', { chapter: q[0].chapter, latencyMs: q.length - remain.length });
-      try { showSyncToast(`✅ 補回 ${q.length - remain.length} 筆離線進度`, 'ok'); } catch {}
+      const value = JSON.parse(raw || "{}");
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    } catch (error) {
+      return {};
     }
   }
 
-  // Toast UI for sync feedback (non-blocking, auto-dismiss)
-  function showSyncToast(msg, kind) {
-    try {
-      if (!document.body) return;
-      let el = document.getElementById('__lwwfSyncToast');
-      if (!el) {
-        el = document.createElement('div');
-        el.id = '__lwwfSyncToast';
-        el.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#333;color:white;padding:10px 16px;border-radius:10px;font-size:0.88rem;font-weight:700;z-index:99998;box-shadow:0 4px 14px rgba(0,0,0,0.25);opacity:0;transition:opacity 0.3s;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;max-width:280px;line-height:1.4;';
-        document.body.appendChild(el);
-      }
-      el.style.background = kind === 'fail' ? 'linear-gradient(135deg,#E53935,#B71C1C)' :
-                            kind === 'ok'   ? 'linear-gradient(135deg,#4CAF50,#2E7D32)' :
-                                              'linear-gradient(135deg,#1565C0,#0D47A1)';
-      el.textContent = msg;
-      el.style.opacity = '1';
-      clearTimeout(el.__hideTimer);
-      el.__hideTimer = setTimeout(() => { el.style.opacity = '0'; }, 3500);
-    } catch (e) {}
+  function cleanTaskId(value) {
+    return String(value).replace(/[^a-zA-Z0-9_-]+/g, "-").slice(0, 120);
   }
 
-  // ---------- Cloud sync (with retry + offline queue) ----------
-  // attempt: current retry count (0 = first try)
-  // isReplay: true when called from offline queue (don't re-queue on fail)
-  async function syncToCloud(chapter, cls, num, raw, attempt, isReplay) {
-    attempt = attempt || 0;
-    let p;
-    try { p = JSON.parse(raw || '{}'); } catch { return false; }
-    if (!p || typeof p !== 'object') return false;
-    const start = Date.now();
-    try {
-      const sb = await ensureSupabase();
-      const progRows = [];
-      const scoreRows = [];
-      Object.entries(p).forEach(([stepId, val]) => {
-        if (!val || typeof val !== 'object' || !val.done) return;
-        progRows.push({ class: cls, student_number: num, chapter, step_id: stepId });
-        const detail = {};
-        SCORE_FIELDS.forEach(k => { if (val[k] !== undefined) detail[k] = val[k]; });
-        if (Object.keys(detail).length > 0) {
-          scoreRows.push({
-            class: cls, student_number: num, chapter,
-            activity_key: stepId, data: detail
-          });
-        }
-      });
-      const tasks = [];
-      if (progRows.length > 0) {
-        tasks.push(sb.from('student_progress').upsert(progRows, {
-          onConflict: 'class,student_number,chapter,step_id'
-        }));
+  function clamp(value, min, max) {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.max(min, Math.min(max, number)) : min;
+  }
+
+  function scoreFromValue(value) {
+    const score = Number(value && value.score);
+    const total = Number(value && value.total);
+    const correct = Number(value && value.correct);
+    if (Number.isFinite(correct) && Number.isFinite(total) && total > 0) {
+      return clamp(Math.round(correct / total * 100), 0, 100);
+    }
+    if (Number.isFinite(score) && Number.isFinite(total) && total > 0 && score <= total) {
+      return clamp(Math.round(score / total * 100), 0, 100);
+    }
+    if (Number.isFinite(score)) return clamp(Math.round(score), 0, 100);
+    return value && value.passed ? 100 : 100;
+  }
+
+  function coinsForStep(stepId, value) {
+    if (value && typeof value.coins === "number") return clamp(value.coins, 0, 50);
+    if (/^game\d*$/.test(stepId)) return 3;
+    if (/^(slides|prelearn|assess)\d*$/.test(stepId)) return 2;
+    if (/^(iq_quiz|voice)\d*$/.test(stepId)) return 1;
+    if (/^(infographic|flashcards|song|summary|bonus|bonus-quiz)$/.test(stepId)) return 2;
+    if (stepId === "extras" && value && typeof value.extras_coins === "number") {
+      return clamp(value.extras_coins, 0, 50);
+    }
+    return 1;
+  }
+
+  function labelForStep(stepId) {
+    const labels = {
+      infographic: "資訊圖",
+      flashcards: "學習卡",
+      summary: "課程總結",
+      song: "溫習歌",
+      national: "國安教育",
+      supplementary: "補充教材",
+      bonus: "Bonus 任務",
+      "bonus-quiz": "Bonus 測驗"
+    };
+    if (labels[stepId]) return labels[stepId];
+    const match = String(stepId || "").match(/^([a-z_]+)(\d*)$/i);
+    const prefix = match ? match[1] : String(stepId || "");
+    const number = match && match[2] ? " " + match[2] : "";
+    const prefixes = {
+      slides: "簡報",
+      assess: "評估",
+      game: "遊戲",
+      quiz: "測驗",
+      iq_quiz: "課前預習",
+      prelearn: "課前預習",
+      voice: "錄音題",
+      mc_quiz: "選擇題"
+    };
+    return (prefixes[prefix] || prefix) + number;
+  }
+
+  function taskFor(chapter, stepId, value) {
+    return {
+      taskId: cleanTaskId("math-ch" + chapter + "-" + stepId),
+      taskTitle: "數學 Ch." + chapter + " " + labelForStep(stepId),
+      completed: true,
+      score: scoreFromValue(value),
+      coins: coinsForStep(stepId, value),
+      metadata: {
+        chapter: Number(chapter),
+        activity: cleanTaskId(stepId),
+        source: "lwwf-math-ai"
       }
-      if (scoreRows.length > 0) {
-        tasks.push(sb.from('student_scores').upsert(scoreRows, {
-          onConflict: 'class,student_number,chapter,activity_key'
-        }));
-      }
-      const results = await Promise.all(tasks);
-      const err = results.find(r => r && r.error);
-      const latency = Date.now() - start;
-      if (err && err.error) {
-        // Soft error from Supabase — retry if attempts left
-        if (attempt < MAX_RETRY) {
-          logHealth('sync_retry', { chapter, error: err.error.message, latencyMs: latency });
-          setTimeout(() => syncToCloud(chapter, cls, num, raw, attempt + 1, isReplay),
-                     RETRY_DELAY_MS[attempt] || 8000);
-          return false;
-        }
-        console.warn('[lwwf-progress] sync failed after retries:', err.error);
-        logHealth('sync_fail', { chapter, error: err.error.message, latencyMs: latency });
-        if (!isReplay) {
-          queueOffline(chapter, cls, num, raw);
-          showSyncToast('⚠️ 進度暫存本機，稍後自動上傳', 'fail');
-        }
-        return false;
-      }
-      logHealth('sync_ok', { chapter, latencyMs: latency });
+    };
+  }
+
+  function tasksFromPayload(chapter, payload) {
+    return Object.entries(payload).filter(function (entry) {
+      const value = entry[1];
+      return value && typeof value === "object" &&
+        (value.done === true || value.passed === true || typeof value.score === "number" || typeof value.coins === "number");
+    }).map(function (entry) {
+      return taskFor(chapter, entry[0], entry[1]);
+    });
+  }
+
+  function parseStorageWrite(key, value) {
+    let match = String(key || "").match(/^progress_ch(\d+)_([^_]+)_(.+)$/);
+    if (match) return { chapter: Number(match[1]), payload: readObject(value) };
+    match = String(key || "").match(/^scores_([^_]+)_(.+)$/);
+    if (match) return { chapter: 12, payload: readObject(value) };
+    return null;
+  }
+
+  async function writeTask(task) {
+    const client = bridge();
+    if (!client || !client.canWrite()) return false;
+    const current = client.getState();
+    const remote = current && current.siteProgress && current.siteProgress.tasks &&
+      current.siteProgress.tasks[task.taskId];
+    const previous = sent.get(task.taskId) || remote;
+    if (previous &&
+        Number(previous.score || 0) >= task.score &&
+        Number(previous.coins || 0) >= task.coins &&
+        previous.completed !== false) {
       return true;
-    } catch (e) {
-      const latency = Date.now() - start;
-      console.warn('[lwwf-progress] sync exception:', e);
-      // Network error → retry
-      if (attempt < MAX_RETRY) {
-        logHealth('sync_retry', { chapter, error: String(e), latencyMs: latency });
-        setTimeout(() => syncToCloud(chapter, cls, num, raw, attempt + 1, isReplay),
-                   RETRY_DELAY_MS[attempt] || 8000);
-        return false;
-      }
-      logHealth('sync_fail', { chapter, error: String(e), latencyMs: latency });
-      if (!isReplay) {
-        queueOffline(chapter, cls, num, raw);
-        showSyncToast('⚠️ 網絡未穩，進度暫存本機', 'fail');
-      }
+    }
+    await client.recordProgress(task);
+    sent.set(task.taskId, {
+      completed: true,
+      score: task.score,
+      coins: task.coins
+    });
+    return true;
+  }
+
+  async function syncToPassport(chapter, cls, number, raw) {
+    await ensureBridge();
+    const client = bridge();
+    if (!client || !client.canWrite()) return false;
+    const tasks = tasksFromPayload(Number(chapter), readObject(raw));
+    try {
+      for (const task of tasks) await writeTask(task);
+      pending.delete(String(chapter));
+      showSyncToast("✅ 進度已更新至 Learning Passport", "ok");
+      return true;
+    } catch (error) {
+      pending.set(String(chapter), { chapter: chapter, cls: cls, number: number, raw: raw });
+      showSyncToast("⚠️ 進度暫存於本頁，稍後再試", "fail");
       return false;
     }
   }
 
-  // Try flushing offline queue on page load + every 30s + on visibility
-  function startOfflineQueueFlusher() {
-    flushOfflineQueue().catch(() => {});
-    setInterval(() => flushOfflineQueue().catch(() => {}), 30000);
-    window.addEventListener('online', () => flushOfflineQueue().catch(() => {}));
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') flushOfflineQueue().catch(() => {});
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startOfflineQueueFlusher);
-  } else {
-    setTimeout(startOfflineQueueFlusher, 100);
-  }
-
-  // Pull from Supabase → merge into localStorage (preserves any local-only data)
-  async function refreshFromCloud(chapter) {
+  function queueSync(detail) {
+    if (!detail) return;
     const user = getUser();
-    if (!user) return null;
-    const key = `progress_ch${chapter}_${user.class}_${user.number}`;
-    let local;
-    try { local = JSON.parse(localStorage.getItem(key) || '{}'); } catch { local = {}; }
-    try {
-      const sb = await ensureSupabase();
-      const [progRes, scoreRes] = await Promise.all([
-        sb.from('student_progress')
-          .select('step_id,done_at')
-          .eq('class', user.class).eq('student_number', user.number).eq('chapter', chapter),
-        sb.from('student_scores')
-          .select('activity_key,data')
-          .eq('class', user.class).eq('student_number', user.number).eq('chapter', chapter),
-      ]);
-      // 🚨 Build cloud-side object first, THEN mergeBest with local — 確保
-      // 不會用 stale cloud 數據 overwrite local 新分（race condition）
-      const cloudP = {};
-      (progRes.data || []).forEach(r => {
-        cloudP[r.step_id] = {
-          done: true,
-          ts: r.done_at ? new Date(r.done_at).getTime() : Date.now()
-        };
-      });
-      (scoreRes.data || []).forEach(r => {
-        cloudP[r.activity_key] = Object.assign(
-          cloudP[r.activity_key] || { done: true },
-          r.data || {}
-        );
-      });
-      // mergeBest: 取 max 的 coins/score，保留最新 ts，done 一旦 true 永遠 true
-      const merged = mergeBest(local || {}, cloudP);
-      // Write back without re-firing the hijack
-      _isCloudLoading = true;
-      try { origSetItem.call(localStorage, key, JSON.stringify(merged)); }
-      finally { _isCloudLoading = false; }
-      try {
-        window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
-          detail: { chapter, key, raw: JSON.stringify(merged), source: 'cloud' }
-        }));
-      } catch {}
-      return merged;
-    } catch(e) {
-      console.warn('[lwwf-progress] cloud fetch failed, using local:', e);
-      return local;
+    if (!user || !bridge() || !bridge().canWrite()) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () {
+      syncToPassport(detail.chapter, user.class, user.number, JSON.stringify(detail.payload)).catch(function () {});
+    }, 350);
+  }
+
+  async function flushPending() {
+    if (!bridge() || !bridge().canWrite()) return;
+    for (const item of Array.from(pending.values())) {
+      await syncToPassport(item.chapter, item.cls, item.number, item.raw);
     }
   }
 
-  // ---------- Unified coin computation ----------
-  // Rules (consistent across all chapters):
-  //   game{N}              → val.coins (or default 3)
-  //   slides{N}            → val.coins (or default 2)
-  //   prelearn{N}          → val.coins (or default 2)
-  //   assess{N}            → val.coins (or default 2)
-  //   infographic          → val.coins (or default 2)
-  //   flashcards / bonus   → val.coins (or default 2)
-  //   extras               → items count: 0 if <2, else min(5, n+2)
+  async function refreshFromPassport(chapter) {
+    await ensureBridge();
+    const client = bridge();
+    const currentUser = getUser();
+    if (!client || !currentUser || !client.getState().ready) return null;
+    const store = storage();
+    if (!store) return null;
+    const chapterNumber = Number(chapter);
+    const key = chapterNumber === 12
+      ? "scores_" + currentUser.class + "_" + currentUser.number
+      : "progress_ch" + chapterNumber + "_" + currentUser.class + "_" + currentUser.number;
+    let local = readObject(store.getItem(key));
+    const tasks = (client.getState().siteProgress && client.getState().siteProgress.tasks) || {};
+    const remote = {};
+    Object.entries(tasks).forEach(function (entry) {
+      const match = entry[0].match(new RegExp("^math-ch" + chapterNumber + "-(.+)$"));
+      if (!match) return;
+      const task = entry[1] || {};
+      remote[match[1]] = {
+        done: task.completed !== false,
+        score: Number(task.score || 0),
+        coins: Number(task.coins || 0),
+        ts: task.updatedAt ? new Date(task.updatedAt).getTime() : Date.now()
+      };
+    });
+    local = mergeBest(local, remote);
+    store.setItem(key, JSON.stringify(local));
+    return local;
+  }
+
   function computeCoins(progress) {
-    if (!progress || typeof progress !== 'object') return 0;
-    let total = 0;
-    Object.entries(progress).forEach(([stepId, val]) => {
-      if (!val || !val.done) return;
-      if (typeof val.coins === 'number') {
-        total += val.coins;
-        return;
-      }
-      if (/^game\d*$/.test(stepId)) total += 3;
-      else if (/^(slides|prelearn|assess)\d*$/.test(stepId)) total += 2;
-      else if (stepId === 'infographic' || stepId === 'flashcards' || stepId === 'bonus' || stepId === 'bonus-quiz') total += 2;
-      else if (stepId === 'extras') {
-        if (typeof val.extras_coins === 'number') total += val.extras_coins;
-        else if (val.items && typeof val.items === 'object') {
-          const n = Object.keys(val.items).length;
-          if (n >= 2) total += Math.min(5, n + 2);
-        }
-      }
-    });
-    return total;
+    if (!progress || typeof progress !== "object") return 0;
+    return Object.entries(progress).reduce(function (total, entry) {
+      const value = entry[1];
+      if (!value || !value.done) return total;
+      return total + coinsForStep(entry[0], value);
+    }, 0);
   }
 
-  // Ch12 coin computation — UNIFIED single source of truth (rule #19, 2026-05-03 fix)
-  // 取代之前 root index 的 computeEarnedCoins（hardcoded list 漏 ch12_game2）
-  // 同 getTotalCoinsAllChapters 之前 raw `coins||score`（quiz1 score=10 變 10 coins overdose）
-  // Logic:
-  //   - 任何 entry 有 coins 字段（含 ch12_game2 等 unusual key）→ 計入 v.coins
-  //   - quiz1 / quiz4 沒有 coins 但有 score/total → 用 Math.min(2, round(score/total*2)) derivation
-  //   - 其他沒有 coins 的 entry → 不計（避免 raw score 過大）
   function computeCh12Coins(scores) {
-    if (!scores || typeof scores !== 'object') return 0;
-    let total = 0;
-    Object.entries(scores).forEach(([k, v]) => {
-      if (!v || typeof v !== 'object') return;
-      if (typeof v.coins === 'number') {
-        total += v.coins;
-        return;
+    if (!scores || typeof scores !== "object") return 0;
+    return Object.entries(scores).reduce(function (total, entry) {
+      const key = entry[0];
+      const value = entry[1];
+      if (!value || typeof value !== "object") return total;
+      if (typeof value.coins === "number") return total + value.coins;
+      if ((key === "quiz1" || key === "quiz4") && Number(value.total) > 0) {
+        return total + Math.min(2, Math.round(Number(value.score || 0) / Number(value.total) * 2));
       }
-      if ((k === 'quiz1' || k === 'quiz4') && typeof v.score === 'number'
-          && typeof v.total === 'number' && v.total > 0) {
-        total += Math.min(2, Math.round((v.score / v.total) * 2));
-      }
-    });
-    return total;
+      return total;
+    }, 0);
   }
 
-  // Total coins across all chapters (12-21) for a user.
-  // Reads from localStorage; assumes refreshFromCloud(ch) was called for any chapter
-  // we want fresh data on. (chapter-header.js re-reads on lwwf-progress-changed.)
-  function getTotalCoinsAllChapters(user) {
-    user = user || getUser();
-    if (!user) return 0;
-    let total = 0;
-    // Ch12 stores under scores_{cls}_{num} — use unified computeCh12Coins
-    try {
-      const ch12 = JSON.parse(localStorage.getItem(`scores_${user.class}_${user.number}`) || '{}');
-      total += computeCh12Coins(ch12);
-    } catch {}
-    // Ch13-21 stored under progress_ch{N}_{cls}_{num}
-    for (let ch = 13; ch <= 21; ch++) {
-      try {
-        const k = `progress_ch${ch}_${user.class}_${user.number}`;
-        const p = JSON.parse(localStorage.getItem(k) || '{}');
-        total += computeCoins(p);
-      } catch {}
+  function getTotalCoinsAllChapters(currentUser) {
+    currentUser = currentUser || getUser();
+    const store = storage();
+    if (!currentUser || !store) return 0;
+    let total = computeCh12Coins(readObject(store.getItem("scores_" + currentUser.class + "_" + currentUser.number)));
+    for (let chapter = 13; chapter <= 21; chapter += 1) {
+      total += computeCoins(readObject(store.getItem("progress_ch" + chapter + "_" + currentUser.class + "_" + currentUser.number)));
     }
     return total;
   }
 
-  // ---------- Auto-flush on page hide ----------
-  function flushPending() {
-    Object.keys(debouncedSync).forEach(key => {
-      clearTimeout(debouncedSync[key]);
-      delete debouncedSync[key];
-      const value = localStorage.getItem(key);
-      if (!value) return;
-      const m = key.match(/^progress_ch(\d+)_([^_]+)_(.+)$/);
-      if (m) {
-        // Fire-and-forget (browser may kill but we did our best)
-        syncToCloud(parseInt(m[1]), m[2], m[3], value).catch(() => {});
-      }
-    });
+  function showSyncToast(message, kind) {
+    if (!document.body || (bridge() && bridge().isTeacherPreview())) return;
+    let element = document.getElementById("__lwwfSyncToast");
+    if (!element) {
+      element = document.createElement("div");
+      element.id = "__lwwfSyncToast";
+      element.style.cssText = "position:fixed;bottom:20px;right:20px;color:white;padding:10px 16px;border-radius:10px;font-size:.88rem;font-weight:700;z-index:99998;box-shadow:0 4px 14px rgba(0,0,0,.25);font-family:-apple-system,'Microsoft JhengHei',sans-serif";
+      document.body.appendChild(element);
+    }
+    element.style.background = kind === "fail" ? "#b91c1c" : "#166534";
+    element.textContent = message;
+    clearTimeout(element.__hideTimer);
+    element.__hideTimer = setTimeout(function () { element.remove(); }, 2600);
   }
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') flushPending();
-  });
-  window.addEventListener('pagehide', flushPending);
 
-  // ---------- Cross-tab sync ----------
-  window.addEventListener('storage', (e) => {
-    if (!e.key || !e.key.startsWith('progress_ch')) return;
-    try {
-      window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
-        detail: { key: e.key, raw: e.newValue, source: 'cross-tab' }
-      }));
-    } catch {}
-  });
+  function handleStorageWrite(event) {
+    const detail = event && event.detail;
+    const parsed = detail && parseStorageWrite(detail.key, detail.value);
+    if (parsed) queueSync(parsed);
+  }
 
-  // ---------- Auto-refresh on chapter pages ----------
   function autoRefresh() {
-    // Sub-page or chapter index inside /chN/ → refresh that chapter
-    const m = location.pathname.match(/\/ch(\d+)\//);
-    if (m) refreshFromCloud(parseInt(m[1])).catch(() => {});
-    // Root index.html with ?ch=N URL → refresh that chapter (Ch12 main)
-    const qm = location.search.match(/[?&]ch=(\d+)/);
-    if (qm && !m) refreshFromCloud(parseInt(qm[1])).catch(() => {});
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autoRefresh);
-  } else {
-    setTimeout(autoRefresh, 0);
+    const effectiveUrl = new URL(document.baseURI);
+    const match = effectiveUrl.pathname.match(/\/ch(\d+)\//);
+    if (match) refreshFromPassport(Number(match[1])).catch(function () {});
+    const query = effectiveUrl.search.match(/[?&]ch=(\d+)/);
+    if (query && !match) refreshFromPassport(Number(query[1])).catch(function () {});
   }
 
-  // ---------- Public API ----------
+  window.addEventListener("lwwf-math-storage-write", handleStorageWrite);
+  window.addEventListener("lwwf-math-passport-ready", autoRefresh);
+  window.addEventListener("online", function () { flushPending().catch(function () {}); });
+  window.addEventListener("pagehide", function () { flushPending().catch(function () {}); });
+
   window.LWWFProgress = {
-    getUser,
-    refreshFromCloud,
-    syncToCloud,
-    flushOfflineQueue,
-    logHealth,
-    showSyncToast,
-    computeCoins,
-    computeCh12Coins,                    // NEW 2026-05-03: unified ch12 coin logic
-    getTotalCoinsAllChapters,
-    flushPending,
-    mergeBest,                           // exposed for testing
-    _ensureSupabase: ensureSupabase,
+    getUser: getUser,
+    refreshFromCloud: refreshFromPassport,
+    refreshFromPassport: refreshFromPassport,
+    syncToCloud: syncToPassport,
+    syncToPassport: syncToPassport,
+    flushOfflineQueue: flushPending,
+    flushPending: flushPending,
+    logHealth: async function () { return { ok: true, remote: false }; },
+    showSyncToast: showSyncToast,
+    computeCoins: computeCoins,
+    computeCh12Coins: computeCh12Coins,
+    getTotalCoinsAllChapters: getTotalCoinsAllChapters,
+    mergeBest: mergeBest,
+    _ensureSupabase: async function () { return null; }
   };
 
-  // 🚨 Fire init event so chapter-header.js / chapter index pages can re-render
-  // 用統一 computeCoins() 規則（解決首次 page load 用 legacy getTotalCoins
-  // 漏計 default coins 的 bug）
-  try {
-    window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
-      detail: { source: 'init' }
-    }));
-  } catch {}
+  ensureBridge().then(autoRefresh).catch(function () {});
 })();

@@ -1,26 +1,29 @@
 # 數學 AI 學習區 Safety And Privacy
 
-更新日期：2026-06-13
+更新日期：2026-08-22
 
 ## 本輪 Golden Slice
 
-分數料理台、體積建築師與面積周界診斷室均是純前端操作型工具，不呼叫 AI API，不使用登入資料，不寫入 Supabase。
+分數料理台、體積建築師與面積周界診斷室均是純前端操作型工具，不呼叫 AI API，學生身分只來自中央 Learning Passport，亦不直接寫入 Supabase。
 
-體積建築師與面積周界診斷室會在完成任務時嘗試寫入 Learning Passport 進度；沒有護照狀態時仍可用本機 `localStorage` 完成練習。
+有效學生會透過中央 Passport 寫入安全學習證據。未驗證身分只可使用記憶體；教師巡堂亦只使用記憶體 synthetic sandbox，不會保存或上傳進度。
 
 ## 安全規則
 
 - `window.__TOOL_DEBUG__` 不可輸出學生姓名、班別、學號、密碼、token 或 API key。
-- 本機保存只記錄完成挑戰 id、嘗試次數與分數。
+- 學生本機快取只記錄完成挑戰 id、嘗試次數與分數；不保存帳戶、密碼、token 或 API key。
+- 教師巡堂的 `localStorage`、`sessionStorage` 由記憶體 Map 取代，IndexedDB 拒絕。
 - Learning Passport metadata 只記錄工具 id、主題、任務 id、學習策略、必要尺寸、學生選擇、計算結果、完成數、嘗試次數與準確率。
 - metadata 不可包含學生姓名、登入資料、供應商名稱、proxy 名稱、token、password、apiKey、secret 或原始 provider payload。
 - 不建立公開排行榜。
+- 不使用舊 raw-handoff token 的 `localStorage`／`sessionStorage` 或 URL 轉送；one-time handoff 只由中央 SDK 交換為記憶體 session。
 
 ## AI / 後端
 
 - 本輪分數工具、體積工具與面積周界工具不需要 AI。
 - 若日後新增 AI 錯因診斷，必須經後端 Worker 或 service binding，不可在前端放 provider key。
 - 學生 UI 不顯示 GPT、OpenAI、Alibaba、proxy 等供應商名稱。
+- 教師巡堂會在所有付費／生成入口 fail closed，只提供本機沙盒回應；中央問題回報除外。
 
 ## Debug 合約
 

@@ -5,29 +5,27 @@
 // ============================================================
 (function() {
   const scriptEl = document.currentScript;
+  const effectiveUrl = new URL(document.baseURI);
   const currentCh = scriptEl?.dataset?.currentCh || (() => {
-    const m = location.pathname.match(/\/ch(\d+)\//);
+    const m = effectiveUrl.pathname.match(/\/ch(\d+)\//);
     return m ? m[1] : '12';
   })();
 
-  // Auto-load shared progress sync module (Supabase ↔ localStorage hybrid).
-  // 一加一個 <script> 就辦妥全網所有 sub-page 的進度同步。
-  // 2026-05-11 hardening: progress.js v2 with retry + offline queue + visible toast + health log
-  // Force cache-bust on progress.js to ensure all sub-pages load the hardened version
-  if (!window.LWWFProgress && scriptEl && scriptEl.src) {
-    const ps = document.createElement('script');
-    // Always bump progress.js to v=20260511h regardless of header version
-    ps.src = scriptEl.src.replace('chapter-header.js', 'progress.js').replace(/\?v=[^&]*/, '') + '?v=20260511h';
-    ps.async = false;
-    document.head.appendChild(ps);
-  }
-
-
+  // Load the memory-only Passport runtime before the shared progress adapter.
   if (!window.LWWFMathPassportBridge && scriptEl && scriptEl.src) {
     const bridge = document.createElement('script');
-    bridge.src = scriptEl.src.replace('chapter-header.js', 'passport-bridge.js').replace(/\?v=[^&]*/, '') + '?v=20260606a';
-    bridge.defer = true;
+    bridge.src = scriptEl.src.replace('chapter-header.js', 'passport-runtime.js').replace(/\?v=[^&]*/, '') + '?v=20260822';
+    bridge.async = false;
+    bridge.referrerPolicy = 'no-referrer';
     document.head.appendChild(bridge);
+  }
+
+  // Auto-load the Learning Passport progress adapter.
+  if (!window.LWWFProgress && scriptEl && scriptEl.src) {
+    const ps = document.createElement('script');
+    ps.src = scriptEl.src.replace('chapter-header.js', 'progress.js').replace(/\?v=[^&]*/, '') + '?v=20260822';
+    ps.async = false;
+    document.head.appendChild(ps);
   }
 
   const CHAPTERS = [
@@ -44,17 +42,18 @@
   ];
 
   function buildHref(targetCh) {
-    const subPageMatch = location.pathname.match(/\/ch\d+\/([^/?]+)$/);
+    const subPageMatch = effectiveUrl.pathname.match(/\/ch\d+\/([^/?]+)$/);
     const subPage = subPageMatch ? subPageMatch[1] : 'index.html';
     if (targetCh === '12') return '../../index.html?ch=12';
     return `../ch${targetCh}/${subPage}`;
   }
 
   function getUser() {
-    try {
-      // Main index uses 'lwwf_auth_user'. 'mathai_user' is legacy fallback.
-      return JSON.parse(localStorage.getItem('lwwf_auth_user') || localStorage.getItem('mathai_user') || sessionStorage.getItem('lwwf_auth_user') || sessionStorage.getItem('mathai_user') || 'null');
-    } catch(e) { return null; }
+    return window.LWWFMathPassportBridge?.getUser?.() || null;
+  }
+
+  function getStorage() {
+    return window.LWWFMathPassportBridge?.storage || null;
   }
 
   // Internal helper — MUST mirror LWWFProgress.computeCh12Coins() in progress.js
@@ -110,23 +109,25 @@
     }
     // Fallback: inline computation — MUST match progress.js logic
     let total = 0;
+    const store = getStorage();
+    if (!store) return 0;
     try {
       // 1) Ch12 scores_{cls}_{num} — use unified computeCh12CoinsLocal
       const scoresKey = `scores_${user.class}_${user.number}`;
-      const scores = JSON.parse(localStorage.getItem(scoresKey) || '{}');
+      const scores = JSON.parse(store.getItem(scoresKey) || '{}');
       total += computeCh12CoinsLocal(scores);
       // 2) Ch13+ progress_ch{N}_{cls}_{num}  (per-user) — apply default coin rules
       for (let ch = 13; ch <= 21; ch++) {
         const perUserKey = `progress_ch${ch}_${user.class}_${user.number}`;
-        const perUser = JSON.parse(localStorage.getItem(perUserKey) || '{}');
+        const perUser = JSON.parse(store.getItem(perUserKey) || '{}');
         total += computeCoinsLocal(perUser);
       }
       // 3) Ch13+ legacy shared progress_ch{N} — only if no per-user key found (avoid double-count)
       for (let ch = 13; ch <= 21; ch++) {
         const perUserKey = `progress_ch${ch}_${user.class}_${user.number}`;
         const sharedKey = `progress_ch${ch}`;
-        if (localStorage.getItem(perUserKey)) continue;
-        const shared = JSON.parse(localStorage.getItem(sharedKey) || '{}');
+        if (store.getItem(perUserKey)) continue;
+        const shared = JSON.parse(store.getItem(sharedKey) || '{}');
         total += computeCoinsLocal(shared);
       }
     } catch(e) {}
@@ -137,7 +138,7 @@
   function getEdx(user) {
     if (!user) return 0;
     try {
-      return parseInt(localStorage.getItem(`edx_${user.class}_${user.number}`) || '0', 10) || 0;
+      return parseInt(getStorage()?.getItem(`edx_${user.class}_${user.number}`) || '0', 10) || 0;
     } catch(e) { return 0; }
   }
 
@@ -331,7 +332,7 @@
   const nextCh = curIdx < CHAPTERS.length - 1 ? CHAPTERS[curIdx + 1] : null;
 
   // Detect if on sub-page (game/slides/assess/etc) vs chapter index
-  const onSubPage = /\/ch\d+\/(?!index\.html$)[^/]+\.html/.test(location.pathname);
+  const onSubPage = /\/ch\d+\/(?!index\.html$)[^/]+\.html/.test(effectiveUrl.pathname);
   const subBackHref = onSubPage ? 'index.html' : '../../index.html';
   const subBackLabel = onSubPage ? '← 返回課題' : '← 主頁';
 
@@ -354,7 +355,7 @@
     const right = bar.querySelector('#mathaiTbRight');
     right.innerHTML = '';
     if (!user || (!user.class && !user.number)) {
-      right.innerHTML = `<button class="tb-btn-login" onclick="window.__mathaiGoPassport()">??????</button>`;
+      right.innerHTML = `<button class="tb-btn-login" onclick="window.__mathaiGoPassport()">Learning Passport</button>`;
       return;
     }
     // Prefer unified LWWFProgress.getTotalCoinsAllChapters when available
@@ -363,12 +364,13 @@
       ? window.LWWFProgress.getTotalCoinsAllChapters(user)
       : getTotalCoins(user);
     const edx = getEdx(user);
+    const preview = window.LWWFMathPassportBridge?.isTeacherPreview?.() === true;
     // 2026-05-05 PII 移除：只顯示班別 + 學號，不顯示真實姓名
     const avatarChar = ((user.class || '').charAt(1) || '👤').trim();
     const nameStr = `${user.class || ''} ${user.number || ''} 號`;
     right.innerHTML = `
-      <button class="tb-btn-action" onclick="window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k','_blank')" title="AI 問功課" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;">🤖 AI問功課</button>
-      <button class="tb-btn-action" onclick="location.href='../../tools/ai-comic.html?from=ch${currentCh}'" title="AI 四格漫畫" style="background:linear-gradient(135deg,#00897B,#F9A825);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,137,123,0.3);white-space:nowrap;">🎨 AI四格漫畫</button>
+      <button class="tb-btn-action" onclick="window.__mathaiOpenPaid('homework')" title="${preview ? '教師巡堂不會呼叫生成服務' : 'AI 問功課'}" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;${preview ? 'opacity:.55' : ''}">🤖 AI問功課</button>
+      <button class="tb-btn-action" onclick="window.__mathaiOpenPaid('comic')" title="${preview ? '教師巡堂不會呼叫生成服務' : 'AI 四格漫畫'}" style="background:linear-gradient(135deg,#00897B,#F9A825);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,137,123,0.3);white-space:nowrap;${preview ? 'opacity:.55' : ''}">🎨 AI四格漫畫</button>
       <button class="tb-btn-action" onclick="location.href='../../index.html#scores'" title="我的成績" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;border:none;padding:6px 10px;border-radius:16px;font-weight:700;font-size:0.78rem;cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.3);white-space:nowrap;">🏆 我的成績</button>
       <div class="tb-coin" title="金幣（可換 EDX）"><img src="${coinImg}" onerror="this.src='${coinFallback}'"><span>${coins}</span></div>
       <div class="tb-edx" title="已換取的 EDX 分"><span>🏅</span><span>${edx}</span></div>
@@ -402,62 +404,52 @@
   document.body.appendChild(popup);
   window.__mathaiOpenChapter = () => popup.classList.add('show');
 
-  // Login modal
+  // Passport-required notice. No local class, number or password form is kept.
   const loginOv = document.createElement('div');
   loginOv.className = 'mathai-login-ov';
   loginOv.innerHTML = `
     <div class="mathai-login-modal" onclick="event.stopPropagation()">
-      <h3>👤 登入</h3>
-      <p style="margin:4px 0 12px;color:#666;font-size:0.85rem;">輸入班別 + 學號，你的進度同金幣會跟住你。</p>
-      <div class="row"><label>班別</label><input type="text" id="mathaiLoginCls" placeholder="例：5F" maxlength="10"></div>
-      <div class="row"><label>學號</label><input type="text" id="mathaiLoginNum" placeholder="例：01" maxlength="5"></div>
-      <div class="row"><label>暱稱（可選）</label><input type="text" id="mathaiLoginName" placeholder="例：小明" maxlength="20"></div>
+      <h3>👤 由 Learning Passport 進入</h3>
+      <p style="margin:4px 0 12px;color:#666;font-size:0.85rem;">學生身分只由 Learning Passport 驗證，本網站不再收集或保存班別、學號及密碼。</p>
       <div class="btn-row">
         <button class="cancel" onclick="window.__mathaiLoginClose()">取消</button>
-        <button class="ok" onclick="window.__mathaiLoginSubmit()">✓ 登入</button>
+        <button class="ok" onclick="window.__mathaiGoPassport()">開啟 Learning Passport</button>
       </div>
     </div>
   `;
   loginOv.addEventListener('click', () => window.__mathaiLoginClose());
   document.body.appendChild(loginOv);
-  window.__mathaiGoPassport = () => { location.href = 'https://lwwf-learning-passport.lwwfaiteams.workers.dev/'; };
-  window.__mathaiLoginOpen = () => { loginOv.classList.add('show'); setTimeout(() => document.getElementById('mathaiLoginCls')?.focus(), 100); };
+  window.__mathaiGoPassport = () => { window.top.location.href = 'https://lwwf-learning-passport.lwwfaiteams.workers.dev/'; };
+  window.__mathaiLoginOpen = () => { loginOv.classList.add('show'); };
   window.__mathaiLoginClose = () => loginOv.classList.remove('show');
-  window.__mathaiLoginSubmit = () => {
-    const cls = document.getElementById('mathaiLoginCls').value.trim().toUpperCase();
-    const num = document.getElementById('mathaiLoginNum').value.trim();
-    const name = document.getElementById('mathaiLoginName').value.trim() || `${cls}${num}`;
-    if (!cls || !num) { alert('班別同學號都要填！'); return; }
-    const user = { class: cls, number: num, name, role: 'student' };
-    // Write to BOTH keys for compat with main index
-    localStorage.setItem('lwwf_auth_user', JSON.stringify(user));
-    localStorage.setItem('mathai_user', JSON.stringify(user));
-    sessionStorage.setItem('lwwf_auth_user', JSON.stringify(user));
-    try { localStorage.setItem('lwwf_auth_lastActive', String(Date.now())); } catch(e) {}
-    loginOv.classList.remove('show');
-    renderRight();
-    setTimeout(() => location.reload(), 300);
+  window.__mathaiLoginSubmit = window.__mathaiGoPassport;
+  window.__mathaiOpenPaid = (kind) => {
+    if (!window.LWWFMathPassportBridge?.canUsePaidFeatures?.()) {
+      alert('教師巡堂為唯讀沙盒，不會呼叫付費或生成服務。');
+      return;
+    }
+    if (kind === 'homework') {
+      window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k', '_blank', 'noopener,noreferrer');
+      return;
+    }
+    const url = new URL(`../../tools/ai-comic.html?from=ch${currentCh}`, document.baseURI);
+    if (window.parent !== window && window.parent.LWWFMathShell?.open) window.parent.LWWFMathShell.open(url.toString());
+    else location.href = url.toString();
   };
   window.__mathaiLogout = () => {
-    if (!confirm('確定要登出？進度仍會保留在本機。')) return;
-    localStorage.removeItem('lwwf_auth_user');
-    localStorage.removeItem('mathai_user');
-    localStorage.removeItem('lwwf_auth_lastActive');
-    sessionStorage.removeItem('lwwf_auth_user');
-    sessionStorage.removeItem('mathai_user');
-    renderRight();
-    // Redirect back to main login
-    setTimeout(() => { location.href = '../../index.html'; }, 300);
+    if (!confirm('確定返回 Learning Passport？')) return;
+    window.__mathaiGoPassport();
   };
 
   // Listen for storage changes to refresh coins
   window.addEventListener('storage', () => renderRight());
+  window.addEventListener('lwwf-math-passport-ready', () => renderRight());
   // Listen for unified LWWFProgress events (same-tab + cross-tab + cloud-load)
   window.addEventListener('lwwf-progress-changed', () => renderRight());
 
   function mount() {
     // Check if we're on a game page — if so, use minimal mode (smaller bar, no sticky)
-    const isGamePage = /\/game\d*\.html/.test(location.pathname);
+    const isGamePage = /\/game\d*\.html/.test(effectiveUrl.pathname);
     if (isGamePage) {
       bar.classList.add('minimal');
       // Add CSS for minimal game mode

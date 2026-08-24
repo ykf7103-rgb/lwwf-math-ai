@@ -139,13 +139,16 @@
     .card-title { font-size: 0.88rem; }
     .card-desc { font-size: 0.72rem; }
   }
-</style>
+  .hero-title { display:flex; align-items:center; gap:12px; flex-wrap:wrap; position:relative; z-index:1; }
+  .hero-title h1 { margin:0; }
+  .school-crest { width:68px; height:76px; object-fit:contain; filter:drop-shadow(0 6px 14px rgba(0,0,0,.22)); flex:0 0 auto; }
+  @media (max-width: 600px) { .school-crest { width:52px; height:58px; } .hero-title { gap:9px; } }</style>
 </head>
 <body>
 <div class="wrap">
   <!-- ======== Hero Banner ======== -->
   <div class="hero">
-    <h1>📘 第 13 課 · 小數乘法（一）</h1>
+    <div class="hero-title"><img class="school-crest" src="../common/images/LWWFPNG.png" alt="樂善堂梁黃蕙芳紀念學校校徽"><h1>📘 第 13 課 · 小數乘法（一）</h1></div>
     <div class="subtitle">一位/兩位小數 × 整數 · 估算技巧深化 · 西遊記取經</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
       <span class="coin-tag"><img src="images/coin_new.png" style="width:14px;height:14px;"> 最多可賺 32 金幣</span>

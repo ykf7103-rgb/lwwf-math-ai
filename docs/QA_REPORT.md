@@ -108,3 +108,29 @@
 | 正式站手機 | 375px 寬度 scrollWidth = clientWidth，無橫向溢出，無壞圖 |
 | 安全 | 正式站 debug 不含 token、password、API key、provider 或 secret |
 | GitHub Pages 注意 | run `27481818881` 成功，但 GitHub Actions 提示 Node.js 20 actions 將於 2026-09-16 移除；屬 workflow 依賴提醒，不影響本次部署 |
+
+## 2026-08-22 Learning Passport 安全更新（本機、未部署）
+
+| 驗證 | 結果 |
+|---|---|
+| 正式來源 | `lwwf-math-ai` GitHub Pages 靜態源碼，source confidence 高；沒有 Wrangler／Worker |
+| 帳戶與密碼 | 根頁已移除公開學生名冊、密碼雜湊、教師密碼常量及前端密碼比對 |
+| Passport session | 中央 SDK `init()` 處理 one-time handoff；網站只使用記憶體公開狀態，不保存 raw token |
+| 巡堂身分 | P1–P6 均須符合 site、grade、role、`teacher-preview`、`readOnly`、`synthetic` 完整合約；錯誤站點、P7 或錯誤角色 fail closed |
+| 巡堂儲存 | 根頁、互動工具及既有課題 shell 內的 local/session storage 均為記憶體；IndexedDB 拒絕 |
+| 巡堂遠端邊界 | 不寫進度、不連舊 Supabase、不呼叫付費／生成；中央浮動回報仍可使用 |
+| 正式學生進度 | 三個互動工具以中央 Passport `recordProgress()` 寫入；payload 不含登入資料或秘密 |
+| GitHub Pages build dry-run | `npm run build` 通過 |
+| 完整 QA | `npm run qa` 通過，32/32 Playwright tests passed |
+| 依賴安全檢查 | `npm audit --audit-level=high` 通過，0 vulnerabilities |
+| 手機與圖片 | 三個工具 390px 無水平溢出、broken image 0 |
+| 預變更資料備份 | Secure-Backups DPAPI：5 表、2,356 列、484,324 加密位元組；逐頁及 manifest round-trip、雜湊、欄位與列數驗證通過 |
+| 備份發布邊界 | 本機備份輔助程式已列入 `.gitignore`，不得提交或隨 GitHub Pages 發布 |
+| 部署 | 未部署、未提交、未推送 |
+
+### 殘餘邊界
+
+- 正式站仍是舊版，只有在獲得部署批准並完成 live smoke check 後，才可視為正式切換。
+- 純 GitHub Pages 無法提供同源 `/api/passport/context` Worker proxy；本輪以中央 SDK 公開狀態及 strict scope validation 實作。若中央規格改為強制 server-side context，必須先遷移 runtime。
+- 正式 GitHub Pages 回應目前沒有 CSP 或 `X-Frame-Options`，而現有大量 inline 教材腳本不能在未重構前直接套用嚴格 CSP；此項須在可控制 response headers 的部署層另行處理。
+- 既有教材頁仍保留原有進度程式，但 Learning Passport 正式入口固定進入根頁，再由記憶體 shell 於任何子頁 script 前注入安全層；直接深層 URL 不屬巡堂入口契約。

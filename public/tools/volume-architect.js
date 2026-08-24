@@ -76,6 +76,14 @@
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
+  function passportBridge() {
+    return window.LWWFMathPassportBridge || null;
+  }
+
+  function toolStorage() {
+    return passportBridge()?.storage;
+  }
+
   function currentChallenge() {
     return challenges[state.challengeIndex % challenges.length];
   }
@@ -100,8 +108,8 @@
   }
 
   function passportSnapshot() {
-    const client = window.LWWFPassport;
-    if (!client || typeof client.getState !== "function") return { ready: false };
+    const client = passportBridge();
+    if (!client || typeof client.getState !== "function") return { ready: false, readOnly: true };
     try {
       return client.getState() || { ready: false };
     } catch {
@@ -113,7 +121,9 @@
     const pill = $("[data-testid='passport-pill']");
     if (!pill) return;
     const snapshot = passportSnapshot();
-    if (state.apiStatus === "pending") {
+    if (snapshot.synthetic === true || snapshot.mode === "teacher-preview") {
+      pill.textContent = "教師巡堂沙盒";
+    } else if (state.apiStatus === "pending") {
       pill.textContent = "護照記錄中";
     } else if (state.apiStatus === "saved-passport") {
       pill.textContent = "護照已記錄";
@@ -128,13 +138,13 @@
 
   function saveProgress() {
     try {
-      localStorage.setItem(storageKey, JSON.stringify({
+      toolStorage()?.setItem(storageKey, JSON.stringify({
         completedIds: state.completedIds,
         correct: state.correct,
         attempts: state.attempts,
         updatedAt: new Date().toISOString()
       }));
-      state.saveStatus = "saved-local";
+      state.saveStatus = passportBridge()?.isTeacherPreview() ? "saved-sandbox" : "saved-local";
     } catch (error) {
       state.saveStatus = "failed";
       state.lastError = error instanceof Error ? error.message : "Local progress could not be saved.";
@@ -143,7 +153,7 @@
 
   function loadProgress() {
     try {
-      const raw = localStorage.getItem(storageKey);
+      const raw = toolStorage()?.getItem(storageKey);
       if (!raw) return;
       const payload = JSON.parse(raw);
       state.completedIds = Array.isArray(payload.completedIds)
@@ -158,8 +168,14 @@
   }
 
   async function recordPassportProgress(challenge, summary) {
-    const client = window.LWWFPassport;
+    const client = passportBridge();
     const snapshot = passportSnapshot();
+    if (snapshot.synthetic === true || snapshot.mode === "teacher-preview") {
+      state.apiStatus = "sandbox";
+      updatePassportStatusLabel();
+      updateDebug();
+      return;
+    }
     if (!client || typeof client.recordProgress !== "function" || !snapshot.ready) {
       state.apiStatus = "not-connected";
       updatePassportStatusLabel();
@@ -288,7 +304,7 @@
     state.apiStatus = "not-connected";
     state.lastError = "";
     try {
-      localStorage.removeItem(storageKey);
+      toolStorage()?.removeItem(storageKey);
     } catch {}
     render();
   }
@@ -558,6 +574,10 @@
     window.addEventListener("lwwf-passport-updated", () => {
       updatePassportStatusLabel();
       updateDebug();
+    });
+    window.addEventListener("lwwf-math-passport-ready", () => {
+      loadProgress();
+      render();
     });
     window.addEventListener("resize", () => {
       drawCanvas();

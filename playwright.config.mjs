@@ -1,6 +1,6 @@
 import { defineConfig } from "@playwright/test";
 
-const port = Number(process.env.PLAYWRIGHT_PORT || 8894);
+const port = Number(process.env.PLAYWRIGHT_PORT || 18994);
 const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
@@ -17,9 +17,9 @@ export default defineConfig({
     screenshot: "only-on-failure"
   },
   webServer: {
-    command: `python -m http.server ${port} --bind 127.0.0.1`,
+    command: `node tests/static-server.mjs ${port}`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000
   }
 });

@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://lwwf-learning-passport.lwwfaiteams.workers.dev/lwwf-passport-sdk.js" data-lwwf-math-passport-sdk="true" data-auto-init="false" referrerpolicy="no-referrer"></script>
+<script src="../common/passport-runtime.js?v=20260822" referrerpolicy="no-referrer"></script>
 <title>第16課 · AI 問功課 - 數學小老師</title>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -313,8 +315,7 @@ const errorOverlay = document.getElementById('errorOverlay');
 
 /* ===== init ===== */
 (function init() {
-  const params = new URLSearchParams(window.location.search);
-  WORKER_ENDPOINT = params.get('worker') || WORKER_URL;
+  WORKER_ENDPOINT = WORKER_URL;
 
   if (!WORKER_ENDPOINT || WORKER_ENDPOINT.includes('YOUR-USERNAME')) {
     showError('\u{2699}\u{FE0F}', 'AI 功能仲未設定好\n\n請通知老師部署 Cloudflare Worker。');
@@ -426,6 +427,9 @@ function removeTypingIndicator() {
 
 /* ===== Worker API ===== */
 async function sendToWorker(text, imageBase64) {
+  if (window.LWWFMathPassportBridge?.isTeacherPreview?.()) {
+    return '教師巡堂沙盒示範：先圈出題目的已知條件，再說出要找甚麼，最後選擇合適的算式。此示範不會上載圖片或呼叫生成服務。';
+  }
   // Build current user message
   const userText = imageBase64
     ? ('學生上傳了這張功課圖片。請用引導式學習方式幫助他們理解題目，不要直接給答案。' + (text ? ' 學生的問題：' + text : ''))
@@ -633,6 +637,7 @@ btnMic.addEventListener('click', toggleRecording);
 
 /* ===== AI-generated illustration ===== */
 async function generateIllustration(prompt, msgRow) {
+  if (window.LWWFMathPassportBridge?.isTeacherPreview?.()) return;
   try {
     // Add a placeholder loader inside the bubble
     const bubble = msgRow.querySelector('.msg-bubble');

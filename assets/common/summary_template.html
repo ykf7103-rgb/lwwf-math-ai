@@ -92,7 +92,7 @@ const RUBRIC = `__RUBRIC__`;
 const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
 let recognition = null, isRecording = false, transcript = '';
 
-function getUser(){ try { return JSON.parse(localStorage.getItem('lwwf_auth_user')||'null'); } catch(e){ return null; } }
+function getUser(){ return window.LWWFMathPassportBridge?.getUser?.() || null; }
 
 function setupRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -249,7 +249,7 @@ function showResult(data, transcriptText) {
       transcript: transcriptText.slice(0, 200),
       feedback: feedback.slice(0, 200)
     };
-    localStorage.setItem(k, JSON.stringify(p));
+    window.LWWFMathPassportBridge?.storage?.setItem(k, JSON.stringify(p));
     // Trigger global update
     window.dispatchEvent(new CustomEvent('lwwf-progress-changed', {
       detail: { key: k, action: 'summary-done', score, coins }

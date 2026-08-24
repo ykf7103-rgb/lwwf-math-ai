@@ -16,3 +16,6 @@ node_modules/
 test-results/
 playwright-report/
 tools/images/*.json
+
+# Local-only encrypted backup helper; never publish through GitHub Pages.
+scripts/backup-live-supabase-dpapi.ps1

@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>樂善堂梁黃蕙芳紀念學校 - 數學AI學習區</title>
+    <script
+        src="https://lwwf-learning-passport.lwwfaiteams.workers.dev/lwwf-passport-sdk.js"
+        data-lwwf-math-passport-sdk="true"
+        data-auto-init="false"
+        referrerpolicy="no-referrer"></script>
+    <script src="assets/common/passport-runtime.js?v=20260822" referrerpolicy="no-referrer"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -143,6 +149,7 @@ body::before {
 
 /* 右側更新記錄 panel — absolute positioned so login stays perfectly centered */
 .update-log {
+    display: none !important;
     position: absolute;
     top: 50%;
     right: 40px;
@@ -1725,9 +1732,48 @@ body::before {
     .slide-viewer-wrap img { border-radius: 8px; }
     .game-select-grid { grid-template-columns: 1fr; }
 }
+
+.passport-entry {
+    padding: 22px;
+    text-align: center;
+    background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+    border: 2px solid #c4b5fd;
+    border-radius: 16px;
+}
+.passport-entry h3 { margin-bottom: 8px; color: #4c1d95; }
+.passport-entry p { color: #546E7A; line-height: 1.6; margin-bottom: 14px; }
+.passport-entry .btn { display: inline-flex; text-decoration: none; }
+.learning-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 2147481000;
+    background: #f8fafc;
+    display: none;
+    flex-direction: column;
+}
+.learning-shell.show { display: flex; }
+.learning-shell-bar {
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(15,23,42,.12);
+}
+.learning-shell-bar button {
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 14px;
+    background: #4c1d95;
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+}
+.learning-shell-title { font-weight: 800; color: #312e81; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.learning-shell-frame { flex: 1; width: 100%; border: 0; background: #fff; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/common/progress.js?v=20260606a"></script>
+    <script src="assets/common/progress.js?v=20260822"></script>
 </head>
 <body>
 
@@ -1746,45 +1792,10 @@ body::before {
             <a class="login-tool-link" data-testid="area-perimeter-home-link" href="tools/area-perimeter-lab.html">面積周界診斷室</a>
         </div>
 
-        <div class="login-tabs">
-            <button class="login-tab active" onclick="switchLoginTab('student')">學生</button>
-            <button class="login-tab" onclick="switchLoginTab('teacher')">教師</button>
-        </div>
-
-        <div id="studentLoginForm" class="login-form active">
-            <div class="form-group">
-                <label>班別</label>
-                <select id="classSelect" onchange="updateStudentList()">
-                    <option value="">請選擇班別</option>
-                    <option value="5A">5A</option>
-                    <option value="5B">5B</option>
-                    <option value="5C">5C</option>
-                    <option value="5D">5D</option>
-                    <option value="5F">5F (測試)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>學號</label>
-                <select id="studentSelect" disabled>
-                    <option value="">請先選擇班別</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>密碼</label>
-                <input type="password" id="studentPassword" placeholder="請輸入密碼" maxlength="10" inputmode="numeric">
-                <div style="font-size:0.75rem; color:#90A4AE; margin-top:4px;">密碼提示：lst後的5位數字</div>
-            </div>
-            <div class="login-error" id="studentLoginError">請選擇班別、學號並輸入正確密碼</div>
-            <button class="btn btn-primary" onclick="studentLogin()">登入</button>
-        </div>
-
-        <div id="teacherLoginForm" class="login-form">
-            <div class="form-group">
-                <label>教師密碼</label>
-                <input type="password" id="teacherPassword" placeholder="請輸入密碼">
-            </div>
-            <div class="login-error" id="teacherLoginError">密碼錯誤</div>
-            <button class="btn btn-primary" onclick="teacherLogin()">登入</button>
+        <div id="passportEntry" class="passport-entry" data-testid="passport-entry">
+            <h3>由 Learning Passport 安全進入</h3>
+            <p id="passportEntryStatus" role="status">正在核對安全工作階段……</p>
+            <a class="btn btn-primary" href="https://lwwf-learning-passport.lwwfaiteams.workers.dev/">返回 Learning Passport</a>
         </div>
     </div>
 
@@ -2381,8 +2392,8 @@ body::before {
             <a class="topbar-action-btn" data-testid="fraction-kitchen-topbar-link" href="tools/fraction-kitchen.html" title="分數料理台" style="background:linear-gradient(135deg,#17766f,#1d65a6);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(29,101,166,0.3);white-space:nowrap;text-decoration:none;">分數料理台</a>
             <a class="topbar-action-btn" data-testid="volume-architect-topbar-link" href="tools/volume-architect.html" title="體積建築師" style="background:linear-gradient(135deg,#2566a8,#7256a5);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(37,102,168,0.3);white-space:nowrap;text-decoration:none;">體積建築師</a>
             <a class="topbar-action-btn" data-testid="area-perimeter-topbar-link" href="tools/area-perimeter-lab.html" title="面積周界診斷室" style="background:linear-gradient(135deg,#c85f48,#c89122);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(200,95,72,0.3);white-space:nowrap;text-decoration:none;">面積周界</a>
-            <button class="topbar-action-btn" onclick="window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k','_blank')" title="AI 問功課" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;">🤖 AI問功課</button>
-            <button class="topbar-action-btn" onclick="location.href='tools/ai-comic.html?from=home'" title="AI 四格漫畫" style="background:linear-gradient(135deg,#00897B,#F9A825);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,137,123,0.3);white-space:nowrap;">🎨 AI四格漫畫</button>
+            <button class="topbar-action-btn" onclick="openRootPaidFeature('homework')" title="AI 問功課" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);white-space:nowrap;">🤖 AI問功課</button>
+            <button class="topbar-action-btn" onclick="openRootPaidFeature('comic')" title="AI 四格漫畫" style="background:linear-gradient(135deg,#00897B,#F9A825);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,137,123,0.3);white-space:nowrap;">🎨 AI四格漫畫</button>
             <button class="topbar-action-btn" onclick="switchTab('scores')" title="我的成績" style="background:linear-gradient(135deg,#E65100,#BF360C);color:white;border:none;padding:6px 12px;border-radius:18px;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 6px rgba(230,81,0,0.3);white-space:nowrap;">🏆 我的成績</button>
             <div id="coinDisplay" style="display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFE082);padding:4px 12px;border-radius:20px;font-weight:700;color:#F57F17;font-size:0.9rem;box-shadow:0 2px 8px rgba(255,193,7,0.3);" title="金幣（可換 EDX）">
                 <img src="assets/ch12/images/coin_new.png" style="width:20px;height:20px;"><span id="coinCount">0</span>
@@ -2990,6 +3001,14 @@ body::before {
     </div>
 </div>
 
+<section id="learningShell" class="learning-shell" aria-label="數學學習內容" data-testid="learning-shell">
+    <div class="learning-shell-bar">
+        <button type="button" onclick="window.LWWFMathShell.close()" data-testid="learning-shell-close">← 返回數學主頁</button>
+        <span id="learningShellTitle" class="learning-shell-title">學習內容</span>
+    </div>
+    <iframe id="learningShellFrame" class="learning-shell-frame" title="數學學習內容" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads" referrerpolicy="no-referrer"></iframe>
+</section>
+
 <!-- ============================================================
      MODAL OVERLAY
      ============================================================ -->
@@ -3005,280 +3024,68 @@ body::before {
      ============================================================ -->
 <script>
 // ============================================================
-// CLOUD STORE (Supabase realtime sync) — replaces localStorage
+// CLOUD STORE — Learning Passport + safe local learning cache
 // ============================================================
-const SUPABASE_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHN2d3VnaHFzdHVid3hoem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMTM3NzUsImV4cCI6MjA5MTg4OTc3NX0.DBsx2945F0Vdfhptx-Tr9mVqaa2i9jE4tMQIvjffvII';
+const CHAPTER = 12;
+const ASSET_BASE = 'assets/ch12';
+const mathStore = window.LWWFMathPassportBridge.storage;
+const sb = null;
 
-// Chapter system: ?ch=13 switches chapter via URL. Default is 12.
-let CHAPTER = parseInt(new URLSearchParams(location.search).get('ch') || '12');
-// Per-chapter activity labels (for teacher dropdown)
-const CH_ACTIVITY_LABELS = {
-    12: { slides: ['悟空的放大法術', '唐僧的縮小心法', '單位轉換大冒險'], iq: ['放大法術', '縮小心法', '單位轉換'], theme: '西遊記' },
-    13: { slides: ['一位×整數', '兩位×整數', '估算+常見錯誤'], iq: ['熱身', '進階', '估算'], theme: '小數乘法（一）' },
-    14: { slides: ['一位×一位', '兩位×一位+取近似值', '兩位×兩位+應用'], iq: ['熱身', '進階', '應用'], theme: '小數乘法（二）' },
-    15: { slides: ['體積概念認識', '直觀比較體積', '照片限制+整合'], iq: ['概念', '比較', '整合'], theme: '哆啦A夢 · 體積' },
-    16: { slides: ['認識 cm³ + 量度', '估計 + 認識 m³', '選擇單位 + 應用'], iq: ['cm³ 量度', '估計+m³', '單位'], theme: 'Minecraft · 體積量度' }
-};
-
-function rebuildCompletionSelect() {
-    const sel = document.getElementById('completionSelect');
-    if (!sel) return;
-    const labels = CH_ACTIVITY_LABELS[CHAPTER] || CH_ACTIVITY_LABELS[12];
-    sel.innerHTML = `
-        <option value="" disabled selected>— 選第 ${CHAPTER} 課項目查看名單 —</option>
-        <optgroup label="📚 教學簡報">
-            <option value="slides1">簡報 1（${labels.slides[0]}）</option>
-            <option value="slides2">簡報 2（${labels.slides[1]}）</option>
-            <option value="slides3">簡報 3（${labels.slides[2]}）</option>
-        </optgroup>
-        <optgroup label="📖 課前預習（含答案）">
-            <option value="iq_quiz1">課前預習 1（${labels.iq[0]}）</option>
-            <option value="iq_quiz2">課前預習 2（${labels.iq[1]}）</option>
-            <option value="iq_quiz3">課前預習 3（${labels.iq[2]}）</option>
-        </optgroup>
-        <optgroup label="📝 MC 測驗">
-            <option value="mc_quiz1">MC 測驗 1</option>
-            <option value="mc_quiz4">MC 測驗 2</option>
-        </optgroup>
-        <optgroup label="✏️ 評估（含分數）">
-            <option value="assess1">評估 1（${labels.slides[0]}）</option>
-            <option value="assess2">評估 2（${labels.slides[1]}）</option>
-            <option value="assess3">評估 3（${labels.slides[2]}）</option>
-        </optgroup>
-        <optgroup label="🎮 遊戲（含分數）">
-            <option value="game1">遊戲 1</option>
-            <option value="game2">遊戲 2</option>
-            <option value="game3">遊戲 3</option>
-            ${CHAPTER === 12 ? '<option value="game4">遊戲 4</option>' : ''}
-        </optgroup>
-    `;
-    // Reset content area
-    const content = document.getElementById('completionContent');
-    if (content) content.innerHTML = `<p style="color:#999;text-align:center;padding:16px;font-size:0.9rem;">👆 選上面的下拉選單查看第 ${CHAPTER} 課哪一個完成了</p>`;
-}
-
-function changeTeacherChapter(ch) {
-    CHAPTER = parseInt(ch) || 12;
-    try { localStorage.setItem('teacher_view_chapter', String(CHAPTER)); } catch(e) {}
-    rebuildCompletionSelect();
-    renderTeacherData();
-}
-// Populate dropdown on initial load
-setTimeout(rebuildCompletionSelect, 200);
-// Restore teacher's last viewed chapter on load
-try {
-    const saved = parseInt(localStorage.getItem('teacher_view_chapter') || '0');
-    if (saved >= 12 && saved <= 21) {
-        CHAPTER = saved;
-        setTimeout(() => { const sel = document.getElementById('teacherChapterFilter'); if (sel) sel.value = String(saved); }, 100);
+function readMathObject(key) {
+    try {
+        const value = JSON.parse(mathStore.getItem(key) || '{}');
+        return value && typeof value === 'object' ? value : {};
+    } catch (error) {
+        return {};
     }
-} catch(e) {}
-// 2026-05-06 critical fix: 學生 view assets 永遠 from ch12（root index.html = ch12 page）
-// 之前 bug：teacher view 個 chapter dropdown 改 global CHAPTER + 存 localStorage
-// → 學生再開時 CHAPTER 被覆蓋成 13 → 評估／簡報全部 load ch13 路徑 → 404
-// 而家：student-side ASSET_BASE 鎖死 ch12，CHAPTER 只用嚟 teacher dashboard filter
-const STUDENT_CHAPTER_ID = 'ch12';
-const CHAPTER_ID = STUDENT_CHAPTER_ID;
-const ASSET_BASE = 'assets/' + STUDENT_CHAPTER_ID;
-const COMMON_BASE = 'assets/common';
-const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+}
 
 const cloudStore = {
   async saveScore(cls, num, activityKey, data) {
-    // Write-through: local first (instant), cloud async
-    const lsKey = `scores_${cls}_${num}`;
-    const local = JSON.parse(localStorage.getItem(lsKey) || '{}');
-    local[activityKey] = data;
-    localStorage.setItem(lsKey, JSON.stringify(local));
-    if (!sb) return;
-    try {
-      await sb.from('student_scores').upsert({
-        class: cls, student_number: num, chapter: CHAPTER,
-        activity_key: activityKey, data
-      }, { onConflict: 'class,student_number,chapter,activity_key' });
-    } catch (e) { console.warn('cloud save failed:', e); }
+    if (!currentUser || !window.LWWFMathPassportBridge.getState().ready) return;
+    const key = 'scores_' + cls + '_' + num;
+    const scores = readMathObject(key);
+    scores[activityKey] = data;
+    mathStore.setItem(key, JSON.stringify(scores));
   },
   async loadScores(cls, num) {
-    // Cloud first; merge with existing local (auto-migrate local → cloud if cloud empty)
-    const lsKey = `scores_${cls}_${num}`;
-    const local = JSON.parse(localStorage.getItem(lsKey) || '{}');
-    if (!sb) return local;
-    try {
-      const { data, error } = await sb.from('student_scores')
-        .select('activity_key,data')
-        .eq('class', cls).eq('student_number', num).eq('chapter', CHAPTER);
-      if (error) throw error;
-      const cloudObj = {};
-      (data || []).forEach(r => cloudObj[r.activity_key] = r.data);
-      // Migration: if cloud empty but local has data → upload local
-      if (Object.keys(cloudObj).length === 0 && Object.keys(local).length > 0) {
-        console.log('migrating', Object.keys(local).length, 'local scores to cloud');
-        for (const [k, v] of Object.entries(local)) {
-          await sb.from('student_scores').upsert({
-            class: cls, student_number: num, chapter: CHAPTER,
-            activity_key: k, data: v
-          }, { onConflict: 'class,student_number,chapter,activity_key' });
-        }
-        return local;
-      }
-      localStorage.setItem(lsKey, JSON.stringify(cloudObj));
-      return cloudObj;
-    } catch (e) {
-      console.warn('cloud load failed, using local:', e);
-      return local;
-    }
+    await window.LWWFProgress?.refreshFromPassport?.(12);
+    return readMathObject('scores_' + cls + '_' + num);
   },
-  async loadAllClassScores(cls) {
-    if (!sb) {
-      // Teacher fallback: scan localStorage
-      const result = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith('scores_')) {
-          const parts = k.split('_');
-          const sk = parts[1] + '_' + parts[2];
-          result[sk] = JSON.parse(localStorage.getItem(k) || '{}');
-        }
-      }
-      return result;
-    }
-    try {
-      let q = sb.from('student_scores').select('class,student_number,activity_key,data').eq('chapter', CHAPTER);
-      if (cls && cls !== 'all') q = q.eq('class', cls);
-      const { data } = await q;
-      const by = {};
-      (data || []).forEach(r => {
-        const k = `${r.class}_${r.student_number}`;
-        if (!by[k]) by[k] = {};
-        by[k][r.activity_key] = r.data;
-        localStorage.setItem(`scores_${r.class}_${r.student_number}`, JSON.stringify(by[k]));
-      });
-      return by;
-    } catch (e) { console.warn('class load failed:', e); return {}; }
+  async loadAllClassScores() {
+    return {};
   },
-  async loadAllClassProgress(cls) {
-    if (!sb) {
-      // Fallback: scan localStorage
-      const result = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith(`progress_ch${CHAPTER}_`)) {
-          const parts = k.split('_');
-          const sk = parts[2] + '_' + parts[3];
-          result[sk] = JSON.parse(localStorage.getItem(k) || '{}');
-        }
-      }
-      return result;
-    }
-    try {
-      let q = sb.from('student_progress')
-        .select('class,student_number,step_id,done_at')
-        .eq('chapter', CHAPTER);
-      if (cls && cls !== 'all') q = q.eq('class', cls);
-      const { data } = await q;
-      const by = {};
-      (data || []).forEach(r => {
-        const k = `${r.class}_${r.student_number}`;
-        if (!by[k]) by[k] = {};
-        by[k][r.step_id] = { done: true, date: r.done_at };
-      });
-      // Persist each student's progress to localStorage so getStudentAllData() can read it
-      Object.entries(by).forEach(([sk, p]) => {
-        const [c, n] = sk.split('_');
-        localStorage.setItem(`progress_ch${CHAPTER}_${c}_${n}`, JSON.stringify(p));
-      });
-      return by;
-    } catch (e) { console.warn('class progress load failed:', e); return {}; }
+  async loadAllClassProgress() {
+    return {};
   },
   async saveProgress(cls, num, stepId) {
-    const pk = `progress_ch${CHAPTER}_${cls}_${num}`;
-    const p = JSON.parse(localStorage.getItem(pk) || '{}');
-    p[stepId] = { done: true, date: new Date().toISOString() };
-    localStorage.setItem(pk, JSON.stringify(p));
-    if (!sb) return;
-    try {
-      await sb.from('student_progress').upsert({
-        class: cls, student_number: num, chapter: CHAPTER, step_id: stepId
-      }, { onConflict: 'class,student_number,chapter,step_id' });
-    } catch (e) { console.warn('progress save failed:', e); }
+    if (!currentUser || !window.LWWFMathPassportBridge.getState().ready) return;
+    const key = 'progress_ch12_' + cls + '_' + num;
+    const progress = readMathObject(key);
+    progress[stepId] = { done: true, date: new Date().toISOString() };
+    mathStore.setItem(key, JSON.stringify(progress));
   },
   async loadProgress(cls, num) {
-    const pk = `progress_ch${CHAPTER}_${cls}_${num}`;
-    const local = JSON.parse(localStorage.getItem(pk) || '{}');
-    if (!sb) return local;
-    try {
-      const { data } = await sb.from('student_progress')
-        .select('step_id,done_at')
-        .eq('class', cls).eq('student_number', num).eq('chapter', CHAPTER);
-      const p = {};
-      (data || []).forEach(r => p[r.step_id] = { done: true, date: r.done_at });
-      if (Object.keys(p).length === 0 && Object.keys(local).length > 0) {
-        // Migrate local → cloud
-        for (const stepId of Object.keys(local)) {
-          await sb.from('student_progress').upsert({
-            class: cls, student_number: num, chapter: CHAPTER, step_id: stepId
-          }, { onConflict: 'class,student_number,chapter,step_id' });
-        }
-        return local;
-      }
-      localStorage.setItem(pk, JSON.stringify(p));
-      return p;
-    } catch (e) { return local; }
+    await window.LWWFProgress?.refreshFromPassport?.(12);
+    return readMathObject('progress_ch12_' + cls + '_' + num);
   },
-  subscribeClassChanges(cls, callback) {
-    if (!sb) return null;
-    const filter = cls === 'all' ? `chapter=eq.${CHAPTER}` : `class=eq.${cls}`;
-    return sb.channel('scores_' + cls)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'student_scores', filter }, callback)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'student_edx', filter }, callback)
-      .subscribe();
+  subscribeClassChanges() {
+    return null;
   },
-  // EDX exchange
-  async loadEdxHistory(cls, num) {
-    if (!sb) return [];
-    try {
-      const { data } = await sb.from('student_edx')
-        .select('coins_spent,edx_earned,exchanged_at')
-        .eq('class', cls).eq('student_number', num);
-      return data || [];
-    } catch (e) { return []; }
+  async loadEdxHistory() {
+    return [];
   },
-  async loadAllClassEdx(cls) {
-    if (!sb) return {};
-    try {
-      let q = sb.from('student_edx').select('class,student_number,coins_spent,edx_earned');
-      if (cls && cls !== 'all') q = q.eq('class', cls);
-      const { data } = await q;
-      const by = {};
-      (data || []).forEach(r => {
-        const k = `${r.class}_${r.student_number}`;
-        if (!by[k]) by[k] = { coins_spent: 0, edx_earned: 0 };
-        by[k].coins_spent += r.coins_spent;
-        by[k].edx_earned += r.edx_earned;
-      });
-      return by;
-    } catch (e) { return {}; }
+  async loadAllClassEdx() {
+    return {};
   },
-  async exchangeEdx(cls, num, coins, edx) {
-    if (!sb) return { success: false, error: 'offline' };
-    try {
-      const { error } = await sb.from('student_edx').insert({
-        class: cls, student_number: num, chapter: CHAPTER,
-        coins_spent: coins, edx_earned: edx
-      });
-      if (error) throw error;
-      return { success: true };
-    } catch (e) { return { success: false, error: e.message }; }
+  async exchangeEdx() {
+    return { success: false, error: 'EDX 兌換已移至 Learning Passport 管理。' };
   }
 };
-
-// ============================================================
 // STUDENT DATA
-// ============================================================
-const STUDENTS = [{"class":"5A","number":"01","pwdHash":"5bff797ab1fad63606a44493eafec6459dd49b3fb4d87fdb82429fdc3408129b"},{"class":"5A","number":"02","pwdHash":"0839d1e4c6d77aaab9d7a273db53396670d88289c67964090a3bd91caff7753a"},{"class":"5A","number":"03","pwdHash":"782b3c78b5128f2885ab2f05a94748ab2380478d86db959f747353ecc92cdc2b"},{"class":"5A","number":"04","pwdHash":"9d455c9a64d5de26200efe710a771b0bd33fc07111a5f1ec3ed00b5d15f1781b"},{"class":"5A","number":"05","pwdHash":"9f1b235f4f9158b3194b48a24fe92ff73e96d9a89f442500b940b5712f97dfd7"},{"class":"5A","number":"06","pwdHash":"01f8424d1456aa59a94f3b3fcd34b0bb8a3d3dbaa193567a37f2120a5ceef5e0"},{"class":"5A","number":"07","pwdHash":"65b4ee38488dc435fcdaa001c59aa653ed65676cf53def21df80e24365a167d8"},{"class":"5A","number":"08","pwdHash":"29e7f7acb7d6e18706678535eea71e58967ec77135f278cf5f7133e3aa71100f"},{"class":"5A","number":"09","pwdHash":"76407cc5620cf9c108619cbe9e9575a5a00805bad04d2fef7889d79d139ba1d2"},{"class":"5A","number":"10","pwdHash":"aa89d8a3383953edf549686270bbb6bbee27cd69c90815fca4c8bd360debeabf"},{"class":"5A","number":"11","pwdHash":"4fe111a6d821531707aadcadbad679f5e057c15bfe7d34a1829ee74956e7d899"},{"class":"5A","number":"12","pwdHash":"d19c3e99d7a79c0f6764039b4890a0985db6e097004f6b8354849c0f76c40dbd"},{"class":"5A","number":"13","pwdHash":"2af1cdf9d9ba8a0d1d14f88a21d6cc2f8e1422ef031f3edd7a4e65221a9b6a35"},{"class":"5A","number":"14","pwdHash":"7eb5ca2d286e1eb3e7c321e390db41b95365431380b8f1a64e91c9fca2233c78"},{"class":"5A","number":"15","pwdHash":"07dd700ae6d9073a31e8d543363f01d43fd3965e5df8cadd24f6500d8e5fbfe9"},{"class":"5A","number":"16","pwdHash":"1f98278699f56b408e96c000bd0a9e6efbd33e0d4fcb123e56ade12f18ad966f"},{"class":"5A","number":"17","pwdHash":"499739b2deb0a7174bf48bb7f7afe02377bb8b26dd5582da3dedf7dedb3abe17"},{"class":"5A","number":"18","pwdHash":"d04e1e8e597af681ec21e478739a1694926702158238ff29b7ff7d210db21ef5"},{"class":"5A","number":"19","pwdHash":"d6ba578479ede7cfbea16c3505d3be0dbdd7136e067411505cd85559380b3d8b"},{"class":"5A","number":"20","pwdHash":"054a5f86a5bdcf73d72aacff9c3163b55f5fe6eb3b5ada26344a4eee98e7296a"},{"class":"5A","number":"21","pwdHash":"ac42cc6a0db425aa4dff796a3af3860234192ba9a0c8d762b2ed8ea0b520bd72"},{"class":"5A","number":"22","pwdHash":"b70763466adf9811a9e84a0fb568e74884c46914ccee5fe467ddeb2a146ddc9f"},{"class":"5A","number":"23","pwdHash":"ae295b16a5ed33466565626b2db7fb098c508836f701afff7dfb8c6dc8274720"},{"class":"5A","number":"24","pwdHash":"7f9d5a2984147659be7f9c8a40377b94c06c42c240962c0bdd2a7c1d7663d1ad"},{"class":"5A","number":"25","pwdHash":"f4e7aa00d090be3187451d8ec666ce83f146799fe353d7945eda8fabff5b4098"},{"class":"5A","number":"26","pwdHash":"d6fb9cfda80fdf904007643b2d959ef5aad935bcd909f817a6512ca1787524bd"},{"class":"5B","number":"01","pwdHash":"b1fcd4fc3fdc8279b23667b76f7509cbbdd16f4da67296552086e884d72f291f"},{"class":"5B","number":"02","pwdHash":"43458e283885dbbd64d1a06ab423e4c109715fe9a18409849f0048aba1cef486"},{"class":"5B","number":"03","pwdHash":"fce36ec99bd49122c97c2cd74f53038b58d351ea49db8b08f0b9ae5ca192029b"},{"class":"5B","number":"04","pwdHash":"b4618c89362ed54b8c1f1900e6084b6c7fdc173b2bda5bb2eb81e8e367286d7a"},{"class":"5B","number":"05","pwdHash":"509d329f8415e5682af9bed8d7b312056a50755ca5a9c7a1cf516edc04d08df8"},{"class":"5B","number":"06","pwdHash":"f3c0ede0690e009feeb2df5f8247d4872dd74fdd788003e723bd8398b4672bca"},{"class":"5B","number":"07","pwdHash":"fee95d67e174a152920bfeac138a03ee41d8fd32cfc191476d7c838bced69739"},{"class":"5B","number":"08","pwdHash":"bd75b36042f6cb91230941c5ab53ed9e980ca9f554757ad8a045b91e73226732"},{"class":"5B","number":"09","pwdHash":"eb1ed985841db3ff97993da1d9dbd6ace4f744b14385765caed35c7576796555"},{"class":"5B","number":"10","pwdHash":"cc2c310036d09b07aff5d48b6da0712b41646a9d79bf0a39d628c7b05b4234a5"},{"class":"5B","number":"11","pwdHash":"cf57a4ebdb3c941fec0a29ab9fb35b02dff472e9320cfc9ea2ed5b21223cf9d9"},{"class":"5B","number":"12","pwdHash":"d987f2ffc24cfc5a48364aa38ea1fb93f9e10457655c332a6c6c8f7e2defc255"},{"class":"5B","number":"13","pwdHash":"b291e6e3bf381f58d5886f3fe9ebc01f235d7f0fd0a7e48172b5241cdbf8945d"},{"class":"5B","number":"14","pwdHash":"34ef549f3b8fa5aa9b13107a0a8ecabf9591c9f227cc3e9835febf3485ae7fc7"},{"class":"5B","number":"15","pwdHash":"d0ac4db195c066dcbcebc2649986d270f098b1df0cbc7bdc09ff9786fe0f94f3"},{"class":"5B","number":"16","pwdHash":"de0a70374714b0eb9bb92dac3af5e16e30a578bd8b6de3448df49c0c1450105c"},{"class":"5B","number":"17","pwdHash":"059934d506c3d1db597950f91f53f2c230118ec4f50fce913d51e805d9b53316"},{"class":"5B","number":"18","pwdHash":"f184bcee9bb1b97ec0c4ef6b5eaf0f5a84f3bb0fc977517d388dd5d213f32c3f"},{"class":"5B","number":"19","pwdHash":"077bbe2cb57387326c500ab5f84239a186441fa75cca6cb3cd9f588e55699185"},{"class":"5B","number":"20","pwdHash":"ebc11e697c2b5b56df27e2c5bf36408b513db6da4701bb61837477f6fdb6ed09"},{"class":"5B","number":"21","pwdHash":"f9ae42f73d98ecacd2b0d37ac8a2d2fe92e30e371750719d687220ab257eb80a"},{"class":"5C","number":"01","pwdHash":"93698bd7177b8c4f573063bd00faf823692667d0eabd811549839ac001643706"},{"class":"5C","number":"02","pwdHash":"22be550ffdfaead128c1631600653f7ebf0126afe710b850582f3ceaff2bd6b8"},{"class":"5C","number":"03","pwdHash":"25d5482b5ad7976ed3d9200f088ac0d0b1529aea6e6db63d63c03ad1d01118da"},{"class":"5C","number":"04","pwdHash":"c28e284f63b2f822b62ee011a9fc2e2a35ad95ac7d333d83cfc3642f38f9ee99"},{"class":"5C","number":"05","pwdHash":"0084d970c44712ab3f84a5ae7d4c9439cd97b636bcf85b11b1484e6cbd2df1d4"},{"class":"5C","number":"06","pwdHash":"5083a6a5a7429d9e403dda7a33995d71532b98d84a1763b87fc457ad7fe5ba65"},{"class":"5C","number":"07","pwdHash":"e7be4f88b98e7a13674856f62e00c27502229f818a44da85637776a6c6ecd2b5"},{"class":"5C","number":"08","pwdHash":"c768cd9e57bdc96d822c1e9b803211bf842d0ec3ba639774ee7d64f60cf68879"},{"class":"5C","number":"09","pwdHash":"e5740c808ff20a1bf539ce9dfce5e434582f2825501370923acf8f5e31fe860d"},{"class":"5C","number":"10","pwdHash":"255df8e7d2b8bdc4134d37cd1d0c0f3d8ad5e6178cb7badb7c1de581092568fa"},{"class":"5C","number":"11","pwdHash":"fce7d8f24c768d5c96579fcff76096c84a3a27c72e1dffae52fc1deac2be5627"},{"class":"5C","number":"12","pwdHash":"ec144701ec50daed8316f192366a278d7bbafc89ee1976f8cc3b052971596944"},{"class":"5C","number":"13","pwdHash":"2c27c7288f70c082a116a56653897bc72c0030b33509724922a5a9b163cb5e46"},{"class":"5C","number":"14","pwdHash":"7ba146c8433af4693f865205a0c48aa1285c581d4b3402ae59af57094b4c0e9a"},{"class":"5C","number":"15","pwdHash":"2257868505ee83827987c7428cc7d9d986e21def227496bcba1a465f2a76c970"},{"class":"5C","number":"16","pwdHash":"5ef7916c97a33a3cbd770f8f50d155301f939fe0814cfb5902499fcd976d2901"},{"class":"5C","number":"17","pwdHash":"0abe7569ba6fdb20236f042b48be15699f3e40b2de4917a1995a7554e3cd2d2a"},{"class":"5C","number":"18","pwdHash":"7887edafa1eb72cecf76bd70c7dfc4ad8c0d3a299328cc7e7687982522ec481c"},{"class":"5C","number":"19","pwdHash":"08df5d355793b8a1cb68f5ed5f777f4bcef739ad9410b342ea54bc23354e136e"},{"class":"5C","number":"20","pwdHash":"59392d501ffa63a2f82c53c4975a1d319a889c1c58e172ea4366aaeaa714c316"},{"class":"5C","number":"21","pwdHash":"d63f66d81e89b749b9a26d67616664543022675c7e9057a7e2b336e0896cc92c"},{"class":"5C","number":"22","pwdHash":"cf558350059624fc5950b9e083f98968252efbbbf0bc58f257e7efb0eafc7910"},{"class":"5C","number":"23","pwdHash":"51093d22057b95450d51d5c527dc9db90f2216e38950c664389f200b35f05c25"},{"class":"5C","number":"24","pwdHash":"7900099423109c3c796371644e03cafb7f9091d4b7f18fd69c45e53893dfa9af"},{"class":"5C","number":"25","pwdHash":"0b37e26c39921e1df57f77da6870c34103ab15c1c4e608015b4aa4216c639615"},{"class":"5C","number":"26","pwdHash":"6ffaadd03b9dffba8f1fe4b744584827b219c9ef983da2ca955f6bb6a255f844"},{"class":"5C","number":"27","pwdHash":"f97ca319ce607b4aad020f1704a97e5b8efaea2634e25a64a76999fc53329327"},{"class":"5C","number":"28","pwdHash":"96a1a6873507318225c63cf11028dc5ff9270cd0c581cdc56828b8836cf1b58f"},{"class":"5D","number":"01","pwdHash":"fef080d6da2a276aeaa7b6a3ade8c5f5ec1dea0e9319cefd589900aacd6c5e72"},{"class":"5D","number":"02","pwdHash":"ef196422411cc5db289bd7a192b12d2fd0d6437365d1839a572c79e641861e4a"},{"class":"5D","number":"03","pwdHash":"0f19cb7c5022613cb175469d978f2fedd26866c6df4fa6be440e016ffa04cd34"},{"class":"5D","number":"04","pwdHash":"399e94abf41b446d7ac3a98a6a6e787ae1d7e0eaa40da86510cfd9f88d1b1242"},{"class":"5D","number":"05","pwdHash":"68b459665824ea318b62a7437402809d08ee7bcbcb6c3ac9d6128a8476165cfd"},{"class":"5D","number":"06","pwdHash":"c3d76407907ecaa72edb4b1f6b6088e7b92cb529625ecae5e7731265f8894fdc"},{"class":"5D","number":"07","pwdHash":"5c512c5c8d38b866493840d8971db7061bbb060604821236629529fe6982dc3a"},{"class":"5D","number":"08","pwdHash":"fcf516620f5843e9eb1ffbdc6fcc57bc1c9f27dabf0350ffb565a0a7a2d05d31"},{"class":"5D","number":"09","pwdHash":"3228be0a597502c728d7f1cdaa63d9a6c964f60089f07fe1ce364753805da73b"},{"class":"5D","number":"10","pwdHash":"6e3791ac3c3f95bca48e1ca04e81696d1e8c5d2011740880a365f4f21021acc4"},{"class":"5D","number":"11","pwdHash":"84e033f04115cb9ca6089a42f0d451a38b0c20ddffd776bfa9a5475f54a39890"},{"class":"5D","number":"12","pwdHash":"eb17815fd683f15c889d46b04b2dbaafb0b95f5cd7ed36cf3867420dae708197"},{"class":"5D","number":"13","pwdHash":"63adac4a13ba1a7731832140e88f3afc18f57e22080520e502ca7ebf5e06be6f"},{"class":"5D","number":"14","pwdHash":"d2d1e9cd3fd801af164e75c8e270a851f6fbb9d3f3da40c62b0647c44cb94832"},{"class":"5D","number":"15","pwdHash":"f6bb67ecdeed65a1e6ef32f93f6623a33487f17035d5b09276a88930f72732b2"},{"class":"5D","number":"16","pwdHash":"6563dd5ccfda5ac425821907eae5d8532136a15ed77700e40c4d136ba6d4752a"},{"class":"5D","number":"17","pwdHash":"0deb8c05b8254176caa91816dfe3042382cfe6aaa41f56a66405d4c59c33b297"},{"class":"5D","number":"18","pwdHash":"95ea10a78ae26bf56012be0c16661d0fe5e3b309a28fb50a4551d58459261a37"},{"class":"5D","number":"19","pwdHash":"a4e1be826c2b55502a6648e515ad3640ec65dbadf6023296f5586ce49102409d"},{"class":"5D","number":"20","pwdHash":"175266cffc06992b4a061acc5a75144f87db99b33e384db6b0e6409b9d594309"},{"class":"7A","number":"01"},{"class":"7A","number":"02"},{"class":"7A","number":"03"},{"class":"7A","number":"04"},{"class":"7A","number":"05"},{"class":"7A","number":"06"},{"class":"7A","number":"07"},{"class":"7A","number":"08"},{"class":"7A","number":"09"},{"class":"7A","number":"10"},{"class":"5F","number":"01"},{"class":"5F","number":"02"},{"class":"5F","number":"03"},{"class":"5F","number":"04"},{"class":"5F","number":"05"}];
+// Student identity and rosters are not published in this static bundle.
+const STUDENTS = Object.freeze([]);
 
-// ============================================================
 // QUIZ DATA
 // ============================================================
 const QUIZ1_DATA = [
@@ -3372,178 +3179,141 @@ let currentUser = null;
 let currentQuiz = null;
 let quizState = {};
 
-// ============================================================
-// LOGIN FUNCTIONS
-// ============================================================
-function switchLoginTab(type) {
-    document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
-
-    if (type === 'student') {
-        document.querySelectorAll('.login-tab')[0].classList.add('active');
-        document.getElementById('studentLoginForm').classList.add('active');
-    } else {
-        document.querySelectorAll('.login-tab')[1].classList.add('active');
-        document.getElementById('teacherLoginForm').classList.add('active');
-    }
+function escapeShellAttribute(value) {
+    return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
 
-function updateStudentList() {
-    const cls = document.getElementById('classSelect').value;
-    const sel = document.getElementById('studentSelect');
-    sel.innerHTML = '';
-
-    if (!cls) {
-        sel.innerHTML = '<option value="">請先選擇班別</option>';
-        sel.disabled = true;
-        return;
+async function openLearningPage(input) {
+    const state = window.LWWFMathPassportBridge.getState();
+    if (!state.ready || !currentUser) {
+        showPassportEntry('請先由 Learning Passport 進入此網站。');
+        return false;
+    }
+    const url = new URL(String(input || ''), window.location.href);
+    const siteRoot = new URL('./', window.location.href);
+    if (url.origin !== window.location.origin || !url.pathname.startsWith(siteRoot.pathname) || !/\.html$/i.test(url.pathname)) {
+        throw new Error('learning-shell-target-rejected');
     }
 
-    sel.disabled = false;
-    sel.innerHTML = '<option value="">請選擇學號</option>';
+    const response = await fetch(url.toString(), { credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer' });
+    if (!response.ok) throw new Error('learning-page-load-failed');
+    let html = await response.text();
+    html = html.replace(/<script\b[^>]*lwwf-passport-sdk\.js[^>]*>[\s\S]*?<\/script>/gi, '');
+    const runtimeUrl = new URL('assets/common/passport-runtime.js?v=20260822', siteRoot).toString();
+    const injection = '<base href="' + escapeShellAttribute(url.toString()) + '">' +
+        '<scr' + 'ipt src="' + escapeShellAttribute(runtimeUrl) + '" referrerpolicy="no-referrer"></scr' + 'ipt>';
+    html = /<head\b[^>]*>/i.test(html)
+        ? html.replace(/<head\b[^>]*>/i, match => match + injection)
+        : '<head>' + injection + '</head>' + html;
 
-    const classStudents = STUDENTS.filter(s => s.class === cls);
-    classStudents.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s.number;
-        opt.textContent = `${cls} ${s.number} 號`;
-        sel.appendChild(opt);
+    const shell = document.getElementById('learningShell');
+    const frame = document.getElementById('learningShellFrame');
+    document.getElementById('learningShellTitle').textContent = decodeURIComponent(url.pathname.split('/').pop() || '學習內容');
+    frame.srcdoc = html;
+    shell.classList.add('show');
+    shell.setAttribute('aria-hidden', 'false');
+    return true;
+}
+
+function closeLearningPage() {
+    const shell = document.getElementById('learningShell');
+    const frame = document.getElementById('learningShellFrame');
+    shell.classList.remove('show');
+    shell.setAttribute('aria-hidden', 'true');
+    frame.srcdoc = '<!doctype html><title>已關閉</title>';
+}
+
+window.LWWFMathShell = Object.freeze({ open: openLearningPage, close: closeLearningPage });
+
+function openRootPaidFeature(kind) {
+    if (!window.LWWFMathPassportBridge.canUsePaidFeatures()) {
+        alert('教師巡堂為唯讀沙盒，不會呼叫付費或生成服務。');
+        return;
+    }
+    if (kind === 'homework') {
+        window.open('https://gemini.google.com/gem/1OukypLveqvlBCL3xsmtCwU0odCAzSS2k', '_blank', 'noopener,noreferrer');
+        return;
+    }
+    openLearningPage('tools/ai-comic.html?from=home').catch(() => alert('暫時未能開啟此工具。'));
+}
+
+document.addEventListener('click', event => {
+    const anchor = event.target.closest('a[href]');
+    if (!anchor || anchor.target === '_blank') return;
+    const url = new URL(anchor.href, window.location.href);
+    if (url.origin !== window.location.origin || !/\.html$/i.test(url.pathname)) return;
+    if (url.pathname === window.location.pathname) return;
+    event.preventDefault();
+    openLearningPage(url.toString()).catch(() => alert('暫時未能開啟此學習內容。'));
+}, true);
+
+// ============================================================
+// LOGIN FUNCTIONS — Learning Passport only
+// ============================================================
+let passportBootPromise = null;
+
+function switchLoginTab() {}
+function updateStudentList() {}
+
+function showPassportEntry(message) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
     });
+    const loginPage = document.getElementById('loginPage');
+    loginPage.classList.add('active');
+    loginPage.style.display = 'flex';
+    const status = document.getElementById('passportEntryStatus');
+    if (status) status.textContent = message || '請先由 Learning Passport 進入此網站。';
 }
 
-async function hashPassword(pwd, cls, num) {
-    const salt = `lwwf_${cls}_${num}`;
-    const data = new TextEncoder().encode(salt + pwd + salt);
-    const buf = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-async function studentLogin() {
-    const cls = document.getElementById('classSelect').value;
-    const num = document.getElementById('studentSelect').value;
-    const pwd = document.getElementById('studentPassword').value.trim();
-    const errorEl = document.getElementById('studentLoginError');
-
-    if (!cls || !num) {
-        errorEl.textContent = '請選擇班別和學號';
-        errorEl.style.display = 'block';
-        return;
-    }
-
-    const student = STUDENTS.find(s => s.class === cls && s.number === num);
-
-    if (student) {
-        // Test accounts (7A) have no password (no pwdHash field)
-        if (student.pwdHash) {
-            const inputHash = await hashPassword(pwd, cls, num);
-            if (inputHash !== student.pwdHash) {
-                errorEl.textContent = '密碼錯誤，請重新輸入（提示：lst後的5位數字）';
-                errorEl.style.display = 'block';
-                return;
-            }
+async function initializePassportEntry() {
+    if (passportBootPromise) return passportBootPromise;
+    passportBootPromise = (async () => {
+        const state = await window.LWWFMathPassportBridge.init({ feedbackWidget: true });
+        const passportUser = window.LWWFMathPassportBridge.getUser();
+        if (!state.ready || !passportUser) {
+            currentUser = null;
+            showPassportEntry('未找到有效的 Learning Passport 工作階段，請返回後重新進入。');
+            return false;
         }
-        errorEl.style.display = 'none';
-        currentUser = { ...student, role: 'student' };
-        persistAuth();
-        showStudentDashboard();
-    }
+        currentUser = passportUser;
+        await showStudentDashboard();
+        return true;
+    })().finally(() => {
+        passportBootPromise = null;
+    });
+    return passportBootPromise;
+}
+
+function studentLogin() {
+    return initializePassportEntry();
 }
 
 function teacherLogin() {
-    const pwd = document.getElementById('teacherPassword').value;
-    const errorEl = document.getElementById('teacherLoginError');
-
-    if (pwd === 'lstlwwf') {
-        errorEl.style.display = 'none';
-        currentUser = { role: 'teacher', name: '教師' };
-        persistAuth();
-        showTeacherDashboard();
-    } else {
-        errorEl.style.display = 'block';
-    }
+    window.location.href = 'https://lwwf-learning-passport.lwwfaiteams.workers.dev/';
 }
+
+function persistAuth() {}
+function clearAuthPersist() {}
+function touchActivity() {}
 
 function logout() {
     currentUser = null;
     currentQuiz = null;
-    clearAuthPersist();
-    document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
-    document.getElementById('loginPage').classList.add('active');
-    document.getElementById('loginPage').style.display = 'flex';  // flex, not block — keeps login container centered
-    window.scrollTo(0, 0);
-    // Reset forms
-    document.getElementById('classSelect').value = '';
-    document.getElementById('studentSelect').innerHTML = '<option value="">請先選擇班別</option>';
-    document.getElementById('studentSelect').disabled = true;
-    document.getElementById('teacherPassword').value = '';
+    window.location.href = 'https://lwwf-learning-passport.lwwfaiteams.workers.dev/';
 }
 
-// ============================================================
-// AUTH PERSISTENCE + 10-MIN IDLE AUTO-LOGOUT
-// ============================================================
-const AUTH_KEY = 'lwwf_auth_user';
-const AUTH_ACTIVE_KEY = 'lwwf_auth_lastActive';
-const IDLE_LIMIT_MS = 10 * 60 * 1000;  // 10 minutes
-
-function persistAuth() {
-    if (!currentUser) return;
-    try {
-        localStorage.setItem(AUTH_KEY, JSON.stringify(currentUser));
-        localStorage.setItem(AUTH_ACTIVE_KEY, String(Date.now()));
-    } catch (e) {}
-}
-
-function clearAuthPersist() {
-    try {
-        localStorage.removeItem(AUTH_KEY);
-        localStorage.removeItem(AUTH_ACTIVE_KEY);
-    } catch (e) {}
-}
-
-function touchActivity() {
-    if (currentUser) {
-        try { localStorage.setItem(AUTH_ACTIVE_KEY, String(Date.now())); } catch (e) {}
-    }
-}
-
-// Listen for any user activity to refresh idle timer
-['click', 'keydown', 'touchstart', 'scroll', 'mousemove'].forEach(ev => {
-    document.addEventListener(ev, touchActivity, { passive: true });
+window.addEventListener('lwwf-math-passport-ready', event => {
+    if (event.detail?.ready) initializePassportEntry().catch(() => {});
 });
 
-// Check idle every 30 sec
-setInterval(() => {
-    if (!currentUser) return;
-    try {
-        const last = parseInt(localStorage.getItem(AUTH_ACTIVE_KEY) || '0', 10);
-        if (Date.now() - last > IDLE_LIMIT_MS) {
-            alert('⏰ 你已經 10 分鐘沒有活動，為安全起見系統已自動登出。請重新登入。');
-            logout();
-        }
-    } catch (e) {}
-}, 30 * 1000);
-
-// On page load: restore auth if within idle window
 window.addEventListener('DOMContentLoaded', () => {
-    try {
-        const stored = localStorage.getItem(AUTH_KEY);
-        const lastActive = parseInt(localStorage.getItem(AUTH_ACTIVE_KEY) || '0', 10);
-        if (!stored) return;
-        if (Date.now() - lastActive > IDLE_LIMIT_MS) {
-            clearAuthPersist();
-            return;
-        }
-        const user = JSON.parse(stored);
-        currentUser = user;
-        touchActivity();
-        if (user.role === 'teacher') showTeacherDashboard();
-        else showStudentDashboard();
-    } catch (e) {
-        clearAuthPersist();
-    }
+    initializePassportEntry().catch(() => {
+        showPassportEntry('安全工作階段未能建立，請返回 Learning Passport 再試。');
+    });
 });
 
-// ============================================================
 // DASHBOARD FUNCTIONS
 // ============================================================
 async function showStudentDashboard() {
@@ -4418,7 +4188,7 @@ function selectChapter(num, status) {
     // Each active chapter other than default (12) has its own entry page at assets/ch{N}/index.html
     // (Transition: individual chapter pages during dev; full dashboard switching comes later)
     closeChapterSelector();
-    window.location.href = `assets/ch${num}/index.html`;
+    openLearningPage(`assets/ch${num}/index.html`).catch(() => alert('暫時未能開啟此課題。'));
 }
 
 // Switch teacher sub-section (completion / iq / stats / feedback) — only one visible at a time
@@ -4434,151 +4204,35 @@ function switchTeacherSection(name) {
     if (name === 'feedback') loadFeedbackData();
 }
 
-// ====== 📨 回報 / 許願 — Teacher View ======
+// ====== 問題回報 — central Learning Passport widget ======
 let _feedbackCache = [];
 
 async function loadFeedbackData() {
     const list = document.getElementById('feedbackList');
-    if (!list) return;
-    list.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">⏳ 載入中…</div>';
-    try {
-        // Read directly from Supabase REST API (anon allowed by RLS for SELECT)
-        const SUPA_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
-        const SUPA_KEY = SUPABASE_ANON_KEY;
-        const r = await fetch(`${SUPA_URL}/rest/v1/student_feedback?select=*&order=created_at.desc&limit=200`, {
-            headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
-        });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        _feedbackCache = await r.json();
-        renderFeedbackList();
-        updateFeedbackBadge();
-    } catch (e) {
-        list.innerHTML = `<div style="background:#FFEBEE;color:#C62828;padding:16px;border-radius:10px;">❌ 載入失敗：${e.message}<br><small>確認 Supabase student_feedback table 已 create + RLS allows anon SELECT</small></div>`;
+    if (list) {
+        list.innerHTML = '<div style="text-align:center;padding:30px;color:#4c1d95;font-weight:700;">請使用右下角「問題回報」浮動按鈕查看及跟進回報。</div>';
     }
 }
 
 function updateFeedbackBadge() {
     const badge = document.getElementById('feedbackBadge');
-    if (!badge) return;
-    const openCount = _feedbackCache.filter(f => f.status === 'open').length;
-    if (openCount > 0) {
-        badge.textContent = openCount;
-        badge.style.display = 'inline-block';
-    } else {
-        badge.style.display = 'none';
-    }
+    if (badge) badge.style.display = 'none';
 }
 
 function renderFeedbackList() {
-    const list = document.getElementById('feedbackList');
-    const stats = document.getElementById('feedbackStats');
-    if (!list) return;
-    const typeF = document.getElementById('feedbackTypeFilter')?.value || 'all';
-    const statusF = document.getElementById('feedbackStatusFilter')?.value || 'open';
-    let items = _feedbackCache.slice();
-    if (typeF !== 'all') items = items.filter(f => f.type === typeF);
-    if (statusF !== 'all') items = items.filter(f => f.status === statusF);
-
-    // Stats summary
-    const totals = {
-        bug: _feedbackCache.filter(f => f.type === 'bug').length,
-        wish: _feedbackCache.filter(f => f.type === 'wish').length,
-        open: _feedbackCache.filter(f => f.status === 'open').length,
-        resolved: _feedbackCache.filter(f => f.status === 'resolved').length
-    };
-    if (stats) stats.innerHTML = `
-        <span style="background:#FFEBEE;color:#C62828;padding:4px 10px;border-radius:12px;font-weight:700;">🐛 Bug ${totals.bug}</span>
-        <span style="background:#E3F2FD;color:#1565C0;padding:4px 10px;border-radius:12px;font-weight:700;">⭐ 許願 ${totals.wish}</span>
-        <span style="background:#FFF3E0;color:#E65100;padding:4px 10px;border-radius:12px;font-weight:700;">⏳ 未處理 ${totals.open}</span>
-        <span style="background:#E8F5E9;color:#2E7D32;padding:4px 10px;border-radius:12px;font-weight:700;">✅ 已解決 ${totals.resolved}</span>
-        <span style="margin-left:auto;color:#999;">顯示 ${items.length} / ${_feedbackCache.length}</span>
-    `;
-
-    if (items.length === 0) {
-        list.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">📭 沒有符合條件的項目</div>';
-        return;
-    }
-
-    list.innerHTML = items.map(f => {
-        const typeIcon = f.type === 'bug' ? '🐛' : '⭐';
-        const typeBg = f.type === 'bug' ? '#FFEBEE' : '#E3F2FD';
-        const typeColor = f.type === 'bug' ? '#C62828' : '#1565C0';
-        const statusInfo = {
-            open: { icon: '⏳', label: '未處理', bg: '#FFF3E0', color: '#E65100' },
-            reviewing: { icon: '🔍', label: '處理中', bg: '#E1F5FE', color: '#0277BD' },
-            resolved: { icon: '✅', label: '已解決', bg: '#E8F5E9', color: '#2E7D32' },
-            dismissed: { icon: '❌', label: '已駁回', bg: '#FAFAFA', color: '#757575' }
-        }[f.status] || { icon: '?', label: f.status, bg: '#fff', color: '#000' };
-        const date = new Date(f.created_at).toLocaleString('zh-Hant', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-        const studentInfo = (f.class && f.number) ? `${f.class}-${f.number} ${f.student_name || ''}` : (f.student_name || '匿名');
-
-        return `
-        <div style="background:white;border-radius:14px;padding:14px 16px;border-left:5px solid ${typeColor};box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span style="background:${typeBg};color:${typeColor};padding:4px 10px;border-radius:10px;font-weight:900;font-size:0.85rem;">${typeIcon} ${f.type === 'bug' ? 'Bug' : '許願'} #${f.id}</span>
-                    <span style="background:${statusInfo.bg};color:${statusInfo.color};padding:4px 10px;border-radius:10px;font-weight:700;font-size:0.82rem;">${statusInfo.icon} ${statusInfo.label}</span>
-                    <span style="color:#999;font-size:0.78rem;">👤 ${studentInfo}</span>
-                    ${f.page ? `<span style="color:#999;font-size:0.78rem;">📄 ${f.page}</span>` : ''}
-                </div>
-                <span style="color:#bbb;font-size:0.78rem;">${date}</span>
-            </div>
-            <div style="background:#FAFAFA;padding:12px;border-radius:8px;line-height:1.6;color:#333;font-size:0.95rem;white-space:pre-wrap;margin-bottom:10px;">${escapeHtml(f.content)}</div>
-            ${f.teacher_note ? `<div style="background:#E8F5E9;padding:8px 12px;border-radius:8px;font-size:0.88rem;color:#2E7D32;margin-bottom:8px;border-left:3px solid #4CAF50;">📝 教師備註：${escapeHtml(f.teacher_note)}</div>` : ''}
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                ${f.status !== 'reviewing' ? `<button class="btn btn-sm" style="background:#0277BD;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'reviewing')">🔍 標記處理中</button>` : ''}
-                ${f.status !== 'resolved' ? `<button class="btn btn-sm" style="background:#2E7D32;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'resolved')">✅ 標記已解決</button>` : ''}
-                ${f.status !== 'dismissed' ? `<button class="btn btn-sm" style="background:#757575;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'dismissed')">❌ 駁回</button>` : ''}
-                ${f.status !== 'open' ? `<button class="btn btn-sm" style="background:#E65100;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="updateFeedbackStatus(${f.id},'open')">↩️ 重開</button>` : ''}
-                <button class="btn btn-sm" style="background:#7B1FA2;color:white;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;" onclick="addTeacherNote(${f.id})">📝 加備註</button>
-            </div>
-        </div>`;
-    }).join('');
+    return loadFeedbackData();
 }
 
-async function updateFeedbackStatus(id, newStatus) {
-    try {
-        const SUPA_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
-        const SUPA_KEY = SUPABASE_ANON_KEY;
-        const body = { status: newStatus };
-        if (newStatus === 'resolved') body.resolved_at = new Date().toISOString();
-        const r = await fetch(`${SUPA_URL}/rest/v1/student_feedback?id=eq.${id}`, {
-            method: 'PATCH',
-            headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-            body: JSON.stringify(body)
-        });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const item = _feedbackCache.find(f => f.id === id);
-        if (item) { item.status = newStatus; if (body.resolved_at) item.resolved_at = body.resolved_at; }
-        renderFeedbackList();
-        updateFeedbackBadge();
-    } catch(e) {
-        alert('❌ 更新失敗：' + e.message);
-    }
+async function updateFeedbackStatus() {
+    alert('請使用右下角的 Learning Passport 問題回報管理功能。');
 }
 
-async function addTeacherNote(id) {
-    const item = _feedbackCache.find(f => f.id === id);
-    const note = prompt('加教師備註（學生會見到）：', item?.teacher_note || '');
-    if (note === null) return;
-    try {
-        const SUPA_URL = 'https://ygpsvwughqstubwxhzoe.supabase.co';
-        const SUPA_KEY = SUPABASE_ANON_KEY;
-        const r = await fetch(`${SUPA_URL}/rest/v1/student_feedback?id=eq.${id}`, {
-            method: 'PATCH',
-            headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ teacher_note: note })
-        });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        if (item) item.teacher_note = note;
-        renderFeedbackList();
-    } catch(e) {
-        alert('❌ 加備註失敗：' + e.message);
-    }
+async function addTeacherNote() {
+    alert('請使用右下角的 Learning Passport 問題回報管理功能。');
 }
 
 function escapeHtml(s) {
-    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 
 // Unified completion / score lookup (簡報 / 評估 / MC / 遊戲)
@@ -5038,11 +4692,6 @@ function showConfetti() {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeModal();
-    }
-    if (e.key === 'Enter') {
-        if (document.getElementById('teacherLoginForm').classList.contains('active')) {
-            teacherLogin();
-        }
     }
 });
 
@@ -6140,6 +5789,13 @@ async function gradeVoiceAnswer(qi) {
     const q = step.questions[qi];
     const resEl = document.getElementById('gradeResult'+qi);
     const gradeBtn = document.getElementById('gradeBtn'+qi);
+    if (window.LWWFMathPassportBridge.isTeacherPreview()) {
+        voiceData[qi] = { transcript: '教師巡堂示範錄音', score: 80, feedback: '巡堂沙盒只示範流程，不會上載錄音或呼叫 AI。' };
+        document.getElementById('transcript'+qi).textContent = '教師巡堂示範：錄音只留在本頁記憶體。';
+        resEl.innerHTML = '<div style="padding:12px;background:#F3E8FF;border-radius:8px;color:#5B21B6;font-weight:700;">教師巡堂沙盒：已完成本機示範，不會上載錄音、寫入進度或呼叫生成服務。</div>';
+        gradeBtn.disabled = false;
+        return;
+    }
     gradeBtn.disabled = true;
     resEl.innerHTML = '<div style="color:#666;padding:10px;">🤖 AI 正在分析你的錄音（轉字幕 + 評分），約需 5-15 秒...</div>';
     document.getElementById('transcript'+qi).innerHTML = '<span style="color:#666;">🔄 分析中...</span>';

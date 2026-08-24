@@ -90,13 +90,16 @@
   .card.done { background: linear-gradient(135deg, #C8E6C9 0%, #F1F8E9 100%); border-color: #4CAF50; }
 
   @media (max-width: 700px) { h1 { font-size: 1.35rem; } .card { padding: 12px 8px; min-height: 120px; } .card-emoji { font-size: 1.6rem; } .card-title { font-size: 0.88rem; } .card-desc { font-size: 0.72rem; } }
-</style>
+  .hero-title { display:flex; align-items:center; gap:12px; flex-wrap:wrap; position:relative; z-index:1; }
+  .hero-title h1 { margin:0; }
+  .school-crest { width:68px; height:76px; object-fit:contain; filter:drop-shadow(0 6px 14px rgba(0,0,0,.22)); flex:0 0 auto; }
+  @media (max-width: 600px) { .school-crest { width:52px; height:58px; } .hero-title { gap:9px; } }</style>
 </head>
 <body>
 <div class="wrap">
   <!-- ======== Hero Banner ======== -->
   <div class="hero">
-    <h1>📦 第 15 課 · 體積的認識</h1>
+    <div class="hero-title"><img class="school-crest" src="../common/images/LWWFPNG.png" alt="樂善堂梁黃蕙芳紀念學校校徽"><h1>📦 第 15 課 · 體積的認識</h1></div>
     <div class="subtitle">體積概念認識 · 直觀比較 · 哆啦A夢主題</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
       <span class="coin-tag"><img src="images/coin_new.png" style="width:14px;height:14px;"> 最多可賺 32 金幣</span>

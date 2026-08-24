@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { installPassportMock } from "./passport-fixture.mjs";
 
 async function readToolDebug(page) {
   await page.waitForFunction(() => Boolean(document.documentElement.dataset.toolDebug));
@@ -16,19 +17,19 @@ async function expectNoBrokenImages(page) {
 }
 
 test.beforeEach(async ({ page }) => {
+  await installPassportMock(page);
   await page.addInitScript(() => localStorage.clear());
 });
 
 test("首頁入口可以開啟分數料理台", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "數學AI學習區" })).toBeVisible();
-  await expect(page.getByTestId("fraction-kitchen-home-link")).toBeVisible();
-  await page.getByTestId("fraction-kitchen-home-link").click();
-
-  await expect(page).toHaveURL(/\/tools\/fraction-kitchen\.html$/);
-  await expect(page.getByRole("heading", { name: "分數料理台" })).toBeVisible();
-  const debug = await readToolDebug(page);
+  await expect(page.locator("#studentPage")).toBeVisible();
+  await page.getByTestId("fraction-kitchen-topbar-link").click();
+  await expect(page.getByTestId("learning-shell")).toHaveClass(/show/);
+  const tool = page.frameLocator("#learningShellFrame");
+  await expect(tool.getByRole("heading", { name: "分數料理台" })).toBeVisible();
+  const debug = JSON.parse(await tool.locator("html").getAttribute("data-tool-debug") || "{}");
   expect(debug.siteId).toBe("lwwf-math-fraction-kitchen");
 });
 
@@ -97,18 +98,6 @@ test("390px 手機寬度沒有橫向溢出", async ({ page }) => {
 
 test("Learning Passport mock receives safe fraction progress", async ({ page }) => {
   await page.goto("/tools/fraction-kitchen.html");
-
-  await page.evaluate(() => {
-    window.__PASSPORT_TEST_LOG = [];
-    window.LWWFPassport = {
-      getState: () => ({ ready: true, grade: "p3" }),
-      recordProgress: async (payload) => {
-        window.__PASSPORT_TEST_LOG.push(payload);
-        return { ok: true };
-      }
-    };
-    window.dispatchEvent(new CustomEvent("lwwf-passport-updated"));
-  });
 
   await expect(page.getByTestId("passport-pill")).toContainText("護照已連線");
   await page.getByTestId("num-up").click();

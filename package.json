@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check public/tools/fraction-kitchen.js && node --check public/tools/volume-architect.js && node --check public/tools/area-perimeter-lab.js",
+    "check": "node --check assets/common/passport-runtime.js && node --check assets/common/passport-bridge.js && node --check assets/common/progress.js && node --check assets/common/chapter-header.js && node --check assets/common/feedback.js && node --check assets/common/wrong-tracker.js && node --check assets/common/ai-tools.js && node --check public/tools/fraction-kitchen.js && node --check public/tools/volume-architect.js && node --check public/tools/area-perimeter-lab.js && node --check tests/static-server.mjs && node tests/check-inline-index.mjs",
     "build": "npm run check",
     "test": "npm run test:smoke",
     "test:smoke": "playwright test",

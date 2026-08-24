@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { installPassportMock } from "./passport-fixture.mjs";
 
 async function readToolDebug(page) {
   await page.waitForFunction(() => Boolean(document.documentElement.dataset.toolDebug));
@@ -23,19 +24,19 @@ async function setRange(page, testId, value) {
 }
 
 test.beforeEach(async ({ page }) => {
+  await installPassportMock(page);
   await page.addInitScript(() => localStorage.clear());
 });
 
 test("首頁入口可以開啟體積建築師", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "數學AI學習區" })).toBeVisible();
-  await expect(page.getByTestId("volume-architect-home-link")).toBeVisible();
-  await page.getByTestId("volume-architect-home-link").click();
-
-  await expect(page).toHaveURL(/\/tools\/volume-architect\.html$/);
-  await expect(page.getByRole("heading", { name: "體積建築師" })).toBeVisible();
-  const debug = await readToolDebug(page);
+  await expect(page.locator("#studentPage")).toBeVisible();
+  await page.getByTestId("volume-architect-topbar-link").click();
+  await expect(page.getByTestId("learning-shell")).toHaveClass(/show/);
+  const tool = page.frameLocator("#learningShellFrame");
+  await expect(tool.getByRole("heading", { name: "體積建築師" })).toBeVisible();
+  const debug = JSON.parse(await tool.locator("html").getAttribute("data-tool-debug") || "{}");
   expect(debug.siteId).toBe("lwwf-math-volume-architect");
 });
 
@@ -120,18 +121,6 @@ test("390px 手機寬度沒有橫向溢出", async ({ page }) => {
 
 test("Learning Passport mock receives safe volume progress", async ({ page }) => {
   await page.goto("/tools/volume-architect.html");
-
-  await page.evaluate(() => {
-    window.__PASSPORT_TEST_LOG = [];
-    window.LWWFPassport = {
-      getState: () => ({ ready: true, grade: "p5" }),
-      recordProgress: async (payload) => {
-        window.__PASSPORT_TEST_LOG.push(payload);
-        return { ok: true };
-      }
-    };
-    window.dispatchEvent(new CustomEvent("lwwf-passport-updated"));
-  });
 
   await expect(page.getByTestId("passport-pill")).toContainText("護照已連線");
   await setRange(page, "length-range", 1);

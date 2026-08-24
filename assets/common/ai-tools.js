@@ -22,6 +22,10 @@
 
   const WORKER_URL = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
 
+  function paidFeaturesAllowed() {
+    return window.LWWFMathPassportBridge?.canUsePaidFeatures?.() === true;
+  }
+
   // ---------- shared modal infrastructure ----------
   function ensureHost() {
     let host = document.getElementById('ai-tools-modal-host');
@@ -112,6 +116,11 @@
     if (!file) return;
     const status = document.getElementById('ait-ocr-status');
     status.className = 'ait-status';
+    if (!paidFeaturesAllowed()) {
+      status.className = 'ait-status success';
+      status.textContent = '教師巡堂沙盒：相片不會上載，OCR 生成服務不會被呼叫。';
+      return;
+    }
     status.innerHTML = '🤖 上載 + 辨識題目中...（10-30 秒）';
 
     try {
@@ -133,7 +142,7 @@
       if (data.error) throw new Error(data.error);
 
       status.className = 'ait-status success';
-      status.innerHTML = `✅ 辨識成功（${data.provider}）`;
+      status.textContent = '✅ 辨識成功';
 
       const html = `
         <div class="ait-question">${data.question}</div>
@@ -171,6 +180,12 @@
 
     const status = document.getElementById('ait-wl-status');
 
+    if (!paidFeaturesAllowed()) {
+      status.className = 'ait-status success';
+      status.textContent = '教師巡堂沙盒：不會讀取遠端錯題或呼叫生成服務。';
+      return;
+    }
+
     if (!window.LWWFWrong) {
       status.className = 'ait-status error';
       status.innerHTML = '❌ wrong-tracker.js 未載入';
@@ -186,7 +201,7 @@
       }
 
       status.className = 'ait-status success';
-      status.innerHTML = `✅ POE 出了 ${data.retries.length} 條 retry 題（${data.provider}）`;
+      status.textContent = `✅ 已建立 ${data.retries.length} 條重試題`;
 
       const html = data.retries.map((r, idx) => `
         <div class="ait-retry-item" data-id="${r.id}">
