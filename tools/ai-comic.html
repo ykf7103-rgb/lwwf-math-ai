@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI 四格漫畫</title>
+<script src="https://lwwf-learning-passport.lwwfaiteams.workers.dev/lwwf-passport-sdk.js" data-lwwf-math-passport-sdk="true" data-auto-init="false" referrerpolicy="no-referrer"></script>
+<script src="../assets/common/passport-runtime.js?v=20260822" referrerpolicy="no-referrer"></script>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
@@ -172,7 +174,7 @@
       <img src="../assets/common/images/LWWFPNG.png" alt="樂善堂梁黃蕙芳紀念學校校徽">
       <div>
         <h1>AI 四格漫畫</h1>
-        <div class="subtitle">拍攝題目，選擇漫畫類型，生成一幅四格解題圖。</div>
+        <div class="subtitle">拍攝題目，選擇漫畫類型，生成一幅四格解題圖。現階段只供 7A 測試。</div>
       </div>
     </div>
     <a class="back" id="backLink" href="../index.html">返回數學 AI 學習區</a>
@@ -222,9 +224,9 @@
 </div>
 
 <script>
-const DEFAULT_WORKER = 'https://lwwf-math-ai.lwwfaiteams.workers.dev';
-const params = new URLSearchParams(location.search);
-const WORKER = (params.get('worker') || DEFAULT_WORKER).replace(/\/$/, '');
+const params = new URL(document.baseURI).searchParams;
+const PASSPORT_ORIGIN = 'https://lwwf-learning-passport.lwwfaiteams.workers.dev';
+const MATH_COMIC_API = `${PASSPORT_ORIGIN}/api/site/math-comic`;
 
 const fileInput = document.getElementById('fileInput');
 const uploadBox = document.getElementById('uploadBox');
@@ -241,6 +243,48 @@ const metaBox = document.getElementById('metaBox');
 const backLink = document.getElementById('backLink');
 
 let uploadedDataUrl = '';
+
+function getPassportClient() {
+  try {
+    if (window.parent !== window && typeof window.parent.LWWFPassport?.authorizedFetch === 'function') {
+      return window.parent.LWWFPassport;
+    }
+  } catch (_) {}
+  return window.LWWFPassport;
+}
+
+async function getComicAccess() {
+  const bridge = window.LWWFMathPassportBridge;
+  const state = bridge?.init ? await bridge.init({ feedbackWidget: false }) : null;
+  const student = state?.studentView || state?.student;
+  return Boolean(
+    state?.ready === true &&
+    state?.mode === 'student' &&
+    state?.readOnly !== true &&
+    state?.site?.id === 'lwwf-math-ai' &&
+    String(student?.classCode || '').trim().toUpperCase() === '7A' &&
+    typeof getPassportClient()?.authorizedFetch === 'function'
+  );
+}
+
+function refreshAccessUi() {
+  getComicAccess().then((allowed) => {
+    if (!allowed) {
+      generateBtn.disabled = true;
+      setStatus('此功能暫只開放由 Learning Passport 進入的 7A 學生測試。', 'error');
+    } else if (!uploadedDataUrl) {
+      setStatus('已確認 7A 測試資格；請上載一張題目圖片。', 'ok');
+    }
+    window.__TOOL_DEBUG__ = Object.freeze({
+      toolId: 'ai-four-panel-comic',
+      access: allowed ? '7A-student' : 'restricted',
+      ready: Boolean(allowed),
+    });
+  }).catch(() => {
+    generateBtn.disabled = true;
+    setStatus('未能確認 Learning Passport 身分，請由數學 AI 學習區重新進入。', 'error');
+  });
+}
 
 function setupBackLink() {
   const from = params.get('from') || '';
@@ -272,7 +316,7 @@ async function fileToDataUrl(file) {
     reader.readAsDataURL(file);
   });
   const img = await loadImage(raw);
-  const maxSide = 1400;
+  const maxSide = 1024;
   const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
   const w = Math.max(1, Math.round(img.width * scale));
   const h = Math.max(1, Math.round(img.height * scale));
@@ -283,7 +327,11 @@ async function fileToDataUrl(file) {
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, w, h);
   ctx.drawImage(img, 0, 0, w, h);
-  return c.toDataURL('image/jpeg', 0.86);
+  const dataUrl = c.toDataURL('image/jpeg', 0.72);
+  if (new TextEncoder().encode(dataUrl).byteLength > 1200000) {
+    throw new Error('圖片檔案過大');
+  }
+  return dataUrl;
 }
 
 async function handleFile(file) {
@@ -296,8 +344,8 @@ async function handleFile(file) {
     uploadedDataUrl = await fileToDataUrl(file);
     previewImg.src = uploadedDataUrl;
     previewImg.style.display = 'block';
-    generateBtn.disabled = false;
-    setStatus('已讀取圖片，可以生成四格漫畫。', 'ok');
+    generateBtn.disabled = !(await getComicAccess());
+    setStatus(generateBtn.disabled ? '已讀取圖片；此功能暫只開放由 Learning Passport 進入的 7A 學生測試。' : '已讀取圖片，可以生成四格漫畫。', generateBtn.disabled ? 'error' : 'ok');
   } catch (err) {
     uploadedDataUrl = '';
     generateBtn.disabled = true;
@@ -485,12 +533,20 @@ async function renderComic(data) {
   downloadLink.href = dataUrl;
   downloadLink.style.display = 'inline-block';
   metaBox.style.display = 'block';
-  metaBox.textContent = `生成來源：${data.provider?.script || 'script'} / ${data.provider?.image || 'image'}；模型：${data.requested_model || '未回傳'}；圖片品質：${data.quality || 'low'}；中文由網頁字體疊加。`;
+  metaBox.textContent = '四格漫畫已完成；中文步驟由網頁安全疊加。';
 }
 
 async function generateComic() {
   if (!uploadedDataUrl) {
     setStatus('請先上載題目圖片。', 'error');
+    return;
+  }
+  if (window.LWWFMathPassportBridge?.isTeacherPreview?.()) {
+    setStatus('教師巡堂沙盒已完成操作示範；圖片只留在本頁記憶體，不會上載或呼叫生成服務。', 'ok');
+    return;
+  }
+  if (!(await getComicAccess())) {
+    setStatus('此功能暫只開放由 Learning Passport 進入的 7A 學生測試。', 'error');
     return;
   }
   generateBtn.disabled = true;
@@ -499,7 +555,7 @@ async function generateComic() {
   setStatus('正在辨識題目並設計四格腳本，請稍候...');
 
   try {
-    const res = await fetch(`${WORKER}/math-comic`, {
+    const res = await getPassportClient().authorizedFetch(MATH_COMIC_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
@@ -511,7 +567,7 @@ async function generateComic() {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.image) {
-      throw new Error(data.detail || data.error || `HTTP ${res.status}`);
+      throw new Error(data.message || data.error || `HTTP ${res.status}`);
     }
     setStatus('正在把正確文字疊加到四格漫畫...');
     await renderComic(data);
@@ -537,6 +593,7 @@ function clearAll() {
 }
 
 setupBackLink();
+refreshAccessUi();
 uploadBox.addEventListener('click', () => fileInput.click());
 uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.style.borderColor = '#C62828'; });
 uploadBox.addEventListener('dragleave', () => { uploadBox.style.borderColor = '#00897B'; });
